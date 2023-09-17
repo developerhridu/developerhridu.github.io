@@ -30,15 +30,15 @@ const Contact = () => {
 
     emailjs
       .send(
-        "service_cosvzzb",
-        "template_oc2y6ge",
+        "service_p90g8lb",
+        "template_l2ewgfe",
         {
           from_name: form.name,
-          to_name: "Ismile",
-          from_email: "ismailsardar540@gmail.com",
+          to_name: "Hridu",
+          from_email: "hridu.bdjobs@gmail.com",
           message: form.message,
         },
-        "tN3WuWFU8omkBi3C9"
+        "9CTVxuzxL-4ARdEn_"
       )
       .then(
         () => {
