@@ -23,9 +23,6 @@ const Contact = () => {
     const { name, value } = event.target;
     setForm({ ...form, [name]: value });
   };
-  // tN3WuWFU8omkBi3C9
-  // service_cosvzzb
-  // template_oc2y6ge
   const handelSubmit = (event) => {
     event.preventDefault();
     setLoading(true);
