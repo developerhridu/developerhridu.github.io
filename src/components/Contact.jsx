@@ -13,6 +13,8 @@ const Contact = () => {
     name: "",
     email: "",
     message: "",
+      mobile: ""
+
   });
 
   const [loading, setLoading] = useState(false);
@@ -28,16 +30,19 @@ const Contact = () => {
     event.preventDefault();
     setLoading(true);
 
+      const templateParams = {
+          user_name: form.name,
+          to_name: "Hridu",
+          user_email: form.email,
+          contact_number: form.mobile,
+          message: form.message,
+      };
+
     emailjs
       .send(
         "service_p90g8lb",
         "template_l2ewgfe",
-        {
-          from_name: form.name,
-          to_name: "Hridu",
-          from_email: "hridu.bdjobs@gmail.com",
-          message: form.message,
-        },
+          templateParams,
         "9CTVxuzxL-4ARdEn_"
       )
       .then(
@@ -95,6 +100,17 @@ const Contact = () => {
               className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outlined-none border-none font-medium"
             />
           </label>
+            <label className="flex flex-col">
+                <span className="text-white font-medium mb-4">Your Mobile Number.</span>
+                <input
+                    type="text"
+                    name="mobile"
+                    value={form.mobile}
+                    onChange={handelChange}
+                    placeholder="What's your mobile number?"
+                    className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outlined-none border-none font-medium"
+                />
+            </label>
           <label className="flex flex-col">
             <span className="text-white font-medium mb-4">Your Message.</span>
             <textarea

@@ -23,6 +23,8 @@ import {
   tripguide,
   typescript,
   web,
+  btcl,
+  clg,
 } from "../assets";
   
   export const navLinks = [
@@ -133,7 +135,7 @@ import {
     {
       title: "Intern",
       company_name: "BTCL",
-      icon: tesla,
+      icon: btcl,
       iconBg: "#E6DEDD",
       date: "Aug 2022 - Sept 2022",
       points: [
@@ -156,7 +158,7 @@ import {
     {
       title: "ICT Lecturer",
       company_name: "Pioneer Coaching & Private State College, Dinajpur",
-      icon: tesla,
+      icon: clg,
       iconBg: "#E6DEDD",
       date: "June 2018 - Apr 2022",
       points: [
