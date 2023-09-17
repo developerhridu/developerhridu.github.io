@@ -27,16 +27,16 @@ const Hero = () => {
           </p>
             <br/>
             <div className="flex">
-                <a href="https://www.your-facebook-link.com" target="_blank" rel="noopener noreferrer" className="text-secondary mr-3">
-                    <FaFacebookF className="text-2xl" />
-                </a>
-                <a href="https://www.your-twitter-link.com" target="_blank" rel="noopener noreferrer" className="text-secondary mr-3">
-                    <FaTwitter className="text-2xl" />
-                </a>
-                <a href="https://www.your-linkedin-link.com" target="_blank" rel="noopener noreferrer" className="text-secondary mr-3">
+                <a href="https://www.linkedin.com/in/developerhridu/" target="_blank" rel="noopener noreferrer" className="text-secondary mr-3">
                     <FaLinkedinIn className="text-2xl" />
                 </a>
-                <a href="https://www.your-github-link.com" target="_blank" rel="noopener noreferrer" className="text-secondary mr-3">
+                <a href="https://twitter.com/developerhridu" target="_blank" rel="noopener noreferrer" className="text-secondary mr-3">
+                    <FaTwitter className="text-2xl" />
+                </a>
+                <a href="https://www.facebook.com/developerhridu" target="_blank" rel="noopener noreferrer" className="text-secondary mr-3">
+                    <FaFacebookF className="text-2xl" />
+                </a>
+                <a href="https://github.com/developerhridu" target="_blank" rel="noopener noreferrer" className="text-secondary mr-3">
                     <FaGithub className="text-2xl" />
                 </a>
             </div>
