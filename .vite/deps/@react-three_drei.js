@@ -1,7 +1,4 @@
 import {
-  require_prop_types
-} from "./chunk-DGXGGGJU.js";
-import {
   _extends,
   addAfterEffect,
   addEffect,
@@ -16,7 +13,7 @@ import {
   useFrame,
   useLoader,
   useThree
-} from "./chunk-EUZQ3SBH.js";
+} from "./chunk-V3S4PMGD.js";
 import {
   _classCallCheck,
   _isNativeReflectConstruct,
@@ -224,6 +221,9 @@ import {
 import {
   require_client
 } from "./chunk-MHTIU4VA.js";
+import {
+  require_prop_types
+} from "./chunk-DGXGGGJU.js";
 import {
   require_react
 } from "./chunk-R653LAQO.js";

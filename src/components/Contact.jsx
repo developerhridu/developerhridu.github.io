@@ -29,13 +29,23 @@ const Contact = () => {
         event.preventDefault();
 
         const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-        const mobileRegex = /^[0-9]+$/;
+        const mobileRegex = /^[0-9\b]+$/;
 
         let isValidData = true;
 
-        if (!form.email || !form.message) {
+        if (!form.email && !form.message) {
             isValidData = false;
             toast.warning('Email & Message is required.');
+            return;
+        }
+        if (!form.email) {
+            isValidData = false;
+            toast.warning('Email is required.');
+            return;
+        }
+        if (!form.message) {
+            isValidData = false;
+            toast.warning('Message is required.');
             return;
         }
 
@@ -139,6 +149,7 @@ const Contact = () => {
                 <span className="text-white font-medium mb-4">Your Mobile Number.</span>
                 <input
                     type="number"
+                    pattern="[0-9]*"
                     name="mobile"
                     value={form.mobile}
                     onChange={handelChange}

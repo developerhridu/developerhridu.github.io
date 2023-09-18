@@ -18603,7 +18603,6 @@ var Canvas2 = React3.forwardRef(function CanvasWrapper(props, ref) {
 });
 
 export {
-  _extends,
   create,
   suspend,
   preload,
@@ -18634,6 +18633,7 @@ export {
   unmountComponentAtNode,
   createPortal,
   act,
+  _extends,
   createPointerEvents,
   Canvas2 as Canvas
 };
@@ -18683,4 +18683,4 @@ scheduler/cjs/scheduler.development.js:
    * LICENSE file in the root directory of this source tree.
    *)
 */
-//# sourceMappingURL=chunk-EUZQ3SBH.js.map
+//# sourceMappingURL=chunk-V3S4PMGD.js.map
