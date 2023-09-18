@@ -51,6 +51,7 @@ const Contact = () => {
             name: "",
             email: "",
             message: "",
+              mobile: "",
           });
         },
         (error) => {
