@@ -6,6 +6,8 @@ import { styles } from "../styles";
 import { EarthCanvas } from "./canvas";
 import { SectionWrapper } from "../hoc";
 import { slideIn } from "../utils/motion";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Contact = () => {
   const formRef = useRef();
@@ -23,45 +25,80 @@ const Contact = () => {
     const { name, value } = event.target;
     setForm({ ...form, [name]: value });
   };
-  const handelSubmit = (event) => {
-    event.preventDefault();
-    setLoading(true);
+    const handelSubmit = (event) => {
+        event.preventDefault();
 
-      const templateParams = {
-          user_name: form.name,
-          to_name: "Hridu",
-          user_email: form.email,
-          contact_number: form.mobile,
-          message: form.message,
-      };
+        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+        const mobileRegex = /^[0-9]+$/;
 
-    emailjs
-      .send(
-        "service_p90g8lb",
-        "template_l2ewgfe",
-          templateParams,
-        "9CTVxuzxL-4ARdEn_"
-      )
-      .then(
-        () => {
-          setLoading(false);
-          alert("Thank you. I will get back to you as soon as possible.");
+        let isValidData = true;
 
-          setForm({
-            name: "",
-            email: "",
-            message: "",
-              mobile: "",
-          });
-        },
-        (error) => {
-          setLoading(false);
-          alert("Ahh, something went wrong. Please try again.");
+        if (!form.email || !form.message) {
+            isValidData = false;
+            toast.warning('Email & Message is required.');
+            return;
         }
-      );
-  };
 
-  return (
+        if (!emailRegex.test(form.email)) {
+            toast.warning('Please enter a valid email address.');
+            isValidData = false;
+            return;
+        }
+
+        if(form.mobile.length > 0){
+            if (!mobileRegex.test(form.mobile)) {
+                toast.warning('Please enter a valid mobile number.');
+                return;
+            }
+        }
+
+        setLoading(true);
+
+        const templateParams = {
+            user_name: form.name,
+            to_name: "Hridu",
+            user_email: form.email,
+            contact_number: form.mobile,
+            message: form.message,
+        };
+
+        if(isValidData)
+        {
+            emailjs
+                .send(
+                    "service_p90g8lb",
+                    "template_l2ewgfe",
+                    templateParams,
+                    "9CTVxuzxL-4ARdEn_"
+                )
+                .then(
+                    () => {
+                        setLoading(false);
+                        toast.success(`Hey ${form.name}! I will get back to you as soon as possible.`);
+
+                        setForm({
+                            name: "",
+                            email: "",
+                            message: "",
+                            mobile: "",
+                        });
+                    },
+                    (error) => {
+                        setLoading(false);
+                        toast.error('Ahh, something went wrong. Please try again.');
+                    }
+                );
+
+        }
+        else {
+            toast.error('Please Fill the form with vaild data and Please try again.');
+
+        }
+    };
+
+
+
+    return (
     <div className="xl:mt-12 xl:flex-row flex-col-reverse flex gap-10 overflow-hidden">
       <motion.div
         variants={slideIn("left", "tween", 0.2, 1)}
@@ -101,7 +138,7 @@ const Contact = () => {
             <label className="flex flex-col">
                 <span className="text-white font-medium mb-4">Your Mobile Number.</span>
                 <input
-                    type="text"
+                    type="number"
                     name="mobile"
                     value={form.mobile}
                     onChange={handelChange}

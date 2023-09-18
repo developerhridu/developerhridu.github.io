@@ -1,4 +1,5 @@
 import { BrowserRouter } from "react-router-dom";
+import React from 'react'
 import {
   About,
   Contact,
@@ -10,6 +11,8 @@ import {
   Tech,
   Works,
 } from "./components";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
   return (
@@ -31,6 +34,7 @@ const App = () => {
           </div>
         </div>
       </BrowserRouter>
+      <ToastContainer position="top-center" />
     </>
   );
 };
