@@ -68,6 +68,7 @@ const Contact = () => {
             user_name: form.name,
             to_name: "Hridu",
             user_email: form.email,
+            from_email: form.email,
             contact_number: form.mobile,
             message: form.message,
         };
