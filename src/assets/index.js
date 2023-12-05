@@ -20,6 +20,12 @@ import redux from "./tech/redux.png";
 import tailwind from "./tech/tailwind.png";
 import typescript from "./tech/typescript.png";
 import threejs from "./tech/threejs.svg";
+import angular from "./tech/angular.png";
+import dotNetCore from "./tech/NET_Core.png";
+import Csharp from "./tech/Csharp.png";
+import mssql from "./tech/msql.png";
+import postgresql from "./tech/postgresql.png";
+import contentCreator from "./tech/content-creator.png";
 
 import meta from "./company/meta.png";
 import shopify from "./company/shopify.png";
@@ -64,5 +70,11 @@ export {
   tripguide,
   bdjobs,
   btcl,
-  clg
+  clg,
+  angular,
+  Csharp,
+  dotNetCore,
+  mssql,
+  postgresql,
+  contentCreator,
 };

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import React from "react";
-import {Tilt} from "react-tilt";
+import { Tilt } from "react-tilt";
 
 import { services } from "../constants";
 import { styles } from "../styles";
@@ -44,9 +44,12 @@ const About = () => {
         variants={fadeIn("", "", 0.1, 1)}
         className="mt-4 text-secondary text-[17px] max-w-3xl leading-[30px]"
       >
-          2+ years of expertise in JavaScript, React.Js, Express.Js, Node.Js. Standout strengths include simplifying complex topics
-          through 7+ years of teaching experience, exceptional communication skills and proficiency in leadership & a strong team
-          player. Seeking a challenging role in an organization to contribute skills, drive company growth & achieve professional goals.
+        2+ years of expertise in TypeScript, C#, JavaScript, Angular, React.Js,
+        .NET Core. Standout strengths include simplifying complex topics through
+        7+ years of teaching experience, exceptional communication skills and
+        proficiency in leadership & a strong team player. Seeking a challenging
+        role in an organization to contribute skills, drive company growth &
+        achieve professional goals.
       </motion.p>
 
       <div className="mt-20 flex flex-wrap gap-10">
