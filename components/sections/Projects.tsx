@@ -83,15 +83,17 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                       Live Demo
                     </a>
                   )}
-                  <a
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
-                  >
-                    <Github size={16} />
-                    Source Code
-                  </a>
+                  {project.githubUrl && (
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                    >
+                      <Github size={16} />
+                      Source Code
+                    </a>
+                  )}
                 </div>
               </GlassCard>
             </motion.div>
@@ -130,15 +132,17 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                         </span>
                       ))}
                     </div>
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
-                    >
-                      <Github size={14} />
-                      View Code
-                    </a>
+                    {project.githubUrl && (
+                      <a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                      >
+                        <Github size={14} />
+                        View Code
+                      </a>
+                    )}
                   </GlassCard>
                 </motion.div>
               ))}

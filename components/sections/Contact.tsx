@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, MapPin, Send, Github, Linkedin, Twitter, CheckCircle, AlertCircle } from "lucide-react";
+import { Mail, MapPin, Send, Github, Linkedin, Code2, CheckCircle, AlertCircle } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Button from "@/components/ui/Button";
@@ -133,12 +133,12 @@ export default function Contact({ showHeading = true }: ContactProps) {
                   <Linkedin size={20} />
                 </a>
                 <a
-                  href={profile.social.twitter}
+                  href={profile.social.leetcode}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-all"
                 >
-                  <Twitter size={20} />
+                  <Code2 size={20} />
                 </a>
               </div>
             </GlassCard>

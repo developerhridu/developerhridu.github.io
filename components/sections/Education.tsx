@@ -5,13 +5,14 @@ import { GraduationCap, MapPin, Calendar, Award } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import experienceData from "@/content/experience.json";
+import type { Education as EducationType } from "@/types";
 
 interface EducationProps {
   showHeading?: boolean;
 }
 
 export default function Education({ showHeading = true }: EducationProps) {
-  const education = experienceData.education || [];
+  const education = (experienceData.education || []) as EducationType[];
 
   if (education.length === 0) return null;
 
