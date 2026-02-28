@@ -187,7 +187,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
-                      placeholder="Your name"
+                      placeholder="Hridu"
                     />
                   </div>
 

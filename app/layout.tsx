@@ -15,12 +15,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Your Name | Full-Stack Software Engineer",
+  title: "Hridu | Full-Stack Software Engineer",
   description: "Full-stack software engineer specializing in backend development. Building robust, scalable systems with modern technologies.",
   keywords: ["software engineer", "full-stack", "backend", "developer", "portfolio"],
-  authors: [{ name: "Your Name" }],
+  authors: [{ name: "Hridu" }],
   openGraph: {
-    title: "Your Name | Full-Stack Software Engineer",
+    title: "Hridu | Full-Stack Software Engineer",
     description: "Full-stack software engineer specializing in backend development.",
     type: "website",
   },
