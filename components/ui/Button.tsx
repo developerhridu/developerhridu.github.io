@@ -7,6 +7,7 @@ interface ButtonProps {
   children: ReactNode;
   variant?: "primary" | "secondary";
   href?: string;
+  download?: string;
   onClick?: () => void;
   className?: string;
 }
@@ -15,6 +16,7 @@ export default function Button({
   children,
   variant = "primary",
   href,
+  download,
   onClick,
   className = ""
 }: ButtonProps) {
@@ -25,20 +27,28 @@ export default function Button({
     secondary: "bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-white/40"
   };
 
-  const Component = href ? "a" : "button";
-
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <Component
-        href={href}
-        onClick={onClick}
-        className={`${baseStyles} ${variants[variant]} ${className}`}
-      >
-        {children}
-      </Component>
+      {href ? (
+        <a
+          href={href}
+          download={download}
+          onClick={onClick}
+          className={`${baseStyles} ${variants[variant]} ${className}`}
+        >
+          {children}
+        </a>
+      ) : (
+        <button
+          onClick={onClick}
+          className={`${baseStyles} ${variants[variant]} ${className}`}
+        >
+          {children}
+        </button>
+      )}
     </motion.div>
   );
 }

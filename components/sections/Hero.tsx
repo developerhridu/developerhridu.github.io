@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, Download, Github, Linkedin, Twitter } from "lucide-react";
+import { ArrowDown, Code2, Download, Github, Linkedin } from "lucide-react";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import profile from "@/content/profile.json";
@@ -47,7 +47,7 @@ export default function Hero() {
               View Projects
               <ArrowDown size={18} />
             </Button>
-            <Button href={profile.resumeUrl} variant="secondary">
+            <Button href={profile.resumeUrl} download="Mizanur-Rahman-Resume.pdf" variant="secondary">
               <Download size={18} />
               Download Resume
             </Button>
@@ -77,12 +77,12 @@ export default function Hero() {
               <Linkedin size={24} />
             </a>
             <a
-              href={profile.social.twitter}
+              href={profile.social.leetcode}
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-400 hover:text-white transition-colors p-2"
             >
-              <Twitter size={24} />
+              <Code2 size={24} />
             </a>
           </motion.div>
 

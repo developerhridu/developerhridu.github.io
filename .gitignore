@@ -41,3 +41,4 @@ yarn-error.log*
 next-env.d.ts
 .vite/deps/@react-three_drei.js.map
 /.vite
+.DS_Store
