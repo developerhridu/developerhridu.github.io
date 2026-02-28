@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Github, Linkedin, Twitter, Mail } from "lucide-react";
+import { Code2, Github, Linkedin, Mail } from "lucide-react";
 import profile from "@/content/profile.json";
 
 export default function Footer() {
@@ -49,12 +49,12 @@ export default function Footer() {
               <Linkedin size={20} />
             </a>
             <a
-              href={profile.social.twitter}
+              href={profile.social.leetcode}
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-400 hover:text-white transition-colors"
             >
-              <Twitter size={20} />
+              <Code2 size={20} />
             </a>
             <a
               href={`mailto:${profile.email}`}
