@@ -1,0 +1,88 @@
+---
+title: "TypeScript Best Practices for 2024"
+date: "2024-02-20"
+description: "Essential TypeScript patterns and best practices I use in every project"
+tags: ["typescript", "javascript", "best-practices"]
+---
+
+# TypeScript Best Practices for 2024
+
+TypeScript has become essential for modern web development. Here are the best practices I follow in every project.
+
+## 1. Use Strict Mode
+
+Always enable strict mode in your `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true
+  }
+}
+```
+
+This catches potential issues early and makes your code more robust.
+
+## 2. Prefer Interfaces for Object Types
+
+```typescript
+// Prefer this
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+// Over this (for object shapes)
+type User = {
+  id: string;
+  name: string;
+  email: string;
+};
+```
+
+Interfaces are more extensible and provide better error messages.
+
+## 3. Use Discriminated Unions
+
+For handling different states:
+
+```typescript
+type LoadingState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'success'; data: User[] }
+  | { status: 'error'; error: string };
+```
+
+## 4. Avoid `any`, Use `unknown`
+
+```typescript
+// Bad
+function processData(data: any) {
+  return data.value;
+}
+
+// Good
+function processData(data: unknown) {
+  if (isValidData(data)) {
+    return data.value;
+  }
+  throw new Error('Invalid data');
+}
+```
+
+## 5. Use Const Assertions
+
+```typescript
+const config = {
+  api: 'https://api.example.com',
+  timeout: 5000,
+} as const;
+
+// config.api is now 'https://api.example.com' instead of string
+```
+
+## Conclusion
+
+Following these practices will make your TypeScript code more maintainable and catch bugs earlier in development.

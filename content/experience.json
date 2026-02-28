@@ -1,0 +1,54 @@
+{
+  "experiences": [
+    {
+      "company": "TechnoNext Ltd. (US-Bangla Group)",
+      "role": "Software Engineer",
+      "period": "April 2024 - Present",
+      "location": "Dhaka, Bangladesh",
+      "description": "Working in B2B Air-API Team as an ASP.NET Core developer, building scalable OTA solutions.",
+      "highlights": [
+        "Built scalable software solutions for 5+ OTA clients (TripLover, TravelChamp, FirstTrip, TakeTrip, TakeOff, TripLover Dubai)",
+        "Contributed to OTA dynamic ecosystem comprising 26+ services, ensuring scalability, performance, and reliability",
+        "Developed key OTA features - Progressive Search, Universal Split PNR, Refund Reissue, PNR Details",
+        "Developed 8 cloud-native supplier integration projects (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, Oman NDC)",
+        "Increased flight search feed by 27% through supplier API integrations"
+      ],
+      "technologies": ["ASP.NET Core", "C#", "Microservices", "MSSQL Server", "Azure", "REST APIs", "SOAP"]
+    },
+    {
+      "company": "Bdjobs.com Ltd.",
+      "role": "Jr. Software Engineer",
+      "period": "May 2023 - March 2024",
+      "location": "Kawran Bazar, Dhaka",
+      "description": "Collaborated with product, backend & QA teams on Bangladesh's largest job portal.",
+      "highlights": [
+        "Migrated Bdjobs.com corporate panel from legacy ASP to Angular and ASP.NET Core, enhancing platform functionality and performance",
+        "Developed key features - Employers Job Posting and Hiring System, Candidate SkillMatch Score, increasing platform sales by 17%",
+        "Developed ETL system to segregate read/write databases for job listings, reducing query time and improving search efficiency by 30%"
+      ],
+      "technologies": ["Angular", "ASP.NET Core", "C#", "MSSQL Server", "ETL"]
+    },
+    {
+      "company": "E-Desh Limited",
+      "role": "Jr. Software Engineer (Part-Time, Remote)",
+      "period": "January 2023 - February 2024",
+      "location": "Remote",
+      "description": "Collaborated with a team of remote developers to design and develop the company's web platform.",
+      "highlights": [
+        "Designed and developed company website using React and ASP.NET Core technologies",
+        "Responsible for crafting Front-end (React - Majorly), APIs, and optimizing existing codebase & database",
+        "Improved website performance and responsiveness through code and database optimization"
+      ],
+      "technologies": ["React", "ASP.NET Core", "C#", "JavaScript"]
+    }
+  ],
+  "education": [
+    {
+      "degree": "BSc (Eng.) in Information & Communication Technology",
+      "institution": "Hajee Mohammad Danesh Science & Technology University",
+      "period": "January 2017 - January 2023",
+      "location": "Dinajpur, Bangladesh",
+      "cgpa": "3.1"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "projects": [
+    {
+      "id": "ota-platform",
+      "title": "Online Travel Agency (OTA) Platform",
+      "description": "Web-based travel booking platform enabling users to search, compare, and book flights from multiple airlines and GDS systems",
+      "longDescription": "A comprehensive travel booking platform integrating multiple airlines (Novo Air, US-Bangla Airlines, Jazeera Airways, AirAstra, Air Arabia, IndiGo) and Global Distribution Systems (Amadeus, Sabre, Travelport). Built with scalable microservices architecture to handle high-volume flight searches and bookings.",
+      "tags": [".NET Core", "MSSQL Server", "SOAP Web Services", "REST APIs", "Firebase", "Azure"],
+      "image": "/images/projects/ota-platform.png",
+      "liveUrl": "https://www.triplover.com",
+      "githubUrl": null,
+      "featured": true
+    },
+    {
+      "id": "booking-manager",
+      "title": "Booking Manager Service",
+      "description": "Background service that automatically cancels un-ticketed bookings, saving 25-30 lakh BDT monthly across 5 OTA clients",
+      "longDescription": "Developed a critical background service using ASP.NET Core & Hangfire that automatically cancels un-ticketed bookings before the last ticketing time. This solution reduced ADM penalties by 5-7 lakh BDT per month per OTA, achieving total savings of 25-30 lakh BDT across 5 clients.",
+      "tags": [".NET Core", "Hangfire", "SQLite", "Background Services"],
+      "image": "/images/projects/booking-manager.png",
+      "liveUrl": "http://18.138.98.64:214/hangfire/",
+      "githubUrl": null,
+      "featured": true
+    },
+    {
+      "id": "foodi-crm",
+      "title": "Foodi CRM - Food Delivery System",
+      "description": "Full-stack customer relationship management system for food delivery businesses",
+      "longDescription": "Foodi CRM is a comprehensive customer relationship management system for food delivery businesses, enabling order tracking, restaurant management, delivery partner monitoring, and customer interaction. Built with a scalable microservices architecture focused on performance and usability.",
+      "tags": [".NET Core", "Microservices", "PostgreSQL"],
+      "image": "/images/projects/foodi-crm.png",
+      "liveUrl": null,
+      "githubUrl": null,
+      "featured": true
+    },
+    {
+      "id": "recruiter-bdjobs",
+      "title": "Recruiter.Bdjobs.com",
+      "description": "Hiring management platform allowing employers to manage job posting to online assessments and interviews",
+      "longDescription": "A comprehensive recruitment platform that allows employers to manage the entire hiring process from job posting to online assessments and interviews. Built with Angular frontend and ASP.NET Core backend, integrated with Bangladesh's largest job portal ecosystem.",
+      "tags": ["Angular", "ASP.NET Core", "MSSQL Server", "ETL"],
+      "image": "/images/projects/recruiter-bdjobs.png",
+      "liveUrl": "https://recruiter.bdjobs.com/jobposting/job-information",
+      "githubUrl": null,
+      "featured": false
+    },
+    {
+      "id": "devnote-blog",
+      "title": "DevNote Blog-site",
+      "description": "A blog platform allowing users to read and write blog posts",
+      "longDescription": "A full-stack blog platform that allows users to read and write blog posts. Features include user authentication, rich text editing, and responsive design. Built with Angular for the frontend and ASP.NET Core for the backend API.",
+      "tags": ["Angular", "ASP.NET Core", "C#", "TypeScript"],
+      "image": "/images/projects/devnote-blog.png",
+      "liveUrl": null,
+      "githubUrl": null,
+      "featured": false
+    },
+    {
+      "id": "supplier-integrations",
+      "title": "Airline Supplier Integration Projects",
+      "description": "8 cloud-native supplier integration projects connecting OTA platforms with major airlines and GDS systems",
+      "longDescription": "Developed 8 cloud-native supplier integration projects (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, Oman NDC) to integrate supplier APIs into client OTA platforms. These integrations increased flight search feed by 27% and enabled seamless booking across multiple airline systems.",
+      "tags": [".NET Core", "Microservices", "REST APIs", "SOAP", "NDC", "Azure"],
+      "image": "/images/projects/supplier-integrations.png",
+      "liveUrl": null,
+      "githubUrl": null,
+      "featured": false
+    }
+  ]
+}

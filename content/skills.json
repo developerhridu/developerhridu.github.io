@@ -1,0 +1,42 @@
+{
+  "backend": [
+    "C#",
+    "ASP.NET Core",
+    "Microservices",
+    "Entity Framework",
+    "Dapper",
+    "MSSQL Server",
+    "PostgreSQL",
+    "MongoDB",
+    "REST APIs",
+    "SOAP Web Services"
+  ],
+  "frontend": [
+    "Angular",
+    "TypeScript",
+    "JavaScript",
+    "React",
+    "HTML/CSS"
+  ],
+  "architecture": [
+    "Clean Architecture",
+    "Onion Architecture",
+    "TDD & DDD",
+    "Clean Code",
+    "Microservices"
+  ],
+  "devops": [
+    "Docker",
+    "CI/CD",
+    "AWS",
+    "Azure",
+    "Firebase"
+  ],
+  "tools": [
+    "Git",
+    "Visual Studio",
+    "VS Code",
+    "Postman",
+    "SQL Server Management Studio"
+  ]
+}

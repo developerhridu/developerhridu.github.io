@@ -1,0 +1,31 @@
+{
+  "name": "Mizanur Rahman",
+  "title": "Software Engineer",
+  "tagline": "Building scalable OTA solutions and enterprise software with .NET Core",
+  "bio": "I'm a Software Engineer specializing in ASP.NET Core and microservices architecture. Currently working in the B2B Air-API Team at TechnoNext Ltd., building scalable software solutions for Online Travel Agency (OTA) platforms. Passionate about clean architecture, distributed systems, and delivering high-performance APIs.",
+  "avatar": "/images/avatar.jpg",
+  "email": "mizanurrahmanhridu@gmail.com",
+  "phone": "+8801689402277",
+  "location": "Dhaka, Bangladesh",
+  "yearsOfExperience": 3,
+  "projectsCompleted": 15,
+  "social": {
+    "github": "https://github.com/developerhridu",
+    "linkedin": "https://linkedin.com/in/developerhridu",
+    "leetcode": "https://leetcode.com/developerhridu"
+  },
+  "resumeUrl": "/resume.pdf",
+  "portfolioUrl": "https://mrhridu.notion.site/Mizanur-s-Portfolio-28506bde9f1c81aeafa4c6f107610ca7",
+  "skills": [
+    { "name": "C#", "level": 90 },
+    { "name": "ASP.NET Core", "level": 90 },
+    { "name": "Microservices", "level": 85 },
+    { "name": "MSSQL Server", "level": 85 },
+    { "name": "Angular", "level": 80 },
+    { "name": "Docker", "level": 80 },
+    { "name": "TypeScript", "level": 75 },
+    { "name": "PostgreSQL", "level": 75 },
+    { "name": "MongoDB", "level": 70 },
+    { "name": "AWS", "level": 70 }
+  ]
+}
