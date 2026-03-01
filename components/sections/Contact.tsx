@@ -20,6 +20,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
     message: "",
   });
 
+  // TODO: Replace with your actual Web3Forms access key and endpoint so that the form can submit messages to your email or backend service.
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormStatus("loading");
@@ -31,7 +32,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          access_key: "YOUR_WEB3FORMS_ACCESS_KEY", // Replace with your Web3Forms access key
+          access_key: "YOUR_WEB3FORMS_ACCESS_KEY", 
           name: formData.name,
           email: formData.email,
           message: formData.message,
@@ -187,7 +188,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
-                      placeholder="Hridu"
+                      placeholder="Your Name"
                     />
                   </div>
 
