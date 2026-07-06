@@ -93,7 +93,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                       Live Demo
                     </a>
                   )}
-                  {project.githubUrl && (
+                  {typeof project.githubUrl === "string" && project.githubUrl && (
                     <a
                       href={project.githubUrl}
                       target="_blank"
@@ -103,6 +103,32 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                       <Github size={16} />
                       Source Code
                     </a>
+                  )}
+                  {project.githubUrl && typeof project.githubUrl === "object" && (
+                    <>
+                      {project.githubUrl.frontend && (
+                        <a
+                          href={project.githubUrl.frontend}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                        >
+                          <Github size={16} />
+                          Front-End
+                        </a>
+                      )}
+                      {project.githubUrl.backend && (
+                        <a
+                          href={project.githubUrl.backend}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                        >
+                          <Github size={16} />
+                          Back-End
+                        </a>
+                      )}
+                    </>
                   )}
                 </div>
               </GlassCard>
@@ -142,7 +168,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                         </span>
                       ))}
                     </div>
-                    {project.githubUrl && (
+                    {typeof project.githubUrl === "string" && project.githubUrl && (
                       <a
                         href={project.githubUrl}
                         target="_blank"
@@ -152,6 +178,32 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                         <Github size={14} />
                         View Code
                       </a>
+                    )}
+                    {project.githubUrl && typeof project.githubUrl === "object" && (
+                      <div className="flex gap-3">
+                        {project.githubUrl.frontend && (
+                          <a
+                            href={project.githubUrl.frontend}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                          >
+                            <Github size={14} />
+                            Front-End
+                          </a>
+                        )}
+                        {project.githubUrl.backend && (
+                          <a
+                            href={project.githubUrl.backend}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                          >
+                            <Github size={14} />
+                            Back-End
+                          </a>
+                        )}
+                      </div>
                     )}
                   </GlassCard>
                 </motion.div>

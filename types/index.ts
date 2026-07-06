@@ -32,7 +32,7 @@ export interface Project {
   image: string;
   tags: string[];
   liveUrl: string | null;
-  githubUrl: string;
+  githubUrl: string | null | { frontend?: string; backend?: string };
   featured: boolean;
 }
 

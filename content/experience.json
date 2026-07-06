@@ -16,7 +16,22 @@
         "Delivered 8 cloud-native supplier integration projects (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, Indigo), increasing flight search feed by 27%",
         "Migrated 8 legacy .NET Framework applications to .NET Core, enabling cross-platform deployment on Linux servers"
       ],
-      "technologies": ["ASP.NET Core", "C#", "Microservices", "MSSQL Server", "PostgreSQL", "MongoDB", "Dapper", "RabbitMQ", "Angular", "React", "Hangfire", "Elasticsearch", "REST APIs", "SOAP"]
+      "technologies": [
+        "ASP.NET Core",
+        "C#",
+        "Microservices",
+        "MSSQL Server",
+        "PostgreSQL",
+        "MongoDB",
+        "Dapper",
+        "RabbitMQ",
+        "Angular",
+        "React",
+        "Hangfire",
+        "Elasticsearch",
+        "REST APIs",
+        "SOAP"
+      ]
     },
     {
       "company": "Bdjobs.com Ltd.",
@@ -29,7 +44,13 @@
         "Developed key features - Employers Job Posting and Hiring System, Candidate SkillMatch Score, increasing platform sales by 17%",
         "Developed ETL system to segregate read/write databases for job listings, reducing query time and improving search efficiency by 30%"
       ],
-      "technologies": ["Angular", "ASP.NET Core", "C#", "MSSQL Server", "ETL"]
+      "technologies": [
+        "Angular",
+        "ASP.NET Core",
+        "C#",
+        "MSSQL Server",
+        "ETL"
+      ]
     },
     {
       "company": "E-Desh Limited",
@@ -42,7 +63,12 @@
         "Responsible for crafting Front-end (React - Majorly), APIs, and optimizing existing codebase & database",
         "Improved website performance and responsiveness through code and database optimization"
       ],
-      "technologies": ["React", "ASP.NET Core", "C#", "JavaScript"]
+      "technologies": [
+        "React",
+        "ASP.NET Core",
+        "C#",
+        "JavaScript"
+      ]
     }
   ],
   "education": [
@@ -51,7 +77,14 @@
       "institution": "Hajee Mohammad Danesh Science & Technology University",
       "period": "January 2017 - January 2023",
       "location": "Dinajpur, Bangladesh",
-      "cgpa": "3.1"
+      "cgpa": "3.1/4.0"
+    },
+    {
+      "degree": "HSC (Higher Secondary Certificate) in Science",
+      "institution": "Cumilla Victoria Government College",
+      "period": "March 2014 - December 2016",
+      "location": "Cumilla, Bangladesh",
+      "cgpa": "5.0/5.0"
     }
   ]
 }

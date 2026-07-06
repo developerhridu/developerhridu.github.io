@@ -95,7 +95,10 @@
       ],
       "image": "/images/devnote.png",
       "liveUrl": null,
-      "githubUrl": null,
+      "githubUrl": {
+        "frontend": "https://github.com/developerhridu/DevNote.UI",
+        "backend": "https://github.com/developerhridu/DevNote.API"
+      },
       "featured": false
     },
     {
@@ -114,6 +117,20 @@
       "image": "/images/supplier.png",
       "liveUrl": null,
       "githubUrl": null,
+      "featured": false
+    },
+    {
+      "id": "08",
+      "title": "Expense Tracker",
+      "description": "Cross-platform personal finance app to track expenses, income, and budgets with analytics",
+      "longDescription": "A cross-platform personal finance application for Android and iOS that enables users to track cash and credit card expenses, record income, manage budgets, categorize transactions, and monitor spending through interactive reports and analytics.",
+      "tags": [
+        "Flutter",
+        "Firebase"
+      ],
+      "image": "/images/expense-tracker.png",
+      "liveUrl": null,
+      "githubUrl": "https://github.com/developerhridu/ExpenseTracker",
       "featured": false
     }
   ]
