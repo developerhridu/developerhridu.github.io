@@ -68,9 +68,12 @@ export interface Certification {
 // Skills category type (for skills page)
 export interface SkillsCategory {
   backend: string[];
+  architecture: string[];
+  messaging: string[];
   frontend: string[];
+  database: string[];
   devops: string[];
-  tools: string[];
+  testing: string[];
 }
 
 // Blog post types

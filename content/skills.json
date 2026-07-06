@@ -1,42 +1,57 @@
 {
   "backend": [
     "C#",
-    "ASP.NET Core",
-    "Microservices",
-    "Entity Framework",
+    ".NET Core",
+    "ASP.NET MVC",
+    "EF Core",
     "Dapper",
-    "MSSQL Server",
-    "PostgreSQL",
-    "MongoDB",
+    "LINQ",
+    "API Integration",
     "REST APIs",
-    "SOAP Web Services"
+    "SOAP"
+  ],
+  "architecture": [
+    "Microservices",
+    "Clean Architecture",
+    "CQRS",
+    "Multi-tenant SaaS",
+    "Event-Driven Design"
+  ],
+  "messaging": [
+    "RabbitMQ",
+    "Kafka",
+    "Redis",
+    "Hangfire"
   ],
   "frontend": [
     "Angular",
     "TypeScript",
     "JavaScript",
     "React",
-    "HTML/CSS"
+    "HTML/CSS",
+    "Bootstrap"
   ],
-  "architecture": [
-    "Clean Architecture",
-    "Onion Architecture",
-    "TDD & DDD",
-    "Clean Code",
-    "Microservices"
+  "database": [
+    "MSSQL Server",
+    "PostgreSQL",
+    "MongoDB",
+    "Redis"
   ],
   "devops": [
     "Docker",
-    "CI/CD",
-    "AWS",
-    "Azure",
-    "Firebase"
-  ],
-  "tools": [
     "Git",
-    "Visual Studio",
-    "VS Code",
+    "GitHub",
+    "GitHub Actions",
+    "GitLab CI/CD",
+    "APM",
+    "Elasticsearch"
+  ],
+  "testing": [
+    "xUnit",
+    "MSTest",
+    "Jasmine",
     "Postman",
-    "SQL Server Management Studio"
+    "JMeter",
+    "k6"
   ]
 }

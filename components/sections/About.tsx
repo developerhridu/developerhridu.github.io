@@ -9,9 +9,12 @@ import skills from "@/content/skills.json";
 
 const skillCategories = [
   { name: "Backend", skills: skills.backend, color: "bg-violet-500" },
+  { name: "Architecture", skills: skills.architecture, color: "bg-pink-500" },
+  { name: "Messaging & Caching", skills: skills.messaging, color: "bg-yellow-500" },
   { name: "Frontend", skills: skills.frontend, color: "bg-blue-500" },
-  { name: "DevOps", skills: skills.devops, color: "bg-emerald-500" },
-  { name: "Tools", skills: skills.tools, color: "bg-orange-500" },
+  { name: "Database", skills: skills.database, color: "bg-cyan-500" },
+  { name: "DevOps & Observability", skills: skills.devops, color: "bg-emerald-500" },
+  { name: "Testing", skills: skills.testing, color: "bg-orange-500" },
 ];
 
 interface AboutProps {
@@ -33,9 +36,19 @@ export default function About({ showHeading = true }: AboutProps) {
           {/* Bio Card */}
           <GlassCard hover={false}>
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
-                {profile.name.split(" ").map(n => n[0]).join("")}
-              </div>
+              {profile.avatar ? (
+                <div className="w-20 h-20 rounded-full overflow-hidden ring-2 ring-black shrink-0">
+                  <img
+                    src={profile.avatar}
+                    alt={profile.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
+                  {profile.name.split(" ").map(n => n[0]).join("")}
+                </div>
+              )}
               <div>
                 <h3 className="text-xl font-bold text-white">{profile.name}</h3>
                 <p className="text-slate-400">{profile.title}</p>

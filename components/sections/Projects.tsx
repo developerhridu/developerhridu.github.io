@@ -39,12 +39,22 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
               transition={{ duration: 0.5, delay: idx * 0.1 }}
             >
               <GlassCard className="h-full flex flex-col">
-                {/* Project Image Placeholder */}
-                <div className="h-48 bg-gradient-to-br from-violet-500/20 to-purple-600/20 rounded-lg mb-4 flex items-center justify-center">
-                  <span className="text-4xl font-bold text-white/20">
-                    {project.title.split(" ").map((w) => w[0]).join("")}
-                  </span>
-                </div>
+                {/* Project Image */}
+                {project.image ? (
+                  <div className="h-48 rounded-lg mb-4 overflow-hidden">
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-48 bg-gradient-to-br from-violet-500/20 to-purple-600/20 rounded-lg mb-4 flex items-center justify-center">
+                    <span className="text-4xl font-bold text-white/20">
+                      {project.title.split(" ").map((w) => w[0]).join("")}
+                    </span>
+                  </div>
+                )}
 
                 <div className="flex-1">
                   <h3 className="text-xl font-bold text-white mb-2">

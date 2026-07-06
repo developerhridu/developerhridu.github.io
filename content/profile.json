@@ -1,9 +1,9 @@
 {
   "name": "Mizanur Rahman",
   "title": "Software Engineer",
-  "tagline": "Building scalable OTA solutions and enterprise software with .NET Core",
+  "tagline": "Architecting clean, scalable backends with ASP.NET Core & microservices",
   "bio": "I'm a Software Engineer specializing in ASP.NET Core and microservices architecture. Currently at TechnoNext Software Ltd., architecting and leading development across OTA, food delivery, and fare-intelligence platforms — supplier integrations, database migrations, and multi-tenant SaaS design for high-availability B2B/B2C systems. Passionate about clean architecture, distributed systems, and delivering high-performance APIs.",
-  "avatar": "/images/avatar.jpg",
+  "avatar": "/images/dp.png",
   "email": "mizanurrahmanhridu@gmail.com",
   "phone": "+8801689402277",
   "location": "Dhaka, Bangladesh",
