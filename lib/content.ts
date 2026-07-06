@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Profile, Project, Experience, SkillsCategory } from "@/types";
+import { Profile, Project, Experience, SkillsCategory, Certification } from "@/types";
 
 const contentDirectory = path.join(process.cwd(), "content");
 
@@ -32,4 +32,11 @@ export function getSkillsCategory(): SkillsCategory {
   const filePath = path.join(contentDirectory, "skills.json");
   const fileContents = fs.readFileSync(filePath, "utf8");
   return JSON.parse(fileContents);
+}
+
+export function getCertifications(): Certification[] {
+  const filePath = path.join(contentDirectory, "certifications.json");
+  const fileContents = fs.readFileSync(filePath, "utf8");
+  const data = JSON.parse(fileContents);
+  return data.certifications;
 }

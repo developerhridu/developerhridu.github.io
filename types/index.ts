@@ -57,6 +57,14 @@ export interface Education {
   achievements?: string[];
 }
 
+// Certification types
+export interface Certification {
+  name: string;
+  issuer: string;
+  date: string;
+  verifyUrl?: string;
+}
+
 // Skills category type (for skills page)
 export interface SkillsCategory {
   backend: string[];

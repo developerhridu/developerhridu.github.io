@@ -1,0 +1,64 @@
+{
+  "certifications": [
+    {
+      "name": "Cloud Architecture Training",
+      "issuer": "Bdjobs.com Ltd. & DU IIT",
+      "date": "June 2024",
+      "verifyUrl": "https://example.com/certificate/TODO"
+    },
+    {
+      "name": "Web Design and Development",
+      "issuer": "ICT Division, Bangladesh (LEDP)",
+      "date": "February 2020",
+      "verifyUrl": "https://ledp.ictd.gov.bd/certificate/?regid=260637"
+    },
+    {
+      "name": "Certified Software Engineer",
+      "issuer": "HackerRank",
+      "date": "January 2024",
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/bc1a30e19b7c"
+    },
+    {
+      "name": "Certified SQL (Advanced)",
+      "issuer": "HackerRank",
+      "date": "July 2026",
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/25415760cf15"
+    },
+    {
+      "name": "Certified C# Developer",
+      "issuer": "HackerRank",
+      "date": "February 2024",
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/e55bde03c575"
+    },
+    {
+      "name": "Certified JavaScript Developer",
+      "issuer": "HackerRank",
+      "date": "July 2026",
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/0a57fe9d6efc"
+    },
+    {
+      "name": "Rest API (Intermediate)",
+      "issuer": "HackerRank",
+      "date": "July 2026",
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/bae955cb87cd"
+    },
+    {
+      "name": "React Basics",
+      "issuer": "Coursera (Meta)",
+      "date": "April 2023",
+      "verifyUrl": "https://www.coursera.org/account/accomplishments/certificate/BNFDSFW4LQMH"
+    },
+    {
+      "name": "Introduction to Back-End Development",
+      "issuer": "Coursera (Meta)",
+      "date": "June 2023",
+      "verifyUrl": "https://www.coursera.org/account/accomplishments/verify/R9ZP2R4QGCSV"
+    },
+    {
+      "name": "Introduction to Front-End Development",
+      "issuer": "Coursera (Meta)",
+      "date": "February 2023",
+      "verifyUrl": "https://www.coursera.org/account/accomplishments/verify/HRT82VR23LTM"
+    }
+  ]
+}

@@ -1,19 +1,22 @@
 {
   "experiences": [
     {
-      "company": "TechnoNext Ltd. (US-Bangla Group)",
+      "company": "TechnoNext Software Ltd. (Concern of US-Bangla Group)",
       "role": "Software Engineer",
       "period": "April 2024 - Present",
       "location": "Dhaka, Bangladesh",
-      "description": "Working in B2B Air-API Team as an ASP.NET Core developer, building scalable OTA solutions.",
+      "description": "Architecting and leading development across OTA, food delivery, and fare-intelligence platforms — driving database migrations, supplier integrations, and multi-tenant SaaS architecture for high-availability B2B/B2C systems.",
       "highlights": [
-        "Built scalable software solutions for 5+ OTA clients (TripLover, TravelChamp, FirstTrip, TakeTrip, TakeOff, TripLover Dubai)",
-        "Contributed to OTA dynamic ecosystem comprising 26+ services, ensuring scalability, performance, and reliability",
-        "Developed key OTA features - Progressive Search, Universal Split PNR, Refund Reissue, PNR Details",
-        "Developed 8 cloud-native supplier integration projects (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, Oman NDC)",
-        "Increased flight search feed by 27% through supplier API integrations"
+        "Built scalable software solutions for 6 OTA clients (TripLover, TravelChamp, FirstTrip, TakeTrip, TakeOff, TripLover Dubai)",
+        "Contributed to OTA dynamic ecosystem comprising 36+ services, ensuring scalability, high availability, and fault tolerance",
+        "Architected and led development of a multi-tenant OTA SaaS supporting both B2B & B2C business models",
+        "Led migration of the core database from SQL Server to PostgreSQL, reducing licensing costs and improving Linux compatibility",
+        "Integrated APM monitoring with Elasticsearch-based structured logging, cutting production failure rates by 30%",
+        "Built an automated Hangfire background service auto-cancelling un-ticketed bookings, saving ~$23K-$27K across 6 OTA clients",
+        "Delivered 8 cloud-native supplier integration projects (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, Indigo), increasing flight search feed by 27%",
+        "Migrated 8 legacy .NET Framework applications to .NET Core, enabling cross-platform deployment on Linux servers"
       ],
-      "technologies": ["ASP.NET Core", "C#", "Microservices", "MSSQL Server", "Azure", "REST APIs", "SOAP"]
+      "technologies": ["ASP.NET Core", "C#", "Microservices", "MSSQL Server", "PostgreSQL", "MongoDB", "Dapper", "RabbitMQ", "Angular", "React", "Hangfire", "Elasticsearch", "REST APIs", "SOAP"]
     },
     {
       "company": "Bdjobs.com Ltd.",
@@ -31,7 +34,7 @@
     {
       "company": "E-Desh Limited",
       "role": "Jr. Software Engineer (Part-Time, Remote)",
-      "period": "January 2023 - February 2024",
+      "period": "May 2022 - February 2023",
       "location": "Remote",
       "description": "Collaborated with a team of remote developers to design and develop the company's web platform.",
       "highlights": [

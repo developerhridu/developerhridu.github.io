@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import About from "@/components/sections/About";
 import Education from "@/components/sections/Education";
+import Certifications from "@/components/sections/Certifications";
 
 export const metadata: Metadata = {
   title: "About | Portfolio",
@@ -12,6 +13,7 @@ export default function AboutPage() {
     <div className="pt-16">
       <About />
       <Education />
+      <Certifications />
     </div>
   );
 }
