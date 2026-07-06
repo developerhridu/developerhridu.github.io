@@ -55,9 +55,11 @@ export default function About({ showHeading = true }: AboutProps) {
               </div>
             </div>
 
-            <p className="text-slate-300 leading-relaxed mb-6">
-              {profile.bio}
-            </p>
+            <div className="text-slate-300 leading-relaxed mb-6 space-y-4">
+              {profile.bio.split("\n\n").map((paragraph, idx) => (
+                <p key={idx}>{paragraph}</p>
+              ))}
+            </div>
 
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2 text-slate-400">
