@@ -7,9 +7,10 @@ interface GlassCardProps {
   children: ReactNode;
   className?: string;
   hover?: boolean;
+  onClick?: () => void;
 }
 
-export default function GlassCard({ children, className = "", hover = true }: GlassCardProps) {
+export default function GlassCard({ children, className = "", hover = true, onClick }: GlassCardProps) {
   return (
     <motion.div
       className={`
@@ -22,6 +23,7 @@ export default function GlassCard({ children, className = "", hover = true }: Gl
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
+      onClick={onClick}
     >
       {children}
     </motion.div>

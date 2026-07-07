@@ -1,10 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ExternalLink, Github } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Github } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
+import ProjectModal from "@/components/ui/ProjectModal";
 import projectsData from "@/content/projects.json";
+
+type ProjectItem = (typeof projectsData.projects)[number];
 
 interface ProjectsProps {
   showHeading?: boolean;
@@ -17,6 +21,8 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
   const otherProjects = projects.filter((p) => !p.featured);
 
   const displayProjects = showAll ? projects : featuredProjects;
+
+  const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
 
   return (
     <section id="projects" className="py-20">
@@ -38,22 +44,28 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
             >
-              <GlassCard className="h-full flex flex-col">
+              <GlassCard className="h-full flex flex-col cursor-pointer group" onClick={() => setSelectedProject(project)}>
                 {/* Project Image */}
                 {project.image ? (
-                  <div className="h-48 rounded-lg mb-4 overflow-hidden">
+                  <div className="relative h-48 rounded-lg mb-4 overflow-hidden">
                     <img
                       src={project.image}
                       alt={project.title}
                       loading="lazy"
                       className="w-full h-full object-cover"
                     />
+                    <div className="absolute bottom-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowUpRight size={18} />
+                    </div>
                   </div>
                 ) : (
-                  <div className="h-48 bg-gradient-to-br from-violet-500/20 to-purple-600/20 rounded-lg mb-4 flex items-center justify-center">
+                  <div className="relative h-48 bg-gradient-to-br from-violet-500/20 to-purple-600/20 rounded-lg mb-4 flex items-center justify-center">
                     <span className="text-4xl font-bold text-white/20">
                       {project.title.split(" ").map((w) => w[0]).join("")}
                     </span>
+                    <div className="absolute bottom-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowUpRight size={18} />
+                    </div>
                   </div>
                 )}
 
@@ -82,7 +94,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                 </div>
 
                 {/* Links */}
-                <div className="flex gap-4 pt-4 border-t border-white/10">
+                <div className="flex gap-4 pt-4 border-t border-white/10" onClick={(e) => e.stopPropagation()}>
                   {project.liveUrl && (
                     <a
                       href={project.liveUrl}
@@ -152,7 +164,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
                 >
-                  <GlassCard className="h-full">
+                  <GlassCard className="h-full cursor-pointer" onClick={() => setSelectedProject(project)}>
                     <h4 className="text-lg font-semibold text-white mb-2">
                       {project.title}
                     </h4>
@@ -174,6 +186,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                         href={project.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
                       >
                         <Github size={14} />
@@ -181,7 +194,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                       </a>
                     )}
                     {project.githubUrl && typeof project.githubUrl === "object" && (
-                      <div className="flex gap-3">
+                      <div className="flex gap-3" onClick={(e) => e.stopPropagation()}>
                         {project.githubUrl.frontend && (
                           <a
                             href={project.githubUrl.frontend}
@@ -213,6 +226,8 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
           </>
         )}
       </div>
+
+      <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
     </section>
   );
 }
