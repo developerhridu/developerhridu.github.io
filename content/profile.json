@@ -1,6 +1,6 @@
 {
   "name": "Mizanur Rahman",
-  "title": "Software Engineer",
+  "title": "Full Stack Software Engineer",
   "tagline": "Architecting clean, scalable backends with ASP.NET Core & microservices",
   "bio": "Hi, I'm a Software Engineer with over four years of experience building scalable backend systems using .NET technologies.\n\nThroughout my career, I've worked across the Online Travel, Food Delivery, Recruitment, and Logistics domains, focusing on backend development, microservices, distributed systems, and third-party API integrations.\n\nCurrently, I'm working at TechnoNext Software, a concern of the US-Bangla Group, where I develop a multi-tenant Online Travel Agency platform serving multiple travel brands. My work includes building scalable backend services, integrating airline and GDS/NDC APIs, and developing business-critical features. One project I'm particularly proud of is an automated booking cancellation service that significantly reduced airline ADM penalties for multiple clients.\n\nI've also contributed to Foodi by developing customer engagement automation features and built a fare intelligence platform that helps airlines make data-driven pricing decisions.\n\nPreviously, I worked at Bdjobs.com, where I helped modernize legacy systems and improve job search performance using Angular, ASP.NET Core, and a CQRS-based architecture. Earlier, I worked remotely at E-Desh Limited, contributing to a logistics platform by building backend APIs and optimizing application performance.\n\nBeyond my day-to-day work, I enjoy learning new technologies, solving real business problems, and mentoring junior engineers. I'm always looking for opportunities to build reliable, scalable software that delivers measurable business value.",
   "avatar": "/images/dp.png",
@@ -32,7 +32,7 @@
     },
     {
       "name": "MSSQL Server",
-      "level": 85
+      "level": 90
     },
     {
       "name": "Angular",
@@ -52,7 +52,7 @@
     },
     {
       "name": "MongoDB",
-      "level": 70
+      "level": 90
     },
     {
       "name": "AWS",
