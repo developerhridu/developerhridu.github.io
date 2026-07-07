@@ -164,8 +164,11 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
                 >
-                  <GlassCard className="h-full cursor-pointer" onClick={() => setSelectedProject(project)}>
-                    <h4 className="text-lg font-semibold text-white mb-2">
+                  <GlassCard className="h-full cursor-pointer group relative" onClick={() => setSelectedProject(project)}>
+                    <div className="absolute top-4 right-4 flex items-center justify-center w-8 h-8 rounded-full bg-violet-600 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowUpRight size={16} />
+                    </div>
+                    <h4 className="text-lg font-semibold text-white mb-2 pr-8">
                       {project.title}
                     </h4>
                     <p className="text-slate-400 text-sm mb-3">
