@@ -5,15 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import navigation from "@/content/navigation.json";
+import profile from "@/content/profile.json";
 
-const navLinks = [
-  { name: "Home", href: "/" },
-  { name: "About", href: "/about" },
-  { name: "Projects", href: "/projects" },
-  { name: "Experience", href: "/experience" },
-  { name: "Blog", href: "/blog" },
-  { name: "Contact", href: "/contact" },
-];
+const navLinks = navigation.navLinks;
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -41,25 +36,44 @@ export default function Navbar() {
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="text-xl font-bold text-white">
+          <Link href="/" className="flex items-center gap-2 text-xl font-bold text-white">
+            <div className="w-8 h-8 overflow-hidden shrink-0">
+              <img
+                src={profile.avatar}
+                alt={profile.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
             Portfolio
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`transition-colors ${
-                  pathname === link.href
-                    ? "text-violet-400"
-                    : "text-slate-300 hover:text-white"
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link) =>
+              link.external ? (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-300 hover:text-white transition-colors"
+                >
+                  {link.name}
+                </a>
+              ) : (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`transition-colors ${
+                    pathname === link.href
+                      ? "text-violet-400"
+                      : "text-slate-300 hover:text-white"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              )
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -78,20 +92,33 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`block py-2 transition-colors ${
-                  pathname === link.href
-                    ? "text-violet-400"
-                    : "text-slate-300 hover:text-white"
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link) =>
+              link.external ? (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block py-2 text-slate-300 hover:text-white transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.name}
+                </a>
+              ) : (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`block py-2 transition-colors ${
+                    pathname === link.href
+                      ? "text-violet-400"
+                      : "text-slate-300 hover:text-white"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              )
+            )}
           </motion.div>
         )}
       </div>

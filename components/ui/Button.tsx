@@ -8,6 +8,8 @@ interface ButtonProps {
   variant?: "primary" | "secondary";
   href?: string;
   download?: string;
+  target?: string;
+  rel?: string;
   onClick?: () => void;
   className?: string;
 }
@@ -17,6 +19,8 @@ export default function Button({
   variant = "primary",
   href,
   download,
+  target,
+  rel,
   onClick,
   className = ""
 }: ButtonProps) {
@@ -36,6 +40,8 @@ export default function Button({
         <a
           href={href}
           download={download}
+          target={target}
+          rel={rel}
           onClick={onClick}
           className={`${baseStyles} ${variants[variant]} ${className}`}
         >
