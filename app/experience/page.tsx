@@ -1,17 +1,16 @@
 import { Metadata } from "next";
 import Experience from "@/components/sections/Experience";
-import Education from "@/components/sections/Education";
 
 export const metadata: Metadata = {
-  title: "Experience | Portfolio",
-  description: "My professional experience and career journey",
+  title: "Experience | Mizanur Rahman — Career Journey",
+  description:
+    "4+ years across TechnoNext Software (US-Bangla Group), Bdjobs.com, and E-Desh Limited. Built production systems in travel, recruitment, and logistics sectors.",
 };
 
 export default function ExperiencePage() {
   return (
-    <div className="pt-16">
+    <div className="pt-16 md:pt-0">
       <Experience />
-      <Education />
     </div>
   );
 }

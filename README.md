@@ -17,7 +17,8 @@ All resume/portfolio content lives in plain JSON files under `content/`, not har
 | File | Drives | Loader |
 |---|---|---|
 | `content/profile.json` | Name, bio, contact info, social links, skill ratings | `getProfile()` |
-| `content/experience.json` | Work experience (`experiences`) + education (`education`) | `getExperiences()` |
+| `content/experience.json` | Work experience (`experiences`) | `getExperiences()` |
+| `content/education.json` | Education history (`education`) | `getEducation()` |
 | `content/skills.json` | Categorized skills (backend/frontend/architecture/devops/tools) | `getSkillsCategory()` |
 | `content/projects.json` | Project showcase entries | `getProjects()` / `getFeaturedProjects()` |
 | `content/certifications.json` | Training & certifications list | `getCertifications()` |

@@ -3,18 +3,19 @@ import Link from "next/link";
 import { getAllBlogPosts } from "@/lib/mdx";
 import SectionHeading from "@/components/ui/SectionHeading";
 import GlassCard from "@/components/ui/GlassCard";
-import { Calendar, Clock, ArrowRight } from "lucide-react";
+import { Calendar, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Blog | Portfolio",
-  description: "Read my latest blog posts about software development",
+  title: "Blog | Mizanur Rahman — Software Engineering Insights",
+  description:
+    "Technical writing on backend architecture, .NET development, microservices patterns, and software engineering practices.",
 };
 
 export default function BlogPage() {
   const posts = getAllBlogPosts();
 
   return (
-    <div className="pt-16">
+    <div className="pt-16 md:pt-0">
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <SectionHeading
@@ -31,12 +32,12 @@ export default function BlogPage() {
               {posts.map((post) => (
                 <Link key={post.slug} href={`/blog/${post.slug}`}>
                   <GlassCard className="h-full flex flex-col group cursor-pointer">
-                    {/* Post Image */}
                     {post.image ? (
                       <div className="h-48 rounded-lg mb-4 overflow-hidden">
                         <img
                           src={post.image}
                           alt={post.title}
+                          loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
@@ -49,7 +50,6 @@ export default function BlogPage() {
                     )}
 
                     <div className="flex-1">
-                      {/* Tags */}
                       <div className="flex flex-wrap gap-2 mb-3">
                         {post.tags.slice(0, 3).map((tag) => (
                           <span

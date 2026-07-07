@@ -39,6 +39,7 @@ export interface Project {
 // Experience types
 export interface Experience {
   company: string;
+  logo?: string;
   role: string;
   period: string;
   location?: string;
@@ -51,6 +52,7 @@ export interface Experience {
 export interface Education {
   degree: string;
   institution: string;
+  icon?: string;
   period: string;
   location: string;
   cgpa?: string;
@@ -61,6 +63,8 @@ export interface Education {
 export interface Certification {
   name: string;
   issuer: string;
+  icon?: string;
+  icons?: string[];
   date: string;
   verifyUrl?: string;
 }

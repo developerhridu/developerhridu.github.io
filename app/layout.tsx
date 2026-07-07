@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import BackToTop from "@/components/ui/BackToTop";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,16 +15,65 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const BASE_URL = "https://developerhridu.github.io";
+
 export const metadata: Metadata = {
   title: "Hridu | Full-Stack Software Engineer",
-  description: "Full-stack software engineer specializing in backend development. Building robust, scalable systems with modern technologies.",
-  keywords: ["software engineer", "full-stack", "backend", "developer", "portfolio"],
-  authors: [{ name: "Hridu" }],
+  description:
+    "Full-stack software engineer with 4+ years building scalable .NET microservices and modern frontends across travel, food delivery, and recruitment domains.",
+  keywords: [
+    "software engineer",
+    "full-stack",
+    "backend",
+    ".NET",
+    "ASP.NET Core",
+    "microservices",
+    "C#",
+    "Angular",
+    "React",
+    "developer",
+    "portfolio",
+    "Dhaka",
+    "Bangladesh",
+  ],
+  authors: [{ name: "Mizanur Rahman" }],
+  metadataBase: new URL(BASE_URL),
   openGraph: {
     title: "Hridu | Full-Stack Software Engineer",
-    description: "Full-stack software engineer specializing in backend development.",
+    description:
+      "Full-stack software engineer with 4+ years building scalable .NET microservices and modern frontends across travel, food delivery, and recruitment domains.",
     type: "website",
+    url: BASE_URL,
+    images: [{ url: "/images/dp.png", width: 400, height: 400, alt: "Mizanur Rahman" }],
   },
+  twitter: {
+    card: "summary",
+    title: "Hridu | Full-Stack Software Engineer",
+    description:
+      "Full-stack software engineer with 4+ years building scalable .NET microservices and modern frontends.",
+    images: ["/images/dp.png"],
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Mizanur Rahman",
+  alternateName: "Hridu",
+  url: BASE_URL,
+  image: `${BASE_URL}/images/dp.png`,
+  jobTitle: "Full-Stack Software Engineer",
+  worksFor: { "@type": "Organization", name: "TechnoNext Software" },
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Dhaka",
+    addressCountry: "BD",
+  },
+  sameAs: [
+    "https://github.com/developerhridu",
+    "https://linkedin.com/in/developerhridu",
+    "https://leetcode.com/developerhridu",
+  ],
 };
 
 export default function RootLayout({
@@ -33,13 +83,29 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="theme-color" content="#0f172a" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
+        <a href="#main-content" className="skip-to-content">
+          Skip to content
+        </a>
         <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <div className="md:pl-20">
+          <main id="main-content">{children}</main>
+          <Footer />
+        </div>
+        <BackToTop />
       </body>
     </html>
   );

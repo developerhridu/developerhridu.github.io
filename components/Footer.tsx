@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Code2, Github, Linkedin, Mail } from "lucide-react";
+import { Code2, Github, Handshake, Linkedin, Mail } from "lucide-react";
 import profile from "@/content/profile.json";
 import navigation from "@/content/navigation.json";
 
@@ -44,6 +44,15 @@ export default function Footer() {
           </div>
 
           <div className="flex items-center gap-4">
+            <a
+              href={profile.social.upwork}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-600 hover:bg-violet-500 text-white text-sm transition-colors"
+            >
+              <Handshake size={16} />
+              Hire Me
+            </a>
             <a
               href={profile.social.github}
               target="_blank"

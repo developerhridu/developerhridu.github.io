@@ -1,14 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, Code2, ExternalLink, Github, Linkedin } from "lucide-react";
+import { ArrowDown, Code2, ExternalLink, Github, Handshake, Linkedin } from "lucide-react";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import profile from "@/content/profile.json";
 
 export default function Hero() {
   return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16">
+    <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 md:pt-0">
       {/* Animated background blobs */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-500/30 rounded-full blur-[100px] animate-pulse" />
@@ -47,6 +47,10 @@ export default function Hero() {
               View Projects
               <ArrowDown size={18} />
             </Button>
+            <Button href={profile.social.upwork} target="_blank" rel="noopener noreferrer" variant="primary">
+              <Handshake size={18} />
+              Hire Me
+            </Button>
             <Button href={profile.resumeUrl} target="_blank" rel="noopener noreferrer" variant="secondary">
               <ExternalLink size={18} />
               View Resume
@@ -64,6 +68,7 @@ export default function Hero() {
               href={profile.social.github}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="GitHub profile"
               className="text-slate-400 hover:text-white transition-colors p-2"
             >
               <Github size={24} />
@@ -72,6 +77,7 @@ export default function Hero() {
               href={profile.social.linkedin}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="LinkedIn profile"
               className="text-slate-400 hover:text-white transition-colors p-2"
             >
               <Linkedin size={24} />
@@ -80,6 +86,7 @@ export default function Hero() {
               href={profile.social.leetcode}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="LeetCode profile"
               className="text-slate-400 hover:text-white transition-colors p-2"
             >
               <Code2 size={24} />
@@ -106,8 +113,8 @@ export default function Hero() {
               <div className="text-sm text-slate-400">Projects Completed</div>
             </GlassCard>
             <GlassCard className="text-center col-span-2 md:col-span-1" hover={false}>
-              <div className="text-3xl font-bold text-white mb-1">100%</div>
-              <div className="text-sm text-slate-400">Client Satisfaction</div>
+              <div className="text-3xl font-bold text-white mb-1">3</div>
+              <div className="text-sm text-slate-400">Companies</div>
             </GlassCard>
           </motion.div>
         </div>

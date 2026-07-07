@@ -40,19 +40,30 @@ export default function Experience({ showHeading = true }: ExperienceProps) {
                 }`}
               >
                 {/* Timeline dot */}
-                <div className="absolute left-0 md:left-1/2 transform -translate-x-1/2 w-4 h-4 bg-violet-500 rounded-full border-4 border-slate-900" />
+                <div className="absolute left-0 md:left-1/2 transform translate-x-0 md:-translate-x-1/2 w-4 h-4 bg-violet-500 rounded-full border-4 border-slate-900" />
 
                 {/* Content */}
                 <div className="md:w-1/2 pl-8 md:pl-0">
                   <GlassCard>
                     <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="text-xl font-bold text-white">
-                          {exp.role}
-                        </h3>
-                        <p className="text-violet-400 font-medium">
-                          {exp.company}
-                        </p>
+                      <div className="flex items-start gap-3">
+                        {exp.logo && (
+                          <div className="w-11 h-11 rounded-lg overflow-hidden shrink-0 bg-white/5">
+                            <img
+                              src={exp.logo}
+                              alt={exp.company}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div>
+                          <h3 className="text-xl font-bold text-white">
+                            {exp.role}
+                          </h3>
+                          <p className="text-violet-400 font-medium">
+                            {exp.company}
+                          </p>
+                        </div>
                       </div>
                       <span className="text-sm text-slate-400 whitespace-nowrap">
                         {exp.period}

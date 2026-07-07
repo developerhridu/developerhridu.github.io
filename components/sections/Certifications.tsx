@@ -9,69 +9,93 @@ import type { Certification } from "@/types";
 
 interface CertificationsProps {
   showHeading?: boolean;
+  noSection?: boolean;
 }
 
-export default function Certifications({ showHeading = true }: CertificationsProps) {
+export default function Certifications({ showHeading = true, noSection = false }: CertificationsProps) {
   const certifications = (certificationsData.certifications || []) as Certification[];
 
   if (certifications.length === 0) return null;
 
-  return (
-    <section id="certifications" className="py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {showHeading && (
-          <SectionHeading
-            title="Training & Certifications"
-            subtitle="Courses and certifications I've completed"
-          />
-        )}
+  const content = (
+    <>
+      {showHeading && (
+        <SectionHeading
+          title="Training & Certifications"
+          subtitle="Courses and certifications I've completed"
+        />
+      )}
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {certifications.map((cert, idx) => (
-            <motion.div
-              key={cert.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.05 }}
-            >
-              <GlassCard className="h-full">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-violet-500/20 rounded-lg">
+      <div className="grid gap-6 md:grid-cols-2">
+        {certifications.map((cert, idx) => (
+          <motion.div
+            key={cert.name}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: idx * 0.05 }}
+          >
+            <GlassCard className="h-full">
+              <div className="flex items-start gap-4">
+                {cert.icons && cert.icons.length > 0 ? (
+                  <div className="flex -space-x-2 shrink-0">
+                    {cert.icons.map((icon) => (
+                      <div
+                        key={icon}
+                        className="w-11 h-11 rounded-lg bg-white/90 border-2 border-slate-900 flex items-center justify-center p-2"
+                      >
+                        <img src={icon} alt={cert.issuer} className="w-full h-full object-contain" />
+                      </div>
+                    ))}
+                  </div>
+                ) : cert.icon ? (
+                  <div className="w-14 h-14 rounded-lg bg-white/90 flex items-center justify-center p-3 shrink-0">
+                    <img src={cert.icon} alt={cert.issuer} className="w-full h-full object-contain" />
+                  </div>
+                ) : (
+                  <div className="p-3 bg-violet-500/20 rounded-lg shrink-0">
                     <BadgeCheck className="w-8 h-8 text-violet-400" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-white mb-1">
-                      {cert.name}
-                    </h3>
-                    <p className="text-violet-400 font-medium mb-3">
-                      {cert.issuer}
-                    </p>
+                )}
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-white mb-1">
+                    {cert.name}
+                  </h3>
+                  <p className="text-violet-400 font-medium mb-3">
+                    {cert.issuer}
+                  </p>
 
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        <span>{cert.date}</span>
-                      </div>
-                      {cert.verifyUrl && (
-                        <a
-                          href={cert.verifyUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-violet-400 hover:text-violet-300 transition-colors"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                          <span>Verify</span>
-                        </a>
-                      )}
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>{cert.date}</span>
                     </div>
+                    {cert.verifyUrl && (
+                      <a
+                        href={cert.verifyUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-violet-400 hover:text-violet-300 transition-colors"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span>Verify</span>
+                      </a>
+                    )}
                   </div>
                 </div>
-              </GlassCard>
-            </motion.div>
-          ))}
-        </div>
+              </div>
+            </GlassCard>
+          </motion.div>
+        ))}
       </div>
+    </>
+  );
+
+  if (noSection) return content;
+
+  return (
+    <section id="certifications" className="py-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">{content}</div>
     </section>
   );
 }
