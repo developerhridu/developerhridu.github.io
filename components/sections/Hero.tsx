@@ -5,6 +5,7 @@ import { ArrowDown, Code2, ExternalLink, Github, Handshake, Linkedin } from "luc
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import profile from "@/content/profile.json";
+import { trackEvent } from "@/lib/analytics";
 
 export default function Hero() {
   return (
@@ -47,11 +48,23 @@ export default function Hero() {
               View Projects
               <ArrowDown size={18} />
             </Button>
-            <Button href={profile.social.upwork} target="_blank" rel="noopener noreferrer" variant="primary">
+            <Button
+              href={profile.social.upwork}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="primary"
+              onClick={() => trackEvent("hire_me_click", { location: "hero" })}
+            >
               <Handshake size={18} />
               Hire Me
             </Button>
-            <Button href={profile.resumeUrl} target="_blank" rel="noopener noreferrer" variant="secondary">
+            <Button
+              href={profile.resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="secondary"
+              onClick={() => trackEvent("resume_view", { location: "hero" })}
+            >
               <ExternalLink size={18} />
               View Resume
             </Button>

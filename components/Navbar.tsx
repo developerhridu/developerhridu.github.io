@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import navigation from "@/content/navigation.json";
 import profile from "@/content/profile.json";
+import { trackEvent } from "@/lib/analytics";
 
 const navLinks = navigation.navLinks;
 
@@ -69,6 +70,7 @@ export default function Navbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={link.name}
+                onClick={() => link.name === "CV" && trackEvent("resume_view", { location: "navbar_desktop" })}
                 className="group relative flex items-center justify-center w-11 h-11 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
               >
                 <Icon size={20} />
@@ -102,6 +104,7 @@ export default function Navbar() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Hire Me"
+          onClick={() => trackEvent("hire_me_click", { location: "navbar_desktop" })}
           className="group relative mt-auto flex items-center justify-center w-11 h-11 rounded-lg bg-violet-600 hover:bg-violet-500 text-white transition-colors"
         >
           <Handshake size={20} />
@@ -127,6 +130,7 @@ export default function Navbar() {
                 href={profile.social.upwork}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackEvent("hire_me_click", { location: "navbar_mobile" })}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-600 hover:bg-violet-500 text-white text-sm transition-colors"
               >
                 <Handshake size={16} />
@@ -157,7 +161,10 @@ export default function Navbar() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block py-2 text-slate-300 hover:text-white transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => {
+                      if (link.name === "CV") trackEvent("resume_view", { location: "navbar_mobile" });
+                      setIsMobileMenuOpen(false);
+                    }}
                   >
                     {link.name}
                   </a>

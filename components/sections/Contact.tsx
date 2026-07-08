@@ -8,6 +8,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import Button from "@/components/ui/Button";
 import profile from "@/content/profile.json";
 import config from "@/content/config.json";
+import { trackEvent } from "@/lib/analytics";
 
 interface ContactProps {
   showHeading?: boolean;
@@ -45,11 +46,14 @@ export default function Contact({ showHeading = true }: ContactProps) {
       if (result.success) {
         setFormStatus("success");
         setFormData({ name: "", email: "", message: "" });
+        trackEvent("contact_form_submit", { status: "success" });
       } else {
         setFormStatus("error");
+        trackEvent("contact_form_submit", { status: "error" });
       }
     } catch {
       setFormStatus("error");
+      trackEvent("contact_form_submit", { status: "error" });
     }
   };
 

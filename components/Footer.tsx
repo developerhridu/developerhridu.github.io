@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Code2, Github, Handshake, Linkedin, Mail } from "lucide-react";
 import profile from "@/content/profile.json";
 import navigation from "@/content/navigation.json";
+import { trackEvent } from "@/lib/analytics";
 
 const footerLinks = navigation.navLinks.filter((link) => link.href !== "/");
 
@@ -26,6 +27,7 @@ export default function Footer() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => link.name === "CV" && trackEvent("resume_view", { location: "footer" })}
                     className="hover:text-white transition-colors"
                   >
                     {link.name}
@@ -48,6 +50,7 @@ export default function Footer() {
               href={profile.social.upwork}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent("hire_me_click", { location: "footer" })}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-600 hover:bg-violet-500 text-white text-sm transition-colors"
             >
               <Handshake size={16} />
