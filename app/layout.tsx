@@ -5,8 +5,9 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/ui/BackToTop";
+import config from "@/content/config.json";
 
-const GA_MEASUREMENT_ID = "G-7DWBDQN5TT";
+const GA_MEASUREMENT_ID = config.gaMeasurementId;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

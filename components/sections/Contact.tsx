@@ -7,6 +7,7 @@ import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Button from "@/components/ui/Button";
 import profile from "@/content/profile.json";
+import config from "@/content/config.json";
 
 interface ContactProps {
   showHeading?: boolean;
@@ -31,7 +32,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          access_key: "YOUR_WEB3FORMS_ACCESS_KEY", // Replace with your Web3Forms access key
+          access_key: config.web3formsAccessKey,
           name: formData.name,
           email: formData.email,
           message: formData.message,
@@ -187,7 +188,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
-                      placeholder="Hridu"
+                      placeholder="Your name"
                     />
                   </div>
 
