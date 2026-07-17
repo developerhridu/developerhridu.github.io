@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, Code2, ExternalLink, Github, Handshake, Linkedin } from "lucide-react";
+import { ArrowDown, Code2, Crosshair, ExternalLink, Github, Handshake, Linkedin } from "lucide-react";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import profile from "@/content/profile.json";
@@ -13,6 +13,37 @@ export default function Hero() {
       {/* Dot-grid background */}
       <div className="bg-grid absolute inset-0" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
+
+      {/* Orbit badge */}
+      <div className="hidden lg:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] xl:w-[640px] xl:h-[640px] pointer-events-none">
+        <div
+          className="absolute inset-0"
+          aria-hidden="true"
+          style={{ backgroundImage: "radial-gradient(circle at center, rgba(34,211,238,0.10), transparent 65%)" }}
+        />
+        <div className="animate-orbit-spin absolute inset-0">
+          <div className="absolute inset-6 rounded-full border border-border/60" />
+          <div className="absolute inset-16 rounded-full border border-border" />
+          <svg viewBox="0 0 320 320" className="absolute inset-0 w-full h-full">
+            <defs>
+              <path
+                id="hero-orbit-path"
+                d="M 160,160 m -112,0 a 112,112 0 1,1 224,0 a 112,112 0 1,1 -224,0"
+              />
+            </defs>
+            <text className="fill-accent font-mono uppercase" fontSize="10" letterSpacing="3">
+              <textPath href="#hero-orbit-path" startOffset="0%">
+                .NET · Angular · React · .NET · Angular · React ·
+              </textPath>
+            </text>
+          </svg>
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-14 h-14 rounded-full border border-accent/40 bg-surface/60 flex items-center justify-center">
+            <Crosshair className="text-accent" size={20} />
+          </div>
+        </div>
+      </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center">

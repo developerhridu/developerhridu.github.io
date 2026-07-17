@@ -84,6 +84,17 @@ html {
   mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 40%, transparent 90%);
 }
 
+/* Slow continuous rotation for the hero orbit badge */
+@keyframes orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-orbit-spin {
+  animation: orbit-spin 24s linear infinite;
+}
+
 /* Small decorative corner brackets used on cards */
 .card-corners {
   position: relative;
