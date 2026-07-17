@@ -26,6 +26,10 @@ import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const navLinks = menu.navLinks.filter((link) => link.visible !== false);
 
+function resolveHref(link: (typeof navLinks)[number]): string {
+  return link.id === "cv" && profile.resumeUrl ? profile.resumeUrl : link.href;
+}
+
 const iconRegistry: Record<string, typeof Home> = {
   home: Home,
   user: User,
@@ -73,7 +77,7 @@ export default function Navbar() {
             return link.external ? (
               <a
                 key={link.name}
-                href={link.href}
+                href={resolveHref(link)}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={link.name}
@@ -167,7 +171,7 @@ export default function Navbar() {
                 link.external ? (
                   <a
                     key={link.name}
-                    href={link.href}
+                    href={resolveHref(link)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block py-2 text-muted hover:text-foreground transition-colors"

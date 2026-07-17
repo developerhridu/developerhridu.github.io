@@ -76,6 +76,7 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   useEffect(() => {
     void load();
@@ -141,6 +142,8 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
 
     const oldAvatar = form.avatar;
     let avatar = form.avatar;
+    const oldResumeUrl = form.resumeUrl;
+    let resumeUrl = form.resumeUrl;
     setSaving(true);
     setError(null);
     try {
@@ -150,6 +153,14 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
         const base64 = await fileToBase64(avatarFile);
         await uploadBinaryFile(repoPath, base64, "content: update profile avatar", token);
         avatar = `/images/profile-avatar.${ext}`;
+      }
+
+      if (resumeFile) {
+        const ext = resumeFile.name.split(".").pop()?.toLowerCase() || "pdf";
+        const repoPath = `public/resume.${ext}`;
+        const base64 = await fileToBase64(resumeFile);
+        await uploadBinaryFile(repoPath, base64, "content: update resume", token);
+        resumeUrl = `/resume.${ext}`;
       }
 
       const payload = {
@@ -170,13 +181,14 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
           leetcode: form.social.leetcode.trim(),
           upwork: form.social.upwork.trim(),
         },
-        resumeUrl: form.resumeUrl.trim(),
+        resumeUrl: resumeUrl.trim(),
         portfolioUrl: form.portfolioUrl.trim(),
       };
 
       const content = JSON.stringify(payload, null, 2) + "\n";
       await updateContentFile(PATH, content, fileSha, "content: update profile", token);
       setAvatarFile(null);
+      setResumeFile(null);
       setSuccessMsg(
         "Saved and committed. The site will redeploy automatically — check the Actions tab in a minute or two."
       );
@@ -184,6 +196,14 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
       if (avatarFile && oldAvatar && oldAvatar !== avatar && oldAvatar.startsWith("/images/profile-avatar.")) {
         try {
           await deleteBinaryFile(`public${oldAvatar}`, "content: remove orphaned profile avatar", token);
+        } catch {
+          // Best-effort cleanup — the profile update already succeeded either way.
+        }
+      }
+
+      if (resumeFile && oldResumeUrl && oldResumeUrl !== resumeUrl && oldResumeUrl.startsWith("/resume.")) {
+        try {
+          await deleteBinaryFile(`public${oldResumeUrl}`, "content: remove orphaned resume", token);
         } catch {
           // Best-effort cleanup — the profile update already succeeded either way.
         }
@@ -297,7 +317,24 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field label="Resume URL" value={form.resumeUrl} onChange={(v) => setForm({ ...form, resumeUrl: v })} />
+          <div>
+            <label className="block text-xs uppercase tracking-wide text-muted mb-1">Resume URL</label>
+            <input
+              value={form.resumeUrl}
+              onChange={(e) => setForm({ ...form, resumeUrl: e.target.value })}
+              className={inputClass}
+            />
+            <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
+              <Upload size={16} className="text-muted shrink-0" />
+              <span className="truncate">{resumeFile ? resumeFile.name : "Or upload a PDF…"}</span>
+              <input
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
+              />
+            </label>
+          </div>
           <Field
             label="Portfolio URL"
             value={form.portfolioUrl}

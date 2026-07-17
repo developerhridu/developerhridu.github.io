@@ -8,7 +8,7 @@ import profile from "@/content/profile.json";
 import { trackEvent } from "@/lib/analytics";
 import menu from "@/content/menu.json";
 
-const cvHref = menu.navLinks.find((link) => link.name === "CV")?.href;
+const cvHref = profile.resumeUrl || menu.navLinks.find((link) => link.id === "cv")?.href;
 
 export default function Hero() {
   return (
