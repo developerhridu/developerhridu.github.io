@@ -33,7 +33,7 @@ const CONFIG: Record<
 };
 
 const PASSWORD_OK_KEY = "admin_pw_ok";
-const GITHUB_TOKEN = profileData.githubToken ?? null;
+const TOKEN_KEY = "gh_pat";
 
 const inputClass =
   "w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors";
@@ -65,7 +65,8 @@ export default function AdminEditor() {
   const [passwordInput, setPasswordInput] = useState("");
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  const token = GITHUB_TOKEN;
+  const [token, setToken] = useState<string | null>(null);
+  const [tokenInput, setTokenInput] = useState("");
   const [kind, setKind] = useState<ContentKind>("blog");
   const [entries, setEntries] = useState<Record<ContentKind, Entry[] | null>>({
     blog: null,
@@ -86,7 +87,19 @@ export default function AdminEditor() {
 
   useEffect(() => {
     if (sessionStorage.getItem(PASSWORD_OK_KEY) === "1") setUnlocked(true);
+    const savedToken = localStorage.getItem(TOKEN_KEY);
+    if (savedToken) setToken(savedToken);
   }, []);
+
+  function handleTokenSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = tokenInput.trim();
+    if (!trimmed) return;
+    localStorage.setItem(TOKEN_KEY, trimmed);
+    setToken(trimmed);
+    setTokenInput("");
+    setError(null);
+  }
 
   function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -124,9 +137,9 @@ export default function AdminEditor() {
 
   function handleApiError(err: unknown) {
     if (err instanceof GitHubApiError && (err.status === 401 || err.status === 403)) {
-      setError(
-        "GitHub rejected the stored token. It may be invalid, expired, or missing repo access — check githubToken in content/profile.json."
-      );
+      localStorage.removeItem(TOKEN_KEY);
+      setToken(null);
+      setError("Token rejected. It may be invalid, expired, or missing repo access — please paste a new one.");
     } else if (err instanceof Error) {
       setError(err.message);
     } else {
@@ -268,11 +281,28 @@ export default function AdminEditor() {
     return (
       <div className="max-w-md mx-auto">
         <h1 className="text-2xl font-bold text-foreground mb-2">Content Editor</h1>
-        <div className="px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-          No GitHub token configured. Set <code>githubToken</code> in{" "}
-          <code>content/profile.json</code> to a fine-grained PAT scoped to this
-          repo&apos;s Contents read/write, then rebuild.
-        </div>
+        <p className="text-muted text-sm mb-6">Paste Token</p>
+        {error && (
+          <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+        <form onSubmit={handleTokenSubmit} className="space-y-4">
+          <input
+            type="password"
+            value={tokenInput}
+            onChange={(e) => setTokenInput(e.target.value)}
+            placeholder="github_pat_..."
+            className={inputClass}
+            autoFocus
+          />
+          <button
+            type="submit"
+            className="w-full px-4 py-3 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg font-medium transition-colors"
+          >
+            Continue
+          </button>
+        </form>
       </div>
     );
   }

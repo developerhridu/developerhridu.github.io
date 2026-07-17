@@ -6,7 +6,6 @@ export interface Skill {
 
 export interface Profile {
   password?: string;
-  githubToken?: string;
   name: string;
   title: string;
   tagline: string;
