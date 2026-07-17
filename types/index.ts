@@ -81,6 +81,12 @@ export interface SkillsCategory {
   testing: string[];
 }
 
+// Shared content section type (optional image + required body)
+export interface ContentSection {
+  image?: string;
+  body: string;
+}
+
 // Blog post types
 export interface BlogPost {
   id: string;
@@ -91,6 +97,7 @@ export interface BlogPost {
   tags: string[];
   image?: string;
   body: string;
+  sections?: ContentSection[];
 }
 
 // Case study types
@@ -104,4 +111,5 @@ export interface CaseStudy {
   tags: string[];
   image?: string;
   body: string;
+  sections?: ContentSection[];
 }

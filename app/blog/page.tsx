@@ -6,10 +6,28 @@ import GlassCard from "@/components/ui/GlassCard";
 import ContentImage from "@/components/ui/ContentImage";
 import { Calendar, ArrowRight } from "lucide-react";
 
+const BASE_URL = "https://developerhridu.github.io";
+
 export const metadata: Metadata = {
   title: "Blog | Mizanur Rahman — Software Engineering Insights",
   description:
     "Technical writing on backend architecture, .NET development, microservices patterns, and software engineering practices.",
+  alternates: { canonical: `${BASE_URL}/blog` },
+  openGraph: {
+    title: "Blog | Mizanur Rahman",
+    description:
+      "Technical writing on backend architecture, .NET development, microservices patterns, and software engineering practices.",
+    type: "website",
+    url: `${BASE_URL}/blog`,
+    images: [{ url: `${BASE_URL}/images/profile/dp.png`, width: 400, height: 400, alt: "Mizanur Rahman" }],
+  },
+  twitter: {
+    card: "summary",
+    title: "Blog | Mizanur Rahman",
+    description:
+      "Technical writing on backend architecture, .NET development, microservices patterns, and software engineering practices.",
+    images: [`${BASE_URL}/images/profile/dp.png`],
+  },
 };
 
 export default function BlogPage() {

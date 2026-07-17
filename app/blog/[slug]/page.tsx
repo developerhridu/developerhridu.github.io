@@ -7,6 +7,8 @@ import { getBlogPosts, getBlogPost } from "@/lib/content";
 import ContentImage from "@/components/ui/ContentImage";
 import { ArrowLeft, Calendar, Tag } from "lucide-react";
 
+const BASE_URL = "https://developerhridu.github.io";
+
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
 }
@@ -27,9 +29,29 @@ export async function generateMetadata({
     };
   }
 
+  const url = `${BASE_URL}/blog/${post.slug}`;
+  const imageUrl = post.image ? `${BASE_URL}${post.image}` : `${BASE_URL}/images/profile/dp.png`;
+
   return {
     title: `${post.title} | Blog | Portfolio`,
     description: post.description,
+    keywords: post.tags,
+    alternates: { canonical: url },
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      type: "article",
+      url,
+      publishedTime: post.date,
+      tags: post.tags,
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: post.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+      images: [imageUrl],
+    },
   };
 }
 
@@ -41,8 +63,29 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
+  const url = `${BASE_URL}/blog/${post.slug}`;
+  const imageUrl = post.image ? `${BASE_URL}${post.image}` : `${BASE_URL}/images/profile/dp.png`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    image: imageUrl,
+    datePublished: post.date,
+    dateModified: post.date,
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    author: { "@type": "Person", name: "Mizanur Rahman", url: BASE_URL },
+    publisher: { "@type": "Person", name: "Mizanur Rahman", url: BASE_URL },
+    keywords: post.tags.join(", "),
+  };
+
   return (
     <div className="pt-16 md:pt-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <article className="py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           {/* Back Button */}
@@ -99,6 +142,27 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div className="prose prose-invert prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted prose-a:text-accent prose-strong:text-foreground prose-code:text-accent prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-surface prose-pre:border prose-pre:border-border">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body}</ReactMarkdown>
           </div>
+
+          {/* Additional Sections */}
+          {post.sections && post.sections.length > 0 && (
+            <div className="mt-8 space-y-8">
+              {post.sections.map((section, idx) => (
+                <div key={idx}>
+                  {section.image && (
+                    <ContentImage
+                      src={section.image}
+                      alt={post.title}
+                      wrapperClassName="mb-6 rounded-2xl"
+                      imgClassName="w-full h-auto"
+                    />
+                  )}
+                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted prose-a:text-accent prose-strong:text-foreground prose-code:text-accent prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-surface prose-pre:border prose-pre:border-border">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{section.body}</ReactMarkdown>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Post Footer */}
           <div className="mt-12 pt-8 border-t border-border">

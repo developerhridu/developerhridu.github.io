@@ -32,6 +32,7 @@ export interface ArrayConfig {
   label: string;
   titleField: string;
   subtitleField?: string;
+  subtitleFormat?: (value: unknown) => string;
   imageFolder?: string;
   fields: FieldDef[];
   extraNormalizeIn?: (raw: RawEntry) => Record<string, string>;
@@ -521,7 +522,11 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
                         <td className="px-4 py-3 min-w-0">
                           <p className="text-foreground font-medium truncate">{title}</p>
                           {config.subtitleField && entry[config.subtitleField] != null && (
-                            <p className="text-muted text-xs">{String(entry[config.subtitleField])}</p>
+                            <p className="text-muted text-xs">
+                              {config.subtitleFormat
+                                ? config.subtitleFormat(entry[config.subtitleField])
+                                : String(entry[config.subtitleField])}
+                            </p>
                           )}
                         </td>
                         <td className="px-4 py-3">

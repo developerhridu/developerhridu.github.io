@@ -7,6 +7,8 @@ import { getCaseStudies, getCaseStudy } from "@/lib/content";
 import ContentImage from "@/components/ui/ContentImage";
 import { ArrowLeft, Calendar, Tag, Building2 } from "lucide-react";
 
+const BASE_URL = "https://developerhridu.github.io";
+
 interface CaseStudyPageProps {
   params: Promise<{ slug: string }>;
 }
@@ -27,9 +29,29 @@ export async function generateMetadata({
     };
   }
 
+  const url = `${BASE_URL}/case-studies/${study.slug}`;
+  const imageUrl = study.image ? `${BASE_URL}${study.image}` : `${BASE_URL}/images/profile/dp.png`;
+
   return {
     title: `${study.title} | Case Studies | Portfolio`,
     description: study.description,
+    keywords: study.tags,
+    alternates: { canonical: url },
+    openGraph: {
+      title: study.title,
+      description: study.description,
+      type: "article",
+      url,
+      publishedTime: study.date,
+      tags: study.tags,
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: study.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: study.title,
+      description: study.description,
+      images: [imageUrl],
+    },
   };
 }
 
@@ -41,8 +63,30 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
     notFound();
   }
 
+  const url = `${BASE_URL}/case-studies/${study.slug}`;
+  const imageUrl = study.image ? `${BASE_URL}${study.image}` : `${BASE_URL}/images/profile/dp.png`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: study.title,
+    description: study.description,
+    image: imageUrl,
+    datePublished: study.date,
+    dateModified: study.date,
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    author: { "@type": "Person", name: "Mizanur Rahman", url: BASE_URL },
+    publisher: { "@type": "Person", name: "Mizanur Rahman", url: BASE_URL },
+    keywords: study.tags.join(", "),
+    ...(study.client ? { about: study.client } : {}),
+  };
+
   return (
     <div className="pt-16 md:pt-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <article className="py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           {/* Back Button */}
@@ -105,6 +149,27 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
           <div className="prose prose-invert prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted prose-a:text-accent prose-strong:text-foreground prose-code:text-accent prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-surface prose-pre:border prose-pre:border-border">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{study.body}</ReactMarkdown>
           </div>
+
+          {/* Additional Sections */}
+          {study.sections && study.sections.length > 0 && (
+            <div className="mt-8 space-y-8">
+              {study.sections.map((section, idx) => (
+                <div key={idx}>
+                  {section.image && (
+                    <ContentImage
+                      src={section.image}
+                      alt={study.title}
+                      wrapperClassName="mb-6 rounded-2xl"
+                      imgClassName="w-full h-auto"
+                    />
+                  )}
+                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted prose-a:text-accent prose-strong:text-foreground prose-code:text-accent prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-surface prose-pre:border prose-pre:border-border">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{section.body}</ReactMarkdown>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Footer */}
           <div className="mt-12 pt-8 border-t border-border">

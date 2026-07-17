@@ -8,8 +8,23 @@ import {
   deleteBinaryFile,
   GitHubApiError,
 } from "@/lib/github";
-import { Pencil, Trash2, Plus, ExternalLink, X, Upload } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  Plus,
+  ExternalLink,
+  X,
+  Upload,
+  Eye,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
+
+interface Section {
+  image?: string;
+  body: string;
+}
 
 interface Entry {
   id: string;
@@ -21,13 +36,14 @@ interface Entry {
   image?: string;
   client?: string;
   body: string;
+  sections: Section[];
 }
 
 type ContentKind = "blog" | "case-study";
 
 const CONFIG: Record<
   ContentKind,
-  { path: string; arrayKey: string; label: string; hasClient: boolean; imageFolder: string }
+  { path: string; arrayKey: string; label: string; hasClient: boolean; imageFolder: string; viewPath: string }
 > = {
   blog: {
     path: "content/blogs.json",
@@ -35,6 +51,7 @@ const CONFIG: Record<
     label: "Blog Posts",
     hasClient: false,
     imageFolder: "blog",
+    viewPath: "/blog",
   },
   "case-study": {
     path: "content/case-studies.json",
@@ -42,6 +59,7 @@ const CONFIG: Record<
     label: "Case Studies",
     hasClient: true,
     imageFolder: "case-studies",
+    viewPath: "/case-studies",
   },
 };
 
@@ -64,6 +82,7 @@ function blankEntry(): Entry {
     image: "",
     client: "",
     body: "",
+    sections: [],
   };
 }
 
@@ -85,6 +104,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
   const [tagsText, setTagsText] = useState("");
   const [isNew, setIsNew] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [sectionImageFiles, setSectionImageFiles] = useState<(File | null)[]>([]);
 
   useEffect(() => {
     setEntries(null);
@@ -101,7 +121,11 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     try {
       const { content, sha } = await fetchContentFile(CONFIG[kind].path, token);
       const parsed = JSON.parse(content);
-      setEntries(parsed[CONFIG[kind].arrayKey] ?? []);
+      const loaded: Entry[] = (parsed[CONFIG[kind].arrayKey] ?? []).map((e: Entry) => ({
+        ...e,
+        sections: e.sections ?? [],
+      }));
+      setEntries(loaded);
       setFileSha(sha);
     } catch (err) {
       handleApiError(err);
@@ -125,15 +149,18 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     setTagsText("");
     setIsNew(true);
     setImageFile(null);
+    setSectionImageFiles([]);
     setSuccessMsg(null);
     setError(null);
   }
 
   function startEdit(entry: Entry) {
-    setEditing({ ...entry });
+    const sections = entry.sections ?? [];
+    setEditing({ ...entry, sections });
     setTagsText(entry.tags.join(", "));
     setIsNew(false);
     setImageFile(null);
+    setSectionImageFiles(sections.map(() => null));
     setSuccessMsg(null);
     setError(null);
   }
@@ -141,6 +168,45 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
   function cancelEdit() {
     setEditing(null);
     setImageFile(null);
+    setSectionImageFiles([]);
+  }
+
+  function addSection() {
+    if (!editing) return;
+    setEditing({ ...editing, sections: [...editing.sections, { image: "", body: "" }] });
+    setSectionImageFiles((prev) => [...prev, null]);
+  }
+
+  function updateSection(index: number, patch: Partial<Section>) {
+    if (!editing) return;
+    setEditing({
+      ...editing,
+      sections: editing.sections.map((s, i) => (i === index ? { ...s, ...patch } : s)),
+    });
+  }
+
+  function removeSection(index: number) {
+    if (!editing) return;
+    setEditing({ ...editing, sections: editing.sections.filter((_, i) => i !== index) });
+    setSectionImageFiles((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function moveSection(index: number, direction: -1 | 1) {
+    if (!editing) return;
+    const target = index + direction;
+    if (target < 0 || target >= editing.sections.length) return;
+    const nextSections = [...editing.sections];
+    [nextSections[index], nextSections[target]] = [nextSections[target], nextSections[index]];
+    setEditing({ ...editing, sections: nextSections });
+    setSectionImageFiles((prev) => {
+      const next = [...prev];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
+  }
+
+  function setSectionImageFile(index: number, file: File | null) {
+    setSectionImageFiles((prev) => prev.map((f, i) => (i === index ? file : f)));
   }
 
   async function persist(newEntries: Entry[], message: string): Promise<boolean> {
@@ -169,14 +235,18 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     }
   }
 
-  async function cleanupOrphanedImage(oldPath: string | undefined, stillAlive: Entry[], label: string) {
-    if (!isManagedImage(oldPath, kind)) return;
-    const stillReferenced = stillAlive.some((e) => e.image === oldPath);
-    if (stillReferenced) return;
-    try {
-      await deleteBinaryFile(toRepoPath(oldPath), `content: remove orphaned image for ${label}`, token);
-    } catch {
-      // Best-effort cleanup — the content change already succeeded either way.
+  async function cleanupOrphanedImages(oldPaths: string[], stillAlive: Entry[], label: string) {
+    for (const oldPath of oldPaths) {
+      if (!isManagedImage(oldPath, kind)) continue;
+      const stillReferenced = stillAlive.some(
+        (e) => e.image === oldPath || (e.sections ?? []).some((s) => s.image === oldPath)
+      );
+      if (stillReferenced) continue;
+      try {
+        await deleteBinaryFile(toRepoPath(oldPath), `content: remove orphaned image for ${label}`, token);
+      } catch {
+        // Best-effort cleanup — the content change already succeeded either way.
+      }
     }
   }
 
@@ -201,26 +271,47 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     }
 
     const previousEntry = !isNew ? current.find((e) => e.id === editing.id) : undefined;
-    const oldImage = previousEntry?.image;
+    const oldManagedPaths = [
+      previousEntry?.image,
+      ...(previousEntry?.sections ?? []).map((s) => s.image),
+    ].filter((p): p is string => isManagedImage(p, kind));
+
+    setSaving(true);
+    setError(null);
 
     let image = editing.image;
-    if (imageFile) {
-      setSaving(true);
-      setError(null);
-      try {
+    let sections: Section[];
+
+    try {
+      if (imageFile) {
         const ext = imageFile.name.split(".").pop()?.toLowerCase() || "png";
         const repoPath = `public/images/${CONFIG[kind].imageFolder}/${slug}.${ext}`;
         const base64 = await fileToBase64(imageFile);
         await uploadBinaryFile(repoPath, base64, `content: upload image for ${editing.title}`, token);
         image = `/images/${CONFIG[kind].imageFolder}/${slug}.${ext}`;
-      } catch (err) {
-        handleApiError(err);
-        setSaving(false);
-        return;
       }
+
+      const uploadedSections: Section[] = [];
+      for (let i = 0; i < editing.sections.length; i++) {
+        let sectionImage = editing.sections[i].image;
+        const file = sectionImageFiles[i];
+        if (file) {
+          const ext = file.name.split(".").pop()?.toLowerCase() || "png";
+          const repoPath = `public/images/${CONFIG[kind].imageFolder}/${slug}-section-${i}.${ext}`;
+          const base64 = await fileToBase64(file);
+          await uploadBinaryFile(repoPath, base64, `content: upload section image for ${editing.title}`, token);
+          sectionImage = `/images/${CONFIG[kind].imageFolder}/${slug}-section-${i}.${ext}`;
+        }
+        uploadedSections.push({ ...editing.sections[i], image: sectionImage });
+      }
+      sections = uploadedSections.filter((s) => s.body.trim());
+    } catch (err) {
+      handleApiError(err);
+      setSaving(false);
+      return;
     }
 
-    const finalEntry: Entry = { ...editing, slug, tags, image };
+    const finalEntry: Entry = { ...editing, slug, tags, image, sections };
     let updated: Entry[];
 
     if (isNew) {
@@ -233,9 +324,10 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     const message = isNew ? `content: add ${editing.title}` : `content: update ${editing.title}`;
     const ok = await persist(updated, message);
     setImageFile(null);
+    setSectionImageFiles(sections.map(() => null));
 
-    if (ok && oldImage && oldImage !== image) {
-      await cleanupOrphanedImage(oldImage, updated, editing.title);
+    if (ok && oldManagedPaths.length > 0) {
+      await cleanupOrphanedImages(oldManagedPaths, updated, editing.title);
     }
   }
 
@@ -245,7 +337,10 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     const updated = current.filter((e) => e.id !== entry.id);
     const ok = await persist(updated, `content: delete ${entry.title}`);
     if (ok) {
-      await cleanupOrphanedImage(entry.image, updated, entry.title);
+      const oldPaths = [entry.image, ...(entry.sections ?? []).map((s) => s.image)].filter(
+        (p): p is string => isManagedImage(p, kind)
+      );
+      await cleanupOrphanedImages(oldPaths, updated, entry.title);
     }
   }
 
@@ -280,8 +375,14 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
           saving={saving}
           imageFile={imageFile}
           setImageFile={setImageFile}
+          sectionImageFiles={sectionImageFiles}
+          onAddSection={addSection}
+          onUpdateSection={updateSection}
+          onRemoveSection={removeSection}
+          onMoveSection={moveSection}
+          onSectionImageFileChange={setSectionImageFile}
           onCancel={cancelEdit}
-          onSave={handleSave}
+          onSave={() => void handleSave()}
           onTitleBlur={() => {
             if (isNew && editing && !editing.slug) {
               setEditing({ ...editing, slug: slugify(editing.title) });
@@ -324,6 +425,15 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2">
+                          <a
+                            href={`${CONFIG[kind].viewPath}/${entry.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`View ${entry.title}`}
+                            className="p-2 text-muted hover:text-foreground transition-colors"
+                          >
+                            <Eye size={16} />
+                          </a>
                           <button
                             onClick={() => startEdit(entry)}
                             aria-label={`Edit ${entry.title}`}
@@ -361,6 +471,12 @@ function EntryForm({
   saving,
   imageFile,
   setImageFile,
+  sectionImageFiles,
+  onAddSection,
+  onUpdateSection,
+  onRemoveSection,
+  onMoveSection,
+  onSectionImageFileChange,
   onCancel,
   onSave,
   onTitleBlur,
@@ -373,6 +489,12 @@ function EntryForm({
   saving: boolean;
   imageFile: File | null;
   setImageFile: (f: File | null) => void;
+  sectionImageFiles: (File | null)[];
+  onAddSection: () => void;
+  onUpdateSection: (index: number, patch: Partial<Section>) => void;
+  onRemoveSection: (index: number) => void;
+  onMoveSection: (index: number, direction: -1 | 1) => void;
+  onSectionImageFileChange: (index: number, file: File | null) => void;
   onCancel: () => void;
   onSave: () => void;
   onTitleBlur: () => void;
@@ -418,7 +540,9 @@ function EntryForm({
           />
         </div>
         <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Image URL</label>
+          <label className="block text-xs uppercase tracking-wide text-muted mb-1">
+            Cover / Thumbnail Image URL
+          </label>
           <input
             value={entry.image ?? ""}
             onChange={(e) => setEntry({ ...entry, image: e.target.value })}
@@ -430,7 +554,7 @@ function EntryForm({
 
       <div>
         <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-          Or Upload Image
+          Or Upload Cover Image
         </label>
         <label className={`${inputClass} flex items-center gap-2 cursor-pointer`}>
           <Upload size={16} className="text-muted shrink-0" />
@@ -490,6 +614,92 @@ function EntryForm({
           rows={16}
           className={`${inputClass} font-mono text-sm`}
         />
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-xs uppercase tracking-wide text-muted">Content Sections</label>
+          <button
+            onClick={onAddSection}
+            type="button"
+            className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover"
+          >
+            <Plus size={14} /> Add Section
+          </button>
+        </div>
+        <div className="space-y-3">
+          {entry.sections.map((section, i) => (
+            <div key={i} className="border border-border rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted">Section {i + 1}</span>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => onMoveSection(i, -1)}
+                    disabled={i === 0}
+                    aria-label={`Move section ${i + 1} up`}
+                    className="p-1.5 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
+                  >
+                    <ArrowUp size={14} />
+                  </button>
+                  <button
+                    onClick={() => onMoveSection(i, 1)}
+                    disabled={i === entry.sections.length - 1}
+                    aria-label={`Move section ${i + 1} down`}
+                    className="p-1.5 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
+                  >
+                    <ArrowDown size={14} />
+                  </button>
+                  <button
+                    onClick={() => onRemoveSection(i)}
+                    aria-label={`Remove section ${i + 1}`}
+                    className="p-1.5 text-muted hover:text-red-400 transition-colors"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs uppercase tracking-wide text-muted mb-1">
+                  Image URL (optional)
+                </label>
+                <input
+                  value={section.image ?? ""}
+                  onChange={(e) => onUpdateSection(i, { image: e.target.value })}
+                  placeholder="/images/blog/example-section.png"
+                  className={inputClass}
+                />
+                <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
+                  <Upload size={16} className="text-muted shrink-0" />
+                  <span className="truncate">
+                    {sectionImageFiles[i] ? sectionImageFiles[i]!.name : "Or upload an image file…"}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => onSectionImageFileChange(i, e.target.files?.[0] ?? null)}
+                  />
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-xs uppercase tracking-wide text-muted mb-1">
+                  Section Body (Markdown)
+                </label>
+                <textarea
+                  value={section.body}
+                  onChange={(e) => onUpdateSection(i, { body: e.target.value })}
+                  rows={8}
+                  className={`${inputClass} font-mono text-sm`}
+                />
+              </div>
+            </div>
+          ))}
+          {entry.sections.length === 0 && (
+            <p className="text-muted text-xs">No additional sections yet.</p>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center gap-3 pt-2">

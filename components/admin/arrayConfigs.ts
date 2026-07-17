@@ -107,6 +107,8 @@ export const proficiencyConfig: ArrayConfig = {
   arrayKey: "proficiency",
   label: "Skill Proficiency",
   titleField: "name",
+  subtitleField: "level",
+  subtitleFormat: (value) => `${value}%`,
   fields: [
     { key: "name", label: "Skill Name", type: "text" },
     { key: "level", label: "Level (0-100)", type: "number", min: 0, max: 100 },
