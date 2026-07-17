@@ -4,6 +4,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getBlogPosts, getBlogPost } from "@/lib/content";
+import ContentImage from "@/components/ui/ContentImage";
 import { ArrowLeft, Calendar, Tag } from "lucide-react";
 
 interface BlogPostPageProps {
@@ -87,15 +88,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </header>
 
           {/* Post Image */}
-          {post.image && (
-            <div className="mb-12 rounded-2xl overflow-hidden">
-              <img
-                src={post.image}
-                alt={post.title}
-                className="w-full h-auto"
-              />
-            </div>
-          )}
+          <ContentImage
+            src={post.image}
+            alt={post.title}
+            wrapperClassName="mb-12 rounded-2xl"
+            imgClassName="w-full h-auto"
+          />
 
           {/* Post Content */}
           <div className="prose prose-invert prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted prose-a:text-accent prose-strong:text-foreground prose-code:text-accent prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-surface prose-pre:border prose-pre:border-border">

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, ExternalLink, Github } from "lucide-react";
+import ContentImage from "@/components/ui/ContentImage";
 
 interface ProjectModalProps {
   project: {
@@ -63,21 +64,13 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
               <X size={18} />
             </button>
 
-            {project.image ? (
-              <div className="h-56 md:h-80 overflow-hidden rounded-t-2xl">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ) : (
-              <div className="h-56 md:h-80 rounded-t-2xl bg-gradient-to-br from-accent/20 to-accent-hover/20 flex items-center justify-center">
-                <span className="text-6xl font-bold text-foreground/20">
-                  {project.title.split(" ").map((w) => w[0]).join("")}
-                </span>
-              </div>
-            )}
+            <ContentImage
+              src={project.image}
+              alt={project.title}
+              wrapperClassName="h-56 md:h-80 rounded-t-2xl"
+              initials={project.title.split(" ").map((w) => w[0]).join("")}
+              initialsClassName="text-6xl"
+            />
 
             <div className="p-6 md:p-8">
               <div className="flex flex-wrap gap-2 mb-4">

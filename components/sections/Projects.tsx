@@ -6,6 +6,7 @@ import { ArrowUpRight, ExternalLink, Github } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ProjectModal from "@/components/ui/ProjectModal";
+import ContentImage from "@/components/ui/ContentImage";
 import projectsData from "@/content/projects.json";
 
 type ProjectItem = (typeof projectsData.projects)[number];
@@ -47,28 +48,16 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
             >
               <GlassCard className="h-full flex flex-col cursor-pointer group" onClick={() => setSelectedProject(project)}>
                 {/* Project Image */}
-                {project.image ? (
-                  <div className="relative h-48 rounded-lg mb-4 overflow-hidden">
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute bottom-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-accent text-accent-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ArrowUpRight size={18} />
-                    </div>
+                <ContentImage
+                  src={project.image}
+                  alt={project.title}
+                  wrapperClassName="relative h-48 rounded-lg mb-4"
+                  initials={project.title.split(" ").map((w) => w[0]).join("")}
+                >
+                  <div className="absolute bottom-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-accent text-accent-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ArrowUpRight size={18} />
                   </div>
-                ) : (
-                  <div className="relative h-48 bg-gradient-to-br from-accent/20 to-accent-hover/20 rounded-lg mb-4 flex items-center justify-center">
-                    <span className="text-4xl font-bold text-foreground/20">
-                      {project.title.split(" ").map((w) => w[0]).join("")}
-                    </span>
-                    <div className="absolute bottom-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-accent text-accent-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ArrowUpRight size={18} />
-                    </div>
-                  </div>
-                )}
+                </ContentImage>
 
                 <div className="flex-1">
                   <h3 className="text-xl font-bold text-foreground mb-2">
