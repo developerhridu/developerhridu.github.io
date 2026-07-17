@@ -15,22 +15,26 @@ import {
   Mail,
   FileText,
   Handshake,
+  Newspaper,
+  Layers,
 } from "lucide-react";
-import navigation from "@/content/navigation.json";
+import menu from "@/content/menu.json";
 import profile from "@/content/profile.json";
 import { trackEvent } from "@/lib/analytics";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
-const navLinks = navigation.navLinks;
+const navLinks = menu.navLinks;
 
-const iconMap: Record<string, typeof Home> = {
-  "/": Home,
-  "/about": User,
-  "/projects": FolderKanban,
-  "/experience": Briefcase,
-  "/certifications": Award,
-  "/contact": Mail,
-  "/resume-2026-v2.pdf": FileText,
+const iconRegistry: Record<string, typeof Home> = {
+  home: Home,
+  user: User,
+  "folder-kanban": FolderKanban,
+  briefcase: Briefcase,
+  award: Award,
+  mail: Mail,
+  "file-text": FileText,
+  newspaper: Newspaper,
+  layers: Layers,
 };
 
 export default function Navbar() {
@@ -63,7 +67,7 @@ export default function Navbar() {
         <div className="mb-8">{Logo}</div>
         <div className="flex flex-col items-center gap-1">
           {navLinks.map((link) => {
-            const Icon = iconMap[link.href] ?? FileText;
+            const Icon = iconRegistry[link.icon] ?? FileText;
             return link.external ? (
               <a
                 key={link.name}

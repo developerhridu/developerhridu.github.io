@@ -1,4 +1,5 @@
 import { MetadataRoute } from "next";
+import { getBlogPosts, getCaseStudies } from "@/lib/content";
 
 export const dynamic = "force-static";
 
@@ -13,6 +14,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/experience`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/certifications`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/blog`, lastModified: LAST_MODIFIED, changeFrequency: "weekly", priority: 0.6 },
+    ...getBlogPosts().map((post) => ({
+      url: `${BASE_URL}/blog/${post.slug}`,
+      lastModified: post.date,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
+    { url: `${BASE_URL}/case-studies`, lastModified: LAST_MODIFIED, changeFrequency: "weekly", priority: 0.6 },
+    ...getCaseStudies().map((study) => ({
+      url: `${BASE_URL}/case-studies/${study.slug}`,
+      lastModified: study.date,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
     { url: `${BASE_URL}/contact`, lastModified: LAST_MODIFIED, changeFrequency: "yearly", priority: 0.5 },
   ];
 }

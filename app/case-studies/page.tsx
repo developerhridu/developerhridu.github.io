@@ -1,18 +1,18 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { getBlogPosts } from "@/lib/content";
+import { getCaseStudies } from "@/lib/content";
 import SectionHeading from "@/components/ui/SectionHeading";
 import GlassCard from "@/components/ui/GlassCard";
 import { Calendar, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Blog | Mizanur Rahman — Software Engineering Insights",
+  title: "Case Studies | Mizanur Rahman — Software Engineering Insights",
   description:
-    "Technical writing on backend architecture, .NET development, microservices patterns, and software engineering practices.",
+    "In-depth case studies on backend architecture, .NET development, microservices patterns, and software engineering practices.",
 };
 
-export default function BlogPage() {
-  const posts = [...getBlogPosts()].sort(
+export default function CaseStudiesPage() {
+  const caseStudies = [...getCaseStudies()].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
@@ -21,25 +21,25 @@ export default function BlogPage() {
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <SectionHeading
-            eyebrow="Blog"
-            title="Blog"
-            subtitle="Thoughts, tutorials, and insights on software development"
+            eyebrow="Case Studies"
+            title="Case Studies"
+            subtitle="In-depth looks at problems I've solved and how I solved them"
           />
 
-          {posts.length === 0 ? (
+          {caseStudies.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted text-lg">No blog posts yet. Check back soon!</p>
+              <p className="text-muted text-lg">No case studies yet. Check back soon!</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {posts.map((post) => (
-                <Link key={post.slug} href={`/blog/${post.slug}`}>
+              {caseStudies.map((study) => (
+                <Link key={study.slug} href={`/case-studies/${study.slug}`}>
                   <GlassCard className="h-full flex flex-col group cursor-pointer">
-                    {post.image ? (
+                    {study.image ? (
                       <div className="h-48 rounded-lg mb-4 overflow-hidden">
                         <img
-                          src={post.image}
-                          alt={post.title}
+                          src={study.image}
+                          alt={study.title}
                           loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
@@ -47,14 +47,14 @@ export default function BlogPage() {
                     ) : (
                       <div className="h-48 bg-gradient-to-br from-accent/20 to-accent-hover/20 rounded-lg mb-4 flex items-center justify-center">
                         <span className="text-4xl font-bold text-foreground/20">
-                          {post.title.split(" ").slice(0, 2).map((w) => w[0]).join("")}
+                          {study.title.split(" ").slice(0, 2).map((w) => w[0]).join("")}
                         </span>
                       </div>
                     )}
 
                     <div className="flex-1">
                       <div className="flex flex-wrap gap-2 mb-3">
-                        {post.tags.slice(0, 3).map((tag) => (
+                        {study.tags.slice(0, 3).map((tag) => (
                           <span
                             key={tag}
                             className="font-mono px-2 py-0.5 bg-accent/10 text-accent border border-accent/20 rounded text-xs uppercase tracking-wide"
@@ -65,10 +65,10 @@ export default function BlogPage() {
                       </div>
 
                       <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-accent transition-colors">
-                        {post.title}
+                        {study.title}
                       </h3>
                       <p className="text-muted text-sm mb-4 line-clamp-2">
-                        {post.description}
+                        {study.description}
                       </p>
                     </div>
 
@@ -76,7 +76,7 @@ export default function BlogPage() {
                       <div className="flex items-center gap-4 text-sm text-muted">
                         <span className="flex items-center gap-1">
                           <Calendar size={14} />
-                          {new Date(post.date).toLocaleDateString("en-US", {
+                          {new Date(study.date).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
                             year: "numeric",

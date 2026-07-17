@@ -5,6 +5,8 @@ export interface Skill {
 }
 
 export interface Profile {
+  password?: string;
+  githubToken?: string;
   name: string;
   title: string;
   tagline: string;
@@ -81,15 +83,26 @@ export interface SkillsCategory {
 }
 
 // Blog post types
-export interface BlogPostMeta {
+export interface BlogPost {
+  id: string;
+  slug: string;
   title: string;
   date: string;
   description: string;
   tags: string[];
   image?: string;
-  slug: string;
+  body: string;
 }
 
-export interface BlogPost extends BlogPostMeta {
-  content: string;
+// Case study types
+export interface CaseStudy {
+  id: string;
+  slug: string;
+  title: string;
+  date: string;
+  client?: string;
+  description: string;
+  tags: string[];
+  image?: string;
+  body: string;
 }

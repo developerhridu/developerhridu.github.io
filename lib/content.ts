@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Profile, Project, Experience, Education, SkillsCategory, Certification } from "@/types";
+import { Profile, Project, Experience, Education, SkillsCategory, Certification, BlogPost, CaseStudy } from "@/types";
 
 const contentDirectory = path.join(process.cwd(), "content");
 
@@ -46,4 +46,26 @@ export function getCertifications(): Certification[] {
   const fileContents = fs.readFileSync(filePath, "utf8");
   const data = JSON.parse(fileContents);
   return data.certifications;
+}
+
+export function getBlogPosts(): BlogPost[] {
+  const filePath = path.join(contentDirectory, "blogs.json");
+  const fileContents = fs.readFileSync(filePath, "utf8");
+  const data = JSON.parse(fileContents);
+  return data.posts;
+}
+
+export function getBlogPost(slug: string): BlogPost | null {
+  return getBlogPosts().find((post) => post.slug === slug) ?? null;
+}
+
+export function getCaseStudies(): CaseStudy[] {
+  const filePath = path.join(contentDirectory, "case-studies.json");
+  const fileContents = fs.readFileSync(filePath, "utf8");
+  const data = JSON.parse(fileContents);
+  return data.caseStudies;
+}
+
+export function getCaseStudy(slug: string): CaseStudy | null {
+  return getCaseStudies().find((study) => study.slug === slug) ?? null;
 }

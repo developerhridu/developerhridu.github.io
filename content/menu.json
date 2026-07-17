@@ -2,31 +2,48 @@
   "navLinks": [
     {
       "name": "Home",
-      "href": "/"
+      "href": "/",
+      "icon": "home"
     },
     {
       "name": "About",
-      "href": "/about"
+      "href": "/about",
+      "icon": "user"
     },
     {
       "name": "Projects",
-      "href": "/projects"
+      "href": "/projects",
+      "icon": "folder-kanban"
     },
     {
       "name": "Experience",
-      "href": "/experience"
+      "href": "/experience",
+      "icon": "briefcase"
     },
     {
       "name": "Training & Certifications",
-      "href": "/certifications"
+      "href": "/certifications",
+      "icon": "award"
     },
     {
       "name": "Contact",
-      "href": "/contact"
+      "href": "/contact",
+      "icon": "mail"
+    },
+    {
+      "name": "Blog",
+      "href": "/blog",
+      "icon": "newspaper"
+    },
+    {
+      "name": "Case Studies",
+      "href": "/case-studies",
+      "icon": "layers"
     },
     {
       "name": "CV",
       "href": "/resume-2026-v2.pdf",
+      "icon": "file-text",
       "external": true
     }
   ]

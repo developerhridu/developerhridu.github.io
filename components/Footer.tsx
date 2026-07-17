@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { Code2, Github, Handshake, Linkedin, Mail } from "lucide-react";
 import profile from "@/content/profile.json";
-import navigation from "@/content/navigation.json";
+import menu from "@/content/menu.json";
 import { trackEvent } from "@/lib/analytics";
 
-const footerLinks = navigation.navLinks.filter((link) => link.href !== "/");
+const footerLinks = menu.navLinks.filter((link) => link.href !== "/");
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();

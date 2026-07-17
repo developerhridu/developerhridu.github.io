@@ -1,4 +1,6 @@
 {
+  "password": "12345",
+  "githubToken": "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",
   "name": "Mizanur Rahman",
   "title": "Full Stack Software Engineer",
   "tagline": "Architecting clean, scalable solutions with ASP.NET Core, Angular/React & microservices",
