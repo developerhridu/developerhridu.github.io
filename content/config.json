@@ -1,5 +1,11 @@
 {
   "password": "1223334444",
   "web3formsAccessKey": "a4616871-06bf-4a00-9234-17871e459dd3",
-  "gaMeasurementId": "G-7DWBDQN5TT"
+  "gaMeasurementId": "G-7DWBDQN5TT",
+  "giscus": {
+    "repo": "",
+    "repoId": "",
+    "category": "",
+    "categoryId": ""
+  }
 }

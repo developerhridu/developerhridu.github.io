@@ -68,7 +68,7 @@ export default function Navbar() {
       {/* Desktop Sidebar */}
       <motion.nav
         aria-label="Main navigation"
-        className="hidden md:flex fixed top-0 left-0 bottom-0 z-50 w-20 flex-col items-center bg-surface/90 backdrop-blur-lg border-r border-border py-6"
+        className="print:hidden hidden md:flex fixed top-0 left-0 bottom-0 z-50 w-20 flex-col items-center bg-surface/90 backdrop-blur-lg border-r border-border py-6"
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -133,7 +133,7 @@ export default function Navbar() {
       {/* Mobile Top Bar */}
       <motion.nav
         aria-label="Main navigation"
-        className="md:hidden fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-lg border-b border-border"
+        className="print:hidden md:hidden fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-lg border-b border-border"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}

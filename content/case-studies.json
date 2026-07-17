@@ -5,6 +5,7 @@
       "slug": "automated-booking-cancellation-service",
       "title": "Cutting ADM Penalties with an Automated Booking Cancellation Service",
       "date": "2024-06-01",
+      "published": true,
       "client": "6 OTA Clients",
       "description": "A background service that automatically cancels un-ticketed bookings before the last ticketing time, saving ~$23K-$27K across 6 OTA clients.",
       "tags": [".NET Core", "Hangfire", "SQLite", "Background Services"],

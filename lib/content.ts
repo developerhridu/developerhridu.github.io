@@ -62,12 +62,16 @@ export function getBlogPosts(): BlogPost[] {
   return data.posts;
 }
 
+export function getPublishedBlogPosts(): BlogPost[] {
+  return getBlogPosts().filter((post) => post.published !== false);
+}
+
 export function getBlogPost(slug: string): BlogPost | null {
   return getBlogPosts().find((post) => post.slug === slug) ?? null;
 }
 
 export function getRelatedBlogPosts(current: BlogPost, limit = 3): BlogPost[] {
-  return getBlogPosts()
+  return getPublishedBlogPosts()
     .filter((post) => post.slug !== current.slug)
     .map((post) => ({
       post,
@@ -88,12 +92,16 @@ export function getCaseStudies(): CaseStudy[] {
   return data.caseStudies;
 }
 
+export function getPublishedCaseStudies(): CaseStudy[] {
+  return getCaseStudies().filter((study) => study.published !== false);
+}
+
 export function getCaseStudy(slug: string): CaseStudy | null {
   return getCaseStudies().find((study) => study.slug === slug) ?? null;
 }
 
 export function getRelatedCaseStudies(current: CaseStudy, limit = 3): CaseStudy[] {
-  return getCaseStudies()
+  return getPublishedCaseStudies()
     .filter((study) => study.slug !== current.slug)
     .map((study) => ({
       study,

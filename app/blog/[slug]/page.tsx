@@ -7,6 +7,7 @@ import { getBlogPosts, getBlogPost, getRelatedBlogPosts } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
 import ContentImage from "@/components/ui/ContentImage";
 import RelatedContent from "@/components/ui/RelatedContent";
+import Comments from "@/components/ui/Comments";
 import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
 
 const BASE_URL = "https://developerhridu.github.io";
@@ -39,6 +40,7 @@ export async function generateMetadata({
     description: post.description,
     keywords: post.tags,
     alternates: { canonical: url },
+    ...(post.published === false ? { robots: { index: false, follow: false } } : {}),
     openGraph: {
       title: post.title,
       description: post.description,
@@ -100,6 +102,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <ArrowLeft size={16} />
             Back to Blog
           </Link>
+
+          {post.published === false && (
+            <div className="mb-8 px-4 py-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-500 text-sm">
+              This post is a draft — it isn&apos;t listed on the blog, sitemap, or RSS feed. Only people with this link can see it.
+            </div>
+          )}
 
           {/* Post Header */}
           <header className="mb-12">
@@ -174,6 +182,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Related Posts */}
           <RelatedContent items={relatedPosts} basePath="/blog" heading="Related Posts" />
+
+          {/* Comments */}
+          <Comments />
 
           {/* Post Footer */}
           <div className="mt-12 pt-8 border-t border-border">

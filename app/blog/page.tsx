@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { getBlogPosts } from "@/lib/content";
+import { getPublishedBlogPosts } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
 import SectionHeading from "@/components/ui/SectionHeading";
 import GlassCard from "@/components/ui/GlassCard";
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
-  const posts = [...getBlogPosts()].sort(
+  const posts = [...getPublishedBlogPosts()].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 

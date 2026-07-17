@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LogOut } from "lucide-react";
+import { LogOut, FileText } from "lucide-react";
 import configData from "@/content/config.json";
 import { inputClass } from "@/components/admin/shared";
 import BlogCaseStudyManager from "@/components/admin/BlogCaseStudyManager";
@@ -156,13 +156,24 @@ export default function AdminEditor() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground">Content Editor</h1>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors"
-        >
-          <LogOut size={14} />
-          Sign out
-        </button>
+        <div className="flex items-center gap-4">
+          <a
+            href="/resume"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors"
+          >
+            <FileText size={14} />
+            View Live Resume
+          </a>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors"
+          >
+            <LogOut size={14} />
+            Sign out
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2 mb-6 border-b border-border">

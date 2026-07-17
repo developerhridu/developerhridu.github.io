@@ -1,4 +1,4 @@
-import { getBlogPosts } from "@/lib/content";
+import { getPublishedBlogPosts } from "@/lib/content";
 
 export const dynamic = "force-static";
 
@@ -14,7 +14,7 @@ function escapeXml(value: string): string {
 }
 
 export function GET() {
-  const posts = [...getBlogPosts()].sort(
+  const posts = [...getPublishedBlogPosts()].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 

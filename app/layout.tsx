@@ -114,7 +114,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <Navbar />
-        <div className="md:pl-20">
+        <div className="md:pl-20 print:pl-0">
           <main id="main-content">{children}</main>
           <Footer />
         </div>

@@ -5,6 +5,7 @@
       "slug": "building-a-modern-portfolio-with-nextjs",
       "title": "Building a Modern Portfolio with Next.js",
       "date": "2024-02-25",
+      "published": true,
       "description": "Learn how I built this portfolio website using Next.js 14, Tailwind CSS, and file-based content management",
       "tags": [
         "next.js",
@@ -30,6 +31,7 @@
       "slug": "typescript-best-practices-for-2024",
       "title": "TypeScript Best Practices for 2024",
       "date": "2024-02-20",
+      "published": true,
       "description": "Essential TypeScript patterns and best practices I use in every project",
       "tags": [
         "typescript",

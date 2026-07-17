@@ -33,6 +33,7 @@ interface Entry {
   title: string;
   date: string;
   updatedAt?: string;
+  published: boolean;
   description: string;
   tags: string[];
   image?: string;
@@ -79,6 +80,7 @@ function blankEntry(): Entry {
     slug: "",
     title: "",
     date: new Date().toISOString().slice(0, 10),
+    published: false,
     description: "",
     tags: [],
     image: "",
@@ -126,6 +128,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
       const loaded: Entry[] = (parsed[CONFIG[kind].arrayKey] ?? []).map((e: Entry) => ({
         ...e,
         sections: e.sections ?? [],
+        published: e.published ?? true,
       }));
       setEntries(loaded);
       setFileSha(sha);
@@ -427,7 +430,14 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
                   {entries.map((entry) => (
                     <tr key={entry.id} className="border-b border-border last:border-b-0">
                       <td className="px-4 py-3 min-w-0">
-                        <p className="text-foreground font-medium truncate">{entry.title}</p>
+                        <p className="text-foreground font-medium truncate flex items-center gap-2">
+                          {entry.title}
+                          {!entry.published && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-yellow-500/10 text-yellow-500 border border-yellow-500/30">
+                              Draft
+                            </span>
+                          )}
+                        </p>
                         <p className="text-muted text-xs">
                           {entry.date} · /{entry.slug}
                         </p>
@@ -560,6 +570,18 @@ function EntryForm({
           />
         </div>
       </div>
+
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={entry.published}
+          onChange={(e) => setEntry({ ...entry, published: e.target.checked })}
+          className="w-4 h-4 accent-accent"
+        />
+        <span className="text-sm text-foreground">
+          Published <span className="text-muted">(visible in listings, sitemap &amp; RSS — unchecked stays a draft, still previewable via View)</span>
+        </span>
+      </label>
 
       <div>
         <label className="block text-xs uppercase tracking-wide text-muted mb-1">

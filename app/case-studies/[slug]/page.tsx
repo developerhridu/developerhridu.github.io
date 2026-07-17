@@ -7,6 +7,7 @@ import { getCaseStudies, getCaseStudy, getRelatedCaseStudies } from "@/lib/conte
 import { estimateReadingTime } from "@/lib/readingTime";
 import ContentImage from "@/components/ui/ContentImage";
 import RelatedContent from "@/components/ui/RelatedContent";
+import Comments from "@/components/ui/Comments";
 import { ArrowLeft, Calendar, Clock, Tag, Building2 } from "lucide-react";
 
 const BASE_URL = "https://developerhridu.github.io";
@@ -39,6 +40,7 @@ export async function generateMetadata({
     description: study.description,
     keywords: study.tags,
     alternates: { canonical: url },
+    ...(study.published === false ? { robots: { index: false, follow: false } } : {}),
     openGraph: {
       title: study.title,
       description: study.description,
@@ -101,6 +103,12 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
             <ArrowLeft size={16} />
             Back to Case Studies
           </Link>
+
+          {study.published === false && (
+            <div className="mb-8 px-4 py-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-500 text-sm">
+              This case study is a draft — it isn&apos;t listed on the case studies page, sitemap, or RSS feed. Only people with this link can see it.
+            </div>
+          )}
 
           {/* Header */}
           <header className="mb-12">
@@ -181,6 +189,9 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
           {/* Related Case Studies */}
           <RelatedContent items={relatedCaseStudies} basePath="/case-studies" heading="Related Case Studies" />
+
+          {/* Comments */}
+          <Comments />
 
           {/* Footer */}
           <div className="mt-12 pt-8 border-t border-border">

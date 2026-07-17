@@ -11,6 +11,7 @@ export interface Profile {
   bio: string;
   avatar: string;
   email: string;
+  phone?: string;
   location: string;
   yearsOfExperience: number;
   projectsCompleted: number;
@@ -18,7 +19,9 @@ export interface Profile {
     github: string;
     linkedin: string;
     leetcode: string;
+    upwork?: string;
   };
+  portfolioUrl?: string;
   resumeUrl: string;
 }
 
@@ -95,6 +98,7 @@ export interface BlogPost {
   title: string;
   date: string;
   updatedAt?: string;
+  published?: boolean;
   description: string;
   tags: string[];
   image?: string;
@@ -109,6 +113,7 @@ export interface CaseStudy {
   title: string;
   date: string;
   updatedAt?: string;
+  published?: boolean;
   client?: string;
   description: string;
   tags: string[];
