@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCaseStudies } from "@/lib/content";
 import SectionHeading from "@/components/ui/SectionHeading";
 import GlassCard from "@/components/ui/GlassCard";
+import ContentImage from "@/components/ui/ContentImage";
 import { Calendar, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -35,22 +36,13 @@ export default function CaseStudiesPage() {
               {caseStudies.map((study) => (
                 <Link key={study.slug} href={`/case-studies/${study.slug}`}>
                   <GlassCard className="h-full flex flex-col group cursor-pointer">
-                    {study.image ? (
-                      <div className="h-48 rounded-lg mb-4 overflow-hidden">
-                        <img
-                          src={study.image}
-                          alt={study.title}
-                          loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                    ) : (
-                      <div className="h-48 bg-gradient-to-br from-accent/20 to-accent-hover/20 rounded-lg mb-4 flex items-center justify-center">
-                        <span className="text-4xl font-bold text-foreground/20">
-                          {study.title.split(" ").slice(0, 2).map((w) => w[0]).join("")}
-                        </span>
-                      </div>
-                    )}
+                    <ContentImage
+                      src={study.image}
+                      alt={study.title}
+                      wrapperClassName="h-48 rounded-lg mb-4"
+                      imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      initials={study.title.split(" ").slice(0, 2).map((w) => w[0]).join("")}
+                    />
 
                     <div className="flex-1">
                       <div className="flex flex-wrap gap-2 mb-3">

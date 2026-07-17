@@ -6,6 +6,9 @@ import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import profile from "@/content/profile.json";
 import { trackEvent } from "@/lib/analytics";
+import menu from "@/content/menu.json";
+
+const cvHref = menu.navLinks.find((link) => link.name === "CV")?.href;
 
 export default function Hero() {
   return (
@@ -58,7 +61,7 @@ export default function Hero() {
               Hire Me
             </Button>
             <Button
-              href={profile.resumeUrl}
+              href={cvHref}
               target="_blank"
               rel="noopener noreferrer"
               variant="secondary"

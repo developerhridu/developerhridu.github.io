@@ -4,6 +4,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getCaseStudies, getCaseStudy } from "@/lib/content";
+import ContentImage from "@/components/ui/ContentImage";
 import { ArrowLeft, Calendar, Tag, Building2 } from "lucide-react";
 
 interface CaseStudyPageProps {
@@ -93,15 +94,12 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
           </header>
 
           {/* Image */}
-          {study.image && (
-            <div className="mb-12 rounded-2xl overflow-hidden">
-              <img
-                src={study.image}
-                alt={study.title}
-                className="w-full h-auto"
-              />
-            </div>
-          )}
+          <ContentImage
+            src={study.image}
+            alt={study.title}
+            wrapperClassName="mb-12 rounded-2xl"
+            imgClassName="w-full h-auto"
+          />
 
           {/* Content */}
           <div className="prose prose-invert prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted prose-a:text-accent prose-strong:text-foreground prose-code:text-accent prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-surface prose-pre:border prose-pre:border-border">

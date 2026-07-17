@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchContentFile, updateContentFile, GitHubApiError } from "@/lib/github";
-import { Pencil, Trash2, Plus, LogOut, ExternalLink, X } from "lucide-react";
+import { fetchContentFile, updateContentFile, uploadBinaryFile, GitHubApiError } from "@/lib/github";
+import { Pencil, Trash2, Plus, LogOut, ExternalLink, X, Upload } from "lucide-react";
 import profileData from "@/content/profile.json";
 
 interface Entry {
@@ -21,16 +21,32 @@ type ContentKind = "blog" | "case-study";
 
 const CONFIG: Record<
   ContentKind,
-  { path: string; arrayKey: string; label: string; hasClient: boolean }
+  { path: string; arrayKey: string; label: string; hasClient: boolean; imageFolder: string }
 > = {
-  blog: { path: "content/blogs.json", arrayKey: "posts", label: "Blog Posts", hasClient: false },
+  blog: {
+    path: "content/blogs.json",
+    arrayKey: "posts",
+    label: "Blog Posts",
+    hasClient: false,
+    imageFolder: "blog",
+  },
   "case-study": {
     path: "content/case-studies.json",
     arrayKey: "caseStudies",
     label: "Case Studies",
     hasClient: true,
+    imageFolder: "case-studies",
   },
 };
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve((reader.result as string).split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 const PASSWORD_OK_KEY = "admin_pw_ok";
 const TOKEN_KEY = "gh_pat";
@@ -84,6 +100,7 @@ export default function AdminEditor() {
   const [editing, setEditing] = useState<Entry | null>(null);
   const [tagsText, setTagsText] = useState("");
   const [isNew, setIsNew] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (sessionStorage.getItem(PASSWORD_OK_KEY) === "1") setUnlocked(true);
@@ -159,6 +176,7 @@ export default function AdminEditor() {
     setEditing(blankEntry());
     setTagsText("");
     setIsNew(true);
+    setImageFile(null);
     setSuccessMsg(null);
     setError(null);
   }
@@ -167,12 +185,14 @@ export default function AdminEditor() {
     setEditing({ ...entry });
     setTagsText(entry.tags.join(", "));
     setIsNew(false);
+    setImageFile(null);
     setSuccessMsg(null);
     setError(null);
   }
 
   function cancelEdit() {
     setEditing(null);
+    setImageFile(null);
   }
 
   async function persist(newEntries: Entry[], message: string) {
@@ -201,8 +221,8 @@ export default function AdminEditor() {
     }
   }
 
-  function handleSave() {
-    if (!editing) return;
+  async function handleSave() {
+    if (!editing || !token) return;
     if (!editing.title.trim() || !editing.slug.trim()) {
       setError("Title and slug are required.");
       return;
@@ -213,29 +233,41 @@ export default function AdminEditor() {
       .map((t) => t.trim())
       .filter(Boolean);
 
+    const slug = editing.slug.trim();
     const current = entries[kind] ?? [];
-    const slugTaken = current.some(
-      (e) => e.slug === editing.slug.trim() && e.id !== editing.id
-    );
+    const slugTaken = current.some((e) => e.slug === slug && e.id !== editing.id);
     if (slugTaken) {
       setError("That slug is already used by another entry.");
       return;
     }
 
-    if (isNew) {
-      const newEntry: Entry = {
-        ...editing,
-        id: Date.now().toString(36),
-        slug: editing.slug.trim(),
-        tags,
-      };
-      void persist([...current, newEntry], `content: add ${editing.title}`);
-    } else {
-      const updated = current.map((e) =>
-        e.id === editing.id ? { ...editing, slug: editing.slug.trim(), tags } : e
-      );
-      void persist(updated, `content: update ${editing.title}`);
+    let image = editing.image;
+    if (imageFile) {
+      setSaving(true);
+      setError(null);
+      try {
+        const ext = imageFile.name.split(".").pop()?.toLowerCase() || "png";
+        const repoPath = `public/images/${CONFIG[kind].imageFolder}/${slug}.${ext}`;
+        const base64 = await fileToBase64(imageFile);
+        await uploadBinaryFile(repoPath, base64, `content: upload image for ${editing.title}`, token);
+        image = `/images/${CONFIG[kind].imageFolder}/${slug}.${ext}`;
+      } catch (err) {
+        handleApiError(err);
+        setSaving(false);
+        return;
+      }
     }
+
+    const finalEntry: Entry = { ...editing, slug, tags, image };
+
+    if (isNew) {
+      const newEntry: Entry = { ...finalEntry, id: Date.now().toString(36) };
+      await persist([...current, newEntry], `content: add ${editing.title}`);
+    } else {
+      const updated = current.map((e) => (e.id === editing.id ? finalEntry : e));
+      await persist(updated, `content: update ${editing.title}`);
+    }
+    setImageFile(null);
   }
 
   function handleDelete(entry: Entry) {
@@ -370,6 +402,8 @@ export default function AdminEditor() {
           setTagsText={setTagsText}
           hasClient={CONFIG[kind].hasClient}
           saving={saving}
+          imageFile={imageFile}
+          setImageFile={setImageFile}
           onCancel={cancelEdit}
           onSave={handleSave}
           onTitleBlur={() => {
@@ -449,6 +483,8 @@ function EntryForm({
   setTagsText,
   hasClient,
   saving,
+  imageFile,
+  setImageFile,
   onCancel,
   onSave,
   onTitleBlur,
@@ -459,6 +495,8 @@ function EntryForm({
   setTagsText: (t: string) => void;
   hasClient: boolean;
   saving: boolean;
+  imageFile: File | null;
+  setImageFile: (f: File | null) => void;
   onCancel: () => void;
   onSave: () => void;
   onTitleBlur: () => void;
@@ -512,6 +550,29 @@ function EntryForm({
             className={inputClass}
           />
         </div>
+      </div>
+
+      <div>
+        <label className="block text-xs uppercase tracking-wide text-muted mb-1">
+          Or Upload Image
+        </label>
+        <label className={`${inputClass} flex items-center gap-2 cursor-pointer`}>
+          <Upload size={16} className="text-muted shrink-0" />
+          <span className="truncate">
+            {imageFile ? imageFile.name : "Choose an image file…"}
+          </span>
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
+          />
+        </label>
+        {imageFile && (
+          <p className="text-muted text-xs mt-1">
+            Uploaded to the repo and set as the Image URL when you save.
+          </p>
+        )}
       </div>
 
       {hasClient && (

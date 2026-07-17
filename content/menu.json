@@ -26,9 +26,9 @@
       "icon": "award"
     },
     {
-      "name": "Contact",
-      "href": "/contact",
-      "icon": "mail"
+      "name": "Case Studies",
+      "href": "/case-studies",
+      "icon": "layers"
     },
     {
       "name": "Blog",
@@ -36,14 +36,14 @@
       "icon": "newspaper"
     },
     {
-      "name": "Case Studies",
-      "href": "/case-studies",
-      "icon": "layers"
+      "name": "Contact",
+      "href": "/contact",
+      "icon": "mail"
     },
     {
       "name": "CV",
-      "href": "/resume-2026-v2.pdf",
-      "icon": "file-text",
+      "href": "/mizanur-swe-4years-cv.pdf",
+      "icon": "file-user",
       "external": true
     }
   ]

@@ -14,6 +14,7 @@ import {
   Award,
   Mail,
   FileText,
+  FileUser,
   Handshake,
   Newspaper,
   Layers,
@@ -33,6 +34,7 @@ const iconRegistry: Record<string, typeof Home> = {
   award: Award,
   mail: Mail,
   "file-text": FileText,
+  "file-user": FileUser,
   newspaper: Newspaper,
   layers: Layers,
 };

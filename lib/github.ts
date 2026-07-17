@@ -66,3 +66,34 @@ export async function updateContentFile(
     }),
   });
 }
+
+async function getFileSha(path: string, token: string): Promise<string | null> {
+  try {
+    const data = await githubRequest(`${path}?ref=${BRANCH}`, token);
+    return data.sha;
+  } catch (err) {
+    if (err instanceof GitHubApiError && err.status === 404) return null;
+    throw err;
+  }
+}
+
+/** Creates or overwrites a binary file (e.g. an image) at `path`. `base64Content` must
+ *  already be base64-encoded (no data: URL prefix). */
+export async function uploadBinaryFile(
+  path: string,
+  base64Content: string,
+  message: string,
+  token: string
+): Promise<void> {
+  const existingSha = await getFileSha(path, token);
+  await githubRequest(path, token, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message,
+      content: base64Content,
+      ...(existingSha ? { sha: existingSha } : {}),
+      branch: BRANCH,
+    }),
+  });
+}
