@@ -21,6 +21,7 @@ export default function Certifications({ showHeading = true, noSection = false }
     <>
       {showHeading && (
         <SectionHeading
+          eyebrow="Certifications"
           title="Training & Certifications"
           subtitle="Courses and certifications I've completed"
         />
@@ -42,7 +43,7 @@ export default function Certifications({ showHeading = true, noSection = false }
                     {cert.icons.map((icon) => (
                       <div
                         key={icon}
-                        className="w-11 h-11 rounded-lg bg-white/90 border-2 border-slate-900 flex items-center justify-center p-2"
+                        className="w-11 h-11 rounded-lg bg-white/90 border-2 border-background flex items-center justify-center p-2"
                       >
                         <img src={icon} alt={cert.issuer} className="w-full h-full object-contain" />
                       </div>
@@ -53,19 +54,19 @@ export default function Certifications({ showHeading = true, noSection = false }
                     <img src={cert.icon} alt={cert.issuer} className="w-full h-full object-contain" />
                   </div>
                 ) : (
-                  <div className="p-3 bg-violet-500/20 rounded-lg shrink-0">
-                    <BadgeCheck className="w-8 h-8 text-violet-400" />
+                  <div className="p-3 bg-accent/10 rounded-lg shrink-0">
+                    <BadgeCheck className="w-8 h-8 text-accent" />
                   </div>
                 )}
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-white mb-1">
+                  <h3 className="text-lg font-bold text-foreground mb-1">
                     {cert.name}
                   </h3>
-                  <p className="text-violet-400 font-medium mb-3">
+                  <p className="text-accent font-medium mb-3">
                     {cert.issuer}
                   </p>
 
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-muted">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
                       <span>{cert.date}</span>
@@ -75,7 +76,7 @@ export default function Certifications({ showHeading = true, noSection = false }
                         href={cert.verifyUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-violet-400 hover:text-violet-300 transition-colors"
+                        className="flex items-center gap-1 text-accent hover:text-accent-hover transition-colors"
                       >
                         <ExternalLink className="w-4 h-4" />
                         <span>Verify</span>

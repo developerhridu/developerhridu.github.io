@@ -69,6 +69,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {showHeading && (
           <SectionHeading
+            eyebrow="Get In Touch"
             title="Get In Touch"
             subtitle="Have a project in mind or want to chat? I'd love to hear from you."
           />
@@ -83,25 +84,25 @@ export default function Contact({ showHeading = true }: ContactProps) {
             transition={{ duration: 0.5 }}
           >
             <GlassCard hover={false} className="h-full">
-              <h3 className="text-xl font-bold text-white mb-6">
+              <h3 className="text-xl font-bold text-foreground mb-6">
                 Let&apos;s Connect
               </h3>
 
-              <p className="text-slate-300 mb-8">
+              <p className="text-muted mb-8">
                 I&apos;m always open to discussing new projects, creative ideas, or
                 opportunities to be part of your vision. Feel free to reach out!
               </p>
 
               <div className="space-y-4 mb-8">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-violet-500/20 rounded-lg flex items-center justify-center">
-                    <Mail className="text-violet-400" size={20} />
+                  <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                    <Mail className="text-accent" size={20} />
                   </div>
                   <div>
-                    <p className="text-sm text-slate-400">Email</p>
+                    <p className="text-sm text-muted">Email</p>
                     <a
                       href={`mailto:${profile.email}`}
-                      className="text-white hover:text-violet-400 transition-colors"
+                      className="text-foreground hover:text-accent transition-colors"
                     >
                       {profile.email}
                     </a>
@@ -109,12 +110,12 @@ export default function Contact({ showHeading = true }: ContactProps) {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-violet-500/20 rounded-lg flex items-center justify-center">
-                    <MapPin className="text-violet-400" size={20} />
+                  <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                    <MapPin className="text-accent" size={20} />
                   </div>
                   <div>
-                    <p className="text-sm text-slate-400">Location</p>
-                    <p className="text-white">{profile.location}</p>
+                    <p className="text-sm text-muted">Location</p>
+                    <p className="text-foreground">{profile.location}</p>
                   </div>
                 </div>
               </div>
@@ -125,7 +126,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                   href={profile.social.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-all"
+                  className="w-10 h-10 bg-surface hover:bg-surface-hover border border-border hover:border-accent/40 rounded-lg flex items-center justify-center text-muted hover:text-foreground transition-all"
                 >
                   <Github size={20} />
                 </a>
@@ -133,7 +134,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                   href={profile.social.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-all"
+                  className="w-10 h-10 bg-surface hover:bg-surface-hover border border-border hover:border-accent/40 rounded-lg flex items-center justify-center text-muted hover:text-foreground transition-all"
                 >
                   <Linkedin size={20} />
                 </a>
@@ -141,7 +142,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                   href={profile.social.leetcode}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-all"
+                  className="w-10 h-10 bg-surface hover:bg-surface-hover border border-border hover:border-accent/40 rounded-lg flex items-center justify-center text-muted hover:text-foreground transition-all"
                 >
                   <Code2 size={20} />
                 </a>
@@ -157,20 +158,20 @@ export default function Contact({ showHeading = true }: ContactProps) {
             transition={{ duration: 0.5 }}
           >
             <GlassCard hover={false} className="h-full">
-              <h3 className="text-xl font-bold text-white mb-6">
+              <h3 className="text-xl font-bold text-foreground mb-6">
                 Send a Message
               </h3>
 
               {formStatus === "success" ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <CheckCircle className="text-green-400 mb-4" size={48} />
-                  <h4 className="text-xl font-semibold text-white mb-2">Message Sent!</h4>
-                  <p className="text-slate-400">
+                  <h4 className="text-xl font-semibold text-foreground mb-2">Message Sent!</h4>
+                  <p className="text-muted">
                     Thank you for reaching out. I&apos;ll get back to you soon.
                   </p>
                   <button
                     onClick={() => setFormStatus("idle")}
-                    className="mt-4 text-violet-400 hover:text-violet-300 transition-colors"
+                    className="mt-4 text-accent hover:text-accent-hover transition-colors"
                   >
                     Send another message
                   </button>
@@ -180,7 +181,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                   <div>
                     <label
                       htmlFor="name"
-                      className="block text-sm text-slate-400 mb-2"
+                      className="block text-sm text-muted mb-2"
                     >
                       Name
                     </label>
@@ -191,7 +192,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
+                      className="w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors"
                       placeholder="Your name"
                     />
                   </div>
@@ -199,7 +200,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-sm text-slate-400 mb-2"
+                      className="block text-sm text-muted mb-2"
                     >
                       Email
                     </label>
@@ -210,7 +211,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
+                      className="w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors"
                       placeholder="your@email.com"
                     />
                   </div>
@@ -218,7 +219,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                   <div>
                     <label
                       htmlFor="message"
-                      className="block text-sm text-slate-400 mb-2"
+                      className="block text-sm text-muted mb-2"
                     >
                       Message
                     </label>
@@ -229,7 +230,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                       value={formData.message}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors resize-none"
+                      className="w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors resize-none"
                       placeholder="Your message..."
                     />
                   </div>

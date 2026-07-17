@@ -21,6 +21,7 @@ export default function Education({ showHeading = true, noSection = false }: Edu
     <>
       {showHeading && (
         <SectionHeading
+          eyebrow="Education"
           title="Education"
           subtitle="My academic background and qualifications"
         />
@@ -42,19 +43,19 @@ export default function Education({ showHeading = true, noSection = false }: Edu
                     <img src={edu.icon} alt={edu.institution} className="w-full h-full object-contain" />
                   </div>
                 ) : (
-                  <div className="p-3 bg-violet-500/20 rounded-lg shrink-0">
-                    <GraduationCap className="w-8 h-8 text-violet-400" />
+                  <div className="p-3 bg-accent/10 rounded-lg shrink-0">
+                    <GraduationCap className="w-8 h-8 text-accent" />
                   </div>
                 )}
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-white mb-1">
+                  <h3 className="text-xl font-bold text-foreground mb-1">
                     {edu.degree}
                   </h3>
-                  <p className="text-violet-400 font-medium mb-3">
+                  <p className="text-accent font-medium mb-3">
                     {edu.institution}
                   </p>
 
-                  <div className="flex flex-wrap gap-4 text-sm text-slate-400 mb-4">
+                  <div className="flex flex-wrap gap-4 text-sm text-muted mb-4">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
                       <span>{edu.period}</span>
@@ -76,9 +77,9 @@ export default function Education({ showHeading = true, noSection = false }: Edu
                       {edu.achievements.map((achievement, aIdx) => (
                         <li
                           key={aIdx}
-                          className="flex items-start gap-2 text-sm text-slate-400"
+                          className="flex items-start gap-2 text-sm text-muted"
                         >
-                          <span className="text-violet-400 mt-1">-</span>
+                          <span className="text-accent mt-1">-</span>
                           {achievement}
                         </li>
                       ))}

@@ -14,9 +14,9 @@ export default function GlassCard({ children, className = "", hover = true, onCl
   return (
     <motion.div
       className={`
-        bg-white/5 backdrop-blur-lg border border-white/10
-        rounded-2xl p-6
-        ${hover ? "hover:bg-white/10 hover:border-white/20 transition-all duration-300" : ""}
+        card-corners bg-surface border border-border
+        rounded-xl p-6
+        ${hover ? "hover:bg-surface-hover hover:border-accent/40 transition-all duration-300" : ""}
         ${className}
       `}
       initial={{ opacity: 0, y: 20 }}

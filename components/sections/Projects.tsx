@@ -29,6 +29,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {showHeading && (
           <SectionHeading
+            eyebrow="Projects"
             title="Projects"
             subtitle="A selection of projects I've worked on"
           />
@@ -54,28 +55,28 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                       loading="lazy"
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute bottom-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute bottom-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-accent text-accent-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                       <ArrowUpRight size={18} />
                     </div>
                   </div>
                 ) : (
-                  <div className="relative h-48 bg-gradient-to-br from-violet-500/20 to-purple-600/20 rounded-lg mb-4 flex items-center justify-center">
-                    <span className="text-4xl font-bold text-white/20">
+                  <div className="relative h-48 bg-gradient-to-br from-accent/20 to-accent-hover/20 rounded-lg mb-4 flex items-center justify-center">
+                    <span className="text-4xl font-bold text-foreground/20">
                       {project.title.split(" ").map((w) => w[0]).join("")}
                     </span>
-                    <div className="absolute bottom-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute bottom-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-accent text-accent-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                       <ArrowUpRight size={18} />
                     </div>
                   </div>
                 )}
 
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-white mb-2">
+                  <h3 className="text-xl font-bold text-foreground mb-2">
                     {project.title}
                   </h3>
-                  <p className="text-slate-400 mb-4">{project.description}</p>
+                  <p className="text-muted mb-4">{project.description}</p>
                   {project.longDescription && (
-                    <p className="text-slate-300 text-sm mb-4">
+                    <p className="text-muted text-sm mb-4">
                       {project.longDescription}
                     </p>
                   )}
@@ -85,7 +86,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-1 bg-violet-500/20 text-violet-300 rounded text-xs"
+                        className="font-mono px-2 py-1 bg-accent/10 text-accent border border-accent/20 rounded text-xs uppercase tracking-wide"
                       >
                         {tag}
                       </span>
@@ -94,13 +95,13 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                 </div>
 
                 {/* Links */}
-                <div className="flex gap-4 pt-4 border-t border-white/10" onClick={(e) => e.stopPropagation()}>
+                <div className="flex gap-4 pt-4 border-t border-border" onClick={(e) => e.stopPropagation()}>
                   {project.liveUrl && (
                     <a
                       href={project.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                      className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                     >
                       <ExternalLink size={16} />
                       Live Demo
@@ -111,7 +112,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                       href={project.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                      className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                     >
                       <Github size={16} />
                       Source Code
@@ -124,7 +125,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                           href={project.githubUrl.frontend}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                          className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                         >
                           <Github size={16} />
                           Front-End
@@ -135,7 +136,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                           href={project.githubUrl.backend}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                          className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                         >
                           <Github size={16} />
                           Back-End
@@ -152,7 +153,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
         {/* Other Projects (only show on showAll or when there are non-featured) */}
         {!showAll && otherProjects.length > 0 && (
           <>
-            <h3 className="text-xl font-semibold text-white mb-4">
+            <h3 className="text-xl font-semibold text-foreground mb-4">
               Other Projects
             </h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -165,20 +166,20 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
                 >
                   <GlassCard className="h-full cursor-pointer group relative" onClick={() => setSelectedProject(project)}>
-                    <div className="absolute top-4 right-4 flex items-center justify-center w-8 h-8 rounded-full bg-violet-600 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute top-4 right-4 flex items-center justify-center w-8 h-8 rounded-full bg-accent text-accent-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                       <ArrowUpRight size={16} />
                     </div>
-                    <h4 className="text-lg font-semibold text-white mb-2 pr-8">
+                    <h4 className="text-lg font-semibold text-foreground mb-2 pr-8">
                       {project.title}
                     </h4>
-                    <p className="text-slate-400 text-sm mb-3">
+                    <p className="text-muted text-sm mb-3">
                       {project.description}
                     </p>
                     <div className="flex flex-wrap gap-1 mb-3">
                       {project.tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="px-2 py-0.5 bg-white/5 text-slate-400 rounded text-xs"
+                          className="font-mono px-2 py-0.5 bg-surface border border-border text-muted rounded text-xs uppercase tracking-wide"
                         >
                           {tag}
                         </span>
@@ -190,7 +191,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                        className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                       >
                         <Github size={14} />
                         View Code
@@ -203,7 +204,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                             href={project.githubUrl.frontend}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                            className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                           >
                             <Github size={14} />
                             Front-End
@@ -214,7 +215,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                             href={project.githubUrl.backend}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                            className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                           >
                             <Github size={14} />
                             Back-End

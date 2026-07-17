@@ -24,11 +24,11 @@ export default function Button({
   onClick,
   className = ""
 }: ButtonProps) {
-  const baseStyles = "inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300";
+  const baseStyles = "inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-300";
 
   const variants = {
-    primary: "bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40",
-    secondary: "bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-white/40"
+    primary: "bg-accent hover:bg-accent-hover text-accent-foreground shadow-lg shadow-accent/20 hover:shadow-accent/30",
+    secondary: "bg-surface hover:bg-surface-hover text-foreground border border-border hover:border-accent/40"
   };
 
   return (

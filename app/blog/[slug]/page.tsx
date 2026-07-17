@@ -47,7 +47,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {/* Back Button */}
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-muted hover:text-foreground transition-colors mb-8"
           >
             <ArrowLeft size={16} />
             Back to Blog
@@ -60,7 +60,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {post.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1 px-3 py-1 bg-violet-500/20 text-violet-300 rounded-full text-sm"
+                  className="font-mono inline-flex items-center gap-1 px-3 py-1 bg-accent/10 text-accent border border-accent/20 rounded-full text-sm uppercase tracking-wide"
                 >
                   <Tag size={12} />
                   {tag}
@@ -68,13 +68,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               ))}
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
               {post.title}
             </h1>
 
-            <p className="text-xl text-slate-400 mb-6">{post.description}</p>
+            <p className="text-xl text-muted mb-6">{post.description}</p>
 
-            <div className="flex items-center gap-4 text-slate-400">
+            <div className="flex items-center gap-4 text-muted">
               <span className="flex items-center gap-2">
                 <Calendar size={16} />
                 {new Date(post.date).toLocaleDateString("en-US", {
@@ -98,15 +98,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           )}
 
           {/* Post Content */}
-          <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-p:text-slate-300 prose-a:text-violet-400 prose-strong:text-white prose-code:text-violet-300 prose-code:bg-white/10 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-slate-800/50 prose-pre:border prose-pre:border-white/10">
+          <div className="prose prose-invert prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted prose-a:text-accent prose-strong:text-foreground prose-code:text-accent prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-surface prose-pre:border prose-pre:border-border">
             <MDXRemote source={post.content} />
           </div>
 
           {/* Post Footer */}
-          <div className="mt-12 pt-8 border-t border-white/10">
+          <div className="mt-12 pt-8 border-t border-border">
             <Link
               href="/blog"
-              className="inline-flex items-center gap-2 text-violet-400 hover:text-violet-300 transition-colors"
+              className="inline-flex items-center gap-2 text-accent hover:text-accent-hover transition-colors"
             >
               <ArrowLeft size={16} />
               Back to all posts

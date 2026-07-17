@@ -19,6 +19,7 @@ import {
 import navigation from "@/content/navigation.json";
 import profile from "@/content/profile.json";
 import { trackEvent } from "@/lib/analytics";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const navLinks = navigation.navLinks;
 
@@ -37,7 +38,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const Logo = (
-    <Link href="/" className="flex items-center gap-2 text-xl font-bold text-white">
+    <Link href="/" className="flex items-center gap-2 text-xl font-bold text-foreground">
       <div className="w-12 h-12 overflow-hidden shrink-0 rounded-md">
         <img
           src={profile.avatar}
@@ -54,7 +55,7 @@ export default function Navbar() {
       {/* Desktop Sidebar */}
       <motion.nav
         aria-label="Main navigation"
-        className="hidden md:flex fixed top-0 left-0 bottom-0 z-50 w-20 flex-col items-center bg-slate-900/80 backdrop-blur-lg border-r border-white/10 py-6"
+        className="hidden md:flex fixed top-0 left-0 bottom-0 z-50 w-20 flex-col items-center bg-surface/90 backdrop-blur-lg border-r border-border py-6"
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -71,10 +72,10 @@ export default function Navbar() {
                 rel="noopener noreferrer"
                 aria-label={link.name}
                 onClick={() => link.name === "CV" && trackEvent("resume_view", { location: "navbar_desktop" })}
-                className="group relative flex items-center justify-center w-11 h-11 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
+                className="group relative flex items-center justify-center w-11 h-11 rounded-lg text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
               >
                 <Icon size={20} />
-                <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-slate-800 border border-white/10 px-2 py-1 text-sm text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-surface border border-border px-2 py-1 text-sm text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                   {link.name}
                 </span>
               </a>
@@ -86,12 +87,12 @@ export default function Navbar() {
                 aria-current={pathname === link.href ? "page" : undefined}
                 className={`group relative flex items-center justify-center w-11 h-11 rounded-lg transition-colors ${
                   pathname === link.href
-                    ? "text-violet-400 bg-violet-500/10"
-                    : "text-slate-300 hover:text-white hover:bg-white/5"
+                    ? "text-accent bg-accent/10"
+                    : "text-muted hover:text-foreground hover:bg-surface-hover"
                 }`}
               >
                 <Icon size={20} />
-                <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-slate-800 border border-white/10 px-2 py-1 text-sm text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-surface border border-border px-2 py-1 text-sm text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                   {link.name}
                 </span>
               </Link>
@@ -99,16 +100,18 @@ export default function Navbar() {
           })}
         </div>
 
+        <ThemeToggle className="mt-auto mb-1" />
+
         <a
           href={profile.social.upwork}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Hire Me"
           onClick={() => trackEvent("hire_me_click", { location: "navbar_desktop" })}
-          className="group relative mt-auto flex items-center justify-center w-11 h-11 rounded-lg bg-violet-600 hover:bg-violet-500 text-white transition-colors"
+          className="group relative flex items-center justify-center w-11 h-11 rounded-lg bg-accent hover:bg-accent-hover text-accent-foreground transition-colors"
         >
           <Handshake size={20} />
-          <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-slate-800 border border-white/10 px-2 py-1 text-sm text-white opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-surface border border-border px-2 py-1 text-sm text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
             Hire Me
           </span>
         </a>
@@ -117,7 +120,7 @@ export default function Navbar() {
       {/* Mobile Top Bar */}
       <motion.nav
         aria-label="Main navigation"
-        className="md:hidden fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-lg border-b border-white/10"
+        className="md:hidden fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-lg border-b border-border"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
@@ -126,18 +129,19 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16">
             {Logo}
             <div className="flex items-center gap-3">
+              <ThemeToggle className="w-9 h-9" />
               <a
                 href={profile.social.upwork}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent("hire_me_click", { location: "navbar_mobile" })}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-600 hover:bg-violet-500 text-white text-sm transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-accent-foreground text-sm transition-colors"
               >
                 <Handshake size={16} />
                 Hire Me
               </a>
               <button
-                className="text-white"
+                className="text-foreground"
                 aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
                 aria-expanded={isMobileMenuOpen}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -149,7 +153,7 @@ export default function Navbar() {
 
           {isMobileMenuOpen && (
             <motion.div
-              className="py-4 border-t border-white/10"
+              className="py-4 border-t border-border"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
             >
@@ -160,7 +164,7 @@ export default function Navbar() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block py-2 text-slate-300 hover:text-white transition-colors"
+                    className="block py-2 text-muted hover:text-foreground transition-colors"
                     onClick={() => {
                       if (link.name === "CV") trackEvent("resume_view", { location: "navbar_mobile" });
                       setIsMobileMenuOpen(false);
@@ -174,8 +178,8 @@ export default function Navbar() {
                     href={link.href}
                     className={`block py-2 transition-colors ${
                       pathname === link.href
-                        ? "text-violet-400"
-                        : "text-slate-300 hover:text-white"
+                        ? "text-accent"
+                        : "text-muted hover:text-foreground"
                     }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

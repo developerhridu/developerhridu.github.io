@@ -10,12 +10,9 @@ import { trackEvent } from "@/lib/analytics";
 export default function Hero() {
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 md:pt-0">
-      {/* Animated background blobs */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-500/30 rounded-full blur-[100px] animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/20 rounded-full blur-[100px] animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/10 rounded-full blur-[120px]" />
-      </div>
+      {/* Dot-grid background */}
+      <div className="bg-grid absolute inset-0" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center">
@@ -25,14 +22,16 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <p className="text-violet-400 font-medium mb-4">Hi, I&apos;m</p>
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+            <p className="font-mono text-s tracking-widest text-accent mb-4">
+              — Hi, I'm
+            </p>
+            <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6">
               {profile.name}
             </h1>
-            <h2 className="text-2xl md:text-3xl text-slate-300 mb-4">
+            <h2 className="text-2xl md:text-3xl text-muted mb-4">
               {profile.title}
             </h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-8">
+            <p className="text-xl text-muted max-w-2xl mx-auto mb-8">
               {profile.tagline}
             </p>
           </motion.div>
@@ -82,7 +81,7 @@ export default function Hero() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub profile"
-              className="text-slate-400 hover:text-white transition-colors p-2"
+              className="text-muted hover:text-foreground transition-colors p-2"
             >
               <Github size={24} />
             </a>
@@ -91,7 +90,7 @@ export default function Hero() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn profile"
-              className="text-slate-400 hover:text-white transition-colors p-2"
+              className="text-muted hover:text-foreground transition-colors p-2"
             >
               <Linkedin size={24} />
             </a>
@@ -100,7 +99,7 @@ export default function Hero() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LeetCode profile"
-              className="text-slate-400 hover:text-white transition-colors p-2"
+              className="text-muted hover:text-foreground transition-colors p-2"
             >
               <Code2 size={24} />
             </a>
@@ -114,20 +113,20 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.5 }}
           >
             <GlassCard className="text-center" hover={false}>
-              <div className="text-3xl font-bold text-white mb-1">
+              <div className="text-3xl font-bold text-foreground mb-1">
                 {profile.yearsOfExperience}+
               </div>
-              <div className="text-sm text-slate-400">Years Experience</div>
+              <div className="text-sm text-muted">Years Experience</div>
             </GlassCard>
             <GlassCard className="text-center" hover={false}>
-              <div className="text-3xl font-bold text-white mb-1">
+              <div className="text-3xl font-bold text-foreground mb-1">
                 {profile.projectsCompleted}+
               </div>
-              <div className="text-sm text-slate-400">Projects Completed</div>
+              <div className="text-sm text-muted">Projects Completed</div>
             </GlassCard>
             <GlassCard className="text-center col-span-2 md:col-span-1" hover={false}>
-              <div className="text-3xl font-bold text-white mb-1">3</div>
-              <div className="text-sm text-slate-400">Companies</div>
+              <div className="text-3xl font-bold text-foreground mb-1">3</div>
+              <div className="text-sm text-muted">Companies</div>
             </GlassCard>
           </motion.div>
         </div>

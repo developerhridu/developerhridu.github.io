@@ -17,6 +17,7 @@ export default function Experience({ showHeading = true }: ExperienceProps) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {showHeading && (
           <SectionHeading
+            eyebrow="Experience"
             title="Experience"
             subtitle="My professional journey and the roles I've held"
           />
@@ -24,7 +25,7 @@ export default function Experience({ showHeading = true }: ExperienceProps) {
 
         <div className="relative">
           {/* Timeline line */}
-          <div className="absolute left-0 md:left-1/2 transform md:-translate-x-px h-full w-0.5 bg-gradient-to-b from-violet-500 to-purple-600" />
+          <div className="absolute left-0 md:left-1/2 transform md:-translate-x-px h-full w-0.5 bg-gradient-to-b from-accent to-accent-hover" />
 
           {/* Experience Items */}
           <div className="space-y-12">
@@ -40,7 +41,7 @@ export default function Experience({ showHeading = true }: ExperienceProps) {
                 }`}
               >
                 {/* Timeline dot */}
-                <div className="absolute left-0 md:left-1/2 transform translate-x-0 md:-translate-x-1/2 w-4 h-4 bg-violet-500 rounded-full border-4 border-slate-900" />
+                <div className="absolute left-0 md:left-1/2 transform translate-x-0 md:-translate-x-1/2 w-4 h-4 bg-accent rounded-full border-4 border-background" />
 
                 {/* Content */}
                 <div className="md:w-1/2 pl-8 md:pl-0">
@@ -48,7 +49,7 @@ export default function Experience({ showHeading = true }: ExperienceProps) {
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-start gap-3">
                         {exp.logo && (
-                          <div className="w-11 h-11 rounded-lg overflow-hidden shrink-0 bg-white/5">
+                          <div className="w-11 h-11 rounded-lg overflow-hidden shrink-0 bg-surface-hover">
                             <img
                               src={exp.logo}
                               alt={exp.company}
@@ -57,29 +58,29 @@ export default function Experience({ showHeading = true }: ExperienceProps) {
                           </div>
                         )}
                         <div>
-                          <h3 className="text-xl font-bold text-white">
+                          <h3 className="text-xl font-bold text-foreground">
                             {exp.role}
                           </h3>
-                          <p className="text-violet-400 font-medium">
+                          <p className="text-accent font-medium">
                             {exp.company}
                           </p>
                         </div>
                       </div>
-                      <span className="text-sm text-slate-400 whitespace-nowrap">
+                      <span className="text-sm text-muted whitespace-nowrap">
                         {exp.period}
                       </span>
                     </div>
 
-                    <p className="text-slate-300 mb-4">{exp.description}</p>
+                    <p className="text-muted mb-4">{exp.description}</p>
 
                     {/* Highlights */}
                     <ul className="space-y-2 mb-4">
                       {exp.highlights.map((highlight, hIdx) => (
                         <li
                           key={hIdx}
-                          className="flex items-start gap-2 text-sm text-slate-400"
+                          className="flex items-start gap-2 text-sm text-muted"
                         >
-                          <span className="text-violet-400 mt-1">-</span>
+                          <span className="text-accent mt-1">-</span>
                           {highlight}
                         </li>
                       ))}
@@ -90,7 +91,7 @@ export default function Experience({ showHeading = true }: ExperienceProps) {
                       {exp.technologies.map((tech) => (
                         <span
                           key={tech}
-                          className="px-2 py-1 bg-white/5 text-slate-400 rounded text-xs"
+                          className="font-mono px-2 py-1 bg-surface border border-border text-muted rounded text-xs uppercase tracking-wide"
                         >
                           {tech}
                         </span>

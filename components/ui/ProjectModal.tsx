@@ -48,7 +48,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
 
           <motion.div
-            className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl border border-white/10 bg-slate-900 shadow-2xl"
+            className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-surface shadow-2xl"
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -58,7 +58,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             <button
               onClick={onClose}
               aria-label="Close"
-              className="absolute top-4 right-4 z-10 flex items-center justify-center w-9 h-9 rounded-full bg-violet-600 hover:bg-violet-500 text-white transition-colors"
+              className="absolute top-4 right-4 z-10 flex items-center justify-center w-9 h-9 rounded-full bg-accent hover:bg-accent-hover text-accent-foreground transition-colors"
             >
               <X size={18} />
             </button>
@@ -72,8 +72,8 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                 />
               </div>
             ) : (
-              <div className="h-56 md:h-80 rounded-t-2xl bg-gradient-to-br from-violet-500/20 to-purple-600/20 flex items-center justify-center">
-                <span className="text-6xl font-bold text-white/20">
+              <div className="h-56 md:h-80 rounded-t-2xl bg-gradient-to-br from-accent/20 to-accent-hover/20 flex items-center justify-center">
+                <span className="text-6xl font-bold text-foreground/20">
                   {project.title.split(" ").map((w) => w[0]).join("")}
                 </span>
               </div>
@@ -84,35 +84,35 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                 {project.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 bg-violet-500/20 text-violet-300 rounded text-xs"
+                    className="font-mono px-2 py-1 bg-accent/10 text-accent border border-accent/20 rounded text-xs uppercase tracking-wide"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
 
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
                 {project.title}
               </h2>
 
-              <p className="text-slate-300 mb-2">{project.description}</p>
+              <p className="text-muted mb-2">{project.description}</p>
               {project.longDescription && (
-                <p className="text-slate-400 text-sm mb-6">
+                <p className="text-muted text-sm mb-6">
                   {project.longDescription}
                 </p>
               )}
 
-              <div className="grid sm:grid-cols-2 gap-6 pt-6 border-t border-white/10">
+              <div className="grid sm:grid-cols-2 gap-6 pt-6 border-t border-border">
                 {project.liveUrl && (
                   <div>
-                    <p className="text-xs uppercase tracking-wide text-slate-500 mb-1">
+                    <p className="text-xs uppercase tracking-wide text-muted mb-1">
                       Live Demo
                     </p>
                     <a
                       href={project.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-violet-400 hover:text-violet-300 transition-colors"
+                      className="flex items-center gap-1.5 text-accent hover:text-accent-hover transition-colors"
                     >
                       <ExternalLink size={16} />
                       View Live
@@ -122,14 +122,14 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
                 {typeof project.githubUrl === "string" && project.githubUrl && (
                   <div>
-                    <p className="text-xs uppercase tracking-wide text-slate-500 mb-1">
+                    <p className="text-xs uppercase tracking-wide text-muted mb-1">
                       Source Code
                     </p>
                     <a
                       href={project.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-violet-400 hover:text-violet-300 transition-colors"
+                      className="flex items-center gap-1.5 text-accent hover:text-accent-hover transition-colors"
                     >
                       <Github size={16} />
                       View Code
@@ -139,7 +139,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
                 {project.githubUrl && typeof project.githubUrl === "object" && (
                   <div>
-                    <p className="text-xs uppercase tracking-wide text-slate-500 mb-1">
+                    <p className="text-xs uppercase tracking-wide text-muted mb-1">
                       Source Code
                     </p>
                     <div className="flex flex-col gap-1.5">
@@ -148,7 +148,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                           href={project.githubUrl.frontend}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 text-violet-400 hover:text-violet-300 transition-colors"
+                          className="flex items-center gap-1.5 text-accent hover:text-accent-hover transition-colors"
                         >
                           <Github size={16} />
                           Front-End
@@ -159,7 +159,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                           href={project.githubUrl.backend}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 text-violet-400 hover:text-violet-300 transition-colors"
+                          className="flex items-center gap-1.5 text-accent hover:text-accent-hover transition-colors"
                         >
                           <Github size={16} />
                           Back-End
