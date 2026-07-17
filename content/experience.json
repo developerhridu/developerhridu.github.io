@@ -1,8 +1,9 @@
 {
   "experiences": [
     {
+      "id": "technonext-software-ltd-concern-of-us-bangla-group",
       "company": "TechnoNext Software Ltd. (Concern of US-Bangla Group)",
-      "logo": "/images/technonext.jpg",
+      "logo": "/images/logos/technonext.jpg",
       "role": "Software Engineer",
       "period": "April 2024 - Present",
       "location": "Dhaka, Bangladesh",
@@ -35,8 +36,9 @@
       ]
     },
     {
+      "id": "bdjobs-com-ltd",
       "company": "Bdjobs.com Ltd.",
-      "logo": "/images/bdjobs-icon.png",
+      "logo": "/images/logos/bdjobs-icon.png",
       "role": "Jr. Software Engineer",
       "period": "May 2023 - March 2024",
       "location": "Kawran Bazar, Dhaka",
@@ -55,8 +57,9 @@
       ]
     },
     {
+      "id": "e-desh-limited",
       "company": "E-Desh Limited",
-      "logo": "/images/Edesh.png",
+      "logo": "/images/logos/Edesh.png",
       "role": "Jr. Software Engineer (Part-Time, Remote)",
       "period": "May 2022 - February 2023",
       "location": "Remote",

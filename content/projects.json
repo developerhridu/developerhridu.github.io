@@ -13,7 +13,7 @@
         "Firebase",
         "Azure"
       ],
-      "image": "/images/OTA.png",
+      "image": "/images/projects/OTA.png",
       "liveUrl": "https://www.triplover.com",
       "githubUrl": null,
       "featured": true
@@ -28,7 +28,7 @@
         "Microservices",
         "PostgreSQL"
       ],
-      "image": "/images/foodi.jpg",
+      "image": "/images/projects/foodi.jpg",
       "liveUrl": null,
       "githubUrl": null,
       "featured": true
@@ -44,7 +44,7 @@
         "MSSQL Server",
         "ETL"
       ],
-      "image": "/images/bdjobs.png",
+      "image": "/images/projects/bdjobs.png",
       "liveUrl": "https://recruiter.bdjobs.com/jobposting/job-information",
       "githubUrl": null,
       "featured": true
@@ -61,7 +61,7 @@
         "React",
         "PostgreSQL"
       ],
-      "image": "/images/fare-comparison.png",
+      "image": "/images/projects/fare-comparison.png",
       "liveUrl": null,
       "githubUrl": null,
       "featured": true
@@ -77,7 +77,7 @@
         "SQLite",
         "Background Services"
       ],
-      "image": "/images/bcs.png",
+      "image": "/images/projects/bcs.png",
       "liveUrl": "http://18.138.98.64:214/hangfire/",
       "githubUrl": null,
       "featured": false
@@ -93,7 +93,7 @@
         "C#",
         "TypeScript"
       ],
-      "image": "/images/DevNote.png",
+      "image": "/images/projects/DevNote.png",
       "liveUrl": null,
       "githubUrl": {
         "frontend": "https://github.com/developerhridu/DevNote.UI",
@@ -114,7 +114,7 @@
         "NDC",
         "Azure"
       ],
-      "image": "/images/supplier.png",
+      "image": "/images/projects/supplier.png",
       "liveUrl": null,
       "githubUrl": null,
       "featured": false
@@ -128,7 +128,7 @@
         "Flutter",
         "Firebase"
       ],
-      "image": "/images/expense-tracker.png",
+      "image": "/images/projects/expense-tracker.png",
       "liveUrl": null,
       "githubUrl": "https://github.com/developerhridu/ExpenseTracker",
       "featured": false

@@ -24,7 +24,7 @@ import profile from "@/content/profile.json";
 import { trackEvent } from "@/lib/analytics";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
-const navLinks = menu.navLinks;
+const navLinks = menu.navLinks.filter((link) => link.visible !== false);
 
 const iconRegistry: Record<string, typeof Home> = {
   home: Home,

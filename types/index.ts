@@ -5,7 +5,6 @@ export interface Skill {
 }
 
 export interface Profile {
-  password?: string;
   name: string;
   title: string;
   tagline: string;
@@ -21,7 +20,6 @@ export interface Profile {
     leetcode: string;
   };
   resumeUrl: string;
-  skills: Skill[];
 }
 
 // Project types
@@ -39,6 +37,7 @@ export interface Project {
 
 // Experience types
 export interface Experience {
+  id: string;
   company: string;
   logo?: string;
   role: string;
@@ -62,6 +61,7 @@ export interface Education {
 
 // Certification types
 export interface Certification {
+  id: string;
   name: string;
   issuer: string;
   icon?: string;
@@ -70,7 +70,7 @@ export interface Certification {
   verifyUrl?: string;
 }
 
-// Skills category type (for skills page)
+// Tech stack / skills type
 export interface SkillsCategory {
   backend: string[];
   architecture: string[];
@@ -79,6 +79,7 @@ export interface SkillsCategory {
   database: string[];
   devops: string[];
   testing: string[];
+  proficiency: Skill[];
 }
 
 // Blog post types
