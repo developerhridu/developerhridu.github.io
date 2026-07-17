@@ -23,6 +23,7 @@ import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
 
 interface Section {
   image?: string;
+  alt?: string;
   body: string;
 }
 
@@ -31,6 +32,7 @@ interface Entry {
   slug: string;
   title: string;
   date: string;
+  updatedAt?: string;
   description: string;
   tags: string[];
   image?: string;
@@ -173,7 +175,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
 
   function addSection() {
     if (!editing) return;
-    setEditing({ ...editing, sections: [...editing.sections, { image: "", body: "" }] });
+    setEditing({ ...editing, sections: [...editing.sections, { image: "", alt: "", body: "" }] });
     setSectionImageFiles((prev) => [...prev, null]);
   }
 
@@ -311,7 +313,14 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
       return;
     }
 
-    const finalEntry: Entry = { ...editing, slug, tags, image, sections };
+    const finalEntry: Entry = {
+      ...editing,
+      slug,
+      tags,
+      image,
+      sections,
+      updatedAt: new Date().toISOString(),
+    };
     let updated: Entry[];
 
     if (isNew) {
@@ -681,6 +690,18 @@ function EntryForm({
                     onChange={(e) => onSectionImageFileChange(i, e.target.files?.[0] ?? null)}
                   />
                 </label>
+              </div>
+
+              <div>
+                <label className="block text-xs uppercase tracking-wide text-muted mb-1">
+                  Image Alt Text (optional — falls back to the entry title)
+                </label>
+                <input
+                  value={section.alt ?? ""}
+                  onChange={(e) => onUpdateSection(i, { alt: e.target.value })}
+                  placeholder="Describe what this image shows"
+                  className={inputClass}
+                />
               </div>
 
               <div>

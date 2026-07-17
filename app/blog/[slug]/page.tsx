@@ -73,7 +73,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     description: post.description,
     image: imageUrl,
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.updatedAt ?? post.date,
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
     author: { "@type": "Person", name: "Mizanur Rahman", url: BASE_URL },
     publisher: { "@type": "Person", name: "Mizanur Rahman", url: BASE_URL },
@@ -151,7 +151,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   {section.image && (
                     <ContentImage
                       src={section.image}
-                      alt={post.title}
+                      alt={section.alt || post.title}
                       wrapperClassName="mb-6 rounded-2xl"
                       imgClassName="w-full h-auto"
                     />

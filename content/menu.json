@@ -47,7 +47,7 @@
       "name": "Blogs",
       "href": "/blog",
       "icon": "newspaper",
-      "visible": true
+      "visible": false
     },
     {
       "id": "contact",

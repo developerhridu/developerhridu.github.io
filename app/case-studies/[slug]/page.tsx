@@ -73,7 +73,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
     description: study.description,
     image: imageUrl,
     datePublished: study.date,
-    dateModified: study.date,
+    dateModified: study.updatedAt ?? study.date,
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
     author: { "@type": "Person", name: "Mizanur Rahman", url: BASE_URL },
     publisher: { "@type": "Person", name: "Mizanur Rahman", url: BASE_URL },
@@ -158,7 +158,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                   {section.image && (
                     <ContentImage
                       src={section.image}
-                      alt={study.title}
+                      alt={section.alt || study.title}
                       wrapperClassName="mb-6 rounded-2xl"
                       imgClassName="w-full h-auto"
                     />

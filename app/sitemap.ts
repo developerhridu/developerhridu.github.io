@@ -16,14 +16,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/blog`, lastModified: LAST_MODIFIED, changeFrequency: "weekly", priority: 0.6 },
     ...getBlogPosts().map((post) => ({
       url: `${BASE_URL}/blog/${post.slug}`,
-      lastModified: post.date,
+      lastModified: post.updatedAt ?? post.date,
       changeFrequency: "monthly" as const,
       priority: 0.5,
     })),
     { url: `${BASE_URL}/case-studies`, lastModified: LAST_MODIFIED, changeFrequency: "weekly", priority: 0.6 },
     ...getCaseStudies().map((study) => ({
       url: `${BASE_URL}/case-studies/${study.slug}`,
-      lastModified: study.date,
+      lastModified: study.updatedAt ?? study.date,
       changeFrequency: "monthly" as const,
       priority: 0.5,
     })),

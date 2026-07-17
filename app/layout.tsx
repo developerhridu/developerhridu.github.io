@@ -42,6 +42,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Mizanur Rahman" }],
   metadataBase: new URL(BASE_URL),
+  alternates: {
+    types: { "application/rss+xml": "/blog/rss.xml" },
+  },
   openGraph: {
     title: "Hridu | Full-Stack Software Engineer",
     description:

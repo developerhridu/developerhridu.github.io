@@ -84,6 +84,7 @@ export interface SkillsCategory {
 // Shared content section type (optional image + required body)
 export interface ContentSection {
   image?: string;
+  alt?: string;
   body: string;
 }
 
@@ -93,6 +94,7 @@ export interface BlogPost {
   slug: string;
   title: string;
   date: string;
+  updatedAt?: string;
   description: string;
   tags: string[];
   image?: string;
@@ -106,6 +108,7 @@ export interface CaseStudy {
   slug: string;
   title: string;
   date: string;
+  updatedAt?: string;
   client?: string;
   description: string;
   tags: string[];
