@@ -66,6 +66,21 @@ export function getBlogPost(slug: string): BlogPost | null {
   return getBlogPosts().find((post) => post.slug === slug) ?? null;
 }
 
+export function getRelatedBlogPosts(current: BlogPost, limit = 3): BlogPost[] {
+  return getBlogPosts()
+    .filter((post) => post.slug !== current.slug)
+    .map((post) => ({
+      post,
+      score: post.tags.filter((tag) => current.tags.includes(tag)).length,
+    }))
+    .sort(
+      (a, b) =>
+        b.score - a.score || new Date(b.post.date).getTime() - new Date(a.post.date).getTime()
+    )
+    .slice(0, limit)
+    .map(({ post }) => post);
+}
+
 export function getCaseStudies(): CaseStudy[] {
   const filePath = path.join(contentDirectory, "case-studies.json");
   const fileContents = fs.readFileSync(filePath, "utf8");
@@ -75,4 +90,19 @@ export function getCaseStudies(): CaseStudy[] {
 
 export function getCaseStudy(slug: string): CaseStudy | null {
   return getCaseStudies().find((study) => study.slug === slug) ?? null;
+}
+
+export function getRelatedCaseStudies(current: CaseStudy, limit = 3): CaseStudy[] {
+  return getCaseStudies()
+    .filter((study) => study.slug !== current.slug)
+    .map((study) => ({
+      study,
+      score: study.tags.filter((tag) => current.tags.includes(tag)).length,
+    }))
+    .sort(
+      (a, b) =>
+        b.score - a.score || new Date(b.study.date).getTime() - new Date(a.study.date).getTime()
+    )
+    .slice(0, limit)
+    .map(({ study }) => study);
 }

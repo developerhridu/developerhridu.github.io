@@ -1,10 +1,11 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { getBlogPosts } from "@/lib/content";
+import { estimateReadingTime } from "@/lib/readingTime";
 import SectionHeading from "@/components/ui/SectionHeading";
 import GlassCard from "@/components/ui/GlassCard";
 import ContentImage from "@/components/ui/ContentImage";
-import { Calendar, ArrowRight } from "lucide-react";
+import { Calendar, Clock, ArrowRight } from "lucide-react";
 
 const BASE_URL = "https://developerhridu.github.io";
 
@@ -91,6 +92,10 @@ export default function BlogPage() {
                             day: "numeric",
                             year: "numeric",
                           })}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock size={14} />
+                          {estimateReadingTime(post.body, ...(post.sections?.map((s) => s.body) ?? []))} min read
                         </span>
                       </div>
                       <span className="flex items-center gap-1 text-sm text-accent group-hover:gap-2 transition-all">

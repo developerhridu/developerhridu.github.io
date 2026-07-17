@@ -3,9 +3,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { getBlogPosts, getBlogPost } from "@/lib/content";
+import { getBlogPosts, getBlogPost, getRelatedBlogPosts } from "@/lib/content";
+import { estimateReadingTime } from "@/lib/readingTime";
 import ContentImage from "@/components/ui/ContentImage";
-import { ArrowLeft, Calendar, Tag } from "lucide-react";
+import RelatedContent from "@/components/ui/RelatedContent";
+import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
 
 const BASE_URL = "https://developerhridu.github.io";
 
@@ -65,6 +67,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   const url = `${BASE_URL}/blog/${post.slug}`;
   const imageUrl = post.image ? `${BASE_URL}${post.image}` : `${BASE_URL}/images/profile/dp.png`;
+  const readingMinutes = estimateReadingTime(post.body, ...(post.sections?.map((s) => s.body) ?? []));
+  const relatedPosts = getRelatedBlogPosts(post);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -127,6 +131,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   year: "numeric",
                 })}
               </span>
+              <span className="flex items-center gap-2">
+                <Clock size={16} />
+                {readingMinutes} min read
+              </span>
             </div>
           </header>
 
@@ -163,6 +171,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               ))}
             </div>
           )}
+
+          {/* Related Posts */}
+          <RelatedContent items={relatedPosts} basePath="/blog" heading="Related Posts" />
 
           {/* Post Footer */}
           <div className="mt-12 pt-8 border-t border-border">

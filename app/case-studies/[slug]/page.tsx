@@ -3,9 +3,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { getCaseStudies, getCaseStudy } from "@/lib/content";
+import { getCaseStudies, getCaseStudy, getRelatedCaseStudies } from "@/lib/content";
+import { estimateReadingTime } from "@/lib/readingTime";
 import ContentImage from "@/components/ui/ContentImage";
-import { ArrowLeft, Calendar, Tag, Building2 } from "lucide-react";
+import RelatedContent from "@/components/ui/RelatedContent";
+import { ArrowLeft, Calendar, Clock, Tag, Building2 } from "lucide-react";
 
 const BASE_URL = "https://developerhridu.github.io";
 
@@ -65,6 +67,8 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
   const url = `${BASE_URL}/case-studies/${study.slug}`;
   const imageUrl = study.image ? `${BASE_URL}${study.image}` : `${BASE_URL}/images/profile/dp.png`;
+  const readingMinutes = estimateReadingTime(study.body, ...(study.sections?.map((s) => s.body) ?? []));
+  const relatedCaseStudies = getRelatedCaseStudies(study);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -134,6 +138,10 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                   {study.client}
                 </span>
               )}
+              <span className="flex items-center gap-2">
+                <Clock size={16} />
+                {readingMinutes} min read
+              </span>
             </div>
           </header>
 
@@ -170,6 +178,9 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
               ))}
             </div>
           )}
+
+          {/* Related Case Studies */}
+          <RelatedContent items={relatedCaseStudies} basePath="/case-studies" heading="Related Case Studies" />
 
           {/* Footer */}
           <div className="mt-12 pt-8 border-t border-border">
