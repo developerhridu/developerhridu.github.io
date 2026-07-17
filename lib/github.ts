@@ -97,3 +97,18 @@ export async function uploadBinaryFile(
     }),
   });
 }
+
+/** Deletes a file at `path` if it exists. No-op (does not throw) if it's already gone. */
+export async function deleteBinaryFile(path: string, message: string, token: string): Promise<void> {
+  const sha = await getFileSha(path, token);
+  if (!sha) return;
+  await githubRequest(path, token, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message,
+      sha,
+      branch: BRANCH,
+    }),
+  });
+}

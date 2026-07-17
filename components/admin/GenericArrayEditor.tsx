@@ -1,11 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchContentFile, updateContentFile, uploadBinaryFile, GitHubApiError } from "@/lib/github";
-import { Pencil, Trash2, Plus, ExternalLink, X, Upload } from "lucide-react";
+import {
+  fetchContentFile,
+  updateContentFile,
+  uploadBinaryFile,
+  deleteBinaryFile,
+  GitHubApiError,
+} from "@/lib/github";
+import { Pencil, Trash2, Plus, ExternalLink, X, Upload, ArrowUp, ArrowDown } from "lucide-react";
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
 
-type FieldType = "text" | "textarea" | "date" | "tags" | "list" | "boolean" | "url" | "image";
+type FieldType = "text" | "textarea" | "date" | "tags" | "list" | "boolean" | "url" | "image" | "number";
 
 interface FieldDef {
   key: string;
@@ -13,6 +19,8 @@ interface FieldDef {
   type: FieldType;
   placeholder?: string;
   defaultBoolean?: boolean;
+  min?: number;
+  max?: number;
 }
 
 type RawEntry = Record<string, unknown>;
@@ -65,6 +73,8 @@ function transformOut(form: FormState, config: ArrayConfig): RawEntry {
     } else if (f.type === "url") {
       const trimmed = String(val ?? "").trim();
       out[f.key] = trimmed || null;
+    } else if (f.type === "number") {
+      out[f.key] = Number(val) || 0;
     } else {
       out[f.key] = String(val ?? "").trim();
     }
@@ -87,6 +97,24 @@ function makeId(base: string, existingIds: string[]): string {
   return candidate;
 }
 
+/** Image paths on `entry` that were uploaded through this admin (i.e. live under this
+ *  content type's own folder) — the only ones safe to auto-delete. */
+function managedImagePaths(entry: RawEntry, config: ArrayConfig): string[] {
+  if (!config.imageFolder) return [];
+  const prefix = `/images/${config.imageFolder}/`;
+  const paths: string[] = [];
+  for (const f of config.fields) {
+    if (f.type !== "image") continue;
+    const val = entry[f.key];
+    if (typeof val === "string" && val.startsWith(prefix)) paths.push(val);
+  }
+  return paths;
+}
+
+function toRepoPath(publicPath: string): string {
+  return `public${publicPath}`;
+}
+
 interface GenericArrayEditorProps {
   config: ArrayConfig;
   token: string;
@@ -106,6 +134,7 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
   const [isNew, setIsNew] = useState(false);
   const [form, setForm] = useState<FormState>({});
   const [imageFiles, setImageFiles] = useState<Record<string, File | null>>({});
+  const [loadedOrderIds, setLoadedOrderIds] = useState<string[]>([]);
 
   useEffect(() => {
     setEntries(null);
@@ -122,13 +151,29 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
     try {
       const { content, sha } = await fetchContentFile(config.path, token);
       const parsed = JSON.parse(content);
-      setEntries((parsed[config.arrayKey] as RawEntry[]) ?? []);
+      const loaded = (parsed[config.arrayKey] as RawEntry[]) ?? [];
+      setEntries(loaded);
+      setLoadedOrderIds(loaded.map((e) => String(e.id)));
       setFileSha(sha);
     } catch (err) {
       handleApiError(err);
     } finally {
       setLoading(false);
     }
+  }
+
+  const orderDirty =
+    entries !== null && entries.map((e) => String(e.id)).join("|") !== loadedOrderIds.join("|");
+
+  function moveEntry(index: number, direction: -1 | 1) {
+    setEntries((prev) => {
+      if (!prev) return prev;
+      const target = index + direction;
+      if (target < 0 || target >= prev.length) return prev;
+      const next = [...prev];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
   }
 
   function handleApiError(err: unknown) {
@@ -167,10 +212,10 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
     setImageFiles({});
   }
 
-  async function persist(newEntries: RawEntry[], message: string) {
+  async function persist(newEntries: RawEntry[], message: string): Promise<boolean> {
     if (!fileSha) {
       setError("Missing file version — reload the list before saving.");
-      return;
+      return false;
     }
     setSaving(true);
     setError(null);
@@ -185,11 +230,34 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
         "Saved and committed. The site will redeploy automatically — check the Actions tab in a minute or two."
       );
       await load();
+      return true;
     } catch (err) {
       handleApiError(err);
+      return false;
     } finally {
       setSaving(false);
     }
+  }
+
+  async function cleanupOrphanedImages(candidatePaths: string[], stillAlive: RawEntry[], label: string) {
+    for (const p of candidatePaths) {
+      const stillReferenced = stillAlive.some((e) => managedImagePaths(e, config).includes(p));
+      if (stillReferenced) continue;
+      try {
+        await deleteBinaryFile(toRepoPath(p), `content: remove orphaned image for ${label}`, token);
+      } catch {
+        // Best-effort cleanup — the content change already succeeded either way.
+      }
+    }
+  }
+
+  async function handleSaveOrder() {
+    if (!entries) return;
+    await persist(entries, `content: reorder ${config.label}`);
+  }
+
+  function discardOrder() {
+    void load();
   }
 
   async function handleSave() {
@@ -199,6 +267,9 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
       setError(`${config.fields.find((f) => f.key === config.titleField)?.label ?? "Title"} is required.`);
       return;
     }
+
+    const previousEntry = !isNew ? entries?.find((e) => String(e.id) === editingId) : undefined;
+    const oldManagedPaths = previousEntry ? managedImagePaths(previousEntry, config) : [];
 
     const workingForm = { ...form };
 
@@ -229,28 +300,38 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
     }
 
     const current = entries ?? [];
+    let updated: RawEntry[];
 
     if (isNew) {
       const newId = makeId(titleVal, current.map((e) => String(e.id)));
       const outEntry = { id: newId, ...transformOut(workingForm, config) };
-      await persist([...current, outEntry], `content: add ${titleVal}`);
+      updated = [...current, outEntry];
     } else {
       const outEntry = { id: editingId, ...transformOut(workingForm, config) };
-      const updated = current.map((e) => (String(e.id) === editingId ? outEntry : e));
-      await persist(updated, `content: update ${titleVal}`);
+      updated = current.map((e) => (String(e.id) === editingId ? outEntry : e));
     }
+
+    const message = isNew ? `content: add ${titleVal}` : `content: update ${titleVal}`;
+    const ok = await persist(updated, message);
     setImageFiles({});
+
+    if (ok && oldManagedPaths.length > 0) {
+      await cleanupOrphanedImages(oldManagedPaths, updated, titleVal);
+    }
   }
 
-  function handleDelete(index: number) {
+  async function handleDelete(index: number) {
     const current = entries ?? [];
     const target = current[index];
     const label = String(target?.[config.titleField] ?? "this entry");
     if (!confirm(`Delete "${label}"? This cannot be undone.`)) return;
-    void persist(
-      current.filter((e) => String(e.id) !== String(target?.id)),
-      `content: delete ${label}`
-    );
+
+    const updated = current.filter((e) => String(e.id) !== String(target?.id));
+    const ok = await persist(updated, `content: delete ${label}`);
+
+    if (ok && target) {
+      await cleanupOrphanedImages(managedImagePaths(target, config), updated, label);
+    }
   }
 
   return (
@@ -322,6 +403,15 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
                       onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
                       className={inputClass}
                     />
+                  ) : field.type === "number" ? (
+                    <input
+                      type="number"
+                      min={field.min}
+                      max={field.max}
+                      value={String(form[field.key] ?? "")}
+                      onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
+                      className={inputClass}
+                    />
                   ) : (
                     <input
                       value={String(form[field.key] ?? "")}
@@ -377,13 +467,34 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
         </div>
       ) : (
         <>
-          <button
-            onClick={startNew}
-            className="mb-4 flex items-center gap-1.5 px-4 py-2 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors"
-          >
-            <Plus size={16} />
-            New Entry
-          </button>
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <button
+              onClick={startNew}
+              className="flex items-center gap-1.5 px-4 py-2 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors"
+            >
+              <Plus size={16} />
+              New Entry
+            </button>
+            {orderDirty && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted">Order changed</span>
+                <button
+                  onClick={() => void handleSaveOrder()}
+                  disabled={saving}
+                  className="px-3 py-1.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+                >
+                  {saving ? "Saving…" : "Save order"}
+                </button>
+                <button
+                  onClick={discardOrder}
+                  disabled={saving}
+                  className="px-3 py-1.5 border border-border text-muted hover:text-foreground rounded-lg text-xs transition-colors"
+                >
+                  Discard
+                </button>
+              </div>
+            )}
+          </div>
 
           {loading && <p className="text-muted text-sm">Loading…</p>}
 
@@ -414,7 +525,23 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
                           )}
                         </td>
                         <td className="px-4 py-3">
-                          <div className="flex items-center justify-end gap-2">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              onClick={() => moveEntry(index, -1)}
+                              disabled={index === 0}
+                              aria-label={`Move ${title} up`}
+                              className="p-2 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
+                            >
+                              <ArrowUp size={16} />
+                            </button>
+                            <button
+                              onClick={() => moveEntry(index, 1)}
+                              disabled={index === entries.length - 1}
+                              aria-label={`Move ${title} down`}
+                              className="p-2 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
+                            >
+                              <ArrowDown size={16} />
+                            </button>
                             <button
                               onClick={() => startEdit(index)}
                               aria-label={`Edit ${title}`}
@@ -423,7 +550,7 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
                               <Pencil size={16} />
                             </button>
                             <button
-                              onClick={() => handleDelete(index)}
+                              onClick={() => void handleDelete(index)}
                               aria-label={`Delete ${title}`}
                               className="p-2 text-muted hover:text-red-400 transition-colors"
                             >

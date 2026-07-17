@@ -101,3 +101,14 @@ export const menuConfig: ArrayConfig = {
     { key: "visible", label: "Visible in menu", type: "boolean", defaultBoolean: true },
   ],
 };
+
+export const proficiencyConfig: ArrayConfig = {
+  path: "content/proficiency.json",
+  arrayKey: "proficiency",
+  label: "Skill Proficiency",
+  titleField: "name",
+  fields: [
+    { key: "name", label: "Skill Name", type: "text" },
+    { key: "level", label: "Level (0-100)", type: "number", min: 0, max: 100 },
+  ],
+};

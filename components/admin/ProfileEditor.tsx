@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchContentFile, updateContentFile, uploadBinaryFile, GitHubApiError } from "@/lib/github";
+import {
+  fetchContentFile,
+  updateContentFile,
+  uploadBinaryFile,
+  deleteBinaryFile,
+  GitHubApiError,
+} from "@/lib/github";
 import { ExternalLink, Upload } from "lucide-react";
 import { inputClass, fileToBase64 } from "@/components/admin/shared";
 
@@ -133,6 +139,7 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
       return;
     }
 
+    const oldAvatar = form.avatar;
     let avatar = form.avatar;
     setSaving(true);
     setError(null);
@@ -173,6 +180,15 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
       setSuccessMsg(
         "Saved and committed. The site will redeploy automatically — check the Actions tab in a minute or two."
       );
+
+      if (avatarFile && oldAvatar && oldAvatar !== avatar && oldAvatar.startsWith("/images/profile-avatar.")) {
+        try {
+          await deleteBinaryFile(`public${oldAvatar}`, "content: remove orphaned profile avatar", token);
+        } catch {
+          // Best-effort cleanup — the profile update already succeeded either way.
+        }
+      }
+
       await load();
     } catch (err) {
       handleApiError(err);

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchContentFile, updateContentFile, GitHubApiError } from "@/lib/github";
-import { ExternalLink, Plus, Trash2 } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { inputClass } from "@/components/admin/shared";
 
 const PATH = "content/tech-stack.json";
@@ -16,11 +16,6 @@ const CATEGORIES: { key: string; label: string }[] = [
   { key: "testing", label: "Testing" },
 ];
 
-interface Proficiency {
-  name: string;
-  level: number;
-}
-
 interface SkillsEditorProps {
   token: string;
   onAuthError: () => void;
@@ -28,7 +23,6 @@ interface SkillsEditorProps {
 
 export default function SkillsEditor({ token, onAuthError }: SkillsEditorProps) {
   const [form, setForm] = useState<Record<string, string>>({});
-  const [proficiency, setProficiency] = useState<Proficiency[]>([]);
   const [fileSha, setFileSha] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -51,7 +45,6 @@ export default function SkillsEditor({ token, onAuthError }: SkillsEditorProps) 
         next[c.key] = Array.isArray(parsed[c.key]) ? parsed[c.key].join(", ") : "";
       }
       setForm(next);
-      setProficiency(Array.isArray(parsed.proficiency) ? parsed.proficiency : []);
       setFileSha(sha);
     } catch (err) {
       handleApiError(err);
@@ -70,18 +63,6 @@ export default function SkillsEditor({ token, onAuthError }: SkillsEditorProps) 
     }
   }
 
-  function updateProficiency(index: number, patch: Partial<Proficiency>) {
-    setProficiency((p) => p.map((s, i) => (i === index ? { ...s, ...patch } : s)));
-  }
-
-  function addProficiency() {
-    setProficiency((p) => [...p, { name: "", level: 50 }]);
-  }
-
-  function removeProficiency(index: number) {
-    setProficiency((p) => p.filter((_, i) => i !== index));
-  }
-
   async function handleSave() {
     if (!fileSha) {
       setError("Missing file version — reload before saving.");
@@ -90,15 +71,13 @@ export default function SkillsEditor({ token, onAuthError }: SkillsEditorProps) 
     setSaving(true);
     setError(null);
     try {
-      const payload: Record<string, unknown> = {};
+      const payload: Record<string, string[]> = {};
       for (const c of CATEGORIES) {
         payload[c.key] = (form[c.key] ?? "")
           .split(",")
           .map((t) => t.trim())
           .filter(Boolean);
       }
-      payload.proficiency = proficiency.filter((s) => s.name.trim());
-
       const content = JSON.stringify(payload, null, 2) + "\n";
       await updateContentFile(PATH, content, fileSha, "content: update tech stack", token);
       setSuccessMsg(
@@ -148,49 +127,6 @@ export default function SkillsEditor({ token, onAuthError }: SkillsEditorProps) 
             />
           </div>
         ))}
-
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-xs uppercase tracking-wide text-muted">
-              Skill Proficiency
-            </label>
-            <button
-              onClick={addProficiency}
-              type="button"
-              className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover"
-            >
-              <Plus size={14} /> Add Skill
-            </button>
-          </div>
-          <div className="space-y-2">
-            {proficiency.map((skill, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <input
-                  value={skill.name}
-                  onChange={(e) => updateProficiency(i, { name: e.target.value })}
-                  placeholder="Skill name"
-                  className={inputClass}
-                />
-                <input
-                  type="number"
-                  min={0}
-                  max={100}
-                  value={skill.level}
-                  onChange={(e) => updateProficiency(i, { level: Number(e.target.value) })}
-                  className={`${inputClass} w-24 shrink-0`}
-                />
-                <button
-                  onClick={() => removeProficiency(i)}
-                  aria-label={`Remove ${skill.name || "skill"}`}
-                  className="p-2 text-muted hover:text-red-400 transition-colors shrink-0"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            ))}
-            {proficiency.length === 0 && <p className="text-muted text-xs">No skills yet.</p>}
-          </div>
-        </div>
 
         <div className="pt-2">
           <button

@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchContentFile, updateContentFile, uploadBinaryFile, GitHubApiError } from "@/lib/github";
+import {
+  fetchContentFile,
+  updateContentFile,
+  uploadBinaryFile,
+  deleteBinaryFile,
+  GitHubApiError,
+} from "@/lib/github";
 import { Pencil, Trash2, Plus, ExternalLink, X, Upload } from "lucide-react";
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
 
@@ -38,6 +44,14 @@ const CONFIG: Record<
     imageFolder: "case-studies",
   },
 };
+
+function isManagedImage(imagePath: string | undefined, kind: ContentKind): imagePath is string {
+  return !!imagePath && imagePath.startsWith(`/images/${CONFIG[kind].imageFolder}/`);
+}
+
+function toRepoPath(publicPath: string): string {
+  return `public${publicPath}`;
+}
 
 function blankEntry(): Entry {
   return {
@@ -129,10 +143,10 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     setImageFile(null);
   }
 
-  async function persist(newEntries: Entry[], message: string) {
+  async function persist(newEntries: Entry[], message: string): Promise<boolean> {
     if (!fileSha) {
       setError("Missing file version — reload the list before saving.");
-      return;
+      return false;
     }
     setSaving(true);
     setError(null);
@@ -146,10 +160,23 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
         "Saved and committed. The site will redeploy automatically — check the Actions tab in a minute or two."
       );
       await load();
+      return true;
     } catch (err) {
       handleApiError(err);
+      return false;
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function cleanupOrphanedImage(oldPath: string | undefined, stillAlive: Entry[], label: string) {
+    if (!isManagedImage(oldPath, kind)) return;
+    const stillReferenced = stillAlive.some((e) => e.image === oldPath);
+    if (stillReferenced) return;
+    try {
+      await deleteBinaryFile(toRepoPath(oldPath), `content: remove orphaned image for ${label}`, token);
+    } catch {
+      // Best-effort cleanup — the content change already succeeded either way.
     }
   }
 
@@ -173,6 +200,9 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
       return;
     }
 
+    const previousEntry = !isNew ? current.find((e) => e.id === editing.id) : undefined;
+    const oldImage = previousEntry?.image;
+
     let image = editing.image;
     if (imageFile) {
       setSaving(true);
@@ -191,24 +221,32 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     }
 
     const finalEntry: Entry = { ...editing, slug, tags, image };
+    let updated: Entry[];
 
     if (isNew) {
       const newEntry: Entry = { ...finalEntry, id: Date.now().toString(36) };
-      await persist([...current, newEntry], `content: add ${editing.title}`);
+      updated = [...current, newEntry];
     } else {
-      const updated = current.map((e) => (e.id === editing.id ? finalEntry : e));
-      await persist(updated, `content: update ${editing.title}`);
+      updated = current.map((e) => (e.id === editing.id ? finalEntry : e));
     }
+
+    const message = isNew ? `content: add ${editing.title}` : `content: update ${editing.title}`;
+    const ok = await persist(updated, message);
     setImageFile(null);
+
+    if (ok && oldImage && oldImage !== image) {
+      await cleanupOrphanedImage(oldImage, updated, editing.title);
+    }
   }
 
-  function handleDelete(entry: Entry) {
+  async function handleDelete(entry: Entry) {
     if (!confirm(`Delete "${entry.title}"? This cannot be undone.`)) return;
     const current = entries ?? [];
-    void persist(
-      current.filter((e) => e.id !== entry.id),
-      `content: delete ${entry.title}`
-    );
+    const updated = current.filter((e) => e.id !== entry.id);
+    const ok = await persist(updated, `content: delete ${entry.title}`);
+    if (ok) {
+      await cleanupOrphanedImage(entry.image, updated, entry.title);
+    }
   }
 
   return (
@@ -294,7 +332,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
                             <Pencil size={16} />
                           </button>
                           <button
-                            onClick={() => handleDelete(entry)}
+                            onClick={() => void handleDelete(entry)}
                             aria-label={`Delete ${entry.title}`}
                             className="p-2 text-muted hover:text-red-400 transition-colors"
                           >

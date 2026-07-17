@@ -53,47 +53,5 @@
     "Postman",
     "JMeter",
     "k6"
-  ],
-  "proficiency": [
-    {
-      "name": "C#",
-      "level": 90
-    },
-    {
-      "name": "ASP.NET Core",
-      "level": 90
-    },
-    {
-      "name": "Microservices",
-      "level": 85
-    },
-    {
-      "name": "MSSQL Server",
-      "level": 90
-    },
-    {
-      "name": "Angular",
-      "level": 80
-    },
-    {
-      "name": "Docker",
-      "level": 80
-    },
-    {
-      "name": "TypeScript",
-      "level": 75
-    },
-    {
-      "name": "PostgreSQL",
-      "level": 75
-    },
-    {
-      "name": "MongoDB",
-      "level": 90
-    },
-    {
-      "name": "AWS",
-      "level": 70
-    }
   ]
 }

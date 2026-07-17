@@ -8,7 +8,13 @@ import BlogCaseStudyManager from "@/components/admin/BlogCaseStudyManager";
 import GenericArrayEditor from "@/components/admin/GenericArrayEditor";
 import ProfileEditor from "@/components/admin/ProfileEditor";
 import SkillsEditor from "@/components/admin/SkillsEditor";
-import { experienceConfig, certificationsConfig, projectsConfig, menuConfig } from "@/components/admin/arrayConfigs";
+import {
+  experienceConfig,
+  certificationsConfig,
+  projectsConfig,
+  menuConfig,
+  proficiencyConfig,
+} from "@/components/admin/arrayConfigs";
 
 const PASSWORD_OK_KEY = "admin_pw_ok";
 const TOKEN_KEY = "gh_pat";
@@ -21,7 +27,8 @@ type Tab =
   | "projects"
   | "menu"
   | "profile"
-  | "skills";
+  | "skills"
+  | "proficiency";
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "blog", label: "Blog Posts" },
@@ -32,6 +39,7 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "menu", label: "Menu" },
   { key: "profile", label: "Profile" },
   { key: "skills", label: "Skills" },
+  { key: "proficiency", label: "Proficiency" },
 ];
 
 export default function AdminEditor() {
@@ -189,6 +197,9 @@ export default function AdminEditor() {
       {tab === "menu" && <GenericArrayEditor config={menuConfig} token={token} onAuthError={handleAuthError} />}
       {tab === "profile" && <ProfileEditor token={token} onAuthError={handleAuthError} />}
       {tab === "skills" && <SkillsEditor token={token} onAuthError={handleAuthError} />}
+      {tab === "proficiency" && (
+        <GenericArrayEditor config={proficiencyConfig} token={token} onAuthError={handleAuthError} />
+      )}
     </div>
   );
 }

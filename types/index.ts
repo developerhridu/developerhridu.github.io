@@ -79,7 +79,6 @@ export interface SkillsCategory {
   database: string[];
   devops: string[];
   testing: string[];
-  proficiency: Skill[];
 }
 
 // Blog post types

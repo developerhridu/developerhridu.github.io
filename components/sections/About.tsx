@@ -6,6 +6,7 @@ import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import profile from "@/content/profile.json";
 import techStack from "@/content/tech-stack.json";
+import proficiencyData from "@/content/proficiency.json";
 
 const skillCategories = [
   { name: "Backend", skills: techStack.backend, color: "bg-accent" },
@@ -118,7 +119,7 @@ export default function About({ showHeading = true }: AboutProps) {
         <div className="mt-12">
           <h3 className="text-xl font-bold text-foreground mb-6 text-center">Skill Proficiency</h3>
           <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-            {techStack.proficiency.map((skill, idx) => (
+            {proficiencyData.proficiency.map((skill, idx) => (
               <motion.div
                 key={skill.name}
                 initial={{ opacity: 0, x: -20 }}

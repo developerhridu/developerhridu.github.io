@@ -1,0 +1,54 @@
+{
+  "proficiency": [
+    {
+      "id": "c",
+      "name": "C#",
+      "level": 90
+    },
+    {
+      "id": "asp-net-core",
+      "name": "ASP.NET Core",
+      "level": 90
+    },
+    {
+      "id": "microservices",
+      "name": "Microservices",
+      "level": 85
+    },
+    {
+      "id": "mssql-server",
+      "name": "MSSQL Server",
+      "level": 90
+    },
+    {
+      "id": "angular",
+      "name": "Angular",
+      "level": 80
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "level": 80
+    },
+    {
+      "id": "typescript",
+      "name": "TypeScript",
+      "level": 75
+    },
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "level": 75
+    },
+    {
+      "id": "mongodb",
+      "name": "MongoDB",
+      "level": 90
+    },
+    {
+      "id": "aws",
+      "name": "AWS",
+      "level": 70
+    }
+  ]
+}
