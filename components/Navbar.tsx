@@ -22,12 +22,15 @@ import {
 import menu from "@/content/menu.json";
 import profile from "@/content/profile.json";
 import { trackEvent } from "@/lib/analytics";
+import { resolveCvHref } from "@/lib/cv";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
-const navLinks = menu.navLinks.filter((link) => link.visible !== false);
+const navLinks = menu.navLinks.filter(
+  (link) => link.visible !== false && (link.id !== "cv" || !!profile.resumeUrl)
+);
 
 function resolveHref(link: (typeof navLinks)[number]): string {
-  return link.id === "cv" && profile.resumeUrl ? profile.resumeUrl : link.href;
+  return resolveCvHref(link, profile.resumeUrl);
 }
 
 const iconRegistry: Record<string, typeof Home> = {

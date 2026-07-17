@@ -5,8 +5,16 @@ import { Code2, Github, Handshake, Linkedin, Mail } from "lucide-react";
 import profile from "@/content/profile.json";
 import menu from "@/content/menu.json";
 import { trackEvent } from "@/lib/analytics";
+import { resolveCvHref } from "@/lib/cv";
 
-const footerLinks = menu.navLinks.filter((link) => link.href !== "/" && link.visible !== false);
+const footerLinks = menu.navLinks.filter(
+  (link) =>
+    link.href !== "/" && link.visible !== false && (link.id !== "cv" || !!profile.resumeUrl)
+);
+
+function resolveHref(link: (typeof footerLinks)[number]): string {
+  return resolveCvHref(link, profile.resumeUrl);
+}
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -24,7 +32,7 @@ export default function Footer() {
                 link.external ? (
                   <a
                     key={link.name}
-                    href={link.href}
+                    href={resolveHref(link)}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => link.name === "CV" && trackEvent("resume_view", { location: "footer" })}

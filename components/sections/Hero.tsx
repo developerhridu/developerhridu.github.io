@@ -6,9 +6,6 @@ import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import profile from "@/content/profile.json";
 import { trackEvent } from "@/lib/analytics";
-import menu from "@/content/menu.json";
-
-const cvHref = profile.resumeUrl || menu.navLinks.find((link) => link.id === "cv")?.href;
 
 export default function Hero() {
   return (
@@ -60,16 +57,18 @@ export default function Hero() {
               <Handshake size={18} />
               Hire Me
             </Button>
-            <Button
-              href={cvHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="secondary"
-              onClick={() => trackEvent("resume_view", { location: "hero" })}
-            >
-              <ExternalLink size={18} />
-              View Resume
-            </Button>
+            {profile.resumeUrl && (
+              <Button
+                href={profile.resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="secondary"
+                onClick={() => trackEvent("resume_view", { location: "hero" })}
+              >
+                <ExternalLink size={18} />
+                View Resume
+              </Button>
+            )}
           </motion.div>
 
           {/* Social Links */}
