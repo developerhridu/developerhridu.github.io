@@ -1,75 +1,85 @@
 {
   "certifications": [
     {
+      "id": "cloud-architecture-training",
       "name": "Cloud Architecture Training",
       "issuer": "Bdjobs.com Ltd. & DU IIT",
       "icons": [
-        "/images/bdjobs-icon.png",
-        "/images/du-iit.svg"
+        "/images/logos/bdjobs-icon.png",
+        "/images/logos/du-iit.svg"
       ],
       "date": "June 2024",
       "verifyUrl": "https://drive.google.com/file/d/1P5oYHusU3wNScHhm2HtBkBSPLM9Fy54g/view?usp=sharing"
     },
     {
+      "id": "web-design-and-development",
       "name": "Web Design and Development",
       "issuer": "ICT Division, Bangladesh (LEDP)",
-      "icon": "/images/ict-division.jpg",
+      "icon": "/images/logos/ict-division.jpg",
       "date": "February 2020",
       "verifyUrl": "https://ledp.ictd.gov.bd/certificate/?regid=260637"
     },
     {
+      "id": "certified-software-engineer",
       "name": "Certified Software Engineer",
       "issuer": "HackerRank",
-      "icon": "/images/hackerrank.svg",
+      "icon": "/images/logos/hackerrank.svg",
       "date": "January 2024",
       "verifyUrl": "https://www.hackerrank.com/certificates/iframe/bc1a30e19b7c"
     },
     {
+      "id": "certified-sql-advanced",
       "name": "Certified SQL (Advanced)",
       "issuer": "HackerRank",
-      "icon": "/images/hackerrank.svg",
+      "icon": "/images/logos/hackerrank.svg",
       "date": "July 2026",
       "verifyUrl": "https://www.hackerrank.com/certificates/iframe/25415760cf15"
     },
     {
+      "id": "certified-c-developer",
       "name": "Certified C# Developer",
       "issuer": "HackerRank",
-      "icon": "/images/hackerrank.svg",
+      "icon": "/images/logos/hackerrank.svg",
       "date": "February 2024",
       "verifyUrl": "https://www.hackerrank.com/certificates/iframe/e55bde03c575"
     },
     {
+      "id": "certified-javascript-developer",
       "name": "Certified JavaScript Developer",
       "issuer": "HackerRank",
-      "icon": "/images/hackerrank.svg",
+      "icon": "/images/logos/hackerrank.svg",
       "date": "July 2026",
       "verifyUrl": "https://www.hackerrank.com/certificates/iframe/0a57fe9d6efc"
     },
     {
+      "id": "rest-api-intermediate",
       "name": "Rest API (Intermediate)",
       "issuer": "HackerRank",
-      "icon": "/images/hackerrank.svg",
+      "icon": "/images/logos/hackerrank.svg",
       "date": "July 2026",
       "verifyUrl": "https://www.hackerrank.com/certificates/iframe/bae955cb87cd"
     },
     {
+      "id": "react-basics",
       "name": "React Basics",
       "issuer": "Coursera (Meta)",
-      "icon": "/images/coursera.svg",
+      "icon": "/images/logos/coursera.svg",
       "date": "April 2023",
       "verifyUrl": "https://www.coursera.org/account/accomplishments/certificate/BNFDSFW4LQMH"
     },
     {
+      "id": "introduction-to-back-end-development",
       "name": "Introduction to Back-End Development",
       "issuer": "Coursera (Meta)",
-      "icon": "/images/coursera.svg",
+      "icon": "/images/logos/coursera.svg",
       "date": "June 2023",
       "verifyUrl": "https://www.coursera.org/account/accomplishments/verify/R9ZP2R4QGCSV"
     },
     {
+      "id": "introduction-to-front-end-development",
       "name": "Introduction to Front-End Development",
       "issuer": "Coursera (Meta)",
-      "icon": "/images/coursera.svg",
+      "icon": "/images/logos/coursera.svg",
       "date": "February 2023",
       "verifyUrl": "https://www.coursera.org/account/accomplishments/verify/HRT82VR23LTM"
     }

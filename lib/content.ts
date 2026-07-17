@@ -36,7 +36,7 @@ export function getEducation(): Education[] {
 }
 
 export function getSkillsCategory(): SkillsCategory {
-  const filePath = path.join(contentDirectory, "skills.json");
+  const filePath = path.join(contentDirectory, "tech-stack.json");
   const fileContents = fs.readFileSync(filePath, "utf8");
   return JSON.parse(fileContents);
 }

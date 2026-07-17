@@ -1,50 +1,68 @@
 {
   "navLinks": [
     {
+      "id": "home",
       "name": "Home",
       "href": "/",
-      "icon": "home"
+      "icon": "home",
+      "visible": true
     },
     {
+      "id": "about",
       "name": "About",
       "href": "/about",
-      "icon": "user"
+      "icon": "user",
+      "visible": true
     },
     {
+      "id": "projects",
       "name": "Projects",
       "href": "/projects",
-      "icon": "folder-kanban"
+      "icon": "folder-kanban",
+      "visible": true
     },
     {
+      "id": "experience",
       "name": "Experience",
       "href": "/experience",
-      "icon": "briefcase"
+      "icon": "briefcase",
+      "visible": true
     },
     {
+      "id": "training-certifications",
       "name": "Training & Certifications",
       "href": "/certifications",
-      "icon": "award"
+      "icon": "award",
+      "visible": true
     },
     {
+      "id": "case-studies",
       "name": "Case Studies",
       "href": "/case-studies",
-      "icon": "layers"
+      "icon": "layers",
+      "visible": true
     },
     {
-      "name": "Blog",
+      "id": "blogs",
+      "name": "Blogs",
       "href": "/blog",
-      "icon": "newspaper"
+      "icon": "newspaper",
+      "visible": true
     },
     {
+      "id": "contact",
       "name": "Contact",
       "href": "/contact",
-      "icon": "mail"
+      "icon": "mail",
+      "visible": true
     },
     {
+      "id": "cv",
       "name": "CV",
       "href": "/mizanur-swe-4years-cv.pdf",
       "icon": "file-user",
-      "external": true
+      "external": true,
+      "visible": true
     }
   ]
 }

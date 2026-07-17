@@ -48,14 +48,14 @@ export const metadata: Metadata = {
       "Full-stack software engineer with 4+ years building scalable .NET microservices and modern frontends across travel, food delivery, and recruitment domains.",
     type: "website",
     url: BASE_URL,
-    images: [{ url: "/images/dp.png", width: 400, height: 400, alt: "Mizanur Rahman" }],
+    images: [{ url: "/images/profile/dp.png", width: 400, height: 400, alt: "Mizanur Rahman" }],
   },
   twitter: {
     card: "summary",
     title: "Hridu | Full-Stack Software Engineer",
     description:
       "Full-stack software engineer with 4+ years building scalable .NET microservices and modern frontends.",
-    images: ["/images/dp.png"],
+    images: ["/images/profile/dp.png"],
   },
 };
 
@@ -65,7 +65,7 @@ const jsonLd = {
   name: "Mizanur Rahman",
   alternateName: "Hridu",
   url: BASE_URL,
-  image: `${BASE_URL}/images/dp.png`,
+  image: `${BASE_URL}/images/profile/dp.png`,
   jobTitle: "Full-Stack Software Engineer",
   worksFor: { "@type": "Organization", name: "TechnoNext Software" },
   address: {

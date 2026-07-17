@@ -6,7 +6,7 @@ import profile from "@/content/profile.json";
 import menu from "@/content/menu.json";
 import { trackEvent } from "@/lib/analytics";
 
-const footerLinks = menu.navLinks.filter((link) => link.href !== "/");
+const footerLinks = menu.navLinks.filter((link) => link.href !== "/" && link.visible !== false);
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();

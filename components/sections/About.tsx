@@ -5,16 +5,16 @@ import { MapPin, Mail } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import profile from "@/content/profile.json";
-import skills from "@/content/skills.json";
+import techStack from "@/content/tech-stack.json";
 
 const skillCategories = [
-  { name: "Backend", skills: skills.backend, color: "bg-accent" },
-  { name: "Architecture", skills: skills.architecture, color: "bg-pink-500" },
-  { name: "Messaging & Caching", skills: skills.messaging, color: "bg-yellow-500" },
-  { name: "Frontend", skills: skills.frontend, color: "bg-blue-500" },
-  { name: "Database", skills: skills.database, color: "bg-cyan-500" },
-  { name: "DevOps & Observability", skills: skills.devops, color: "bg-emerald-500" },
-  { name: "Testing", skills: skills.testing, color: "bg-orange-500" },
+  { name: "Backend", skills: techStack.backend, color: "bg-accent" },
+  { name: "Architecture", skills: techStack.architecture, color: "bg-pink-500" },
+  { name: "Messaging & Caching", skills: techStack.messaging, color: "bg-yellow-500" },
+  { name: "Frontend", skills: techStack.frontend, color: "bg-blue-500" },
+  { name: "Database", skills: techStack.database, color: "bg-cyan-500" },
+  { name: "DevOps & Observability", skills: techStack.devops, color: "bg-emerald-500" },
+  { name: "Testing", skills: techStack.testing, color: "bg-orange-500" },
 ];
 
 interface AboutProps {
@@ -118,7 +118,7 @@ export default function About({ showHeading = true }: AboutProps) {
         <div className="mt-12">
           <h3 className="text-xl font-bold text-foreground mb-6 text-center">Skill Proficiency</h3>
           <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-            {profile.skills.map((skill, idx) => (
+            {techStack.proficiency.map((skill, idx) => (
               <motion.div
                 key={skill.name}
                 initial={{ opacity: 0, x: -20 }}
