@@ -1,18 +1,18 @@
 {
   "testimonials": [
     {
-      "id": "dummy-1",
-      "name": "Alex Morgan",
-      "role": "Engineering Manager",
-      "company": "TechCorp",
+      "id": "1",
+      "name": "Muhammad Sayyedul Awwab",
+      "role": "Senior Software Engineer",
+      "company": "Epyllion Group",
       "quote": "Mizanur is one of the most reliable backend engineers I've worked with. He consistently delivers scalable solutions and communicates trade-offs clearly before they become problems.",
       "email": "alex.morgan@techcorp.example",
-      "linkedinUrl": "https://linkedin.com/in/alex-morgan-placeholder",
+      "linkedinUrl": "https://www.linkedin.com/in/sayyedulawwab/",
       "avatar": "https://api.dicebear.com/9.x/avataaars/svg?seed=Alex%20Morgan",
       "verifyImages": []
     },
     {
-      "id": "dummy-2",
+      "id": "2",
       "name": "Priya Sharma",
       "role": "Product Manager",
       "company": "Acme Inc",
@@ -25,7 +25,7 @@
       ]
     },
     {
-      "id": "dummy-3",
+      "id": "3",
       "name": "Daniel Lee",
       "role": "CTO",
       "company": "StartupXYZ",
