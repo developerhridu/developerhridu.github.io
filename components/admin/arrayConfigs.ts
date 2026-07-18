@@ -83,6 +83,18 @@ export const menuConfig: ArrayConfig = {
   ],
 };
 
+export const adminMenuConfig: ArrayConfig = {
+  path: "content/admin-menu.json",
+  arrayKey: "tabs",
+  label: "Admin Menu",
+  titleField: "label",
+  subtitleField: "id",
+  fields: [
+    { key: "label", label: "Label", type: "text" },
+    { key: "visible", label: "Visible", type: "boolean", defaultBoolean: true },
+  ],
+};
+
 export const proficiencyConfig: ArrayConfig = {
   path: "content/proficiency.json",
   arrayKey: "proficiency",

@@ -19,6 +19,7 @@ import {
   Newspaper,
   Layers,
   Search,
+  Quote,
 } from "lucide-react";
 import menu from "@/content/menu.json";
 import profile from "@/content/profile.json";
@@ -46,6 +47,7 @@ const iconRegistry: Record<string, typeof Home> = {
   "file-user": FileUser,
   newspaper: Newspaper,
   layers: Layers,
+  quote: Quote,
 };
 
 export default function Navbar() {

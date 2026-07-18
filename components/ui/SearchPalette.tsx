@@ -4,8 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import Fuse from "fuse.js";
-import { Search, X } from "lucide-react";
+import { Search, X, Sparkles } from "lucide-react";
 import { searchIndex, type SearchItem } from "@/lib/searchIndex";
+import { dispatchAskAi } from "@/lib/askAiEvent";
 
 const fuse = new Fuse(searchIndex, {
   keys: ["title", "description"],
@@ -68,6 +69,13 @@ export default function SearchPalette({ open, onOpenChange }: SearchPaletteProps
     router.push(item.url);
   }
 
+  function askAi() {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    onOpenChange(false);
+    dispatchAskAi(trimmed);
+  }
+
   function handleQueryChange(value: string) {
     setQuery(value);
     setActiveIndex(0);
@@ -82,6 +90,10 @@ export default function SearchPalette({ open, onOpenChange }: SearchPaletteProps
       setActiveIndex((i) => Math.max(i - 1, 0));
     } else if (e.key === "Enter") {
       e.preventDefault();
+      if (results.length === 0) {
+        askAi();
+        return;
+      }
       const item = results[activeIndex];
       if (item) go(item);
     }
@@ -127,7 +139,18 @@ export default function SearchPalette({ open, onOpenChange }: SearchPaletteProps
 
             <div className="max-h-96 overflow-y-auto py-2">
               {results.length === 0 && (
-                <p className="px-4 py-6 text-center text-sm text-muted">No results found.</p>
+                <div className="px-4 py-6 text-center">
+                  <p className="text-sm text-muted mb-3">No pages match &ldquo;{query}&rdquo;.</p>
+                  {query.trim() && (
+                    <button
+                      onClick={askAi}
+                      className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-lg border border-accent/40 text-accent hover:bg-accent/10 transition-colors"
+                    >
+                      <Sparkles size={14} />
+                      Ask AI: &ldquo;{query}&rdquo;
+                    </button>
+                  )}
+                </div>
               )}
               {results.map((item, i) => (
                 <button

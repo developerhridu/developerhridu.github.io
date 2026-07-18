@@ -173,14 +173,38 @@ export default function ResumePage() {
                 {experiences.map((exp) => (
                   <div key={exp.id}>
                     <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                      <h3 className="font-bold text-foreground print:text-black">{exp.company}</h3>
+                      {exp.companyUrl ? (
+                        <a
+                          href={exp.companyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-bold text-foreground print:text-black hover:text-accent transition-colors"
+                        >
+                          {exp.company}
+                        </a>
+                      ) : (
+                        <h3 className="font-bold text-foreground print:text-black">{exp.company}</h3>
+                      )}
                       <span className="text-sm text-muted print:text-black">{exp.period}</span>
                     </div>
                     <div className="flex flex-wrap items-baseline justify-between gap-x-4 mb-2">
                       <p className="text-accent print:text-black italic">{exp.role}</p>
-                      {exp.location && (
-                        <span className="text-sm text-muted print:text-black">{exp.location}</span>
-                      )}
+                      <span className="flex items-center gap-3">
+                        {exp.location && (
+                          <span className="text-sm text-muted print:text-black">{exp.location}</span>
+                        )}
+                        {exp.verifyUrl && (
+                          <a
+                            href={exp.verifyUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-sm text-accent print:text-black hover:underline"
+                          >
+                            <ExternalLink size={12} />
+                            Verify
+                          </a>
+                        )}
+                      </span>
                     </div>
                     <div className="space-y-4">
                       {exp.projects.map((project) => (

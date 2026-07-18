@@ -33,7 +33,9 @@ export async function generateMetadata({
   }
 
   const url = `${BASE_URL}/case-studies/${study.slug}`;
-  const imageUrl = study.image ? `${BASE_URL}${study.image}` : `${BASE_URL}/images/profile/dp.png`;
+  const imageUrl = study.image
+    ? `${BASE_URL}${study.image}`
+    : `${BASE_URL}/og-image/case-studies/${study.slug}`;
 
   return {
     title: `${study.title} | Case Studies | Portfolio`,
@@ -68,7 +70,9 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
   }
 
   const url = `${BASE_URL}/case-studies/${study.slug}`;
-  const imageUrl = study.image ? `${BASE_URL}${study.image}` : `${BASE_URL}/images/profile/dp.png`;
+  const imageUrl = study.image
+    ? `${BASE_URL}${study.image}`
+    : `${BASE_URL}/og-image/case-studies/${study.slug}`;
   const readingMinutes = estimateReadingTime(study.body, ...(study.sections?.map((s) => s.body) ?? []));
   const relatedCaseStudies = getRelatedCaseStudies(study);
 

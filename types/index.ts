@@ -49,10 +49,12 @@ export interface ExperienceProject {
 export interface Experience {
   id: string;
   company: string;
+  companyUrl?: string;
   logo?: string;
   role: string;
   period: string;
   location?: string;
+  verifyUrl?: string;
   projects: ExperienceProject[];
 }
 
@@ -76,6 +78,19 @@ export interface Certification {
   icons?: string[];
   date: string;
   verifyUrl?: string;
+}
+
+// Testimonial types
+export interface Testimonial {
+  id: string;
+  name: string;
+  role?: string;
+  company?: string;
+  avatar?: string;
+  quote: string;
+  email?: string;
+  linkedinUrl?: string;
+  verifyImages?: string[];
 }
 
 // Tech stack / skills type

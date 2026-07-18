@@ -43,6 +43,13 @@
       "visible": true
     },
     {
+      "id": "testimonials",
+      "name": "Testimonials",
+      "href": "/testimonials",
+      "icon": "quote",
+      "visible": true
+    },
+    {
       "id": "blogs",
       "name": "Blogs",
       "href": "/blog",

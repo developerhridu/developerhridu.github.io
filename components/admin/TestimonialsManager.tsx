@@ -20,28 +20,21 @@ import {
 } from "lucide-react";
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
 
-interface Project {
-  name: string;
-  description?: string;
-  technologies: string[];
-  highlights: string[];
-}
-
 interface Entry {
   id: string;
-  company: string;
-  companyUrl?: string;
-  logo?: string;
-  role: string;
-  period: string;
-  location?: string;
-  verifyUrl?: string;
-  projects: Project[];
+  name: string;
+  role?: string;
+  company?: string;
+  avatar?: string;
+  quote: string;
+  email?: string;
+  linkedinUrl?: string;
+  verifyImages: string[];
 }
 
-const PATH = "content/experience.json";
-const ARRAY_KEY = "experiences";
-const IMAGE_FOLDER = "experience";
+const PATH = "content/testimonials.json";
+const ARRAY_KEY = "testimonials";
+const IMAGE_FOLDER = "testimonials";
 
 function isManagedImage(imagePath: string | undefined): imagePath is string {
   return !!imagePath && imagePath.startsWith(`/images/${IMAGE_FOLDER}/`);
@@ -54,19 +47,15 @@ function toRepoPath(publicPath: string): string {
 function blankEntry(): Entry {
   return {
     id: "",
-    company: "",
-    companyUrl: "",
-    logo: "",
+    name: "",
     role: "",
-    period: "",
-    location: "",
-    verifyUrl: "",
-    projects: [],
+    company: "",
+    avatar: "",
+    quote: "",
+    email: "",
+    linkedinUrl: "",
+    verifyImages: [],
   };
-}
-
-function blankProject(): Project {
-  return { name: "", description: "", technologies: [], highlights: [] };
 }
 
 function makeId(base: string, existingIds: string[]): string {
@@ -80,7 +69,7 @@ function makeId(base: string, existingIds: string[]): string {
   return candidate;
 }
 
-export default function ExperienceManager({
+export default function TestimonialsManager({
   token,
   onAuthError,
 }: {
@@ -97,9 +86,8 @@ export default function ExperienceManager({
 
   const [editing, setEditing] = useState<Entry | null>(null);
   const [isNew, setIsNew] = useState(false);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [projectTechText, setProjectTechText] = useState<string[]>([]);
-  const [projectHighlightsText, setProjectHighlightsText] = useState<string[]>([]);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [verifyImageFiles, setVerifyImageFiles] = useState<(File | null)[]>([]);
 
   useEffect(() => {
     void load();
@@ -114,7 +102,7 @@ export default function ExperienceManager({
       const parsed = JSON.parse(content);
       const loaded: Entry[] = (parsed[ARRAY_KEY] ?? []).map((e: Entry) => ({
         ...e,
-        projects: e.projects ?? [],
+        verifyImages: e.verifyImages ?? [],
       }));
       setEntries(loaded);
       setLoadedOrderIds(loaded.map((e) => e.id));
@@ -153,70 +141,64 @@ export default function ExperienceManager({
   function startNew() {
     setEditing(blankEntry());
     setIsNew(true);
-    setLogoFile(null);
-    setProjectTechText([]);
-    setProjectHighlightsText([]);
+    setAvatarFile(null);
+    setVerifyImageFiles([]);
     setSuccessMsg(null);
     setError(null);
   }
 
   function startEdit(entry: Entry) {
-    const projects = entry.projects ?? [];
-    setEditing({ ...entry, projects });
+    const verifyImages = entry.verifyImages ?? [];
+    setEditing({ ...entry, verifyImages });
     setIsNew(false);
-    setLogoFile(null);
-    setProjectTechText(projects.map((p) => p.technologies.join(", ")));
-    setProjectHighlightsText(projects.map((p) => p.highlights.join("\n")));
+    setAvatarFile(null);
+    setVerifyImageFiles(verifyImages.map(() => null));
     setSuccessMsg(null);
     setError(null);
   }
 
   function cancelEdit() {
     setEditing(null);
-    setLogoFile(null);
-    setProjectTechText([]);
-    setProjectHighlightsText([]);
+    setAvatarFile(null);
+    setVerifyImageFiles([]);
   }
 
-  function addProject() {
+  function addVerifyImage() {
     if (!editing) return;
-    setEditing({ ...editing, projects: [...editing.projects, blankProject()] });
-    setProjectTechText((prev) => [...prev, ""]);
-    setProjectHighlightsText((prev) => [...prev, ""]);
+    setEditing({ ...editing, verifyImages: [...editing.verifyImages, ""] });
+    setVerifyImageFiles((prev) => [...prev, null]);
   }
 
-  function updateProject(index: number, patch: Partial<Project>) {
+  function updateVerifyImageUrl(index: number, value: string) {
     if (!editing) return;
     setEditing({
       ...editing,
-      projects: editing.projects.map((p, i) => (i === index ? { ...p, ...patch } : p)),
+      verifyImages: editing.verifyImages.map((v, i) => (i === index ? value : v)),
     });
   }
 
-  function removeProject(index: number) {
+  function removeVerifyImage(index: number) {
     if (!editing) return;
-    setEditing({ ...editing, projects: editing.projects.filter((_, i) => i !== index) });
-    setProjectTechText((prev) => prev.filter((_, i) => i !== index));
-    setProjectHighlightsText((prev) => prev.filter((_, i) => i !== index));
+    setEditing({ ...editing, verifyImages: editing.verifyImages.filter((_, i) => i !== index) });
+    setVerifyImageFiles((prev) => prev.filter((_, i) => i !== index));
   }
 
-  function moveProject(index: number, direction: -1 | 1) {
+  function moveVerifyImage(index: number, direction: -1 | 1) {
     if (!editing) return;
     const target = index + direction;
-    if (target < 0 || target >= editing.projects.length) return;
-    const nextProjects = [...editing.projects];
-    [nextProjects[index], nextProjects[target]] = [nextProjects[target], nextProjects[index]];
-    setEditing({ ...editing, projects: nextProjects });
-    setProjectTechText((prev) => {
-      const next = [...prev];
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
+    if (target < 0 || target >= editing.verifyImages.length) return;
+    const next = [...editing.verifyImages];
+    [next[index], next[target]] = [next[target], next[index]];
+    setEditing({ ...editing, verifyImages: next });
+    setVerifyImageFiles((prev) => {
+      const nextFiles = [...prev];
+      [nextFiles[index], nextFiles[target]] = [nextFiles[target], nextFiles[index]];
+      return nextFiles;
     });
-    setProjectHighlightsText((prev) => {
-      const next = [...prev];
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
-    });
+  }
+
+  function setVerifyImageFile(index: number, file: File | null) {
+    setVerifyImageFiles((prev) => prev.map((f, i) => (i === index ? file : f)));
   }
 
   async function persist(newEntries: Entry[], message: string): Promise<boolean> {
@@ -245,20 +227,24 @@ export default function ExperienceManager({
     }
   }
 
-  async function cleanupOrphanedLogo(oldPath: string | undefined, stillAlive: Entry[], label: string) {
-    if (!isManagedImage(oldPath)) return;
-    const stillReferenced = stillAlive.some((e) => e.logo === oldPath);
-    if (stillReferenced) return;
-    try {
-      await deleteBinaryFile(toRepoPath(oldPath), `content: remove orphaned logo for ${label}`, token);
-    } catch {
-      // Best-effort cleanup — the content change already succeeded either way.
+  async function cleanupOrphanedImages(oldPaths: string[], stillAlive: Entry[], label: string) {
+    for (const oldPath of oldPaths) {
+      if (!isManagedImage(oldPath)) continue;
+      const stillReferenced = stillAlive.some(
+        (e) => e.avatar === oldPath || (e.verifyImages ?? []).includes(oldPath)
+      );
+      if (stillReferenced) continue;
+      try {
+        await deleteBinaryFile(toRepoPath(oldPath), `content: remove orphaned image for ${label}`, token);
+      } catch {
+        // Best-effort cleanup — the content change already succeeded either way.
+      }
     }
   }
 
   async function handleSaveOrder() {
     if (!entries) return;
-    await persist(entries, "content: reorder experience");
+    await persist(entries, "content: reorder testimonials");
   }
 
   function discardOrder() {
@@ -267,72 +253,83 @@ export default function ExperienceManager({
 
   async function handleSave() {
     if (!editing) return;
-    if (!editing.company.trim() || !editing.role.trim()) {
-      setError("Company and role are required.");
+    if (!editing.name.trim() || !editing.quote.trim()) {
+      setError("Name and quote are required.");
       return;
     }
 
     const current = entries ?? [];
-    const oldLogo = !isNew ? current.find((e) => e.id === editing.id)?.logo : undefined;
+    const previousEntry = !isNew ? current.find((e) => e.id === editing.id) : undefined;
+    const oldManagedPaths = [previousEntry?.avatar, ...(previousEntry?.verifyImages ?? [])].filter(
+      (p): p is string => isManagedImage(p)
+    );
 
     setSaving(true);
     setError(null);
 
-    let logo = editing.logo;
+    const slug = slugify(editing.name);
+    let avatar = editing.avatar;
+    let verifyImages: string[];
+
     try {
-      if (logoFile) {
-        const ext = logoFile.name.split(".").pop()?.toLowerCase() || "png";
-        const slug = slugify(editing.company);
+      if (avatarFile) {
+        const ext = avatarFile.name.split(".").pop()?.toLowerCase() || "png";
         const repoPath = `public/images/${IMAGE_FOLDER}/${slug}.${ext}`;
-        const base64 = await fileToBase64(logoFile);
-        await uploadBinaryFile(repoPath, base64, `content: upload logo for ${editing.company}`, token);
-        logo = `/images/${IMAGE_FOLDER}/${slug}.${ext}`;
+        const base64 = await fileToBase64(avatarFile);
+        await uploadBinaryFile(repoPath, base64, `content: upload avatar for ${editing.name}`, token);
+        avatar = `/images/${IMAGE_FOLDER}/${slug}.${ext}`;
       }
+
+      const uploaded: string[] = [];
+      for (let i = 0; i < editing.verifyImages.length; i++) {
+        let url = editing.verifyImages[i];
+        const file = verifyImageFiles[i];
+        if (file) {
+          const ext = file.name.split(".").pop()?.toLowerCase() || "png";
+          const repoPath = `public/images/${IMAGE_FOLDER}/${slug}-verify-${i}.${ext}`;
+          const base64 = await fileToBase64(file);
+          await uploadBinaryFile(repoPath, base64, `content: upload verification image for ${editing.name}`, token);
+          url = `/images/${IMAGE_FOLDER}/${slug}-verify-${i}.${ext}`;
+        }
+        uploaded.push(url);
+      }
+      verifyImages = uploaded.filter((v) => v.trim());
     } catch (err) {
       handleApiError(err);
       setSaving(false);
       return;
     }
 
-    const projects: Project[] = editing.projects.map((p, i) => ({
-      name: p.name.trim(),
-      description: p.description?.trim() || undefined,
-      technologies: (projectTechText[i] ?? "")
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-      highlights: (projectHighlightsText[i] ?? "")
-        .split("\n")
-        .map((h) => h.trim())
-        .filter(Boolean),
-    }));
-
-    const finalEntry: Entry = { ...editing, logo, projects };
+    const finalEntry: Entry = { ...editing, avatar, verifyImages };
     let updated: Entry[];
 
     if (isNew) {
-      const newId = makeId(editing.company, current.map((e) => e.id));
+      const newId = makeId(editing.name, current.map((e) => e.id));
       updated = [...current, { ...finalEntry, id: newId }];
     } else {
       updated = current.map((e) => (e.id === editing.id ? finalEntry : e));
     }
 
-    const message = isNew ? `content: add ${editing.company}` : `content: update ${editing.company}`;
+    const message = isNew ? `content: add ${editing.name}` : `content: update ${editing.name}`;
     const ok = await persist(updated, message);
-    setLogoFile(null);
+    setAvatarFile(null);
+    setVerifyImageFiles(verifyImages.map(() => null));
 
-    if (ok && logoFile && oldLogo && oldLogo !== logo) {
-      await cleanupOrphanedLogo(oldLogo, updated, editing.company);
+    if (ok && oldManagedPaths.length > 0) {
+      await cleanupOrphanedImages(oldManagedPaths, updated, editing.name);
     }
   }
 
   async function handleDelete(entry: Entry) {
-    if (!confirm(`Delete "${entry.company}"? This cannot be undone.`)) return;
+    if (!confirm(`Delete "${entry.name}"? This cannot be undone.`)) return;
     const current = entries ?? [];
     const updated = current.filter((e) => e.id !== entry.id);
-    const ok = await persist(updated, `content: delete ${entry.company}`);
+    const ok = await persist(updated, `content: delete ${entry.name}`);
     if (ok) {
-      await cleanupOrphanedLogo(entry.logo, updated, entry.company);
+      const oldPaths = [entry.avatar, ...(entry.verifyImages ?? [])].filter(
+        (p): p is string => isManagedImage(p)
+      );
+      await cleanupOrphanedImages(oldPaths, updated, entry.name);
     }
   }
 
@@ -362,20 +359,14 @@ export default function ExperienceManager({
           entry={editing}
           setEntry={setEditing}
           saving={saving}
-          logoFile={logoFile}
-          setLogoFile={setLogoFile}
-          projectTechText={projectTechText}
-          projectHighlightsText={projectHighlightsText}
-          onProjectTechTextChange={(i, v) =>
-            setProjectTechText((prev) => prev.map((t, idx) => (idx === i ? v : t)))
-          }
-          onProjectHighlightsTextChange={(i, v) =>
-            setProjectHighlightsText((prev) => prev.map((t, idx) => (idx === i ? v : t)))
-          }
-          onAddProject={addProject}
-          onUpdateProject={updateProject}
-          onRemoveProject={removeProject}
-          onMoveProject={moveProject}
+          avatarFile={avatarFile}
+          setAvatarFile={setAvatarFile}
+          verifyImageFiles={verifyImageFiles}
+          onAddVerifyImage={addVerifyImage}
+          onUpdateVerifyImageUrl={updateVerifyImageUrl}
+          onRemoveVerifyImage={removeVerifyImage}
+          onMoveVerifyImage={moveVerifyImage}
+          onVerifyImageFileChange={setVerifyImageFile}
           onCancel={cancelEdit}
           onSave={() => void handleSave()}
         />
@@ -421,7 +412,7 @@ export default function ExperienceManager({
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border bg-surface">
-                    <th className="text-left font-medium text-muted px-4 py-3">Company</th>
+                    <th className="text-left font-medium text-muted px-4 py-3">Name</th>
                     <th className="text-right font-medium text-muted px-4 py-3">Actions</th>
                   </tr>
                 </thead>
@@ -429,10 +420,11 @@ export default function ExperienceManager({
                   {entries.map((entry, index) => (
                     <tr key={entry.id} className="border-b border-border last:border-b-0">
                       <td className="px-4 py-3 min-w-0">
-                        <p className="text-foreground font-medium truncate">{entry.company}</p>
+                        <p className="text-foreground font-medium truncate">{entry.name}</p>
                         <p className="text-muted text-xs">
-                          {entry.role} · {entry.projects.length}{" "}
-                          {entry.projects.length === 1 ? "project" : "projects"}
+                          {[entry.role, entry.company].filter(Boolean).join(" · ") || "—"} ·{" "}
+                          {entry.verifyImages.length}{" "}
+                          {entry.verifyImages.length === 1 ? "verify image" : "verify images"}
                         </p>
                       </td>
                       <td className="px-4 py-3">
@@ -440,7 +432,7 @@ export default function ExperienceManager({
                           <button
                             onClick={() => moveEntry(index, -1)}
                             disabled={index === 0}
-                            aria-label={`Move ${entry.company} up`}
+                            aria-label={`Move ${entry.name} up`}
                             className="p-2 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
                           >
                             <ArrowUp size={16} />
@@ -448,21 +440,21 @@ export default function ExperienceManager({
                           <button
                             onClick={() => moveEntry(index, 1)}
                             disabled={index === entries.length - 1}
-                            aria-label={`Move ${entry.company} down`}
+                            aria-label={`Move ${entry.name} down`}
                             className="p-2 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
                           >
                             <ArrowDown size={16} />
                           </button>
                           <button
                             onClick={() => startEdit(entry)}
-                            aria-label={`Edit ${entry.company}`}
+                            aria-label={`Edit ${entry.name}`}
                             className="p-2 text-muted hover:text-foreground transition-colors"
                           >
                             <Pencil size={16} />
                           </button>
                           <button
                             onClick={() => void handleDelete(entry)}
-                            aria-label={`Delete ${entry.company}`}
+                            aria-label={`Delete ${entry.name}`}
                             className="p-2 text-muted hover:text-red-400 transition-colors"
                           >
                             <Trash2 size={16} />
@@ -485,32 +477,28 @@ function EntryForm({
   entry,
   setEntry,
   saving,
-  logoFile,
-  setLogoFile,
-  projectTechText,
-  projectHighlightsText,
-  onProjectTechTextChange,
-  onProjectHighlightsTextChange,
-  onAddProject,
-  onUpdateProject,
-  onRemoveProject,
-  onMoveProject,
+  avatarFile,
+  setAvatarFile,
+  verifyImageFiles,
+  onAddVerifyImage,
+  onUpdateVerifyImageUrl,
+  onRemoveVerifyImage,
+  onMoveVerifyImage,
+  onVerifyImageFileChange,
   onCancel,
   onSave,
 }: {
   entry: Entry;
   setEntry: (e: Entry) => void;
   saving: boolean;
-  logoFile: File | null;
-  setLogoFile: (f: File | null) => void;
-  projectTechText: string[];
-  projectHighlightsText: string[];
-  onProjectTechTextChange: (index: number, value: string) => void;
-  onProjectHighlightsTextChange: (index: number, value: string) => void;
-  onAddProject: () => void;
-  onUpdateProject: (index: number, patch: Partial<Project>) => void;
-  onRemoveProject: (index: number) => void;
-  onMoveProject: (index: number, direction: -1 | 1) => void;
+  avatarFile: File | null;
+  setAvatarFile: (f: File | null) => void;
+  verifyImageFiles: (File | null)[];
+  onAddVerifyImage: () => void;
+  onUpdateVerifyImageUrl: (index: number, value: string) => void;
+  onRemoveVerifyImage: (index: number) => void;
+  onMoveVerifyImage: (index: number, direction: -1 | 1) => void;
+  onVerifyImageFileChange: (index: number, file: File | null) => void;
   onCancel: () => void;
   onSave: () => void;
 }) {
@@ -527,17 +515,17 @@ function EntryForm({
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Company</label>
+          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Name</label>
           <input
-            value={entry.company}
-            onChange={(e) => setEntry({ ...entry, company: e.target.value })}
+            value={entry.name}
+            onChange={(e) => setEntry({ ...entry, name: e.target.value })}
             className={inputClass}
           />
         </div>
         <div>
           <label className="block text-xs uppercase tracking-wide text-muted mb-1">Role</label>
           <input
-            value={entry.role}
+            value={entry.role ?? ""}
             onChange={(e) => setEntry({ ...entry, role: e.target.value })}
             className={inputClass}
           />
@@ -546,105 +534,101 @@ function EntryForm({
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Period</label>
+          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Company</label>
           <input
-            value={entry.period}
-            onChange={(e) => setEntry({ ...entry, period: e.target.value })}
-            placeholder="April 2024 - Present"
+            value={entry.company ?? ""}
+            onChange={(e) => setEntry({ ...entry, company: e.target.value })}
             className={inputClass}
           />
         </div>
         <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Location</label>
+          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Email</label>
           <input
-            value={entry.location ?? ""}
-            onChange={(e) => setEntry({ ...entry, location: e.target.value })}
-            className={inputClass}
-          />
-        </div>
-      </div>
-
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-            Company URL (optional)
-          </label>
-          <input
-            value={entry.companyUrl ?? ""}
-            onChange={(e) => setEntry({ ...entry, companyUrl: e.target.value })}
-            placeholder="https://example.com"
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-            Verify URL (optional proof of employment)
-          </label>
-          <input
-            value={entry.verifyUrl ?? ""}
-            onChange={(e) => setEntry({ ...entry, verifyUrl: e.target.value })}
-            placeholder="https://..."
+            value={entry.email ?? ""}
+            onChange={(e) => setEntry({ ...entry, email: e.target.value })}
+            placeholder="name@example.com"
             className={inputClass}
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs uppercase tracking-wide text-muted mb-1">Logo URL</label>
+        <label className="block text-xs uppercase tracking-wide text-muted mb-1">LinkedIn URL</label>
         <input
-          value={entry.logo ?? ""}
-          onChange={(e) => setEntry({ ...entry, logo: e.target.value })}
-          placeholder="/images/logos/example.png"
+          value={entry.linkedinUrl ?? ""}
+          onChange={(e) => setEntry({ ...entry, linkedinUrl: e.target.value })}
+          className={inputClass}
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs uppercase tracking-wide text-muted mb-1">Quote</label>
+        <textarea
+          value={entry.quote}
+          onChange={(e) => setEntry({ ...entry, quote: e.target.value })}
+          rows={4}
+          className={`${inputClass} resize-none`}
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs uppercase tracking-wide text-muted mb-1">Avatar</label>
+        <input
+          value={entry.avatar ?? ""}
+          onChange={(e) => setEntry({ ...entry, avatar: e.target.value })}
+          placeholder="https://... or /images/testimonials/example.png"
           className={inputClass}
         />
         <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
           <Upload size={16} className="text-muted shrink-0" />
-          <span className="truncate">{logoFile ? logoFile.name : "Or upload an image file…"}</span>
+          <span className="truncate">{avatarFile ? avatarFile.name : "Or upload an image file…"}</span>
           <input
             type="file"
             accept="image/*"
             className="hidden"
-            onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)}
+            onChange={(e) => setAvatarFile(e.target.files?.[0] ?? null)}
           />
         </label>
       </div>
 
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-xs uppercase tracking-wide text-muted">Projects</label>
+          <label className="block text-xs uppercase tracking-wide text-muted">
+            Verification Photos
+          </label>
           <button
-            onClick={onAddProject}
+            onClick={onAddVerifyImage}
             type="button"
             className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover"
           >
-            <Plus size={14} /> Add Project
+            <Plus size={14} /> Add Image
           </button>
         </div>
         <div className="space-y-3">
-          {entry.projects.map((project, i) => (
+          {entry.verifyImages.map((image, i) => (
             <div key={i} className="border border-border rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted">Project {i + 1}</span>
+                <span className="text-xs text-muted">Image {i + 1}</span>
                 <div className="flex items-center gap-1">
                   <button
-                    onClick={() => onMoveProject(i, -1)}
+                    onClick={() => onMoveVerifyImage(i, -1)}
                     disabled={i === 0}
-                    aria-label={`Move project ${i + 1} up`}
+                    aria-label={`Move image ${i + 1} up`}
                     className="p-1.5 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
                   >
                     <ArrowUp size={14} />
                   </button>
                   <button
-                    onClick={() => onMoveProject(i, 1)}
-                    disabled={i === entry.projects.length - 1}
-                    aria-label={`Move project ${i + 1} down`}
+                    onClick={() => onMoveVerifyImage(i, 1)}
+                    disabled={i === entry.verifyImages.length - 1}
+                    aria-label={`Move image ${i + 1} down`}
                     className="p-1.5 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
                   >
                     <ArrowDown size={14} />
                   </button>
                   <button
-                    onClick={() => onRemoveProject(i)}
-                    aria-label={`Remove project ${i + 1}`}
+                    onClick={() => onRemoveVerifyImage(i)}
+                    aria-label={`Remove image ${i + 1}`}
                     className="p-1.5 text-muted hover:text-red-400 transition-colors"
                   >
                     <Trash2 size={14} />
@@ -654,54 +638,31 @@ function EntryForm({
 
               <div>
                 <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-                  Project Name
+                  Image URL
                 </label>
                 <input
-                  value={project.name}
-                  onChange={(e) => onUpdateProject(i, { name: e.target.value })}
+                  value={image}
+                  onChange={(e) => onUpdateVerifyImageUrl(i, e.target.value)}
+                  placeholder="/images/testimonials/example-verify-0.png"
                   className={inputClass}
                 />
-              </div>
-
-              <div>
-                <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-                  Description (optional)
+                <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
+                  <Upload size={16} className="text-muted shrink-0" />
+                  <span className="truncate">
+                    {verifyImageFiles[i] ? verifyImageFiles[i]!.name : "Or upload an image file…"}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => onVerifyImageFileChange(i, e.target.files?.[0] ?? null)}
+                  />
                 </label>
-                <textarea
-                  value={project.description ?? ""}
-                  onChange={(e) => onUpdateProject(i, { description: e.target.value })}
-                  rows={2}
-                  className={`${inputClass} resize-none`}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-                  Technologies (comma separated)
-                </label>
-                <input
-                  value={projectTechText[i] ?? ""}
-                  onChange={(e) => onProjectTechTextChange(i, e.target.value)}
-                  placeholder=".NET Core, React, PostgreSQL"
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-                  Highlights (one per line)
-                </label>
-                <textarea
-                  value={projectHighlightsText[i] ?? ""}
-                  onChange={(e) => onProjectHighlightsTextChange(i, e.target.value)}
-                  rows={5}
-                  className={`${inputClass} resize-none`}
-                />
               </div>
             </div>
           ))}
-          {entry.projects.length === 0 && (
-            <p className="text-muted text-xs">No projects yet.</p>
+          {entry.verifyImages.length === 0 && (
+            <p className="text-muted text-xs">No verification photos yet.</p>
           )}
         </div>
       </div>

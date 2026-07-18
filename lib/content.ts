@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Profile, Project, Experience, Education, SkillsCategory, Certification, BlogPost, CaseStudy, Skill } from "@/types";
+import { Profile, Project, Experience, Education, SkillsCategory, Certification, BlogPost, CaseStudy, Skill, Testimonial } from "@/types";
 
 const contentDirectory = path.join(process.cwd(), "content");
 
@@ -53,6 +53,13 @@ export function getCertifications(): Certification[] {
   const fileContents = fs.readFileSync(filePath, "utf8");
   const data = JSON.parse(fileContents);
   return data.certifications;
+}
+
+export function getTestimonials(): Testimonial[] {
+  const filePath = path.join(contentDirectory, "testimonials.json");
+  const fileContents = fs.readFileSync(filePath, "utf8");
+  const data = JSON.parse(fileContents);
+  return data.testimonials;
 }
 
 export function getBlogPosts(): BlogPost[] {

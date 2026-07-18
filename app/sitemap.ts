@@ -28,6 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: 0.5,
     })),
+    { url: `${BASE_URL}/testimonials`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE_URL}/contact`, lastModified: LAST_MODIFIED, changeFrequency: "yearly", priority: 0.5 },
   ];
 }

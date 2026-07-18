@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { ExternalLink } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import experienceData from "@/content/experience.json";
@@ -61,14 +62,36 @@ export default function Experience({ showHeading = true }: ExperienceProps) {
                           <h3 className="text-xl font-bold text-foreground">
                             {exp.role}
                           </h3>
-                          <p className="text-accent font-medium">
-                            {exp.company}
-                          </p>
+                          {exp.companyUrl ? (
+                            <a
+                              href={exp.companyUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-accent font-medium hover:text-accent-hover transition-colors"
+                            >
+                              {exp.company}
+                            </a>
+                          ) : (
+                            <p className="text-accent font-medium">{exp.company}</p>
+                          )}
                         </div>
                       </div>
-                      <span className="text-sm text-muted whitespace-nowrap">
-                        {exp.period}
-                      </span>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <span className="text-sm text-muted whitespace-nowrap">
+                          {exp.period}
+                        </span>
+                        {exp.verifyUrl && (
+                          <a
+                            href={exp.verifyUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover transition-colors"
+                          >
+                            <ExternalLink size={12} />
+                            <span>Verify</span>
+                          </a>
+                        )}
+                      </div>
                     </div>
 
                     {/* Projects */}

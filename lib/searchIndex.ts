@@ -42,6 +42,12 @@ const staticPages: SearchItem[] = [
     url: "/case-studies",
     category: "Page",
   },
+  {
+    title: "Testimonials",
+    description: "Feedback and recommendations from people I've worked with",
+    url: "/testimonials",
+    category: "Page",
+  },
   { title: "Blog", description: "Technical writing and tutorials", url: "/blog", category: "Page" },
   { title: "Resume", description: "Live, printable resume", url: "/resume", category: "Page" },
   { title: "Contact", description: "Get in touch", url: "/contact", category: "Page" },

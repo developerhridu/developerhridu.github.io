@@ -1,0 +1,41 @@
+{
+  "testimonials": [
+    {
+      "id": "dummy-1",
+      "name": "Alex Morgan",
+      "role": "Engineering Manager",
+      "company": "TechCorp",
+      "quote": "Mizanur is one of the most reliable backend engineers I've worked with. He consistently delivers scalable solutions and communicates trade-offs clearly before they become problems.",
+      "email": "alex.morgan@techcorp.example",
+      "linkedinUrl": "https://linkedin.com/in/alex-morgan-placeholder",
+      "avatar": "https://api.dicebear.com/9.x/avataaars/svg?seed=Alex%20Morgan",
+      "verifyImages": []
+    },
+    {
+      "id": "dummy-2",
+      "name": "Priya Sharma",
+      "role": "Product Manager",
+      "company": "Acme Inc",
+      "quote": "Working with Mizanur was a great experience — he understood the business context behind every feature request and often suggested better technical approaches than what we originally asked for.",
+      "email": "priya.sharma@acme.example",
+      "linkedinUrl": "https://linkedin.com/in/priya-sharma-placeholder",
+      "avatar": "https://api.dicebear.com/9.x/avataaars/svg?seed=Priya%20Sharma",
+      "verifyImages": [
+        "https://verify.example/proof/priya-sharma.jpg"
+      ]
+    },
+    {
+      "id": "dummy-3",
+      "name": "Daniel Lee",
+      "role": "CTO",
+      "company": "StartupXYZ",
+      "quote": "Mizanur owns problems end-to-end. Give him a vague requirement and he'll come back with a well-architected solution, clear documentation, and a plan for what comes next.",
+      "email": "daniel.lee@startupxyz.example",
+      "linkedinUrl": "https://linkedin.com/in/daniel-lee-placeholder",
+      "avatar": "https://api.dicebear.com/9.x/avataaars/svg?seed=Daniel%20Lee",
+      "verifyImages": [
+        "https://verify.example/proof/daniel-lee.jpg"
+      ]
+    }
+  ]
+}
