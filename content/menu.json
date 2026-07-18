@@ -54,7 +54,8 @@
       "name": "Testimonials",
       "href": "/testimonials",
       "icon": "quote",
-      "published": false
+      "external": false,
+      "published": true
     },
     {
       "id": "blogs",
