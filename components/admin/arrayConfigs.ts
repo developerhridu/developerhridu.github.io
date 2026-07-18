@@ -1,5 +1,23 @@
 import type { ArrayConfig } from "@/components/admin/GenericArrayEditor";
 
+export const educationConfig: ArrayConfig = {
+  path: "content/education.json",
+  arrayKey: "education",
+  label: "Education",
+  titleField: "degree",
+  subtitleField: "institution",
+  imageFolder: "education",
+  fields: [
+    { key: "degree", label: "Degree", type: "text" },
+    { key: "institution", label: "Institution", type: "text" },
+    { key: "period", label: "Period", type: "text", placeholder: "January 2017 - January 2023" },
+    { key: "location", label: "Location", type: "text" },
+    { key: "cgpa", label: "CGPA / Grade (optional)", type: "text" },
+    { key: "icon", label: "Icon / Logo", type: "image" },
+    { key: "achievements", label: "Achievements (one per line, optional)", type: "list" },
+  ],
+};
+
 export const certificationsConfig: ArrayConfig = {
   path: "content/certifications.json",
   arrayKey: "certifications",

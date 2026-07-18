@@ -13,6 +13,7 @@ import ProfileEditor from "@/components/admin/ProfileEditor";
 import SkillsEditor from "@/components/admin/SkillsEditor";
 import ChatLogViewer from "@/components/admin/ChatLogViewer";
 import {
+  educationConfig,
   certificationsConfig,
   projectsConfig,
   menuConfig,
@@ -29,6 +30,7 @@ type Tab =
   | "case-study"
   | "experience"
   | "services"
+  | "education"
   | "certifications"
   | "testimonials"
   | "projects"
@@ -200,6 +202,9 @@ export default function AdminEditor() {
       {tab === "experience" && <ExperienceManager token={token} onAuthError={handleAuthError} />}
       {tab === "services" && (
         <GenericArrayEditor config={servicesConfig} token={token} onAuthError={handleAuthError} />
+      )}
+      {tab === "education" && (
+        <GenericArrayEditor config={educationConfig} token={token} onAuthError={handleAuthError} />
       )}
       {tab === "certifications" && (
         <GenericArrayEditor config={certificationsConfig} token={token} onAuthError={handleAuthError} />

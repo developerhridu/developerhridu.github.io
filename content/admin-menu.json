@@ -26,6 +26,11 @@
       "published": true
     },
     {
+      "id": "education",
+      "label": "Education",
+      "published": true
+    },
+    {
       "id": "certifications",
       "label": "Certifications",
       "published": true

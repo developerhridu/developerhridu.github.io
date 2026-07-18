@@ -60,6 +60,7 @@ export interface Experience {
 
 // Education types
 export interface Education {
+  id: string;
   degree: string;
   institution: string;
   icon?: string;

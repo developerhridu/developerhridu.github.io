@@ -1,6 +1,7 @@
 {
   "education": [
     {
+      "id": "bsc-eng-in-information-communication-technology",
       "degree": "BSc (Eng.) in Information & Communication Technology",
       "institution": "Hajee Mohammad Danesh Science & Technology University",
       "icon": "/images/logos/hstu-logo.png",
@@ -9,6 +10,7 @@
       "cgpa": "3.1/4.0"
     },
     {
+      "id": "hsc-higher-secondary-certificate-in-science",
       "degree": "HSC (Higher Secondary Certificate) in Science",
       "institution": "Cumilla Victoria Government College",
       "icon": "/images/logos/clg-logo.png",
