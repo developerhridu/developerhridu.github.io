@@ -93,6 +93,15 @@ export interface Testimonial {
   verifyImages?: string[];
 }
 
+// Service types
+export interface Service {
+  id: string;
+  title: string;
+  description: string;
+  icon?: string;
+  highlights?: string[];
+}
+
 // Tech stack / skills type
 export interface SkillsCategory {
   backend: string[];

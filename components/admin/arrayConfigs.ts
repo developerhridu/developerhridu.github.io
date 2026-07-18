@@ -79,7 +79,26 @@ export const menuConfig: ArrayConfig = {
     { key: "href", label: "Href", type: "text" },
     { key: "icon", label: "Icon key", type: "text", placeholder: "home, user, folder-kanban…" },
     { key: "external", label: "External link", type: "boolean" },
-    { key: "visible", label: "Visible in menu", type: "boolean", defaultBoolean: true },
+    { key: "published", label: "Published (visible in menu & search)", type: "boolean", defaultBoolean: true },
+  ],
+};
+
+export const servicesConfig: ArrayConfig = {
+  path: "content/services.json",
+  arrayKey: "services",
+  label: "Services",
+  titleField: "title",
+  subtitleField: "icon",
+  fields: [
+    { key: "title", label: "Title", type: "text" },
+    { key: "description", label: "Description", type: "textarea" },
+    {
+      key: "icon",
+      label: "Icon key",
+      type: "text",
+      placeholder: "server, layers, plug, gauge, shield-check, refresh-cw…",
+    },
+    { key: "highlights", label: "Highlights (one per line, optional)", type: "list" },
   ],
 };
 
@@ -91,7 +110,7 @@ export const adminMenuConfig: ArrayConfig = {
   subtitleField: "id",
   fields: [
     { key: "label", label: "Label", type: "text" },
-    { key: "visible", label: "Visible", type: "boolean", defaultBoolean: true },
+    { key: "published", label: "Published", type: "boolean", defaultBoolean: true },
   ],
 };
 

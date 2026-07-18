@@ -5,63 +5,70 @@
       "name": "Home",
       "href": "/",
       "icon": "home",
-      "visible": true
+      "published": true
     },
     {
       "id": "about",
       "name": "About",
       "href": "/about",
       "icon": "user",
-      "visible": true
+      "published": true
     },
     {
       "id": "experience",
       "name": "Experience",
       "href": "/experience",
       "icon": "briefcase",
-      "visible": true
+      "published": true
+    },
+    {
+      "id": "services",
+      "name": "Services",
+      "href": "/services",
+      "icon": "wrench",
+      "published": false
     },
     {
       "id": "projects",
       "name": "Projects",
       "href": "/projects",
       "icon": "folder-kanban",
-      "visible": true
+      "published": true
     },
     {
       "id": "training-certifications",
       "name": "Training & Certifications",
       "href": "/certifications",
       "icon": "award",
-      "visible": true
+      "published": true
     },
     {
       "id": "case-studies",
       "name": "Case Studies",
       "href": "/case-studies",
       "icon": "layers",
-      "visible": true
+      "published": true
     },
     {
       "id": "testimonials",
       "name": "Testimonials",
       "href": "/testimonials",
       "icon": "quote",
-      "visible": true
+      "published": false
     },
     {
       "id": "blogs",
       "name": "Blogs",
       "href": "/blog",
       "icon": "newspaper",
-      "visible": false
+      "published": false
     },
     {
       "id": "contact",
       "name": "Contact",
       "href": "/contact",
       "icon": "mail",
-      "visible": true
+      "published": true
     },
     {
       "id": "cv",
@@ -69,7 +76,7 @@
       "href": "",
       "icon": "file-user",
       "external": true,
-      "visible": true
+      "published": true
     }
   ]
 }

@@ -9,7 +9,7 @@ import { resolveCvHref } from "@/lib/cv";
 
 const footerLinks = menu.navLinks.filter(
   (link) =>
-    link.href !== "/" && link.visible !== false && (link.id !== "cv" || !!profile.resumeUrl)
+    link.href !== "/" && link.published !== false && (link.id !== "cv" || !!profile.resumeUrl)
 );
 
 function resolveHref(link: (typeof footerLinks)[number]): string {
