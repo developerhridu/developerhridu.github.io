@@ -5,6 +5,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/ui/BackToTop";
+import AiChatWidget from "@/components/ui/AiChatWidget";
 import config from "@/content/config.json";
 
 const GA_MEASUREMENT_ID = config.gaMeasurementId;
@@ -119,6 +120,7 @@ export default function RootLayout({
           <Footer />
         </div>
         <BackToTop />
+        <AiChatWidget />
         {process.env.NODE_ENV === "production" && (
           <>
             <Script

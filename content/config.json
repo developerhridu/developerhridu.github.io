@@ -7,5 +7,6 @@
     "repoId": "",
     "category": "",
     "categoryId": ""
-  }
+  },
+  "aiChatWorkerUrl": "https://hridu-portfolio-ai-chat.developerhridu.workers.dev/"
 }
