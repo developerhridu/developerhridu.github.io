@@ -18,6 +18,7 @@ const AI_WORKER_URL = config.aiChatWorkerUrl;
 
 export default function AiChatWidget() {
   const [open, setOpen] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,8 +30,18 @@ export default function AiChatWidget() {
     }
   }, [messages, loading, open]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setShowPrompt(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  function dismissPrompt() {
+    setShowPrompt(false);
+  }
+
   function handleOpen() {
     setOpen(true);
+    dismissPrompt();
     if (messages.length === 0) trackEvent("faq_bot_open", {});
   }
 
@@ -161,6 +172,30 @@ export default function AiChatWidget() {
                 <Send size={16} />
               </button>
             </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showPrompt && !open && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.9 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-24 right-6 z-50 flex items-center gap-2 max-w-[220px] bg-surface border border-border rounded-xl shadow-lg px-4 py-3"
+          >
+            <Sparkles size={16} className="text-accent shrink-0" />
+            <button onClick={handleOpen} className="flex-1 text-left text-sm text-foreground">
+              Ask AI about Hridu
+            </button>
+            <button
+              onClick={dismissPrompt}
+              aria-label="Dismiss"
+              className="text-muted hover:text-foreground transition-colors shrink-0"
+            >
+              <X size={14} />
+            </button>
           </motion.div>
         )}
       </AnimatePresence>

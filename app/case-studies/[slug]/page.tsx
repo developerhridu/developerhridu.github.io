@@ -175,13 +175,23 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
             <div className="mt-8 space-y-8">
               {study.sections.map((section, idx) => (
                 <div key={idx}>
-                  {section.image && (
-                    <ContentImage
-                      src={section.image}
-                      alt={section.alt || study.title}
-                      wrapperClassName="mb-6 rounded-2xl"
-                      imgClassName="w-full h-auto"
-                    />
+                  {section.images && section.images.length > 0 && (
+                    <div
+                      className={`mb-6 ${
+                        section.images.length > 1 ? "grid sm:grid-cols-2 gap-4" : ""
+                      }`}
+                    >
+                      {section.images.map((image, imgIdx) => (
+                        <ContentImage
+                          key={image}
+                          src={image}
+                          alt={section.alt || study.title}
+                          wrapperClassName="rounded-2xl"
+                          imgClassName="w-full h-auto"
+                          initials={String(imgIdx + 1)}
+                        />
+                      ))}
+                    </div>
                   )}
                   <div className="prose prose-invert prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted prose-a:text-accent prose-strong:text-foreground prose-code:text-accent prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-surface prose-pre:border prose-pre:border-border">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{section.body}</ReactMarkdown>

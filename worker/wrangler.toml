@@ -4,3 +4,7 @@ compatibility_date = "2024-11-01"
 
 [ai]
 binding = "AI"
+
+[[kv_namespaces]]
+binding = "CHAT_LOG"
+id = "d3599f06d98e46a3ba18bc828906d585"

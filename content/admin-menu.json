@@ -64,6 +64,11 @@
       "id": "admin-menu",
       "label": "Admin Menu",
       "published": true
+    },
+    {
+      "id": "chat-log",
+      "label": "Chat Log",
+      "published": true
     }
   ]
 }
