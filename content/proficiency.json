@@ -26,6 +26,11 @@
       "level": 75
     },
     {
+      "id": "react",
+      "name": "React/Next",
+      "level": 85
+    },
+    {
       "id": "angular",
       "name": "Angular",
       "level": 80
@@ -49,11 +54,6 @@
       "id": "aws",
       "name": "AWS",
       "level": 70
-    },
-    {
-      "id": "react",
-      "name": "React",
-      "level": 85
     }
   ]
 }
