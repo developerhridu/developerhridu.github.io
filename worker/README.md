@@ -103,6 +103,24 @@ Until you complete step 1, `/logs` returns `501 Logging is not configured`
 and the chat itself works exactly the same either way — logging is
 fire-and-forget and never blocks or affects the answer a visitor sees.
 
+## Reader counts (blog posts & case studies)
+
+Already set up — a `VIEWS` KV namespace is bound in `wrangler.toml`, so no
+further steps needed. Each blog/case-study detail page calls `/views` once
+per browser (deduped via `localStorage`) to increment and display its count.
+
+- `POST /views` with `{ "type": "blog" | "case-study", "slug": "..." }` —
+  increments and returns `{ "count": N }`.
+- `GET /views?type=...&slug=...` — read-only, doesn't increment. Useful if
+  you ever want to show counts on the listing pages too, without every
+  card render counting as a view.
+
+If you ever need to reset a count, delete its key directly:
+
+```bash
+npx wrangler kv key delete "views:blog:<slug>" --namespace-id <VIEWS-namespace-id>
+```
+
 ## Notes
 
 - The Worker fetches `content/*.json` directly from

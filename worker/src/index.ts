@@ -1,9 +1,11 @@
 export interface Env {
   AI: Ai;
-  // Both optional: only present once you opt in via `wrangler kv namespace create`
-  // and `wrangler secret put` — see worker/README.md. Absent = logging silently no-ops.
+  // All optional: only present once you opt in via `wrangler kv namespace create`
+  // and `wrangler secret put` — see worker/README.md. Absent = the related feature
+  // silently no-ops (chat logging) or 501s (view counts).
   CHAT_LOG?: KVNamespace;
   ADMIN_KEY?: string;
+  VIEWS?: KVNamespace;
 }
 
 const REPO_OWNER = "developerhridu";
@@ -84,6 +86,63 @@ async function handleLogs(request: Request, env: Env): Promise<Response> {
   );
 
   return new Response(JSON.stringify({ entries: entries.filter(Boolean) }), {
+    headers: { "Content-Type": "application/json", ...corsHeaders(request) },
+  });
+}
+
+type ViewType = "blog" | "case-study";
+
+function isViewType(v: unknown): v is ViewType {
+  return v === "blog" || v === "case-study";
+}
+
+/**
+ * Tracks per-slug reader counts in KV. GET just reads the current count (used by
+ * listing pages, never increments). POST increments then returns the new count —
+ * called once per browser per article, deduped client-side via localStorage.
+ */
+async function handleViews(request: Request, env: Env): Promise<Response> {
+  if (!env.VIEWS) {
+    return new Response(JSON.stringify({ error: "View counting is not configured for this Worker" }), {
+      status: 501,
+      headers: { "Content-Type": "application/json", ...corsHeaders(request) },
+    });
+  }
+
+  const url = new URL(request.url);
+  let type: string | null;
+  let slug: string | null;
+
+  if (request.method === "GET") {
+    type = url.searchParams.get("type");
+    slug = url.searchParams.get("slug");
+  } else {
+    try {
+      const body = await request.json<{ type?: string; slug?: string }>();
+      type = body.type ?? null;
+      slug = body.slug ?? null;
+    } catch {
+      type = null;
+      slug = null;
+    }
+  }
+
+  if (!isViewType(type) || !slug) {
+    return new Response(
+      JSON.stringify({ error: "type must be 'blog' or 'case-study', and slug is required" }),
+      { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders(request) } }
+    );
+  }
+
+  const key = `views:${type}:${slug}`;
+  let count = Number((await env.VIEWS.get(key)) ?? "0") || 0;
+
+  if (request.method === "POST") {
+    count += 1;
+    await env.VIEWS.put(key, String(count));
+  }
+
+  return new Response(JSON.stringify({ count }), {
     headers: { "Content-Type": "application/json", ...corsHeaders(request) },
   });
 }
@@ -247,6 +306,10 @@ export default {
 
     if (request.method === "GET" && url.pathname === "/logs") {
       return handleLogs(request, env);
+    }
+
+    if ((request.method === "GET" || request.method === "POST") && url.pathname === "/views") {
+      return handleViews(request, env);
     }
 
     if (request.method !== "POST") {

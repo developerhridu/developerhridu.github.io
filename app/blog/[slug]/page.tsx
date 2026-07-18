@@ -9,6 +9,7 @@ import LightboxImage from "@/components/ui/LightboxImage";
 import RelatedContent from "@/components/ui/RelatedContent";
 import Comments from "@/components/ui/Comments";
 import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
+import ViewCounter from "@/components/ui/ViewCounter";
 
 const BASE_URL = "https://developerhridu.github.io";
 
@@ -147,6 +148,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 <Clock size={16} />
                 {readingMinutes} min read
               </span>
+              <ViewCounter type="blog" slug={post.slug} />
             </div>
           </header>
 
