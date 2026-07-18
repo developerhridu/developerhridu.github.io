@@ -356,6 +356,10 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     }
   }
 
+  const sortedEntries = entries
+    ? [...entries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    : null;
+
   return (
     <div>
       {error && (
@@ -413,11 +417,11 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
 
           {loading && <p className="text-muted text-sm">Loading…</p>}
 
-          {!loading && entries && entries.length === 0 && (
+          {!loading && sortedEntries && sortedEntries.length === 0 && (
             <p className="text-muted text-sm">No entries yet.</p>
           )}
 
-          {!loading && entries && entries.length > 0 && (
+          {!loading && sortedEntries && sortedEntries.length > 0 && (
             <div className="overflow-x-auto border border-border rounded-lg">
               <table className="w-full text-sm">
                 <thead>
@@ -427,7 +431,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
                   </tr>
                 </thead>
                 <tbody>
-                  {entries.map((entry) => (
+                  {sortedEntries.map((entry) => (
                     <tr key={entry.id} className="border-b border-border last:border-b-0">
                       <td className="px-4 py-3 min-w-0">
                         <p className="text-foreground font-medium truncate flex items-center gap-2">
