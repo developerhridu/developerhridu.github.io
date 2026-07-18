@@ -15,17 +15,17 @@
       "visible": true
     },
     {
-      "id": "projects",
-      "name": "Projects",
-      "href": "/projects",
-      "icon": "folder-kanban",
-      "visible": true
-    },
-    {
       "id": "experience",
       "name": "Experience",
       "href": "/experience",
       "icon": "briefcase",
+      "visible": true
+    },
+    {
+      "id": "projects",
+      "name": "Projects",
+      "href": "/projects",
+      "icon": "folder-kanban",
       "visible": true
     },
     {
