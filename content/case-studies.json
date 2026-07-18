@@ -51,8 +51,8 @@
       "id": "03",
       "slug": "airline-fare-intelligence-platform",
       "title": "Building an Airline Fare Intelligence Platform Across Multiple GDS & NDC Suppliers",
-      "date": "2024-11-01",
-      "published": false,
+      "date": "2026-01-13",
+      "published": true,
       "description": "An airline fare intelligence platform integrating multiple GDS and NDC suppliers to aggregate, normalize, and analyze competitor pricing — turning scattered market data into data-driven fare recommendations.",
       "tags": [
         ".NET Core",
@@ -63,7 +63,8 @@
       ],
       "image": "/images/projects/fare-comparison.png",
       "body": "## The Problem\n\nAirlines need to price competitively, but seeing what competitors are actually charging in real time is hard — that data lives across many different GDS (Global Distribution System) and NDC (New Distribution Capability) supplier APIs, each shaped differently, updating constantly, and none of them talking to each other. Without a way to pull that together, pricing decisions were reactive: made without a clear, current picture of the competitive landscape.\n\n## The Solution\n\nI designed and built an end-to-end fare intelligence platform, from the backend integrations through the React dashboard airlines use to view the results.\n\nThe core of the system integrates multiple GDS and NDC suppliers to continuously pull competitor fares, flight schedules, and seat availability. Each supplier returns data in its own format and structure, so a large part of the work was building a normalization layer that reconciles all of it into one consistent internal model — without that, comparing one supplier's fare for a route against another supplier's fare for the same route isn't a fair or even valid comparison.\n\nOn top of the normalized data, I built pricing-intelligence logic that analyzes the aggregated market data and surfaces data-driven fare recommendations, so airlines can adjust pricing based on what's actually happening in the market instead of guesswork.\n\nKey design points:\n\n- Built with **.NET Core**, **EF Core**, and **PostgreSQL** on the backend, with a **React** dashboard for airlines to explore comparisons and recommendations\n- Used **Hangfire** to run supplier data pulls on a recurring schedule, keeping the comparison data continuously fresh without manual refreshes\n- Treated data normalization as a first-class concern — a dedicated layer between raw supplier responses and the comparison/recommendation engine, so adding a new supplier doesn't ripple through the rest of the system\n\n## The Results\n\n- Gave airlines a live, aggregated view of competitor pricing they didn't have before, replacing manual, ad-hoc fare checking with a continuously updated dashboard\n- Turned pricing from a reactive decision into a data-driven one, backed by real competitor fare, schedule, and availability data\n- Designed and shipped the entire platform — supplier integrations, the normalization layer, pricing-intelligence logic, and the dashboard — end-to-end as a single engineer\n",
-      "sections": []
+      "sections": [],
+      "updatedAt": "2026-07-18T11:33:42.567Z"
     }
   ]
 }
