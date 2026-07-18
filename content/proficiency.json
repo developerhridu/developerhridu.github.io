@@ -21,6 +21,11 @@
       "level": 90
     },
     {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "level": 75
+    },
+    {
       "id": "angular",
       "name": "Angular",
       "level": 80
@@ -36,11 +41,6 @@
       "level": 75
     },
     {
-      "id": "postgresql",
-      "name": "PostgreSQL",
-      "level": 75
-    },
-    {
       "id": "mongodb",
       "name": "MongoDB",
       "level": 90
@@ -49,6 +49,11 @@
       "id": "aws",
       "name": "AWS",
       "level": 70
+    },
+    {
+      "id": "react",
+      "name": "React",
+      "level": 85
     }
   ]
 }
