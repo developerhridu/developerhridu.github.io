@@ -16,17 +16,17 @@
     },
     {
       "id": "2",
-      "name": "Priya Sharma",
-      "role": "Product Manager",
-      "company": "Acme Inc",
-      "quote": "Working with Mizanur was a great experience — he understood the business context behind every feature request and often suggested better technical approaches than what we originally asked for.",
-      "email": "priya.sharma@acme.example",
-      "linkedinUrl": "https://linkedin.com/in/priya-sharma-placeholder",
-      "avatar": "https://api.dicebear.com/9.x/avataaars/svg?seed=Priya%20Sharma",
+      "name": "Ismile Sardar",
+      "role": "Software Engineer ||",
+      "company": "Devxhub",
+      "quote": "I had the pleasure of collaborating with Mizanur Rahman Hridu, an exceptional professional who specializes in RestApi building and Responsive Web Design with React.\nHis remarkable analytical skills, quick understanding of new ideas, and impressive productivity played a significant role in our team's success in MERN stack projects. Hridu's commitment to continuously improving himself and delivering remarkable outcomes was truly impressive.\nI sincere recommend Hridu for any project that requires a skilled and dependable expert.",
+      "email": "ismilesardar.dev@gmail.com",
+      "linkedinUrl": "https://www.linkedin.com/in/ismilesardar",
+      "avatar": "/images/testimonials/ismile-sardar.jpeg",
       "verifyImages": [
-        "https://verify.example/proof/priya-sharma.jpg"
+        "/images/testimonials/ismile-sardar-verify-0.png"
       ],
-      "published": false
+      "published": true
     },
     {
       "id": "3",
