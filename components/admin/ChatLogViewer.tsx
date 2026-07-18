@@ -3,10 +3,8 @@
 import { useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import config from "@/content/config.json";
-import { inputClass } from "@/components/admin/shared";
 
 const WORKER_URL = config.aiChatWorkerUrl.replace(/\/$/, "");
-const KEY_STORAGE = "worker_admin_key";
 
 interface LogEntry {
   question: string;
@@ -14,33 +12,30 @@ interface LogEntry {
   timestamp: string;
 }
 
-export default function ChatLogViewer() {
-  const [adminKey, setAdminKey] = useState<string | null>(null);
-  const [keyInput, setKeyInput] = useState("");
+interface ChatLogViewerProps {
+  token: string;
+  onAuthError: () => void;
+}
+
+export default function ChatLogViewer({ token, onAuthError }: ChatLogViewerProps) {
   const [entries, setEntries] = useState<LogEntry[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem(KEY_STORAGE);
-    if (saved) setAdminKey(saved);
+    void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (adminKey) void load(adminKey);
-  }, [adminKey]);
-
-  async function load(key: string) {
+  async function load() {
     setLoading(true);
     setError(null);
     try {
       const res = await fetch(`${WORKER_URL}/logs`, {
-        headers: { Authorization: `Bearer ${key}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (res.status === 401) {
-        localStorage.removeItem(KEY_STORAGE);
-        setAdminKey(null);
-        setError("Key rejected. Paste the current Worker admin key.");
+        onAuthError();
         return;
       }
       if (res.status === 501) {
@@ -60,46 +55,6 @@ export default function ChatLogViewer() {
     }
   }
 
-  function handleKeySubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const trimmed = keyInput.trim();
-    if (!trimmed) return;
-    localStorage.setItem(KEY_STORAGE, trimmed);
-    setAdminKey(trimmed);
-    setKeyInput("");
-  }
-
-  if (!adminKey) {
-    return (
-      <div className="max-w-md">
-        <p className="text-muted text-sm mb-4">
-          Paste the AI Chat Worker&apos;s admin key to view visitor questions.
-        </p>
-        {error && (
-          <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-            {error}
-          </div>
-        )}
-        <form onSubmit={handleKeySubmit} className="space-y-4">
-          <input
-            type="password"
-            value={keyInput}
-            onChange={(e) => setKeyInput(e.target.value)}
-            placeholder="Worker admin key"
-            className={inputClass}
-            autoFocus
-          />
-          <button
-            type="submit"
-            className="w-full px-4 py-3 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg font-medium transition-colors"
-          >
-            Continue
-          </button>
-        </form>
-      </div>
-    );
-  }
-
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -107,7 +62,7 @@ export default function ChatLogViewer() {
           Last {entries?.length ?? 0} visitor question{entries?.length === 1 ? "" : "s"}, newest first.
         </p>
         <button
-          onClick={() => void load(adminKey)}
+          onClick={() => void load()}
           disabled={loading}
           className="flex items-center gap-1.5 px-3 py-1.5 border border-border text-muted hover:text-foreground rounded-lg text-xs transition-colors disabled:opacity-50"
         >

@@ -217,7 +217,7 @@ export default function AdminEditor() {
       {tab === "proficiency" && (
         <GenericArrayEditor config={proficiencyConfig} token={token} onAuthError={handleAuthError} />
       )}
-      {tab === "chat-log" && <ChatLogViewer />}
+      {tab === "chat-log" && <ChatLogViewer token={token} onAuthError={handleAuthError} />}
     </div>
   );
 }

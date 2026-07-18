@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getCaseStudies, getCaseStudy, getRelatedCaseStudies } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
-import ContentImage from "@/components/ui/ContentImage";
+import LightboxImage from "@/components/ui/LightboxImage";
 import RelatedContent from "@/components/ui/RelatedContent";
 import Comments from "@/components/ui/Comments";
 import { ArrowLeft, Calendar, Clock, Tag, Building2 } from "lucide-react";
@@ -158,7 +158,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
           </header>
 
           {/* Image */}
-          <ContentImage
+          <LightboxImage
             src={study.image}
             alt={study.title}
             wrapperClassName="mb-12 rounded-2xl"
@@ -182,7 +182,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                       }`}
                     >
                       {section.images.map((image, imgIdx) => (
-                        <ContentImage
+                        <LightboxImage
                           key={image}
                           src={image}
                           alt={section.alt || study.title}

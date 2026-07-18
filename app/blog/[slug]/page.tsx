@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getBlogPosts, getBlogPost, getRelatedBlogPosts } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
-import ContentImage from "@/components/ui/ContentImage";
+import LightboxImage from "@/components/ui/LightboxImage";
 import RelatedContent from "@/components/ui/RelatedContent";
 import Comments from "@/components/ui/Comments";
 import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
@@ -151,7 +151,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </header>
 
           {/* Post Image */}
-          <ContentImage
+          <LightboxImage
             src={post.image}
             alt={post.title}
             wrapperClassName="mb-12 rounded-2xl"
@@ -175,7 +175,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                       }`}
                     >
                       {section.images.map((image, imgIdx) => (
-                        <ContentImage
+                        <LightboxImage
                           key={image}
                           src={image}
                           alt={section.alt || post.title}

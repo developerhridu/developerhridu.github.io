@@ -79,25 +79,29 @@ opt into logging:
    id = "paste-the-id-here"
    ```
 
-2. Set an admin key (pick any long random string yourself) so the log
-   endpoint isn't publicly readable:
+2. Redeploy: `npm run deploy`. That's it — the `/logs` endpoint is protected
+   without any extra secret to manage. The `/admin` panel's "Chat Log" tab
+   reuses the GitHub PAT you already pasted there: the Worker calls GitHub's
+   `/user` API with it and only allows the request through if it belongs to
+   the repo owner (`developerhridu`).
+
+3. (Optional) For scripted/curl access outside the browser, you can still
+   set a static admin key as a fallback credential:
 
    ```bash
    npx wrangler secret put ADMIN_KEY
    ```
 
-3. Redeploy: `npm run deploy`.
-
-4. Fetch recent Q&A pairs (last 100, newest first):
+   Then redeploy, and fetch recent Q&A pairs (last 100, newest first) with:
 
    ```bash
    curl -H "Authorization: Bearer <your-admin-key>" \
      https://hridu-portfolio-ai-chat.<your-subdomain>.workers.dev/logs
    ```
 
-Until you do this, `/logs` returns `501 Logging is not configured` and the
-chat itself works exactly the same either way — logging is fire-and-forget
-and never blocks or affects the answer a visitor sees.
+Until you complete step 1, `/logs` returns `501 Logging is not configured`
+and the chat itself works exactly the same either way — logging is
+fire-and-forget and never blocks or affects the answer a visitor sees.
 
 ## Notes
 

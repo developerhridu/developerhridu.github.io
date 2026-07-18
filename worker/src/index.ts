@@ -6,8 +6,8 @@ export interface Env {
   ADMIN_KEY?: string;
 }
 
-const CONTENT_BASE =
-  "https://raw.githubusercontent.com/developerhridu/developerhridu.github.io/main/content";
+const REPO_OWNER = "developerhridu";
+const CONTENT_BASE = `https://raw.githubusercontent.com/${REPO_OWNER}/developerhridu.github.io/main/content`;
 const ALLOWED_ORIGINS = ["https://developerhridu.github.io", "http://localhost:3000"];
 const MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
 
@@ -36,15 +36,38 @@ async function logQa(env: Env, question: string, answer: string) {
   }
 }
 
+/** True if `token` is a valid GitHub token belonging to the repo owner — lets the admin
+ *  panel reuse the same GitHub PAT it already collected instead of a separate secret. */
+async function isRepoOwnerToken(token: string): Promise<boolean> {
+  try {
+    const res = await fetch("https://api.github.com/user", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+        "User-Agent": "hridu-portfolio-ai-chat-worker",
+      },
+    });
+    if (!res.ok) return false;
+    const data = await res.json<{ login?: string }>();
+    return data.login === REPO_OWNER;
+  } catch {
+    return false;
+  }
+}
+
 async function handleLogs(request: Request, env: Env): Promise<Response> {
-  if (!env.ADMIN_KEY || !env.CHAT_LOG) {
+  if (!env.CHAT_LOG) {
     return new Response(JSON.stringify({ error: "Logging is not configured for this Worker" }), {
       status: 501,
       headers: { "Content-Type": "application/json", ...corsHeaders(request) },
     });
   }
 
-  if (request.headers.get("Authorization") !== `Bearer ${env.ADMIN_KEY}`) {
+  const token = request.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
+  const isAdminKey = !!token && !!env.ADMIN_KEY && token === env.ADMIN_KEY;
+  const isAuthorized = isAdminKey || (!!token && (await isRepoOwnerToken(token)));
+
+  if (!isAuthorized) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json", ...corsHeaders(request) },
