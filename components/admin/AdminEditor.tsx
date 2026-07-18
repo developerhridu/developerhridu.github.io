@@ -17,6 +17,7 @@ import {
   menuConfig,
   adminMenuConfig,
   proficiencyConfig,
+  servicesConfig,
 } from "@/components/admin/arrayConfigs";
 
 const PASSWORD_OK_KEY = "admin_pw_ok";
@@ -26,6 +27,7 @@ type Tab =
   | "blog"
   | "case-study"
   | "experience"
+  | "services"
   | "certifications"
   | "testimonials"
   | "projects"
@@ -36,7 +38,7 @@ type Tab =
   | "admin-menu";
 
 const TABS: { key: Tab; label: string }[] = adminMenuData.tabs
-  .filter((t) => t.visible !== false)
+  .filter((t) => t.published !== false)
   .map((t) => ({ key: t.id as Tab, label: t.label }));
 
 export default function AdminEditor() {
@@ -194,6 +196,9 @@ export default function AdminEditor() {
         <BlogCaseStudyManager kind="case-study" token={token} onAuthError={handleAuthError} />
       )}
       {tab === "experience" && <ExperienceManager token={token} onAuthError={handleAuthError} />}
+      {tab === "services" && (
+        <GenericArrayEditor config={servicesConfig} token={token} onAuthError={handleAuthError} />
+      )}
       {tab === "certifications" && (
         <GenericArrayEditor config={certificationsConfig} token={token} onAuthError={handleAuthError} />
       )}

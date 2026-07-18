@@ -1,0 +1,39 @@
+{
+  "services": [
+    {
+      "id": "backend-api-development",
+      "title": "Backend & API Development",
+      "icon": "server",
+      "description": "Scalable REST/SOAP APIs and backend systems built with ASP.NET Core, EF Core, and clean, maintainable architecture.",
+      "highlights": ["Clean Architecture", "CQRS", "API design & documentation"]
+    },
+    {
+      "id": "microservices-architecture",
+      "title": "Microservices & System Architecture",
+      "icon": "layers",
+      "description": "Designing and building multi-tenant, event-driven microservices that scale — from service boundaries to messaging and data ownership.",
+      "highlights": ["Multi-tenant SaaS", "Event-driven design", "RabbitMQ / Kafka"]
+    },
+    {
+      "id": "third-party-integrations",
+      "title": "Third-Party & GDS/NDC API Integrations",
+      "icon": "plug",
+      "description": "Integrating airline GDS/NDC APIs, payment gateways, and other third-party services into production systems reliably.",
+      "highlights": ["Airline GDS/NDC APIs", "Payment gateways", "Webhook & event integrations"]
+    },
+    {
+      "id": "performance-optimization",
+      "title": "Performance Optimization & Scaling",
+      "icon": "gauge",
+      "description": "Profiling and optimizing backend systems — from query tuning to caching — to handle production load without surprises.",
+      "highlights": ["Query & DB tuning", "Redis caching", "Load testing"]
+    },
+    {
+      "id": "legacy-modernization",
+      "title": "Legacy Modernization & Code Review",
+      "icon": "refresh-cw",
+      "description": "Modernizing legacy .NET systems and mentoring teams through code review, without disrupting what already works.",
+      "highlights": ["Legacy system migration", "Code review", "Technical mentoring"]
+    }
+  ]
+}

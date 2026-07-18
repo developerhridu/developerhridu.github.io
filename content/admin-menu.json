@@ -3,12 +3,12 @@
     {
       "id": "blog",
       "label": "Blog Posts",
-      "visible": true
+      "published": true
     },
     {
       "id": "case-study",
       "label": "Case Studies",
-      "visible": true
+      "published": true
     },
     {
       "id": "testimonials",
@@ -18,42 +18,52 @@
     {
       "id": "experience",
       "label": "Experience",
-      "visible": true
+      "published": true
+    },
+    {
+      "id": "services",
+      "label": "Services",
+      "published": true
     },
     {
       "id": "certifications",
       "label": "Certifications",
-      "visible": true
+      "published": true
+    },
+    {
+      "id": "testimonials",
+      "label": "Testimonials",
+      "published": true
     },
     {
       "id": "projects",
       "label": "Projects",
-      "visible": true
+      "published": true
     },
     {
       "id": "menu",
       "label": "Menu",
-      "visible": true
+      "published": true
     },
     {
       "id": "profile",
       "label": "Profile",
-      "visible": true
+      "published": true
     },
     {
       "id": "skills",
       "label": "Skills",
-      "visible": true
+      "published": true
     },
     {
       "id": "proficiency",
       "label": "Proficiency",
-      "visible": true
+      "published": true
     },
     {
       "id": "admin-menu",
       "label": "Admin Menu",
-      "visible": true
+      "published": true
     }
   ]
 }

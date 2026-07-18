@@ -20,6 +20,7 @@ import {
   Layers,
   Search,
   Quote,
+  Wrench,
 } from "lucide-react";
 import menu from "@/content/menu.json";
 import profile from "@/content/profile.json";
@@ -29,7 +30,7 @@ import ThemeToggle from "@/components/ui/ThemeToggle";
 import SearchPalette from "@/components/ui/SearchPalette";
 
 const navLinks = menu.navLinks.filter(
-  (link) => link.visible !== false && (link.id !== "cv" || !!profile.resumeUrl)
+  (link) => link.published !== false && (link.id !== "cv" || !!profile.resumeUrl)
 );
 
 function resolveHref(link: (typeof navLinks)[number]): string {
@@ -48,6 +49,7 @@ const iconRegistry: Record<string, typeof Home> = {
   newspaper: Newspaper,
   layers: Layers,
   quote: Quote,
+  wrench: Wrench,
 };
 
 export default function Navbar() {
