@@ -54,6 +54,11 @@
       "id": "aws",
       "name": "AWS",
       "level": 70
+    },
+    {
+      "id": "ef-core",
+      "name": "EF Core",
+      "level": 90
     }
   ]
 }
