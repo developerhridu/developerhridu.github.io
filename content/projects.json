@@ -83,6 +83,24 @@
       "featured": false
     },
     {
+      "id": "07",
+      "title": "Airline Supplier Integration Projects",
+      "description": "8 cloud-native supplier integration projects connecting OTA platforms with major airlines and GDS systems",
+      "longDescription": "Developed 8 cloud-native supplier integration projects (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, Indigo) to integrate supplier APIs into client OTA platforms. These integrations increased flight search feed by 27% and enabled seamless booking across multiple airline systems.",
+      "tags": [
+        ".NET Core",
+        "Microservices",
+        "REST APIs",
+        "SOAP",
+        "NDC",
+        "Azure"
+      ],
+      "image": "/images/projects/supplier.png",
+      "liveUrl": null,
+      "githubUrl": null,
+      "featured": false
+    },
+    {
       "id": "06",
       "title": "DevNote Blog-site",
       "description": "A blog platform allowing users to read and write blog posts",
@@ -99,24 +117,6 @@
         "frontend": "https://github.com/developerhridu/DevNote.UI",
         "backend": "https://github.com/developerhridu/DevNote.API"
       },
-      "featured": false
-    },
-    {
-      "id": "07",
-      "title": "Airline Supplier Integration Projects",
-      "description": "8 cloud-native supplier integration projects connecting OTA platforms with major airlines and GDS systems",
-      "longDescription": "Developed 8 cloud-native supplier integration projects (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, Indigo) to integrate supplier APIs into client OTA platforms. These integrations increased flight search feed by 27% and enabled seamless booking across multiple airline systems.",
-      "tags": [
-        ".NET Core",
-        "Microservices",
-        "REST APIs",
-        "SOAP",
-        "NDC",
-        "Azure"
-      ],
-      "image": "/images/projects/supplier.png",
-      "liveUrl": null,
-      "githubUrl": null,
       "featured": false
     },
     {
