@@ -30,6 +30,7 @@ interface Entry {
   email?: string;
   linkedinUrl?: string;
   verifyImages: string[];
+  published: boolean;
 }
 
 const PATH = "content/testimonials.json";
@@ -61,6 +62,7 @@ function blankEntry(): Entry {
     email: "",
     linkedinUrl: "",
     verifyImages: [],
+    published: false,
   };
 }
 
@@ -109,6 +111,7 @@ export default function TestimonialsManager({
       const loaded: Entry[] = (parsed[ARRAY_KEY] ?? []).map((e: Entry) => ({
         ...e,
         verifyImages: e.verifyImages ?? [],
+        published: e.published ?? true,
       }));
       setEntries(loaded);
       setLoadedOrderIds(loaded.map((e) => e.id));
@@ -418,7 +421,14 @@ export default function TestimonialsManager({
                   {entries.map((entry, index) => (
                     <tr key={entry.id} className="border-b border-border last:border-b-0">
                       <td className="px-4 py-3 min-w-0">
-                        <p className="text-foreground font-medium truncate">{entry.name}</p>
+                        <p className="text-foreground font-medium truncate flex items-center gap-2">
+                          {entry.name}
+                          {!entry.published && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-yellow-500/10 text-yellow-500 border border-yellow-500/30">
+                              Draft
+                            </span>
+                          )}
+                        </p>
                         <p className="text-muted text-xs">
                           {[entry.role, entry.company].filter(Boolean).join(" · ") || "—"} ·{" "}
                           {entry.verifyImages.length}{" "}
@@ -568,6 +578,21 @@ function EntryForm({
           className={`${inputClass} resize-none`}
         />
       </div>
+
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={entry.published}
+          onChange={(e) => setEntry({ ...entry, published: e.target.checked })}
+          className="w-4 h-4 accent-accent"
+        />
+        <span className="text-sm text-foreground">
+          Published{" "}
+          <span className="text-muted">
+            (visible on the Testimonials section &amp; page — unchecked stays a draft)
+          </span>
+        </span>
+      </label>
 
       <div>
         <label className="block text-xs uppercase tracking-wide text-muted mb-1">Avatar</label>

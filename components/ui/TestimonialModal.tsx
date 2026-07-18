@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Quote, Mail, Linkedin, BadgeCheck } from "lucide-react";
+import LightboxImage from "@/components/ui/LightboxImage";
 import type { Testimonial } from "@/types";
 
 interface TestimonialModalProps {
@@ -73,9 +74,7 @@ export default function TestimonialModal({ testimonial, onClose }: TestimonialMo
                 <div className="flex-1 min-w-0">
                   <h2 className="text-xl font-bold text-foreground truncate flex items-center gap-1.5">
                     <span className="truncate">{testimonial.name}</span>
-                    {testimonial.verifyImages && testimonial.verifyImages.length > 0 && (
-                      <BadgeCheck size={18} className="text-accent shrink-0" aria-label="Verified" />
-                    )}
+                    <BadgeCheck size={18} className="text-accent shrink-0" aria-label="Verified" />
                   </h2>
                   {(testimonial.role || testimonial.company) && (
                     <p className="text-muted text-sm truncate">
@@ -117,11 +116,11 @@ export default function TestimonialModal({ testimonial, onClose }: TestimonialMo
                   </p>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {testimonial.verifyImages.map((image, i) => (
-                      <img
-                        key={i}
+                      <LightboxImage
+                        key={image}
                         src={image}
                         alt={`Verification ${i + 1} for ${testimonial.name}'s testimonial`}
-                        className="w-full h-auto rounded-lg border border-border"
+                        imgClassName="w-full h-auto rounded-lg border border-border"
                       />
                     ))}
                   </div>

@@ -15,7 +15,9 @@ interface TestimonialsProps {
 }
 
 export default function Testimonials({ showHeading = true, noSection = false }: TestimonialsProps) {
-  const testimonials = (testimonialsData.testimonials || []) as Testimonial[];
+  const testimonials = ((testimonialsData.testimonials || []) as Testimonial[]).filter(
+    (t) => t.published !== false
+  );
   const [selected, setSelected] = useState<Testimonial | null>(null);
 
   if (testimonials.length === 0) return null;
@@ -48,7 +50,7 @@ export default function Testimonials({ showHeading = true, noSection = false }: 
               </div>
 
               <Quote className="w-8 h-8 text-accent/40 mb-3 shrink-0" />
-              <p className="text-muted flex-1 mb-4">&ldquo;{testimonial.quote}&rdquo;</p>
+              <p className="text-muted flex-1 mb-4 line-clamp-4">&ldquo;{testimonial.quote}&rdquo;</p>
 
               <div className="flex items-center gap-3">
                 {testimonial.avatar ? (
@@ -67,13 +69,7 @@ export default function Testimonials({ showHeading = true, noSection = false }: 
                 <div className="flex-1 min-w-0">
                   <p className="text-foreground font-medium truncate flex items-center gap-1">
                     <span className="truncate">{testimonial.name}</span>
-                    {testimonial.verifyImages && testimonial.verifyImages.length > 0 && (
-                      <BadgeCheck
-                        size={15}
-                        className="text-accent shrink-0"
-                        aria-label="Verified"
-                      />
-                    )}
+                    <BadgeCheck size={15} className="text-accent shrink-0" aria-label="Verified" />
                   </p>
                   {(testimonial.role || testimonial.company) && (
                     <p className="text-muted text-sm truncate">

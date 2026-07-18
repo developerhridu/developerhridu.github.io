@@ -11,7 +11,8 @@
       "avatar": "/images/testimonials/muhammad-sayyedul-awwab.jpeg",
       "verifyImages": [
         "/images/testimonials/muhammad-sayyedul-awwab-verify-0.png"
-      ]
+      ],
+      "published": true
     },
     {
       "id": "2",
@@ -24,7 +25,8 @@
       "avatar": "https://api.dicebear.com/9.x/avataaars/svg?seed=Priya%20Sharma",
       "verifyImages": [
         "https://verify.example/proof/priya-sharma.jpg"
-      ]
+      ],
+      "published": false
     },
     {
       "id": "3",
@@ -37,7 +39,8 @@
       "avatar": "https://api.dicebear.com/9.x/avataaars/svg?seed=Daniel%20Lee",
       "verifyImages": [
         "https://verify.example/proof/daniel-lee.jpg"
-      ]
+      ],
+      "published": false
     }
   ]
 }

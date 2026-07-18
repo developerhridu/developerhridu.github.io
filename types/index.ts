@@ -92,6 +92,7 @@ export interface Testimonial {
   email?: string;
   linkedinUrl?: string;
   verifyImages?: string[];
+  published?: boolean;
 }
 
 // Service types
