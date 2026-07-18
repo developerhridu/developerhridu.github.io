@@ -38,13 +38,14 @@
         {
           "images": [
             "/images/case-studies/editable-website-without-a-backend-section-0-0.png",
-            "/images/case-studies/editable-website-without-a-backend-section-0-1.png"
+            "/images/case-studies/editable-website-without-a-backend-section-0-1.png",
+            "/images/case-studies/editable-website-without-a-backend-section-0-2.png"
           ],
           "alt": "",
           "body": "Behind the scenes, all of the site's content is stored as simple, organized files inside the same project that runs the website. The control panel doesn't talk to a database — it talks directly to where those files already live. When I save a change in the panel, it writes the update straight back into the project itself, the same way I would if I were editing the code by hand — except now it happens automatically, in seconds, from a form instead of a code editor. The website then rebuilds and republishes itself automatically, the same way it already does whenever I ship a code change.\n\nTo keep it safe, the control panel sits behind a password screen, and beyond that, a personal access key that only I have is required before any change can actually be saved. Without that key, nothing can be published — someone could reach the login screen, but they could never change anything on the live site.\n\nI also designed it to behave like a proper content editor, not just a raw text form:\n\n- **Photo uploads** — I can upload a new photo for a testimonial or project, and the panel replaces the old one automatically so nothing unused is left behind.\n- **Reordering** — I can rearrange items (like which testimonial shows first) with simple up/down controls, and nothing changes on the live site until I explicitly hit \"Save.\"\n- **Show/hide toggles** — Any section, like a menu link or an entire page, can be hidden from visitors with one checkbox, without deleting the content — useful for drafts I'm not ready to publish yet.\n\n## The Results\n\n- A fully editable website — content updates now take seconds from a form, not a code change and a manual publish.\n- Still completely free to host, since no database or server was added — it's the exact same lightweight, free website underneath.\n- Every change is automatically recorded with a full history, the same way the rest of the website's code already is — so I can always see what changed and undo it if needed.\n- I can now update the site from my phone or any browser, without opening a code editor."
         }
       ],
-      "updatedAt": "2026-07-18T11:28:55.385Z"
+      "updatedAt": "2026-07-18T11:32:30.415Z"
     },
     {
       "id": "03",
