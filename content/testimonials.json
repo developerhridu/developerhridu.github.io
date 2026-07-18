@@ -9,7 +9,9 @@
       "email": "alex.morgan@techcorp.example",
       "linkedinUrl": "https://www.linkedin.com/in/sayyedulawwab/",
       "avatar": "/images/testimonials/muhammad-sayyedul-awwab.jpeg",
-      "verifyImages": []
+      "verifyImages": [
+        "/images/testimonials/muhammad-sayyedul-awwab-verify-0.png"
+      ]
     },
     {
       "id": "2",
