@@ -182,30 +182,41 @@ export default function ResumePage() {
                         <span className="text-sm text-muted print:text-black">{exp.location}</span>
                       )}
                     </div>
-                    {exp.description && (
-                      <p className="text-sm text-muted print:text-black mb-2">{exp.description}</p>
-                    )}
-                    {exp.highlights.length > 0 && (
-                      <ul className="space-y-1 mb-2">
-                        {exp.highlights.map((h, i) => (
-                          <li
-                            key={i}
-                            className="text-sm text-muted print:text-black flex items-start gap-2"
-                          >
-                            <span className="text-accent print:text-black mt-1">•</span>
-                            {h}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    {exp.technologies.length > 0 && (
-                      <p className="text-xs text-muted print:text-black">
-                        <span className="font-semibold text-foreground print:text-black">
-                          Tech-Stack:
-                        </span>{" "}
-                        {exp.technologies.join(", ")}
-                      </p>
-                    )}
+                    <div className="space-y-4">
+                      {exp.projects.map((project) => (
+                        <div key={project.name}>
+                          <h4 className="text-sm font-semibold text-foreground print:text-black italic">
+                            {project.name}
+                          </h4>
+                          {project.description && (
+                            <p className="text-sm text-muted print:text-black mb-1">
+                              {project.description}
+                            </p>
+                          )}
+                          {project.technologies.length > 0 && (
+                            <p className="text-xs text-muted print:text-black mb-1">
+                              <span className="font-semibold text-foreground print:text-black">
+                                Tech-Stack:
+                              </span>{" "}
+                              {project.technologies.join(", ")}
+                            </p>
+                          )}
+                          {project.highlights.length > 0 && (
+                            <ul className="space-y-1">
+                              {project.highlights.map((h, i) => (
+                                <li
+                                  key={i}
+                                  className="text-sm text-muted print:text-black flex items-start gap-2"
+                                >
+                                  <span className="text-accent print:text-black mt-1">•</span>
+                                  {h}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>

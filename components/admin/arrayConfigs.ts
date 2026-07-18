@@ -1,24 +1,5 @@
 import type { ArrayConfig } from "@/components/admin/GenericArrayEditor";
 
-export const experienceConfig: ArrayConfig = {
-  path: "content/experience.json",
-  arrayKey: "experiences",
-  label: "Experience",
-  titleField: "company",
-  subtitleField: "role",
-  imageFolder: "experience",
-  fields: [
-    { key: "company", label: "Company", type: "text" },
-    { key: "role", label: "Role", type: "text" },
-    { key: "period", label: "Period", type: "text", placeholder: "April 2024 - Present" },
-    { key: "location", label: "Location", type: "text" },
-    { key: "logo", label: "Logo", type: "image" },
-    { key: "description", label: "Description", type: "textarea" },
-    { key: "highlights", label: "Highlights (one per line)", type: "list" },
-    { key: "technologies", label: "Technologies (comma separated)", type: "tags" },
-  ],
-};
-
 export const certificationsConfig: ArrayConfig = {
   path: "content/certifications.json",
   arrayKey: "certifications",

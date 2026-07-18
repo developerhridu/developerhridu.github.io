@@ -71,30 +71,47 @@ export default function Experience({ showHeading = true }: ExperienceProps) {
                       </span>
                     </div>
 
-                    <p className="text-muted mb-4">{exp.description}</p>
-
-                    {/* Highlights */}
-                    <ul className="space-y-2 mb-4">
-                      {exp.highlights.map((highlight, hIdx) => (
-                        <li
-                          key={hIdx}
-                          className="flex items-start gap-2 text-sm text-muted"
+                    {/* Projects */}
+                    <div className="space-y-5">
+                      {exp.projects.map((project) => (
+                        <div
+                          key={project.name}
+                          className="pl-3 border-l-2 border-accent/30"
                         >
-                          <span className="text-accent mt-1">-</span>
-                          {highlight}
-                        </li>
-                      ))}
-                    </ul>
+                          <h4 className="text-sm font-semibold text-foreground mb-1">
+                            {project.name}
+                          </h4>
+                          {project.description && (
+                            <p className="text-sm text-muted mb-2">{project.description}</p>
+                          )}
 
-                    {/* Tech Stack */}
-                    <div className="flex flex-wrap gap-2">
-                      {exp.technologies.map((tech) => (
-                        <span
-                          key={tech}
-                          className="font-mono px-2 py-1 bg-surface border border-border text-muted rounded text-xs uppercase tracking-wide"
-                        >
-                          {tech}
-                        </span>
+                          {project.highlights.length > 0 && (
+                            <ul className="space-y-2 mb-3">
+                              {project.highlights.map((highlight, hIdx) => (
+                                <li
+                                  key={hIdx}
+                                  className="flex items-start gap-2 text-sm text-muted"
+                                >
+                                  <span className="text-accent mt-1">-</span>
+                                  {highlight}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+
+                          {project.technologies.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {project.technologies.map((tech) => (
+                                <span
+                                  key={tech}
+                                  className="font-mono px-2 py-1 bg-surface border border-border text-muted rounded text-xs uppercase tracking-wide"
+                                >
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       ))}
                     </div>
                   </GlassCard>

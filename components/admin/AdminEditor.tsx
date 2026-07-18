@@ -6,10 +6,10 @@ import configData from "@/content/config.json";
 import { inputClass } from "@/components/admin/shared";
 import BlogCaseStudyManager from "@/components/admin/BlogCaseStudyManager";
 import GenericArrayEditor from "@/components/admin/GenericArrayEditor";
+import ExperienceManager from "@/components/admin/ExperienceManager";
 import ProfileEditor from "@/components/admin/ProfileEditor";
 import SkillsEditor from "@/components/admin/SkillsEditor";
 import {
-  experienceConfig,
   certificationsConfig,
   projectsConfig,
   menuConfig,
@@ -196,9 +196,7 @@ export default function AdminEditor() {
       {tab === "case-study" && (
         <BlogCaseStudyManager kind="case-study" token={token} onAuthError={handleAuthError} />
       )}
-      {tab === "experience" && (
-        <GenericArrayEditor config={experienceConfig} token={token} onAuthError={handleAuthError} />
-      )}
+      {tab === "experience" && <ExperienceManager token={token} onAuthError={handleAuthError} />}
       {tab === "certifications" && (
         <GenericArrayEditor config={certificationsConfig} token={token} onAuthError={handleAuthError} />
       )}

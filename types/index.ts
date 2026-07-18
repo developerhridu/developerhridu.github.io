@@ -39,6 +39,13 @@ export interface Project {
 }
 
 // Experience types
+export interface ExperienceProject {
+  name: string;
+  description?: string;
+  technologies: string[];
+  highlights: string[];
+}
+
 export interface Experience {
   id: string;
   company: string;
@@ -46,9 +53,7 @@ export interface Experience {
   role: string;
   period: string;
   location?: string;
-  description: string;
-  highlights: string[];
-  technologies: string[];
+  projects: ExperienceProject[];
 }
 
 // Education types
