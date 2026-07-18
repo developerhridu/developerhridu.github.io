@@ -18,12 +18,14 @@ import {
   Handshake,
   Newspaper,
   Layers,
+  Search,
 } from "lucide-react";
 import menu from "@/content/menu.json";
 import profile from "@/content/profile.json";
 import { trackEvent } from "@/lib/analytics";
 import { resolveCvHref } from "@/lib/cv";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import SearchPalette from "@/components/ui/SearchPalette";
 
 const navLinks = menu.navLinks.filter(
   (link) => link.visible !== false && (link.id !== "cv" || !!profile.resumeUrl)
@@ -48,6 +50,7 @@ const iconRegistry: Record<string, typeof Home> = {
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
 
   const Logo = (
@@ -113,7 +116,14 @@ export default function Navbar() {
           })}
         </div>
 
-        <ThemeToggle className="mt-auto mb-1" />
+        <button
+          onClick={() => setSearchOpen(true)}
+          aria-label="Search"
+          className="mt-auto flex items-center justify-center w-11 h-11 rounded-lg text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
+        >
+          <Search size={20} />
+        </button>
+        <ThemeToggle className="mb-1" />
 
         <a
           href={profile.social.upwork}
@@ -142,6 +152,13 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16">
             {Logo}
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => setSearchOpen(true)}
+                aria-label="Search"
+                className="flex items-center justify-center w-9 h-9 rounded-lg text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
+              >
+                <Search size={18} />
+              </button>
               <ThemeToggle className="w-9 h-9" />
               <a
                 href={profile.social.upwork}
@@ -204,6 +221,8 @@ export default function Navbar() {
           )}
         </div>
       </motion.nav>
+
+      <SearchPalette open={searchOpen} onOpenChange={setSearchOpen} />
     </>
   );
 }

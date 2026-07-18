@@ -178,9 +178,22 @@ export default {
     }
 
     let question: string;
+    let history: { role: "user" | "assistant"; content: string }[];
     try {
-      const body = await request.json<{ question?: string }>();
+      const body = await request.json<{
+        question?: string;
+        history?: { role?: string; content?: string }[];
+      }>();
       question = (body.question ?? "").trim().slice(0, 500);
+      history = Array.isArray(body.history)
+        ? body.history
+            .filter(
+              (m): m is { role: "user" | "assistant"; content: string } =>
+                (m.role === "user" || m.role === "assistant") && typeof m.content === "string"
+            )
+            .slice(-6)
+            .map((m) => ({ role: m.role, content: m.content.slice(0, 500) }))
+        : [];
     } catch {
       return new Response(JSON.stringify({ error: "Invalid request body" }), {
         status: 400,
@@ -203,6 +216,7 @@ export default {
       const result = await env.AI.run(MODEL, {
         messages: [
           { role: "system", content: systemPrompt },
+          ...history,
           { role: "user", content: question },
         ],
       });

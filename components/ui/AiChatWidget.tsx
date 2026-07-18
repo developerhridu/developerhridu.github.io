@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, X, Send, Sparkles } from "lucide-react";
 import { askFaqBot, STARTER_QUESTIONS } from "@/lib/faqBot";
-import { askAi } from "@/lib/aiChat";
+import { askAi, type AiChatHistoryMessage } from "@/lib/aiChat";
 import { trackEvent } from "@/lib/analytics";
 import config from "@/content/config.json";
 
@@ -36,13 +36,17 @@ export default function AiChatWidget() {
   async function ask(question: string) {
     const trimmed = question.trim();
     if (!trimmed || loading) return;
+    const history: AiChatHistoryMessage[] = messages.map((m) => ({
+      role: m.role === "user" ? "user" : "assistant",
+      content: m.text,
+    }));
     setMessages((prev) => [...prev, { role: "user", text: trimmed }]);
     setInput("");
     trackEvent("faq_bot_question", { question: trimmed });
 
     if (AI_WORKER_URL) {
       setLoading(true);
-      const aiAnswer = await askAi(trimmed, AI_WORKER_URL);
+      const aiAnswer = await askAi(trimmed, AI_WORKER_URL, history);
       setLoading(false);
       if (aiAnswer) {
         setMessages((prev) => [...prev, { role: "bot", text: aiAnswer }]);

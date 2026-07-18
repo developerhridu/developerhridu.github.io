@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/projects`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE_URL}/experience`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/certifications`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE_URL}/resume`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/blog`, lastModified: LAST_MODIFIED, changeFrequency: "weekly", priority: 0.6 },
     ...getPublishedBlogPosts().map((post) => ({
       url: `${BASE_URL}/blog/${post.slug}`,
