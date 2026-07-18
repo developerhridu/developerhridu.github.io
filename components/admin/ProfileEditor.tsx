@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import {
   fetchContentFile,
-  updateContentFile,
-  uploadBinaryFile,
-  deleteBinaryFile,
+  commitFiles,
+  encodeBase64Unicode,
   GitHubApiError,
+  type FileChange,
 } from "@/lib/github";
 import { ExternalLink, Upload } from "lucide-react";
 import { inputClass, fileToBase64 } from "@/components/admin/shared";
@@ -146,12 +146,14 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
     let resumeUrl = form.resumeUrl;
     setSaving(true);
     setError(null);
+
+    const changes: FileChange[] = [];
     try {
       if (avatarFile) {
         const ext = avatarFile.name.split(".").pop()?.toLowerCase() || "png";
         const repoPath = `public/images/profile-avatar.${ext}`;
         const base64 = await fileToBase64(avatarFile);
-        await uploadBinaryFile(repoPath, base64, "content: update profile avatar", token);
+        changes.push({ path: repoPath, content: base64 });
         avatar = `/images/profile-avatar.${ext}`;
       }
 
@@ -159,8 +161,15 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
         const ext = resumeFile.name.split(".").pop()?.toLowerCase() || "pdf";
         const repoPath = `public/resume.${ext}`;
         const base64 = await fileToBase64(resumeFile);
-        await uploadBinaryFile(repoPath, base64, "content: update resume", token);
+        changes.push({ path: repoPath, content: base64 });
         resumeUrl = `/resume.${ext}`;
+      }
+
+      if (avatarFile && oldAvatar && oldAvatar !== avatar && oldAvatar.startsWith("/images/profile-avatar.")) {
+        changes.push({ path: `public${oldAvatar}`, content: null });
+      }
+      if (resumeFile && oldResumeUrl && oldResumeUrl !== resumeUrl && oldResumeUrl.startsWith("/resume.")) {
+        changes.push({ path: `public${oldResumeUrl}`, content: null });
       }
 
       const payload = {
@@ -186,28 +195,14 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
       };
 
       const content = JSON.stringify(payload, null, 2) + "\n";
-      await updateContentFile(PATH, content, fileSha, "content: update profile", token);
+      changes.push({ path: PATH, content: encodeBase64Unicode(content) });
+
+      await commitFiles(changes, "content: update profile", token, { path: PATH, expectedSha: fileSha });
       setAvatarFile(null);
       setResumeFile(null);
       setSuccessMsg(
         "Saved and committed. The site will redeploy automatically — check the Actions tab in a minute or two."
       );
-
-      if (avatarFile && oldAvatar && oldAvatar !== avatar && oldAvatar.startsWith("/images/profile-avatar.")) {
-        try {
-          await deleteBinaryFile(`public${oldAvatar}`, "content: remove orphaned profile avatar", token);
-        } catch {
-          // Best-effort cleanup — the profile update already succeeded either way.
-        }
-      }
-
-      if (resumeFile && oldResumeUrl && oldResumeUrl !== resumeUrl && oldResumeUrl.startsWith("/resume.")) {
-        try {
-          await deleteBinaryFile(`public${oldResumeUrl}`, "content: remove orphaned resume", token);
-        } catch {
-          // Best-effort cleanup — the profile update already succeeded either way.
-        }
-      }
 
       await load();
     } catch (err) {

@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import {
   fetchContentFile,
-  updateContentFile,
-  uploadBinaryFile,
-  deleteBinaryFile,
+  commitFiles,
+  encodeBase64Unicode,
   GitHubApiError,
+  type FileChange,
 } from "@/lib/github";
 import { Pencil, Trash2, Plus, ExternalLink, X, Upload, ArrowUp, ArrowDown } from "lucide-react";
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
@@ -213,17 +213,19 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
     setImageFiles({});
   }
 
-  async function persist(newEntries: RawEntry[], message: string): Promise<boolean> {
+  async function commit(changes: FileChange[], newEntries: RawEntry[], message: string): Promise<boolean> {
     if (!fileSha) {
       setError("Missing file version — reload the list before saving.");
       return false;
     }
+    const payload = { [config.arrayKey]: newEntries };
+    const content = JSON.stringify(payload, null, 2) + "\n";
+    const allChanges = [...changes, { path: config.path, content: encodeBase64Unicode(content) }];
+
     setSaving(true);
     setError(null);
     try {
-      const payload = { [config.arrayKey]: newEntries };
-      const content = JSON.stringify(payload, null, 2) + "\n";
-      await updateContentFile(config.path, content, fileSha, message, token);
+      await commitFiles(allChanges, message, token, { path: config.path, expectedSha: fileSha });
       setEntries(newEntries);
       setEditingIndex(null);
       setEditingId(null);
@@ -240,21 +242,9 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
     }
   }
 
-  async function cleanupOrphanedImages(candidatePaths: string[], stillAlive: RawEntry[], label: string) {
-    for (const p of candidatePaths) {
-      const stillReferenced = stillAlive.some((e) => managedImagePaths(e, config).includes(p));
-      if (stillReferenced) continue;
-      try {
-        await deleteBinaryFile(toRepoPath(p), `content: remove orphaned image for ${label}`, token);
-      } catch {
-        // Best-effort cleanup — the content change already succeeded either way.
-      }
-    }
-  }
-
   async function handleSaveOrder() {
     if (!entries) return;
-    await persist(entries, `content: reorder ${config.label}`);
+    await commit([], entries, `content: reorder ${config.label}`);
   }
 
   function discardOrder() {
@@ -273,6 +263,7 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
     const oldManagedPaths = previousEntry ? managedImagePaths(previousEntry, config) : [];
 
     const workingForm = { ...form };
+    const changes: FileChange[] = [];
 
     const imageFields = config.fields.filter((f) => f.type === "image");
     if (imageFields.length > 0) {
@@ -288,7 +279,7 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
             imageFields.length > 1 ? `-${field.key}` : ""
           }.${ext}`;
           const base64 = await fileToBase64(file);
-          await uploadBinaryFile(repoPath, base64, `content: upload image for ${titleVal}`, token);
+          changes.push({ path: repoPath, content: base64 });
           workingForm[field.key] = `/images/${config.imageFolder}/${slug}${
             imageFields.length > 1 ? `-${field.key}` : ""
           }.${ext}`;
@@ -312,13 +303,14 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
       updated = current.map((e) => (String(e.id) === editingId ? outEntry : e));
     }
 
-    const message = isNew ? `content: add ${titleVal}` : `content: update ${titleVal}`;
-    const ok = await persist(updated, message);
-    setImageFiles({});
-
-    if (ok && oldManagedPaths.length > 0) {
-      await cleanupOrphanedImages(oldManagedPaths, updated, titleVal);
+    for (const p of oldManagedPaths) {
+      const stillReferenced = updated.some((e) => managedImagePaths(e, config).includes(p));
+      if (!stillReferenced) changes.push({ path: toRepoPath(p), content: null });
     }
+
+    const message = isNew ? `content: add ${titleVal}` : `content: update ${titleVal}`;
+    await commit(changes, updated, message);
+    setImageFiles({});
   }
 
   async function handleDelete(index: number) {
@@ -328,11 +320,12 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
     if (!confirm(`Delete "${label}"? This cannot be undone.`)) return;
 
     const updated = current.filter((e) => String(e.id) !== String(target?.id));
-    const ok = await persist(updated, `content: delete ${label}`);
+    const candidatePaths = target ? managedImagePaths(target, config) : [];
+    const changes: FileChange[] = candidatePaths
+      .filter((p) => !updated.some((e) => managedImagePaths(e, config).includes(p)))
+      .map((p) => ({ path: toRepoPath(p), content: null }));
 
-    if (ok && target) {
-      await cleanupOrphanedImages(managedImagePaths(target, config), updated, label);
-    }
+    await commit(changes, updated, `content: delete ${label}`);
   }
 
   return (

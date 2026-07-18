@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import {
   fetchContentFile,
-  updateContentFile,
-  uploadBinaryFile,
-  deleteBinaryFile,
+  commitFiles,
+  encodeBase64Unicode,
   GitHubApiError,
+  type FileChange,
 } from "@/lib/github";
 import {
   Pencil,
@@ -42,6 +42,12 @@ function isManagedImage(imagePath: string | undefined): imagePath is string {
 
 function toRepoPath(publicPath: string): string {
   return `public${publicPath}`;
+}
+
+function referencedImagePaths(list: Entry[]): Set<string> {
+  return new Set(
+    list.flatMap((e) => [e.avatar, ...(e.verifyImages ?? [])].filter(Boolean) as string[])
+  );
 }
 
 function blankEntry(): Entry {
@@ -201,17 +207,19 @@ export default function TestimonialsManager({
     setVerifyImageFiles((prev) => prev.map((f, i) => (i === index ? file : f)));
   }
 
-  async function persist(newEntries: Entry[], message: string): Promise<boolean> {
+  async function commit(changes: FileChange[], newEntries: Entry[], message: string): Promise<boolean> {
     if (!fileSha) {
       setError("Missing file version — reload the list before saving.");
       return false;
     }
+    const payload = { [ARRAY_KEY]: newEntries };
+    const content = JSON.stringify(payload, null, 2) + "\n";
+    const allChanges = [...changes, { path: PATH, content: encodeBase64Unicode(content) }];
+
     setSaving(true);
     setError(null);
     try {
-      const payload = { [ARRAY_KEY]: newEntries };
-      const content = JSON.stringify(payload, null, 2) + "\n";
-      await updateContentFile(PATH, content, fileSha, message, token);
+      await commitFiles(allChanges, message, token, { path: PATH, expectedSha: fileSha });
       setEntries(newEntries);
       setEditing(null);
       setSuccessMsg(
@@ -227,24 +235,9 @@ export default function TestimonialsManager({
     }
   }
 
-  async function cleanupOrphanedImages(oldPaths: string[], stillAlive: Entry[], label: string) {
-    for (const oldPath of oldPaths) {
-      if (!isManagedImage(oldPath)) continue;
-      const stillReferenced = stillAlive.some(
-        (e) => e.avatar === oldPath || (e.verifyImages ?? []).includes(oldPath)
-      );
-      if (stillReferenced) continue;
-      try {
-        await deleteBinaryFile(toRepoPath(oldPath), `content: remove orphaned image for ${label}`, token);
-      } catch {
-        // Best-effort cleanup — the content change already succeeded either way.
-      }
-    }
-  }
-
   async function handleSaveOrder() {
     if (!entries) return;
-    await persist(entries, "content: reorder testimonials");
+    await commit([], entries, "content: reorder testimonials");
   }
 
   function discardOrder() {
@@ -268,6 +261,7 @@ export default function TestimonialsManager({
     setError(null);
 
     const slug = slugify(editing.name);
+    const changes: FileChange[] = [];
     let avatar = editing.avatar;
     let verifyImages: string[];
 
@@ -276,7 +270,7 @@ export default function TestimonialsManager({
         const ext = avatarFile.name.split(".").pop()?.toLowerCase() || "png";
         const repoPath = `public/images/${IMAGE_FOLDER}/${slug}.${ext}`;
         const base64 = await fileToBase64(avatarFile);
-        await uploadBinaryFile(repoPath, base64, `content: upload avatar for ${editing.name}`, token);
+        changes.push({ path: repoPath, content: base64 });
         avatar = `/images/${IMAGE_FOLDER}/${slug}.${ext}`;
       }
 
@@ -288,7 +282,7 @@ export default function TestimonialsManager({
           const ext = file.name.split(".").pop()?.toLowerCase() || "png";
           const repoPath = `public/images/${IMAGE_FOLDER}/${slug}-verify-${i}.${ext}`;
           const base64 = await fileToBase64(file);
-          await uploadBinaryFile(repoPath, base64, `content: upload verification image for ${editing.name}`, token);
+          changes.push({ path: repoPath, content: base64 });
           url = `/images/${IMAGE_FOLDER}/${slug}-verify-${i}.${ext}`;
         }
         uploaded.push(url);
@@ -310,27 +304,31 @@ export default function TestimonialsManager({
       updated = current.map((e) => (e.id === editing.id ? finalEntry : e));
     }
 
+    const stillReferenced = referencedImagePaths(updated);
+    for (const oldPath of oldManagedPaths) {
+      if (!stillReferenced.has(oldPath)) changes.push({ path: toRepoPath(oldPath), content: null });
+    }
+
     const message = isNew ? `content: add ${editing.name}` : `content: update ${editing.name}`;
-    const ok = await persist(updated, message);
+    await commit(changes, updated, message);
     setAvatarFile(null);
     setVerifyImageFiles(verifyImages.map(() => null));
-
-    if (ok && oldManagedPaths.length > 0) {
-      await cleanupOrphanedImages(oldManagedPaths, updated, editing.name);
-    }
   }
 
   async function handleDelete(entry: Entry) {
     if (!confirm(`Delete "${entry.name}"? This cannot be undone.`)) return;
     const current = entries ?? [];
     const updated = current.filter((e) => e.id !== entry.id);
-    const ok = await persist(updated, `content: delete ${entry.name}`);
-    if (ok) {
-      const oldPaths = [entry.avatar, ...(entry.verifyImages ?? [])].filter(
-        (p): p is string => isManagedImage(p)
-      );
-      await cleanupOrphanedImages(oldPaths, updated, entry.name);
-    }
+
+    const oldPaths = [entry.avatar, ...(entry.verifyImages ?? [])].filter(
+      (p): p is string => isManagedImage(p)
+    );
+    const stillReferenced = referencedImagePaths(updated);
+    const changes: FileChange[] = oldPaths
+      .filter((p) => !stillReferenced.has(p))
+      .map((p) => ({ path: toRepoPath(p), content: null }));
+
+    await commit(changes, updated, `content: delete ${entry.name}`);
   }
 
   return (

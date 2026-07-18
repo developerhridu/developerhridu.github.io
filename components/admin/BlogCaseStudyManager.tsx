@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import {
   fetchContentFile,
-  updateContentFile,
-  uploadBinaryFile,
-  deleteBinaryFile,
+  commitFiles,
+  encodeBase64Unicode,
   GitHubApiError,
+  type FileChange,
 } from "@/lib/github";
 import {
   Pencil,
@@ -72,6 +72,12 @@ function isManagedImage(imagePath: string | undefined, kind: ContentKind): image
 
 function toRepoPath(publicPath: string): string {
   return `public${publicPath}`;
+}
+
+function referencedImagePaths(list: Entry[]): Set<string> {
+  return new Set(
+    list.flatMap((e) => [e.image, ...(e.sections ?? []).map((s) => s.image)].filter(Boolean) as string[])
+  );
 }
 
 function blankEntry(): Entry {
@@ -214,17 +220,19 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     setSectionImageFiles((prev) => prev.map((f, i) => (i === index ? file : f)));
   }
 
-  async function persist(newEntries: Entry[], message: string): Promise<boolean> {
+  async function commit(changes: FileChange[], newEntries: Entry[], message: string): Promise<boolean> {
     if (!fileSha) {
       setError("Missing file version — reload the list before saving.");
       return false;
     }
+    const payload = { [CONFIG[kind].arrayKey]: newEntries };
+    const content = JSON.stringify(payload, null, 2) + "\n";
+    const allChanges = [...changes, { path: CONFIG[kind].path, content: encodeBase64Unicode(content) }];
+
     setSaving(true);
     setError(null);
     try {
-      const payload = { [CONFIG[kind].arrayKey]: newEntries };
-      const content = JSON.stringify(payload, null, 2) + "\n";
-      await updateContentFile(CONFIG[kind].path, content, fileSha, message, token);
+      await commitFiles(allChanges, message, token, { path: CONFIG[kind].path, expectedSha: fileSha });
       setEntries(newEntries);
       setEditing(null);
       setSuccessMsg(
@@ -237,21 +245,6 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
       return false;
     } finally {
       setSaving(false);
-    }
-  }
-
-  async function cleanupOrphanedImages(oldPaths: string[], stillAlive: Entry[], label: string) {
-    for (const oldPath of oldPaths) {
-      if (!isManagedImage(oldPath, kind)) continue;
-      const stillReferenced = stillAlive.some(
-        (e) => e.image === oldPath || (e.sections ?? []).some((s) => s.image === oldPath)
-      );
-      if (stillReferenced) continue;
-      try {
-        await deleteBinaryFile(toRepoPath(oldPath), `content: remove orphaned image for ${label}`, token);
-      } catch {
-        // Best-effort cleanup — the content change already succeeded either way.
-      }
     }
   }
 
@@ -284,6 +277,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     setSaving(true);
     setError(null);
 
+    const changes: FileChange[] = [];
     let image = editing.image;
     let sections: Section[];
 
@@ -292,7 +286,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
         const ext = imageFile.name.split(".").pop()?.toLowerCase() || "png";
         const repoPath = `public/images/${CONFIG[kind].imageFolder}/${slug}.${ext}`;
         const base64 = await fileToBase64(imageFile);
-        await uploadBinaryFile(repoPath, base64, `content: upload image for ${editing.title}`, token);
+        changes.push({ path: repoPath, content: base64 });
         image = `/images/${CONFIG[kind].imageFolder}/${slug}.${ext}`;
       }
 
@@ -304,7 +298,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
           const ext = file.name.split(".").pop()?.toLowerCase() || "png";
           const repoPath = `public/images/${CONFIG[kind].imageFolder}/${slug}-section-${i}.${ext}`;
           const base64 = await fileToBase64(file);
-          await uploadBinaryFile(repoPath, base64, `content: upload section image for ${editing.title}`, token);
+          changes.push({ path: repoPath, content: base64 });
           sectionImage = `/images/${CONFIG[kind].imageFolder}/${slug}-section-${i}.${ext}`;
         }
         uploadedSections.push({ ...editing.sections[i], image: sectionImage });
@@ -333,27 +327,31 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
       updated = current.map((e) => (e.id === editing.id ? finalEntry : e));
     }
 
+    const stillReferenced = referencedImagePaths(updated);
+    for (const oldPath of oldManagedPaths) {
+      if (!stillReferenced.has(oldPath)) changes.push({ path: toRepoPath(oldPath), content: null });
+    }
+
     const message = isNew ? `content: add ${editing.title}` : `content: update ${editing.title}`;
-    const ok = await persist(updated, message);
+    await commit(changes, updated, message);
     setImageFile(null);
     setSectionImageFiles(sections.map(() => null));
-
-    if (ok && oldManagedPaths.length > 0) {
-      await cleanupOrphanedImages(oldManagedPaths, updated, editing.title);
-    }
   }
 
   async function handleDelete(entry: Entry) {
     if (!confirm(`Delete "${entry.title}"? This cannot be undone.`)) return;
     const current = entries ?? [];
     const updated = current.filter((e) => e.id !== entry.id);
-    const ok = await persist(updated, `content: delete ${entry.title}`);
-    if (ok) {
-      const oldPaths = [entry.image, ...(entry.sections ?? []).map((s) => s.image)].filter(
-        (p): p is string => isManagedImage(p, kind)
-      );
-      await cleanupOrphanedImages(oldPaths, updated, entry.title);
-    }
+
+    const oldPaths = [entry.image, ...(entry.sections ?? []).map((s) => s.image)].filter(
+      (p): p is string => isManagedImage(p, kind)
+    );
+    const stillReferenced = referencedImagePaths(updated);
+    const changes: FileChange[] = oldPaths
+      .filter((p) => !stillReferenced.has(p))
+      .map((p) => ({ path: toRepoPath(p), content: null }));
+
+    await commit(changes, updated, `content: delete ${entry.title}`);
   }
 
   const sortedEntries = entries

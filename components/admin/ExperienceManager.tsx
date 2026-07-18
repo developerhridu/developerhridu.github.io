@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import {
   fetchContentFile,
-  updateContentFile,
-  uploadBinaryFile,
-  deleteBinaryFile,
+  commitFiles,
+  encodeBase64Unicode,
   GitHubApiError,
+  type FileChange,
 } from "@/lib/github";
 import {
   Pencil,
@@ -219,17 +219,19 @@ export default function ExperienceManager({
     });
   }
 
-  async function persist(newEntries: Entry[], message: string): Promise<boolean> {
+  async function commit(changes: FileChange[], newEntries: Entry[], message: string): Promise<boolean> {
     if (!fileSha) {
       setError("Missing file version — reload the list before saving.");
       return false;
     }
+    const payload = { [ARRAY_KEY]: newEntries };
+    const content = JSON.stringify(payload, null, 2) + "\n";
+    const allChanges = [...changes, { path: PATH, content: encodeBase64Unicode(content) }];
+
     setSaving(true);
     setError(null);
     try {
-      const payload = { [ARRAY_KEY]: newEntries };
-      const content = JSON.stringify(payload, null, 2) + "\n";
-      await updateContentFile(PATH, content, fileSha, message, token);
+      await commitFiles(allChanges, message, token, { path: PATH, expectedSha: fileSha });
       setEntries(newEntries);
       setEditing(null);
       setSuccessMsg(
@@ -245,20 +247,9 @@ export default function ExperienceManager({
     }
   }
 
-  async function cleanupOrphanedLogo(oldPath: string | undefined, stillAlive: Entry[], label: string) {
-    if (!isManagedImage(oldPath)) return;
-    const stillReferenced = stillAlive.some((e) => e.logo === oldPath);
-    if (stillReferenced) return;
-    try {
-      await deleteBinaryFile(toRepoPath(oldPath), `content: remove orphaned logo for ${label}`, token);
-    } catch {
-      // Best-effort cleanup — the content change already succeeded either way.
-    }
-  }
-
   async function handleSaveOrder() {
     if (!entries) return;
-    await persist(entries, "content: reorder experience");
+    await commit([], entries, "content: reorder experience");
   }
 
   function discardOrder() {
@@ -278,6 +269,7 @@ export default function ExperienceManager({
     setSaving(true);
     setError(null);
 
+    const changes: FileChange[] = [];
     let logo = editing.logo;
     try {
       if (logoFile) {
@@ -285,7 +277,7 @@ export default function ExperienceManager({
         const slug = slugify(editing.company);
         const repoPath = `public/images/${IMAGE_FOLDER}/${slug}.${ext}`;
         const base64 = await fileToBase64(logoFile);
-        await uploadBinaryFile(repoPath, base64, `content: upload logo for ${editing.company}`, token);
+        changes.push({ path: repoPath, content: base64 });
         logo = `/images/${IMAGE_FOLDER}/${slug}.${ext}`;
       }
     } catch (err) {
@@ -317,23 +309,26 @@ export default function ExperienceManager({
       updated = current.map((e) => (e.id === editing.id ? finalEntry : e));
     }
 
-    const message = isNew ? `content: add ${editing.company}` : `content: update ${editing.company}`;
-    const ok = await persist(updated, message);
-    setLogoFile(null);
-
-    if (ok && logoFile && oldLogo && oldLogo !== logo) {
-      await cleanupOrphanedLogo(oldLogo, updated, editing.company);
+    if (isManagedImage(oldLogo) && oldLogo !== logo && !updated.some((e) => e.logo === oldLogo)) {
+      changes.push({ path: toRepoPath(oldLogo), content: null });
     }
+
+    const message = isNew ? `content: add ${editing.company}` : `content: update ${editing.company}`;
+    await commit(changes, updated, message);
+    setLogoFile(null);
   }
 
   async function handleDelete(entry: Entry) {
     if (!confirm(`Delete "${entry.company}"? This cannot be undone.`)) return;
     const current = entries ?? [];
     const updated = current.filter((e) => e.id !== entry.id);
-    const ok = await persist(updated, `content: delete ${entry.company}`);
-    if (ok) {
-      await cleanupOrphanedLogo(entry.logo, updated, entry.company);
+
+    const changes: FileChange[] = [];
+    if (isManagedImage(entry.logo) && !updated.some((e) => e.logo === entry.logo)) {
+      changes.push({ path: toRepoPath(entry.logo), content: null });
     }
+
+    await commit(changes, updated, `content: delete ${entry.company}`);
   }
 
   return (
