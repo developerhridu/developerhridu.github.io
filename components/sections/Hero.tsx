@@ -23,7 +23,7 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
           >
             <p className="font-mono text-s tracking-widest text-accent mb-4">
-              — Hi, I'm
+              Hi, I'm
             </p>
             <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6">
               {profile.name}

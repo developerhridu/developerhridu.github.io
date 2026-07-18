@@ -12,6 +12,7 @@ import TestimonialsManager from "@/components/admin/TestimonialsManager";
 import ProfileEditor from "@/components/admin/ProfileEditor";
 import SkillsEditor from "@/components/admin/SkillsEditor";
 import ChatLogViewer from "@/components/admin/ChatLogViewer";
+import Dashboard from "@/components/admin/Dashboard";
 import {
   educationConfig,
   certificationsConfig,
@@ -26,6 +27,7 @@ const PASSWORD_OK_KEY = "admin_pw_ok";
 const TOKEN_KEY = "gh_pat";
 
 type Tab =
+  | "dashboard"
   | "blog"
   | "case-study"
   | "experience"
@@ -54,7 +56,7 @@ export default function AdminEditor() {
   const [tokenInput, setTokenInput] = useState("");
   const [tokenError, setTokenError] = useState<string | null>(null);
 
-  const [tab, setTab] = useState<Tab>("blog");
+  const [tab, setTab] = useState<Tab>("dashboard");
 
   useEffect(() => {
     if (sessionStorage.getItem(PASSWORD_OK_KEY) === "1") setUnlocked(true);
@@ -195,6 +197,7 @@ export default function AdminEditor() {
         ))}
       </div>
 
+      {tab === "dashboard" && <Dashboard token={token} onAuthError={handleAuthError} />}
       {tab === "blog" && <BlogCaseStudyManager kind="blog" token={token} onAuthError={handleAuthError} />}
       {tab === "case-study" && (
         <BlogCaseStudyManager kind="case-study" token={token} onAuthError={handleAuthError} />

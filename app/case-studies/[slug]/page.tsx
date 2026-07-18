@@ -10,6 +10,8 @@ import RelatedContent from "@/components/ui/RelatedContent";
 import Comments from "@/components/ui/Comments";
 import { ArrowLeft, Calendar, Clock, Tag, Building2 } from "lucide-react";
 import ViewCounter from "@/components/ui/ViewCounter";
+import ShareButtons from "@/components/ui/ShareButtons";
+import ReactionButton from "@/components/ui/ReactionButton";
 
 const BASE_URL = "https://developerhridu.github.io";
 
@@ -157,6 +159,10 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
               </span>
               <ViewCounter type="case-study" slug={study.slug} />
             </div>
+
+            <div className="mt-4">
+              <ShareButtons url={url} title={study.title} />
+            </div>
           </header>
 
           {/* Image */}
@@ -202,6 +208,8 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
               ))}
             </div>
           )}
+
+          <ReactionButton type="case-study" slug={study.slug} />
 
           {/* Related Case Studies */}
           <RelatedContent items={relatedCaseStudies} basePath="/case-studies" heading="Related Case Studies" />

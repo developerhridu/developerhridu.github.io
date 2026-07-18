@@ -2,7 +2,10 @@
 
 A Cloudflare Worker that answers visitor questions on the portfolio site using
 Workers AI, grounded in the live content from `content/*.json` in this repo
-(fetched fresh from GitHub on each request, so it never goes stale).
+(fetched fresh from GitHub on each request, so it never goes stale). It also
+backs a few smaller site features that need somewhere to persist state that a
+static site can't provide itself: reader counts, reactions, and (optionally)
+public testimonial submissions — see below.
 
 ## One-time setup
 
@@ -111,15 +114,59 @@ per browser (deduped via `localStorage`) to increment and display its count.
 
 - `POST /views` with `{ "type": "blog" | "case-study", "slug": "..." }` —
   increments and returns `{ "count": N }`.
-- `GET /views?type=...&slug=...` — read-only, doesn't increment. Useful if
-  you ever want to show counts on the listing pages too, without every
-  card render counting as a view.
+- `GET /views?type=...&slug=...` — read-only, doesn't increment. Used by the
+  admin dashboard and the "Most Read" widget on the listing pages.
+- `GET /views/top?type=blog|case-study&limit=5` — top N slugs by view count
+  for that type, plus `total` (sum across all matching entries). Omit `type`
+  to rank/sum across both content types at once (used by the admin
+  dashboard's "Total Views" stat).
 
 If you ever need to reset a count, delete its key directly:
 
 ```bash
 npx wrangler kv key delete "views:blog:<slug>" --namespace-id <VIEWS-namespace-id>
 ```
+
+## Reactions ("was this helpful")
+
+Also already set up, reusing the same `VIEWS` namespace under a
+`reactions:<type>:<slug>` key — no separate namespace needed.
+
+- `POST /reactions` with `{ "type", "slug", "action": "add" | "remove" }` —
+  the client toggles a heart/thumbs-up button, tracked per-browser via
+  `localStorage`, same dedup idea as view counts.
+- `GET /reactions?type=...&slug=...` — read-only.
+
+## Optional: let visitors submit their own testimonials
+
+Off by default. When on, `content/testimonials.json` gets a new entry with
+`published: false` whenever someone submits the form at `/testimonials/submit`
+on the site — it shows up in the admin's Testimonials tab for you to review
+and approve, exactly like any other draft. Nothing goes live without you.
+
+This one needs real write access to the repo from a public, unauthenticated
+endpoint, so it can't reuse the admin's session token the way `/logs` and
+the content-editing tabs do — it needs its own credential:
+
+1. On GitHub, create a **fine-grained personal access token**
+   (Settings → Developer settings → Personal access tokens → Fine-grained
+   tokens) scoped to **only this repository**, with **Contents:
+   Read and write** permission and nothing else.
+
+2. Set it as a Worker secret:
+
+   ```bash
+   npx wrangler secret put CONTENT_PAT
+   ```
+
+   Paste the token when prompted.
+
+3. Redeploy: `npm run deploy`.
+
+Until you do this, the submission form shows "Submissions aren't open yet"
+and `/testimonials/submit` returns `501`. There's no CAPTCHA or rate limit —
+just a honeypot field and basic validation — since spam still lands as an
+unpublished draft you review, not something that goes live automatically.
 
 ## Notes
 

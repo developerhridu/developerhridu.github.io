@@ -1,6 +1,11 @@
 {
   "tabs": [
     {
+      "id": "dashboard",
+      "label": "Dashboard",
+      "published": true
+    },
+    {
       "id": "blog",
       "label": "Blog Posts",
       "published": true

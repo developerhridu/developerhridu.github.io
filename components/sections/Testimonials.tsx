@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Quote, Linkedin, Mail, Maximize2, BadgeCheck } from "lucide-react";
+import Link from "next/link";
+import { Quote, Linkedin, Mail, Maximize2, BadgeCheck, PenLine } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import TestimonialModal from "@/components/ui/TestimonialModal";
@@ -103,6 +104,16 @@ export default function Testimonials({ showHeading = true, noSection = false }: 
             </GlassCard>
           </motion.div>
         ))}
+      </div>
+
+      <div className="flex justify-center mt-10">
+        <Link
+          href="/testimonials/submit"
+          className="flex items-center gap-2 text-sm text-accent hover:text-accent-hover transition-colors"
+        >
+          <PenLine size={16} />
+          Worked with me? Share your experience
+        </Link>
       </div>
 
       <TestimonialModal testimonial={selected} onClose={() => setSelected(null)} />

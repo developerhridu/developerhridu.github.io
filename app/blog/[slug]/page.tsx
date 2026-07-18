@@ -10,6 +10,8 @@ import RelatedContent from "@/components/ui/RelatedContent";
 import Comments from "@/components/ui/Comments";
 import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
 import ViewCounter from "@/components/ui/ViewCounter";
+import ShareButtons from "@/components/ui/ShareButtons";
+import ReactionButton from "@/components/ui/ReactionButton";
 
 const BASE_URL = "https://developerhridu.github.io";
 
@@ -150,6 +152,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </span>
               <ViewCounter type="blog" slug={post.slug} />
             </div>
+
+            <div className="mt-4">
+              <ShareButtons url={url} title={post.title} />
+            </div>
           </header>
 
           {/* Post Image */}
@@ -195,6 +201,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               ))}
             </div>
           )}
+
+          <ReactionButton type="blog" slug={post.slug} />
 
           {/* Related Posts */}
           <RelatedContent items={relatedPosts} basePath="/blog" heading="Related Posts" />
