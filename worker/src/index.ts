@@ -1,5 +1,9 @@
 export interface Env {
   AI: Ai;
+  // Both optional: only present once you opt in via `wrangler kv namespace create`
+  // and `wrangler secret put` — see worker/README.md. Absent = logging silently no-ops.
+  CHAT_LOG?: KVNamespace;
+  ADMIN_KEY?: string;
 }
 
 const CONTENT_BASE =
@@ -12,10 +16,53 @@ function corsHeaders(request: Request): HeadersInit {
   const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     Vary: "Origin",
   };
+}
+
+async function logQa(env: Env, question: string, answer: string) {
+  if (!env.CHAT_LOG) return;
+  try {
+    const key = `qa:${Date.now()}:${crypto.randomUUID()}`;
+    await env.CHAT_LOG.put(
+      key,
+      JSON.stringify({ question, answer, timestamp: new Date().toISOString() }),
+      { expirationTtl: 60 * 60 * 24 * 90 } // keep 90 days
+    );
+  } catch {
+    // Best-effort logging only — never let this affect the actual chat response.
+  }
+}
+
+async function handleLogs(request: Request, env: Env): Promise<Response> {
+  if (!env.ADMIN_KEY || !env.CHAT_LOG) {
+    return new Response(JSON.stringify({ error: "Logging is not configured for this Worker" }), {
+      status: 501,
+      headers: { "Content-Type": "application/json", ...corsHeaders(request) },
+    });
+  }
+
+  if (request.headers.get("Authorization") !== `Bearer ${env.ADMIN_KEY}`) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json", ...corsHeaders(request) },
+    });
+  }
+
+  const list = await env.CHAT_LOG.list({ prefix: "qa:", limit: 100 });
+  const sortedKeys = [...list.keys].sort((a, b) => b.name.localeCompare(a.name));
+  const entries = await Promise.all(
+    sortedKeys.map(async (k) => {
+      const value = await env.CHAT_LOG!.get(k.name);
+      return value ? JSON.parse(value) : null;
+    })
+  );
+
+  return new Response(JSON.stringify({ entries: entries.filter(Boolean) }), {
+    headers: { "Content-Type": "application/json", ...corsHeaders(request) },
+  });
 }
 
 async function fetchJson(path: string): Promise<unknown> {
@@ -168,9 +215,15 @@ async function buildContext(): Promise<string> {
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const url = new URL(request.url);
+
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: corsHeaders(request) });
+    }
+
+    if (request.method === "GET" && url.pathname === "/logs") {
+      return handleLogs(request, env);
     }
 
     if (request.method !== "POST") {
@@ -224,6 +277,8 @@ export default {
       const answer =
         (result as { response?: string }).response?.trim() ||
         "Sorry, I couldn't come up with an answer to that.";
+
+      ctx.waitUntil(logQa(env, question, answer));
 
       return new Response(JSON.stringify({ answer }), {
         headers: { "Content-Type": "application/json", ...corsHeaders(request) },

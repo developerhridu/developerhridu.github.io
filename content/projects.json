@@ -78,7 +78,7 @@
         "Background Services"
       ],
       "image": "/images/projects/bcs.png",
-      "liveUrl": "http://18.138.98.64:214/hangfire/",
+      "liveUrl": null,
       "githubUrl": null,
       "featured": false
     },

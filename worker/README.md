@@ -58,6 +58,47 @@ infrastructure — there's no fully-offline mode for AI bindings).
 Whenever you change `src/index.ts`, just run `npm run deploy` again — no
 account setup needed a second time.
 
+## Optional: log visitor questions
+
+By default the Worker doesn't store anything — every question is answered
+and forgotten. If you want to see what visitors actually ask (useful for
+improving the static fallback bot's intents, or just curiosity), you can
+opt into logging:
+
+1. Create a KV namespace:
+
+   ```bash
+   npx wrangler kv namespace create CHAT_LOG
+   ```
+
+   This prints an `id`. Add it to `wrangler.toml`:
+
+   ```toml
+   [[kv_namespaces]]
+   binding = "CHAT_LOG"
+   id = "paste-the-id-here"
+   ```
+
+2. Set an admin key (pick any long random string yourself) so the log
+   endpoint isn't publicly readable:
+
+   ```bash
+   npx wrangler secret put ADMIN_KEY
+   ```
+
+3. Redeploy: `npm run deploy`.
+
+4. Fetch recent Q&A pairs (last 100, newest first):
+
+   ```bash
+   curl -H "Authorization: Bearer <your-admin-key>" \
+     https://hridu-portfolio-ai-chat.<your-subdomain>.workers.dev/logs
+   ```
+
+Until you do this, `/logs` returns `501 Logging is not configured` and the
+chat itself works exactly the same either way — logging is fire-and-forget
+and never blocks or affects the answer a visitor sees.
+
 ## Notes
 
 - The Worker fetches `content/*.json` directly from
@@ -65,9 +106,9 @@ account setup needed a second time.
   cached at Cloudflare's edge for 5 minutes. Any content you update via the
   site's `/admin` panel is reflected within a few minutes automatically —
   no need to redeploy the Worker when only content changes.
-- CORS is locked to `https://developerhridu.github.io`. If you ever serve
-  the site from a different origin, update `ALLOWED_ORIGIN` in
-  `src/index.ts`.
+- CORS is allowed for `https://developerhridu.github.io` and
+  `http://localhost:3000` (for local dev). Update `ALLOWED_ORIGINS` in
+  `src/index.ts` if you ever serve the site from a different origin.
 - There's no rate limiting built into the Worker itself. If you see abuse,
   add a Rate Limiting rule in the Cloudflare dashboard for this Worker's
   route — the free Workers AI daily quota also acts as a natural ceiling.

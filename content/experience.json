@@ -3,10 +3,12 @@
     {
       "id": "technonext-software-ltd-concern-of-us-bangla-group",
       "company": "TechnoNext Software Ltd. (Concern of US-Bangla Group)",
+      "companyUrl": "https://technonext.com",
       "logo": "/images/logos/technonext.jpg",
       "role": "Software Engineer",
       "period": "April 2024 - Present",
       "location": "Dhaka, Bangladesh",
+      "verifyUrl": "/pdf/TechnoNext-1.pdf",
       "projects": [
         {
           "name": "Online Travel Agency",
@@ -69,10 +71,12 @@
     {
       "id": "bdjobs-com-ltd",
       "company": "Bdjobs.com Ltd.",
+      "companyUrl": "https://www.bdjobs.com",
       "logo": "/images/logos/bdjobs-icon.png",
       "role": "Jr. Software Engineer",
       "period": "May 2023 - March 2024",
       "location": "Kawran Bazar, Dhaka",
+      "verifyUrl": "https://drive.google.com/file/d/1xZcYeuAx0CnsUSBHUZG0hBEVzzyOAmEx/view?usp=sharing",
       "projects": [
         {
           "name": "Bdjobs.com & Recruiter.Bdjobs.com",
@@ -89,10 +93,12 @@
     {
       "id": "e-desh-limited",
       "company": "E-Desh Limited",
+      "companyUrl": "https://e-deshltd.com",
       "logo": "/images/logos/Edesh.png",
       "role": "Jr. Software Engineer (Part-Time)",
       "period": "May 2022 - February 2023",
       "location": "Remote",
+      "verifyUrl": "https://youtu.be/ouIKiEqVOYY",
       "projects": [
         {
           "name": "Courier Platform",

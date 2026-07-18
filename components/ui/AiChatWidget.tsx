@@ -6,6 +6,7 @@ import { MessageCircle, X, Send, Sparkles } from "lucide-react";
 import { askFaqBot, STARTER_QUESTIONS } from "@/lib/faqBot";
 import { askAi, type AiChatHistoryMessage } from "@/lib/aiChat";
 import { trackEvent } from "@/lib/analytics";
+import { ASK_AI_EVENT } from "@/lib/askAiEvent";
 import config from "@/content/config.json";
 
 interface Message {
@@ -62,6 +63,17 @@ export default function AiChatWidget() {
     e.preventDefault();
     void ask(input);
   }
+
+  useEffect(() => {
+    function onAskAi(e: Event) {
+      const question = (e as CustomEvent<string>).detail;
+      if (!question) return;
+      setOpen(true);
+      void ask(question);
+    }
+    window.addEventListener(ASK_AI_EVENT, onAskAi);
+    return () => window.removeEventListener(ASK_AI_EVENT, onAskAi);
+  }, [ask]);
 
   return (
     <div className="print:hidden">

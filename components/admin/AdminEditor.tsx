@@ -3,16 +3,19 @@
 import { useEffect, useState } from "react";
 import { LogOut, FileText } from "lucide-react";
 import configData from "@/content/config.json";
+import adminMenuData from "@/content/admin-menu.json";
 import { inputClass } from "@/components/admin/shared";
 import BlogCaseStudyManager from "@/components/admin/BlogCaseStudyManager";
 import GenericArrayEditor from "@/components/admin/GenericArrayEditor";
 import ExperienceManager from "@/components/admin/ExperienceManager";
+import TestimonialsManager from "@/components/admin/TestimonialsManager";
 import ProfileEditor from "@/components/admin/ProfileEditor";
 import SkillsEditor from "@/components/admin/SkillsEditor";
 import {
   certificationsConfig,
   projectsConfig,
   menuConfig,
+  adminMenuConfig,
   proficiencyConfig,
 } from "@/components/admin/arrayConfigs";
 
@@ -24,23 +27,17 @@ type Tab =
   | "case-study"
   | "experience"
   | "certifications"
+  | "testimonials"
   | "projects"
   | "menu"
   | "profile"
   | "skills"
-  | "proficiency";
+  | "proficiency"
+  | "admin-menu";
 
-const TABS: { key: Tab; label: string }[] = [
-  { key: "blog", label: "Blog Posts" },
-  { key: "case-study", label: "Case Studies" },
-  { key: "experience", label: "Experience" },
-  { key: "certifications", label: "Certifications" },
-  { key: "projects", label: "Projects" },
-  { key: "menu", label: "Menu" },
-  { key: "profile", label: "Profile" },
-  { key: "skills", label: "Skills" },
-  { key: "proficiency", label: "Proficiency" },
-];
+const TABS: { key: Tab; label: string }[] = adminMenuData.tabs
+  .filter((t) => t.visible !== false)
+  .map((t) => ({ key: t.id as Tab, label: t.label }));
 
 export default function AdminEditor() {
   const [unlocked, setUnlocked] = useState(false);
@@ -200,10 +197,14 @@ export default function AdminEditor() {
       {tab === "certifications" && (
         <GenericArrayEditor config={certificationsConfig} token={token} onAuthError={handleAuthError} />
       )}
+      {tab === "testimonials" && <TestimonialsManager token={token} onAuthError={handleAuthError} />}
       {tab === "projects" && (
         <GenericArrayEditor config={projectsConfig} token={token} onAuthError={handleAuthError} />
       )}
       {tab === "menu" && <GenericArrayEditor config={menuConfig} token={token} onAuthError={handleAuthError} />}
+      {tab === "admin-menu" && (
+        <GenericArrayEditor config={adminMenuConfig} token={token} onAuthError={handleAuthError} />
+      )}
       {tab === "profile" && <ProfileEditor token={token} onAuthError={handleAuthError} />}
       {tab === "skills" && <SkillsEditor token={token} onAuthError={handleAuthError} />}
       {tab === "proficiency" && (

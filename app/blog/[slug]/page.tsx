@@ -33,7 +33,9 @@ export async function generateMetadata({
   }
 
   const url = `${BASE_URL}/blog/${post.slug}`;
-  const imageUrl = post.image ? `${BASE_URL}${post.image}` : `${BASE_URL}/images/profile/dp.png`;
+  const imageUrl = post.image
+    ? `${BASE_URL}${post.image}`
+    : `${BASE_URL}/og-image/blog/${post.slug}`;
 
   return {
     title: `${post.title} | Blog | Portfolio`,
@@ -68,7 +70,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   const url = `${BASE_URL}/blog/${post.slug}`;
-  const imageUrl = post.image ? `${BASE_URL}${post.image}` : `${BASE_URL}/images/profile/dp.png`;
+  const imageUrl = post.image
+    ? `${BASE_URL}${post.image}`
+    : `${BASE_URL}/og-image/blog/${post.slug}`;
   const readingMinutes = estimateReadingTime(post.body, ...(post.sections?.map((s) => s.body) ?? []));
   const relatedPosts = getRelatedBlogPosts(post);
 
