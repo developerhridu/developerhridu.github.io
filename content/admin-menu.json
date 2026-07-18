@@ -11,6 +11,11 @@
       "visible": true
     },
     {
+      "id": "testimonials",
+      "label": "Testimonials",
+      "visible": true
+    },
+    {
       "id": "experience",
       "label": "Experience",
       "visible": true
@@ -18,11 +23,6 @@
     {
       "id": "certifications",
       "label": "Certifications",
-      "visible": true
-    },
-    {
-      "id": "testimonials",
-      "label": "Testimonials",
       "visible": true
     },
     {
