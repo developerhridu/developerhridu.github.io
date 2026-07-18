@@ -6,18 +6,23 @@ import Experience from "@/components/sections/Experience";
 import EducationCertifications from "@/components/sections/EducationCertifications";
 import Testimonials from "@/components/sections/Testimonials";
 import Contact from "@/components/sections/Contact";
+import menu from "@/content/menu.json";
+
+function isPublished(id: string): boolean {
+  return menu.navLinks.find((link) => link.id === id)?.published !== false;
+}
 
 export default function Home() {
   return (
     <>
       <Hero />
-      <About />
-      <Services />
-      <Experience />
-      <Projects />
+      {isPublished("about") && <About />}
+      {isPublished("services") && <Services />}
+      {isPublished("experience") && <Experience />}
+      {isPublished("projects") && <Projects />}
       <EducationCertifications />
-      <Testimonials />
-      <Contact />
+      {isPublished("testimonials") && <Testimonials />}
+      {isPublished("contact") && <Contact />}
     </>
   );
 }
