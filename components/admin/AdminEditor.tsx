@@ -13,6 +13,7 @@ import ProfileEditor from "@/components/admin/ProfileEditor";
 import SkillsEditor from "@/components/admin/SkillsEditor";
 import ChatLogViewer from "@/components/admin/ChatLogViewer";
 import Dashboard from "@/components/admin/Dashboard";
+import TasksManager from "@/components/admin/TasksManager";
 import {
   educationConfig,
   certificationsConfig,
@@ -41,7 +42,8 @@ type Tab =
   | "skills"
   | "proficiency"
   | "admin-menu"
-  | "chat-log";
+  | "chat-log"
+  | "tasks";
 
 const TABS: { key: Tab; label: string }[] = adminMenuData.tabs
   .filter((t) => t.published !== false)
@@ -226,6 +228,7 @@ export default function AdminEditor() {
         <GenericArrayEditor config={proficiencyConfig} token={token} onAuthError={handleAuthError} />
       )}
       {tab === "chat-log" && <ChatLogViewer token={token} onAuthError={handleAuthError} />}
+      {tab === "tasks" && <TasksManager token={token} onAuthError={handleAuthError} />}
     </div>
   );
 }

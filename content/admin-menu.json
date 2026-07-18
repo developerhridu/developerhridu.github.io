@@ -6,6 +6,11 @@
       "published": true
     },
     {
+      "id": "tasks",
+      "label": "Tasks",
+      "published": true
+    },
+    {
       "id": "blog",
       "label": "Blog Posts",
       "published": true
