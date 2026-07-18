@@ -1,14 +1,14 @@
 {
   "tasks": [
     {
-      "id": "set-up-content-pat-so-testimonial-submissions-go-live",
-      "text": "Set up CONTENT_PAT so testimonial submissions go live",
-      "done": true
-    },
-    {
       "id": "traffic-graph-in-the-admin-dashboard-via-google-analytics",
       "text": "Traffic graph in the admin Dashboard (via Google Analytics)",
       "done": false
+    },
+    {
+      "id": "set-up-content-pat-so-testimonial-submissions-go-live",
+      "text": "Set up CONTENT_PAT so testimonial submissions go live",
+      "done": true
     }
   ]
 }
