@@ -46,6 +46,11 @@
       "published": true
     },
     {
+      "id": "admin-menu",
+      "label": "Admin Menu",
+      "published": true
+    },
+    {
       "id": "profile",
       "label": "Profile",
       "published": true
@@ -58,11 +63,6 @@
     {
       "id": "proficiency",
       "label": "Proficiency",
-      "published": true
-    },
-    {
-      "id": "admin-menu",
-      "label": "Admin Menu",
       "published": true
     },
     {
