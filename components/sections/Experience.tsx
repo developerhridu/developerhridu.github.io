@@ -1,13 +1,52 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import experienceData from "@/content/experience.json";
 
 interface ExperienceProps {
   showHeading?: boolean;
+}
+
+const VISIBLE_HIGHLIGHTS = 3;
+
+function ProjectHighlights({ highlights }: { highlights: string[] }) {
+  const [expanded, setExpanded] = useState(false);
+  const hasMore = highlights.length > VISIBLE_HIGHLIGHTS;
+  const visible = expanded ? highlights : highlights.slice(0, VISIBLE_HIGHLIGHTS);
+
+  return (
+    <>
+      <ul className={`space-y-2 ${hasMore ? "mb-2" : "mb-3"}`}>
+        {visible.map((highlight, hIdx) => (
+          <li key={hIdx} className="flex items-start gap-2 text-sm text-muted">
+            <span className="text-accent mt-1">-</span>
+            {highlight}
+          </li>
+        ))}
+      </ul>
+      {hasMore && (
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover transition-colors mb-3"
+        >
+          {expanded ? (
+            <>
+              Show less <ChevronUp size={12} />
+            </>
+          ) : (
+            <>
+              Read more ({highlights.length - VISIBLE_HIGHLIGHTS} more) <ChevronDown size={12} />
+            </>
+          )}
+        </button>
+      )}
+    </>
+  );
 }
 
 export default function Experience({ showHeading = true }: ExperienceProps) {
@@ -109,17 +148,7 @@ export default function Experience({ showHeading = true }: ExperienceProps) {
                           )}
 
                           {project.highlights.length > 0 && (
-                            <ul className="space-y-2 mb-3">
-                              {project.highlights.map((highlight, hIdx) => (
-                                <li
-                                  key={hIdx}
-                                  className="flex items-start gap-2 text-sm text-muted"
-                                >
-                                  <span className="text-accent mt-1">-</span>
-                                  {highlight}
-                                </li>
-                              ))}
-                            </ul>
+                            <ProjectHighlights highlights={project.highlights} />
                           )}
 
                           {project.technologies.length > 0 && (
