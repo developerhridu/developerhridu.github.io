@@ -92,7 +92,7 @@
       "id": "05",
       "slug": "cqrs-etl-mssql-mongodb-job-search",
       "title": "Splitting Reads From Writes: A CQRS + ETL Pipeline That Cut Job Search Query Time by 30%",
-      "date": "2026-07-24",
+      "date": "2024-09-24",
       "published": true,
       "client": "Bdjobs.com & Recruiter.Bdjobs.com",
       "description": "Job search was slowed by relational joins across a normalized MSSQL schema — here's how a CQRS split with a MongoDB read model and an ETL sync pipeline cut query time and improved search efficiency by 30%.",
@@ -107,7 +107,8 @@
       ],
       "body": "## The Problem\n\nJob search on Bdjobs.com has to filter and list postings across a lot of dimensions at once — location, category, salary range, skills, company. The data behind it lived in MSSQL as a properly normalized relational schema: jobs, companies, categories, skills, and locations each in their own table, linked by foreign keys. That's the right shape for an employer posting or editing a job — but every search query had to join across most of those tables just to render a single results page.\n\nAs the job catalog and search traffic grew, those join-heavy queries got measurably slower, and the slowdown landed squarely on the most-used part of the platform: job seekers searching and browsing listings.\n\n## The Root Cause\n\nOne database, one schema, was being asked to serve two fundamentally different workloads. Writes (employers posting and updating jobs) need normalization — no duplicated data, strong integrity, one place to update a company's name. Reads (job seekers searching and filtering) need the opposite — everything a query needs sitting together, ready to scan and filter, with no joins standing between the query and the answer. Optimizing the schema for one workload meant fighting the other, and the search path was losing.\n\n## The Solution\n\nWe split the system along CQRS lines — separate models for writing and reading, instead of one schema trying to serve both:\n\n- **MSSQL stays the write side** — the source of truth for job postings, unchanged: normalized, transactional, and correct.\n- **MongoDB becomes the read side** — a denormalized, search-shaped model where each job listing is a single flattened document with everything a search query needs already embedded directly in it: company details, category, skills, location. No joins, because there's nothing left to join.\n- **An event-driven ETL pipeline keeps the two in sync** — whenever a job posting is created or updated on the write side, that change triggers the transform into a flattened MongoDB document on the read side, so search results stay current without waiting on a batch window.\n- Search and listing endpoints query MongoDB directly, using indexes built around the real filter patterns — location, category, salary, skills — instead of relying on the query planner to make a multi-table join fast.\n\n## The Results\n\n- **Query time reduced and search efficiency improved by 30%**\n- Complex SQL joins removed entirely from the search critical path\n- Read and write sides now scale independently — search load no longer contends with the transactional database that employers post jobs into\n",
       "sections": [],
-      "updatedAt": "2026-07-24T00:00:00.000Z"
+      "updatedAt": "2026-07-23T13:56:24.383Z",
+      "image": "/images/case-studies/cqrs-etl-mssql-mongodb-job-search.png"
     }
   ]
 }
