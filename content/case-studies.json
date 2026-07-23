@@ -117,7 +117,7 @@
       "id": "06",
       "slug": "progressive-search-30-suppliers-ota",
       "title": "Progressive Search: Showing Flight Results Before All 30 Suppliers Answer",
-      "date": "2026-05-25",
+      "date": "2026-05-24",
       "published": true,
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
       "description": "Flight search used to wait on all 30 suppliers before showing anything — one slow responder meant everyone waited. Here's how Server-Sent Events let us stream results the moment each supplier answers.",
@@ -131,7 +131,7 @@
       ],
       "body": "## The Problem\n\nA flight search on our OTA platform fans out to all 30 integrated GDS/NDC suppliers in parallel — but the original design waited for every single one of them to respond, or time out, before showing the user anything at all. Most suppliers answer quickly. It only takes one or two slow ones — a sluggish GDS queue, an occasional timeout — to drag the entire perceived search time up to whatever the slowest responder happened to do that moment. Users stared at a loading spinner for as long as the worst-performing supplier took, even when 28 of the other 30 had already answered in under a second.\n\n## The Root Cause\n\nThe search endpoint was synchronous and all-or-nothing: results were assembled fully on the server and returned in a single response, only after every supplier settled. Total response time was bounded by the slowest supplier in the batch, not the typical one — a single slow dependency held the entire request hostage, no matter how fast everything else finished.\n\n## The Solution\n\nWe rebuilt the search response as a stream instead of a single payload, using **Server-Sent Events (SSE)**:\n\n- Suppliers are still queried in parallel exactly as before, but the client opens an SSE connection to the search endpoint instead of waiting for one JSON response.\n- As each supplier's response comes back, the server immediately pushes it down the SSE stream as its own event — the client doesn't wait for the other 29 suppliers to catch up.\n- The frontend appends and live re-sorts the growing result set as each event arrives, so the user sees real, bookable flights within a second or two, from whichever suppliers happened to answer fastest.\n- Slow or timed-out suppliers simply stream in later, or drop off silently if they never respond — they no longer block the first result the user sees.\n- The stream closes once every supplier has either answered or timed out, at which point the result set is complete.\n\n## The Results\n\n- Time to first visible result is now bound by the fastest supplier instead of the slowest, cutting the wait before a user sees anything real\n- Users start scanning and comparing actual flights almost immediately instead of watching a blank loading state for the full round trip\n- A single slow or misbehaving supplier can no longer degrade the experience for the entire search — it just arrives late instead of holding everyone else back\n",
       "sections": [],
-      "updatedAt": "2026-07-23T14:12:36.418Z",
+      "updatedAt": "2026-07-23T14:21:28.436Z",
       "image": "/images/case-studies/progressive-search-30-suppliers-ota.png"
     }
   ]
