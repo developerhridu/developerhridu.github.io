@@ -11,9 +11,17 @@ interface LightboxImageProps {
   wrapperClassName?: string;
   imgClassName?: string;
   initials?: string;
+  initialsClassName?: string;
 }
 
-export default function LightboxImage({ src, alt, wrapperClassName, imgClassName, initials }: LightboxImageProps) {
+export default function LightboxImage({
+  src,
+  alt,
+  wrapperClassName,
+  imgClassName,
+  initials,
+  initialsClassName,
+}: LightboxImageProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -38,6 +46,7 @@ export default function LightboxImage({ src, alt, wrapperClassName, imgClassName
         wrapperClassName={wrapperClassName}
         imgClassName={imgClassName}
         initials={initials}
+        initialsClassName={initialsClassName}
         natural
       />
     );
@@ -53,7 +62,14 @@ export default function LightboxImage({ src, alt, wrapperClassName, imgClassName
           wrapperClassName ?? ""
         }`.trim()}
       >
-        <ContentImage src={src} alt={alt} imgClassName={imgClassName} initials={initials} natural />
+        <ContentImage
+          src={src}
+          alt={alt}
+          imgClassName={imgClassName}
+          initials={initials}
+          initialsClassName={initialsClassName}
+          natural
+        />
         <span className="absolute top-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity">
           <Maximize2 size={16} />
         </span>

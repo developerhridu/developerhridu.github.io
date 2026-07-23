@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, ExternalLink, Github } from "lucide-react";
-import ContentImage from "@/components/ui/ContentImage";
+import LightboxImage from "@/components/ui/LightboxImage";
 
 interface ProjectModalProps {
   project: {
@@ -64,10 +64,10 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
               <X size={18} />
             </button>
 
-            <ContentImage
+            <LightboxImage
               src={project.image}
               alt={project.title}
-              wrapperClassName="h-56 md:h-80 rounded-t-2xl"
+              wrapperClassName="h-56 md:h-80 rounded-t-2xl overflow-hidden"
               initials={project.title.split(" ").map((w) => w[0]).join("")}
               initialsClassName="text-6xl"
             />
