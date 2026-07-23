@@ -133,6 +133,27 @@
       "sections": [],
       "updatedAt": "2026-07-23T14:21:28.436Z",
       "image": "/images/case-studies/progressive-search-30-suppliers-ota.png"
+    },
+    {
+      "id": "07",
+      "slug": "sql-server-to-postgresql-migration",
+      "title": "Migrating the Core Database From SQL Server to PostgreSQL — Under Live Traffic",
+      "date": "2026-07-26",
+      "published": false,
+      "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
+      "description": "SQL Server's per-core licensing and Windows-only hosting were holding back a platform running 36+ services for 6 live client brands — here's how we migrated the core database to PostgreSQL without taking booking or search offline.",
+      "tags": [
+        "PostgreSQL",
+        "SQL Server",
+        "Dapper",
+        ".NET Core",
+        "Database Migration",
+        "Linux",
+        "Cost Optimization"
+      ],
+      "body": "## The Problem\n\nThe OTA platform's core database ran on SQL Server, licensed per-core — a cost that scaled with every server added as the platform grew to 36+ services serving 6 live client brands. SQL Server also tied hosting to Windows, blocking a move to the cheaper Linux infrastructure the rest of the platform's modernization was already heading toward.\n\n## The Challenge\n\nThis wasn't a connection-string swap. The platform uses **Dapper**, a micro-ORM that executes raw SQL rather than abstracting it away like EF Core would — so every hand-written query across every service was written in T-SQL, and every one of them had to be individually audited and rewritten for PostgreSQL: `TOP` became `LIMIT`, `GETDATE()` became `NOW()`, identity columns became sequences, and T-SQL-specific syntax had to be found and replaced wherever it appeared. On top of that, this database backs live, 24/7 booking and search traffic across 6 client brands — there was no window where taking it offline to migrate was acceptable.\n\n## The Solution\n\nWe treated the migration as a gradual cutover, not a single event:\n\n- **Stood up PostgreSQL as a replication target first.** While SQL Server kept serving all live traffic untouched, data was continuously synced across so PostgreSQL stayed current in near real time, well before any service depended on it.\n- **Rewrote and validated queries service by service.** Each service's Dapper queries were audited for T-SQL-specific syntax, rewritten for PostgreSQL, and validated against the replicated data in a staging environment before touching production.\n- **Cut over one service at a time**, not all at once — once a service's queries were verified correct and replication lag confirmed near-zero, its connection string was flipped to PostgreSQL during a low-traffic window, with SQL Server kept warm as an immediate fallback.\n- **Decommissioned SQL Server only after every service was confirmed stable on PostgreSQL**, closing out the licensing cost it existed to justify removing.\n\n## The Results\n\n- Eliminated ongoing SQL Server licensing costs entirely\n- Unlocked Linux-based hosting for the core database, in line with the rest of the platform's move off Windows infrastructure\n- Completed the full migration without a single disruption to live booking or search traffic across the 6 client brands\n",
+      "sections": [],
+      "updatedAt": "2026-07-26T00:00:00.000Z"
     }
   ]
 }
