@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { GraduationCap, MapPin, Calendar, Award } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -40,7 +41,9 @@ export default function Education({ showHeading = true, noSection = false }: Edu
               <div className="flex items-start gap-4">
                 {edu.icon ? (
                   <div className="w-14 h-14 rounded-lg bg-white/90 flex items-center justify-center p-3 shrink-0">
-                    <img src={edu.icon} alt={edu.institution} className="w-full h-full object-contain" />
+                    <div className="relative w-full h-full">
+                      <Image src={edu.icon} alt={edu.institution} fill sizes="32px" className="object-contain" />
+                    </div>
                   </div>
                 ) : (
                   <div className="p-3 bg-accent/10 rounded-lg shrink-0">

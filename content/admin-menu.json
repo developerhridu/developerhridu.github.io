@@ -84,6 +84,11 @@
       "id": "chat-log",
       "label": "Chat Log",
       "published": true
+    },
+    {
+      "id": "search-log",
+      "label": "Search Log",
+      "published": true
     }
   ]
 }

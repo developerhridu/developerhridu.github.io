@@ -12,6 +12,7 @@ import TestimonialsManager from "@/components/admin/TestimonialsManager";
 import ProfileEditor from "@/components/admin/ProfileEditor";
 import SkillsEditor from "@/components/admin/SkillsEditor";
 import ChatLogViewer from "@/components/admin/ChatLogViewer";
+import SearchLogViewer from "@/components/admin/SearchLogViewer";
 import Dashboard from "@/components/admin/Dashboard";
 import TasksManager from "@/components/admin/TasksManager";
 import {
@@ -43,6 +44,7 @@ type Tab =
   | "proficiency"
   | "admin-menu"
   | "chat-log"
+  | "search-log"
   | "tasks";
 
 const TABS: { key: Tab; label: string }[] = adminMenuData.tabs
@@ -228,6 +230,7 @@ export default function AdminEditor() {
         <GenericArrayEditor config={proficiencyConfig} token={token} onAuthError={handleAuthError} />
       )}
       {tab === "chat-log" && <ChatLogViewer token={token} onAuthError={handleAuthError} />}
+      {tab === "search-log" && <SearchLogViewer token={token} onAuthError={handleAuthError} />}
       {tab === "tasks" && <TasksManager token={token} onAuthError={handleAuthError} />}
     </div>
   );

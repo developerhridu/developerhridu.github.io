@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -89,12 +90,8 @@ export default function Experience({ showHeading = true }: ExperienceProps) {
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-start gap-3">
                         {exp.logo && (
-                          <div className="w-11 h-11 rounded-lg overflow-hidden shrink-0 bg-surface-hover">
-                            <img
-                              src={exp.logo}
-                              alt={exp.company}
-                              className="w-full h-full object-cover"
-                            />
+                          <div className="relative w-11 h-11 rounded-lg overflow-hidden shrink-0 bg-surface-hover">
+                            <Image src={exp.logo} alt={exp.company} fill sizes="44px" className="object-cover" />
                           </div>
                         )}
                         <div>

@@ -38,6 +38,7 @@ export default function LightboxImage({ src, alt, wrapperClassName, imgClassName
         wrapperClassName={wrapperClassName}
         imgClassName={imgClassName}
         initials={initials}
+        natural
       />
     );
   }
@@ -52,7 +53,7 @@ export default function LightboxImage({ src, alt, wrapperClassName, imgClassName
           wrapperClassName ?? ""
         }`.trim()}
       >
-        <ContentImage src={src} alt={alt} imgClassName={imgClassName} initials={initials} />
+        <ContentImage src={src} alt={alt} imgClassName={imgClassName} initials={initials} natural />
         <span className="absolute top-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity">
           <Maximize2 size={16} />
         </span>

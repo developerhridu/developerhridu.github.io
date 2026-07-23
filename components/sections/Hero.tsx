@@ -22,6 +22,17 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
+            {profile.openToWork && (
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-accent/30 bg-accent/10 mb-6">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
+                </span>
+                <span className="text-xs font-medium text-accent">
+                  {profile.openToWorkLabel || "Open to work"}
+                </span>
+              </div>
+            )}
             <p className="font-mono text-s tracking-widest text-accent mb-4">
               Hi, I'm
             </p>

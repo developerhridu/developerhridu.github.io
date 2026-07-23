@@ -7,12 +7,15 @@ import Fuse from "fuse.js";
 import { Search, X, Sparkles } from "lucide-react";
 import { searchIndex, type SearchItem } from "@/lib/searchIndex";
 import { dispatchAskAi } from "@/lib/askAiEvent";
+import config from "@/content/config.json";
 
 const fuse = new Fuse(searchIndex, {
   keys: ["title", "description"],
   threshold: 0.35,
   ignoreLocation: true,
 });
+
+const WORKER_URL = config.aiChatWorkerUrl.replace(/\/$/, "");
 
 interface SearchPaletteProps {
   open: boolean;
@@ -40,6 +43,21 @@ export default function SearchPalette({ open, onOpenChange }: SearchPaletteProps
   const results: SearchItem[] = useMemo(() => {
     if (!query.trim()) return searchIndex.slice(0, 8);
     return fuse.search(query).slice(0, 8).map((r) => r.item);
+  }, [query]);
+
+  // Debounced, best-effort logging of what visitors search for (and whether it
+  // found anything) — never blocks or affects the search UI itself.
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (!trimmed || !WORKER_URL) return;
+    const timer = setTimeout(() => {
+      fetch(`${WORKER_URL}/search-log`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: trimmed, resultCount: fuse.search(trimmed).length }),
+      }).catch(() => {});
+    }, 600);
+    return () => clearTimeout(timer);
   }, [query]);
 
   useEffect(() => {

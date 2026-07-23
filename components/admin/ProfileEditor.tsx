@@ -24,6 +24,8 @@ interface ProfileForm {
   projectsCompleted: string;
   resumeUrl: string;
   portfolioUrl: string;
+  openToWork: boolean;
+  openToWorkLabel: string;
   social: { github: string; linkedin: string; leetcode: string; upwork: string };
 }
 
@@ -41,6 +43,8 @@ const KNOWN_KEYS = new Set([
   "projectsCompleted",
   "resumeUrl",
   "portfolioUrl",
+  "openToWork",
+  "openToWorkLabel",
   "social",
 ]);
 
@@ -58,6 +62,8 @@ function blankForm(): ProfileForm {
     projectsCompleted: "0",
     resumeUrl: "",
     portfolioUrl: "",
+    openToWork: false,
+    openToWorkLabel: "Open to work",
     social: { github: "", linkedin: "", leetcode: "", upwork: "" },
   };
 }
@@ -102,6 +108,8 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
         projectsCompleted: String(parsed.projectsCompleted ?? 0),
         resumeUrl: parsed.resumeUrl ?? "",
         portfolioUrl: parsed.portfolioUrl ?? "",
+        openToWork: parsed.openToWork ?? false,
+        openToWorkLabel: parsed.openToWorkLabel ?? "Open to work",
         social: {
           github: parsed.social?.github ?? "",
           linkedin: parsed.social?.linkedin ?? "",
@@ -184,6 +192,8 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
         location: form.location.trim(),
         yearsOfExperience: Number(form.yearsOfExperience) || 0,
         projectsCompleted: Number(form.projectsCompleted) || 0,
+        openToWork: form.openToWork,
+        openToWorkLabel: form.openToWorkLabel.trim() || "Open to work",
         social: {
           github: form.social.github.trim(),
           linkedin: form.social.linkedin.trim(),
@@ -241,6 +251,26 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
           <Field label="Title" value={form.title} onChange={(v) => setForm({ ...form, title: v })} />
         </div>
         <Field label="Tagline" value={form.tagline} onChange={(v) => setForm({ ...form, tagline: v })} />
+
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-lg border border-border">
+          <label className="flex items-center gap-2 cursor-pointer shrink-0">
+            <input
+              type="checkbox"
+              checked={form.openToWork}
+              onChange={(e) => setForm({ ...form, openToWork: e.target.checked })}
+              className="w-4 h-4 accent-accent"
+            />
+            <span className="text-sm text-foreground whitespace-nowrap">Show &quot;Open to work&quot; badge</span>
+          </label>
+          <input
+            value={form.openToWorkLabel}
+            onChange={(e) => setForm({ ...form, openToWorkLabel: e.target.value })}
+            disabled={!form.openToWork}
+            placeholder="Open to work"
+            className={`${inputClass} disabled:opacity-50`}
+          />
+        </div>
+
         <div>
           <label className="block text-xs uppercase tracking-wide text-muted mb-1">Bio</label>
           <textarea

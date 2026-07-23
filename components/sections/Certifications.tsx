@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { BadgeCheck, Calendar, ExternalLink } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -45,13 +46,17 @@ export default function Certifications({ showHeading = true, noSection = false }
                         key={icon}
                         className="w-11 h-11 rounded-lg bg-white/90 border-2 border-background flex items-center justify-center p-2"
                       >
-                        <img src={icon} alt={cert.issuer} className="w-full h-full object-contain" />
+                        <div className="relative w-full h-full">
+                          <Image src={icon} alt={cert.issuer} fill sizes="28px" className="object-contain" />
+                        </div>
                       </div>
                     ))}
                   </div>
                 ) : cert.icon ? (
                   <div className="w-14 h-14 rounded-lg bg-white/90 flex items-center justify-center p-3 shrink-0">
-                    <img src={cert.icon} alt={cert.issuer} className="w-full h-full object-contain" />
+                    <div className="relative w-full h-full">
+                      <Image src={cert.icon} alt={cert.issuer} fill sizes="32px" className="object-contain" />
+                    </div>
                   </div>
                 ) : (
                   <div className="p-3 bg-accent/10 rounded-lg shrink-0">

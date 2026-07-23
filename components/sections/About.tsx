@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { MapPin, Mail } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -39,12 +40,8 @@ export default function About({ showHeading = true }: AboutProps) {
           <GlassCard hover={false}>
             <div className="flex items-center gap-4 mb-6">
               {profile.avatar ? (
-                <div className="w-20 h-20 rounded-full overflow-hidden ring-2 ring-border shrink-0">
-                  <img
-                    src={profile.avatar}
-                    alt={profile.name}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="relative w-20 h-20 rounded-full overflow-hidden ring-2 ring-border shrink-0">
+                  <Image src={profile.avatar} alt={profile.name} fill sizes="80px" className="object-cover" />
                 </div>
               ) : (
                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent to-accent-hover flex items-center justify-center text-accent-foreground text-2xl font-bold">

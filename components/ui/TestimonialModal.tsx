@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
 import { X, Quote, Mail, Linkedin, BadgeCheck } from "lucide-react";
 import LightboxImage from "@/components/ui/LightboxImage";
 import type { Testimonial } from "@/types";
@@ -59,11 +60,13 @@ export default function TestimonialModal({ testimonial, onClose }: TestimonialMo
             <div className="p-6 md:p-8">
               <div className="flex items-center gap-4 mb-6">
                 {testimonial.avatar ? (
-                  <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 bg-surface-hover">
-                    <img
+                  <div className="relative w-14 h-14 rounded-full overflow-hidden shrink-0 bg-surface-hover">
+                    <Image
                       src={testimonial.avatar}
                       alt={testimonial.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="56px"
+                      className="object-cover"
                     />
                   </div>
                 ) : (

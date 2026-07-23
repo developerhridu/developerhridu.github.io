@@ -22,6 +22,7 @@ import {
   Quote,
   Wrench,
 } from "lucide-react";
+import Image from "next/image";
 import menu from "@/content/menu.json";
 import profile from "@/content/profile.json";
 import { trackEvent } from "@/lib/analytics";
@@ -59,12 +60,8 @@ export default function Navbar() {
 
   const Logo = (
     <Link href="/" className="flex items-center gap-2 text-xl font-bold text-foreground">
-      <div className="w-12 h-12 overflow-hidden shrink-0 rounded-md">
-        <img
-          src={profile.avatar}
-          alt={profile.name}
-          className="w-full h-full object-cover"
-        />
+      <div className="relative w-12 h-12 overflow-hidden shrink-0 rounded-md">
+        <Image src={profile.avatar} alt={profile.name} fill sizes="48px" className="object-cover" />
       </div>
       {/* Portfolio */}
     </Link>

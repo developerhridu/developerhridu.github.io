@@ -23,6 +23,8 @@ export interface Profile {
   };
   portfolioUrl?: string;
   resumeUrl: string;
+  openToWork?: boolean;
+  openToWorkLabel?: string;
 }
 
 // Project types

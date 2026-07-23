@@ -60,6 +60,26 @@ async function isRepoOwnerToken(token: string): Promise<boolean> {
   }
 }
 
+async function isAuthorizedAdmin(request: Request, env: Env): Promise<boolean> {
+  const token = request.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
+  if (!token) return false;
+  if (env.ADMIN_KEY && token === env.ADMIN_KEY) return true;
+  return isRepoOwnerToken(token);
+}
+
+async function listLogEntries(env: Env, prefix: string): Promise<unknown[]> {
+  if (!env.CHAT_LOG) return [];
+  const list = await env.CHAT_LOG.list({ prefix, limit: 100 });
+  const sortedKeys = [...list.keys].sort((a, b) => b.name.localeCompare(a.name));
+  const entries = await Promise.all(
+    sortedKeys.map(async (k) => {
+      const value = await env.CHAT_LOG!.get(k.name);
+      return value ? JSON.parse(value) : null;
+    })
+  );
+  return entries.filter(Boolean);
+}
+
 async function handleLogs(request: Request, env: Env): Promise<Response> {
   if (!env.CHAT_LOG) {
     return new Response(JSON.stringify({ error: "Logging is not configured for this Worker" }), {
@@ -68,27 +88,67 @@ async function handleLogs(request: Request, env: Env): Promise<Response> {
     });
   }
 
-  const token = request.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
-  const isAdminKey = !!token && !!env.ADMIN_KEY && token === env.ADMIN_KEY;
-  const isAuthorized = isAdminKey || (!!token && (await isRepoOwnerToken(token)));
-
-  if (!isAuthorized) {
+  if (!(await isAuthorizedAdmin(request, env))) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json", ...corsHeaders(request) },
     });
   }
 
-  const list = await env.CHAT_LOG.list({ prefix: "qa:", limit: 100 });
-  const sortedKeys = [...list.keys].sort((a, b) => b.name.localeCompare(a.name));
-  const entries = await Promise.all(
-    sortedKeys.map(async (k) => {
-      const value = await env.CHAT_LOG!.get(k.name);
-      return value ? JSON.parse(value) : null;
-    })
-  );
+  const entries = await listLogEntries(env, "qa:");
+  return new Response(JSON.stringify({ entries }), {
+    headers: { "Content-Type": "application/json", ...corsHeaders(request) },
+  });
+}
 
-  return new Response(JSON.stringify({ entries: entries.filter(Boolean) }), {
+/** Fire-and-forget: records what visitors type into the ⌘K search palette (and
+ *  whether it found anything), so the admin can see what people are looking for. */
+async function logSearchQuery(env: Env, query: string, resultCount: number) {
+  if (!env.CHAT_LOG) return;
+  try {
+    const key = `search:${Date.now()}:${crypto.randomUUID()}`;
+    await env.CHAT_LOG.put(
+      key,
+      JSON.stringify({ query, resultCount, timestamp: new Date().toISOString() }),
+      { expirationTtl: 60 * 60 * 24 * 90 } // keep 90 days
+    );
+  } catch {
+    // Best-effort logging only.
+  }
+}
+
+async function handleSearchLog(request: Request, env: Env): Promise<Response> {
+  if (!env.CHAT_LOG) {
+    return new Response(JSON.stringify({ error: "Search logging is not configured for this Worker" }), {
+      status: 501,
+      headers: { "Content-Type": "application/json", ...corsHeaders(request) },
+    });
+  }
+
+  if (request.method === "GET") {
+    if (!(await isAuthorizedAdmin(request, env))) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders(request) },
+      });
+    }
+    const entries = await listLogEntries(env, "search:");
+    return new Response(JSON.stringify({ entries }), {
+      headers: { "Content-Type": "application/json", ...corsHeaders(request) },
+    });
+  }
+
+  // POST — fire-and-forget write, no auth required (same as chat logging).
+  try {
+    const body = await request.json<{ query?: string; resultCount?: number }>();
+    const query = (body.query ?? "").trim().slice(0, 200);
+    const resultCount = Number(body.resultCount) || 0;
+    if (query) await logSearchQuery(env, query, resultCount);
+  } catch {
+    // Malformed body — nothing to log, not worth erroring the client over.
+  }
+
+  return new Response(JSON.stringify({ ok: true }), {
     headers: { "Content-Type": "application/json", ...corsHeaders(request) },
   });
 }
@@ -542,6 +602,10 @@ export default {
 
     if (request.method === "POST" && url.pathname === "/testimonials/submit") {
       return handleTestimonialSubmit(request, env);
+    }
+
+    if ((request.method === "GET" || request.method === "POST") && url.pathname === "/search-log") {
+      return handleSearchLog(request, env);
     }
 
     if (request.method !== "POST") {

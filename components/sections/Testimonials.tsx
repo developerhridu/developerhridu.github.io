@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Quote, Linkedin, Mail, Maximize2, BadgeCheck, PenLine } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -55,11 +56,13 @@ export default function Testimonials({ showHeading = true, noSection = false }: 
 
               <div className="flex items-center gap-3">
                 {testimonial.avatar ? (
-                  <div className="w-11 h-11 rounded-full overflow-hidden shrink-0 bg-surface-hover">
-                    <img
+                  <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0 bg-surface-hover">
+                    <Image
                       src={testimonial.avatar}
                       alt={testimonial.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="44px"
+                      className="object-cover"
                     />
                   </div>
                 ) : (
