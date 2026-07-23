@@ -6,7 +6,7 @@
       "title": "Cutting ADM Penalties with an Automated Booking Cancellation Service",
       "date": "2025-03-04",
       "published": true,
-      "client": "6 OTA Clients",
+      "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
       "description": "A background service that automatically cancels un-ticketed bookings before the last ticketing time, saving ~$23K-$27K across 6 OTA clients.",
       "tags": [
         ".NET Core",
@@ -25,6 +25,7 @@
       "title": "How I Made My Static Website Editable — Without a Server or Database",
       "date": "2026-07-18",
       "published": true,
+      "client": "Personal Project",
       "description": "This portfolio site is hosted completely free with no server behind it. Here's how I still gave myself a private dashboard to update every part of it from a browser, without adding a server or a database.",
       "tags": [
         "Next.js",
@@ -54,6 +55,7 @@
       "title": "Building an Airline Fare Intelligence Platform Across Multiple GDS & NDC Suppliers",
       "date": "2026-01-13",
       "published": true,
+      "client": "US-Bangla Airlines",
       "description": "An airline fare intelligence platform integrating multiple GDS and NDC suppliers to aggregate, normalize, and analyze competitor pricing — turning scattered market data into data-driven fare recommendations.",
       "tags": [
         ".NET Core",
@@ -73,7 +75,7 @@
       "title": "How a Redis Stampede (Thundering Herd) Hit Our OTA Search Ranking Engine — And How We Fixed It",
       "date": "2026-07-23",
       "published": true,
-      "client": "Multi-tenant OTA Platform (30 Suppliers)",
+      "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
       "description": "When 30 integrated suppliers and 40-50 unique airlines per search met an uncached rank lookup, concurrent cache misses stampeded the database in unison — here's how negative caching and locking around retrieval broke the herd.",
       "tags": [
         "Redis",
@@ -95,7 +97,7 @@
       "title": "Splitting Reads From Writes: A CQRS + ETL Pipeline That Cut Job Search Query Time by 30%",
       "date": "2024-09-24",
       "published": true,
-      "client": "Bdjobs.com & Recruiter.Bdjobs.com",
+      "client": "Bdjobs.com",
       "description": "Job search was slowed by relational joins across a normalized MSSQL schema — here's how a CQRS split with a MongoDB read model and an ETL sync pipeline cut query time and improved search efficiency by 30%.",
       "tags": [
         "CQRS",
@@ -110,6 +112,26 @@
       "sections": [],
       "updatedAt": "2026-07-23T13:56:24.383Z",
       "image": "/images/case-studies/cqrs-etl-mssql-mongodb-job-search.png"
+    },
+    {
+      "id": "06",
+      "slug": "progressive-search-30-suppliers-ota",
+      "title": "Progressive Search: Showing Flight Results Before All 30 Suppliers Answer",
+      "date": "2026-05-25",
+      "published": true,
+      "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
+      "description": "Flight search used to wait on all 30 suppliers before showing anything — one slow responder meant everyone waited. Here's how Server-Sent Events let us stream results the moment each supplier answers.",
+      "tags": [
+        "Server-Sent Events",
+        ".NET Core",
+        "Streaming",
+        "React",
+        "UX Performance",
+        "Scalability"
+      ],
+      "body": "## The Problem\n\nA flight search on our OTA platform fans out to all 30 integrated GDS/NDC suppliers in parallel — but the original design waited for every single one of them to respond, or time out, before showing the user anything at all. Most suppliers answer quickly. It only takes one or two slow ones — a sluggish GDS queue, an occasional timeout — to drag the entire perceived search time up to whatever the slowest responder happened to do that moment. Users stared at a loading spinner for as long as the worst-performing supplier took, even when 28 of the other 30 had already answered in under a second.\n\n## The Root Cause\n\nThe search endpoint was synchronous and all-or-nothing: results were assembled fully on the server and returned in a single response, only after every supplier settled. Total response time was bounded by the slowest supplier in the batch, not the typical one — a single slow dependency held the entire request hostage, no matter how fast everything else finished.\n\n## The Solution\n\nWe rebuilt the search response as a stream instead of a single payload, using **Server-Sent Events (SSE)**:\n\n- Suppliers are still queried in parallel exactly as before, but the client opens an SSE connection to the search endpoint instead of waiting for one JSON response.\n- As each supplier's response comes back, the server immediately pushes it down the SSE stream as its own event — the client doesn't wait for the other 29 suppliers to catch up.\n- The frontend appends and live re-sorts the growing result set as each event arrives, so the user sees real, bookable flights within a second or two, from whichever suppliers happened to answer fastest.\n- Slow or timed-out suppliers simply stream in later, or drop off silently if they never respond — they no longer block the first result the user sees.\n- The stream closes once every supplier has either answered or timed out, at which point the result set is complete.\n\n## The Results\n\n- Time to first visible result is now bound by the fastest supplier instead of the slowest, cutting the wait before a user sees anything real\n- Users start scanning and comparing actual flights almost immediately instead of watching a blank loading state for the full round trip\n- A single slow or misbehaving supplier can no longer degrade the experience for the entire search — it just arrives late instead of holding everyone else back\n",
+      "sections": [],
+      "updatedAt": "2026-07-25T00:00:00.000Z"
     }
   ]
 }
