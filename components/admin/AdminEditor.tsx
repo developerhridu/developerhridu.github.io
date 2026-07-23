@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { LogOut, FileText } from "lucide-react";
 import configData from "@/content/config.json";
 import adminMenuData from "@/content/admin-menu.json";
-import { inputClass } from "@/components/admin/shared";
+import { inputClass, TOKEN_KEY } from "@/components/admin/shared";
 import BlogCaseStudyManager from "@/components/admin/BlogCaseStudyManager";
 import GenericArrayEditor from "@/components/admin/GenericArrayEditor";
 import ExperienceManager from "@/components/admin/ExperienceManager";
@@ -26,7 +26,6 @@ import {
 } from "@/components/admin/arrayConfigs";
 
 const PASSWORD_OK_KEY = "admin_pw_ok";
-const TOKEN_KEY = "gh_pat";
 
 type Tab =
   | "dashboard"

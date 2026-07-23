@@ -1,3 +1,5 @@
+export const TOKEN_KEY = "gh_pat";
+
 export const inputClass =
   "w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors";
 

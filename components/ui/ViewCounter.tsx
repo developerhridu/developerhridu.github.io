@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Eye } from "lucide-react";
 import config from "@/content/config.json";
+import { TOKEN_KEY } from "@/components/admin/shared";
 
 const WORKER_URL = config.aiChatWorkerUrl.replace(/\/$/, "");
 
@@ -13,8 +14,15 @@ interface ViewCounterProps {
 
 export default function ViewCounter({ type, slug }: ViewCounterProps) {
   const [count, setCount] = useState<number | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
+    setIsOwner(!!localStorage.getItem(TOKEN_KEY));
+  }, []);
+
+  useEffect(() => {
+    // Tracking runs for every visitor regardless of who's viewing — only the
+    // rendered count below is restricted to the site owner.
     if (!WORKER_URL) return;
     const storageKey = `viewed:${type}:${slug}`;
     const alreadyViewed = localStorage.getItem(storageKey) === "1";
@@ -40,7 +48,7 @@ export default function ViewCounter({ type, slug }: ViewCounterProps) {
     void run();
   }, [type, slug]);
 
-  if (count === null) return null;
+  if (count === null || !isOwner) return null;
 
   return (
     <span className="flex items-center gap-2">
