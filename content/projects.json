@@ -54,6 +54,7 @@
       "title": "Fare Comparison",
       "description": "Airline fare intelligence platform comparing competitors' real-time fares, flight schedules, and seat availability for data-driven pricing",
       "longDescription": "An airline fare intelligence platform that enables airlines to compare competitors' real time fares, flight schedules, and seat availability, providing data-driven pricing recommendations to maximize revenue and profitability. Integrated multiple GDS and NDC suppliers to aggregate and normalize competitor data, and engineered pricing-intelligence logic to help airlines optimize ticket pricing.",
+      "image": "/images/projects/fare-comparison.png",
       "tags": [
         ".NET Core",
         "Hangfire",
@@ -61,7 +62,6 @@
         "React",
         "PostgreSQL"
       ],
-      "image": "/images/projects/fare-comparison.png",
       "liveUrl": null,
       "githubUrl": null,
       "featured": true
