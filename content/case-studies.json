@@ -4,7 +4,7 @@
       "id": "01",
       "slug": "automated-booking-cancellation-service",
       "title": "Cutting ADM Penalties with an Automated Booking Cancellation Service",
-      "date": "2024-06-01",
+      "date": "2025-03-04",
       "published": true,
       "client": "6 OTA Clients",
       "description": "A background service that automatically cancels un-ticketed bookings before the last ticketing time, saving ~$23K-$27K across 6 OTA clients.",
@@ -16,7 +16,8 @@
       ],
       "image": "/images/projects/bcs.png",
       "body": "## The Problem\n\nAirlines charge Agency Debit Memo (ADM) penalties when a travel agency holds a booking past the last ticketing time without issuing a ticket. Across the OTA platforms I supported, un-ticketed bookings were slipping past their deadlines because there was no automated way to catch and cancel them in time — someone had to notice and act manually, and that didn't scale across 6 client platforms.\n\n## The Solution\n\nI built a background service using **ASP.NET Core** and **Hangfire** that continuously monitors bookings approaching their last ticketing time. When a booking is still un-ticketed as the deadline closes in, the service automatically cancels it — removing the ADM exposure without requiring manual intervention. The job scheduling and retry behavior are backed by **SQLite** for lightweight, reliable persistence across restarts.\n\nKey design points:\n\n- Runs as a recurring Hangfire job, independent of the main booking API's request/response cycle\n- Idempotent cancellation logic so re-runs or retries never double-cancel or corrupt booking state\n- Configurable per-client thresholds, since each OTA's ticketing deadlines and airline agreements differ slightly\n\n## The Results\n\n- Reduced ADM penalties by **$4,500–$6,400 per month per OTA**\n- Total savings of **~$23,000–$27,000** across 6 client platforms\n- Removed a manual, error-prone monitoring step from the operations workflow entirely\n",
-      "sections": []
+      "sections": [],
+      "updatedAt": "2026-07-23T13:58:44.089Z"
     },
     {
       "id": "02",
