@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, ExternalLink, Github } from "lucide-react";
+import { X, ExternalLink, Github, Building2 } from "lucide-react";
 import LightboxImage from "@/components/ui/LightboxImage";
 
 interface ProjectModalProps {
@@ -12,6 +12,7 @@ interface ProjectModalProps {
     description: string;
     longDescription?: string;
     image?: string;
+    client?: string;
     tags: string[];
     liveUrl?: string | null;
     githubUrl?: string | null | { frontend?: string; backend?: string };
@@ -84,9 +85,16 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                 ))}
               </div>
 
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
                 {project.title}
               </h2>
+
+              {project.client && (
+                <p className="flex items-center gap-2 text-sm text-muted mb-4">
+                  <Building2 size={16} />
+                  {project.client}
+                </p>
+              )}
 
               <p className="text-muted mb-2">{project.description}</p>
               {project.longDescription && (

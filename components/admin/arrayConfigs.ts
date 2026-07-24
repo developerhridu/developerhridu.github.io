@@ -54,6 +54,7 @@ export const projectsConfig: ArrayConfig = {
     { key: "description", label: "Description", type: "textarea" },
     { key: "longDescription", label: "Long Description", type: "textarea" },
     { key: "image", label: "Image", type: "image" },
+    { key: "client", label: "Client", type: "text" },
     { key: "tags", label: "Tags (comma separated)", type: "tags" },
     { key: "liveUrl", label: "Live URL", type: "url" },
     { key: "githubUrl", label: "GitHub URL (single repo)", type: "url" },

@@ -34,6 +34,7 @@ export interface Project {
   description: string;
   longDescription?: string;
   image: string;
+  client?: string;
   tags: string[];
   liveUrl: string | null;
   githubUrl: string | null | { frontend?: string; backend?: string };

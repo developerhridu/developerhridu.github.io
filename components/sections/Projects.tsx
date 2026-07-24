@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowUpRight, ExternalLink, Github } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Github, Building2 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ProjectModal from "@/components/ui/ProjectModal";
 import ContentImage from "@/components/ui/ContentImage";
 import projectsData from "@/content/projects.json";
+import type { Project } from "@/types";
 
-type ProjectItem = (typeof projectsData.projects)[number];
+type ProjectItem = Project;
 
 interface ProjectsProps {
   showHeading?: boolean;
@@ -17,7 +18,7 @@ interface ProjectsProps {
 }
 
 export default function Projects({ showHeading = true, showAll = false }: ProjectsProps) {
-  const projects = projectsData.projects;
+  const projects = projectsData.projects as Project[];
   const featuredProjects = projects.filter((p) => p.featured);
   const otherProjects = projects.filter((p) => !p.featured);
 
@@ -63,6 +64,12 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                   <h3 className="text-xl font-bold text-foreground mb-2">
                     {project.title}
                   </h3>
+                  {project.client && (
+                    <p className="flex items-center gap-1.5 text-sm text-muted mb-2">
+                      <Building2 size={14} />
+                      {project.client}
+                    </p>
+                  )}
                   <p className="text-muted mb-4">{project.description}</p>
                   {project.longDescription && (
                     <p className="text-muted text-sm mb-4">
@@ -161,6 +168,12 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                     <h4 className="text-lg font-semibold text-foreground mb-2 pr-8">
                       {project.title}
                     </h4>
+                    {project.client && (
+                      <p className="flex items-center gap-1.5 text-xs text-muted mb-2">
+                        <Building2 size={13} />
+                        {project.client}
+                      </p>
+                    )}
                     <p className="text-muted text-sm mb-3">
                       {project.description}
                     </p>
