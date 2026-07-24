@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ThumbsUp } from "lucide-react";
-import config from "@/content/config.json";
-
-const WORKER_URL = config.aiChatWorkerUrl.replace(/\/$/, "");
+import { WORKER_URL } from "@/lib/workerUrl";
 
 interface ReactionButtonProps {
   type: "blog" | "case-study";

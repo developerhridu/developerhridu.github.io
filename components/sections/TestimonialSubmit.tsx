@@ -6,10 +6,8 @@ import { Send, CheckCircle, AlertCircle } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Button from "@/components/ui/Button";
-import config from "@/content/config.json";
+import { WORKER_URL } from "@/lib/workerUrl";
 import { trackEvent } from "@/lib/analytics";
-
-const WORKER_URL = config.aiChatWorkerUrl.replace(/\/$/, "");
 
 const inputClass =
   "w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors";

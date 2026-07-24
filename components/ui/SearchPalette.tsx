@@ -7,15 +7,13 @@ import Fuse from "fuse.js";
 import { Search, X, Sparkles } from "lucide-react";
 import { searchIndex, type SearchItem } from "@/lib/searchIndex";
 import { dispatchAskAi } from "@/lib/askAiEvent";
-import config from "@/content/config.json";
+import { WORKER_URL } from "@/lib/workerUrl";
 
 const fuse = new Fuse(searchIndex, {
   keys: ["title", "description"],
   threshold: 0.35,
   ignoreLocation: true,
 });
-
-const WORKER_URL = config.aiChatWorkerUrl.replace(/\/$/, "");
 
 interface SearchPaletteProps {
   open: boolean;

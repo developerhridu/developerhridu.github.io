@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import { TrendingUp, MessageSquareText, Quote as QuoteIcon, RefreshCw } from "lucide-react";
 import { fetchContentFile, GitHubApiError } from "@/lib/github";
-import config from "@/content/config.json";
+import { WORKER_URL } from "@/lib/workerUrl";
 
-const WORKER_URL = config.aiChatWorkerUrl.replace(/\/$/, "");
 const TESTIMONIALS_PATH = "content/testimonials.json";
 
 interface DashboardProps {

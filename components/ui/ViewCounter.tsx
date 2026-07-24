@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Eye } from "lucide-react";
-import config from "@/content/config.json";
+import { WORKER_URL } from "@/lib/workerUrl";
 import { TOKEN_KEY } from "@/components/admin/shared";
-
-const WORKER_URL = config.aiChatWorkerUrl.replace(/\/$/, "");
 
 interface ViewCounterProps {
   type: "blog" | "case-study";
