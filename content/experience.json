@@ -14,7 +14,7 @@
           "name": "Online Travel Agency",
           "description": "A multi-tenant OTA platform that enables travel agencies to search, compare, book, and manage flights, hotels, holiday packages, and other travel services.",
           "technologies": [
-            "Microservices",
+            "Modular Monolith",
             ".NET Core",
             "Dapper",
             "Angular",
@@ -59,7 +59,13 @@
         {
           "name": "Fare Comparison",
           "description": "An airline fare intelligence platform that enables airlines to compare competitors' real time fares, flight schedules, and seat availability, providing data-driven pricing recommendations to maximize revenue and profitability.",
-          "technologies": [".NET Core", "Hangfire", "EF Core", "React", "PostgreSQL"],
+          "technologies": [
+            ".NET Core",
+            "Hangfire",
+            "EF Core",
+            "React",
+            "PostgreSQL"
+          ],
           "highlights": [
             "Designed and developed the end-to-end platform, delivering a scalable and responsive web application",
             "Integrated multiple GDS, NDC Suppliers to aggregate competitor fares, flight schedules, and seat availability, normalizing data for accurate comparison and analysis",
@@ -81,7 +87,13 @@
         {
           "name": "Bdjobs.com & Recruiter.Bdjobs.com",
           "description": "Platforms that connects job seekers with employers by enabling job posting, job search, application management, resume submission, and recruitment workflows.",
-          "technologies": ["Angular", "ASP.NET Core", "C#", "MSSQL Server", "ETL"],
+          "technologies": [
+            "Angular",
+            "ASP.NET Core",
+            "C#",
+            "MSSQL Server",
+            "ETL"
+          ],
           "highlights": [
             "Collaborated with product, backend & QA teams to migrate Bdjobs.com corporate panel from legacy ASP to Angular and ASP.NET Core, enhancing platform functionality and performance",
             "Developed key features — Employers Job Posting and Hiring System and Candidate SkillMatch Score, increasing platform sales by 17%",
@@ -103,7 +115,12 @@
         {
           "name": "Courier Platform",
           "description": "A comprehensive logistics platform that streamlines parcel booking, real-time tracking, last-mile delivery, reverse logistics, fulfillment, and cross-border shipping through a centralized management system.",
-          "technologies": ["React", "ASP.NET Core", "C#", "JavaScript"],
+          "technologies": [
+            "React",
+            "ASP.NET Core",
+            "C#",
+            "JavaScript"
+          ],
           "highlights": [
             "Collaborated with a team of remote developers to design and develop the company's website using React and ASP.NET Core",
             "Crafted front-end (React), built APIs, and optimized existing codebase & database, resulting in improved website performance and responsiveness"
