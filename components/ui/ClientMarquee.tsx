@@ -7,14 +7,14 @@ const CLIENTS_WITH_LOGOS = clientsData.clients.filter(
 
 function LogoTrack({ ariaHidden }: { ariaHidden: boolean }) {
   return (
-    <div className="flex items-center gap-10 pr-10 shrink-0" aria-hidden={ariaHidden || undefined}>
+    <div className="flex items-center gap-12 pr-12 shrink-0" aria-hidden={ariaHidden || undefined}>
       {CLIENTS_WITH_LOGOS.map((client) => (
         <div
           key={client.id}
-          className="flex items-center justify-center w-24 h-14 shrink-0 rounded-lg bg-white/90 px-4 py-2"
+          className="flex items-center justify-center w-36 h-24 shrink-0 rounded-xl bg-white/90 px-5 py-3 transition-transform hover:scale-105"
         >
-          <div className="relative w-full h-full grayscale opacity-70 transition-all hover:grayscale-0 hover:opacity-100">
-            <Image src={client.logo} alt={client.name} fill sizes="96px" className="object-contain" />
+          <div className="relative w-full h-full">
+            <Image src={client.logo} alt={client.name} fill sizes="144px" className="object-contain" />
           </div>
         </div>
       ))}

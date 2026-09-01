@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, Code2, ExternalLink, Github, Handshake, Linkedin } from "lucide-react";
+import { ArrowDown, ExternalLink, Handshake } from "lucide-react";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import ClientMarquee from "@/components/ui/ClientMarquee";
@@ -11,12 +11,12 @@ import { trackEvent } from "@/lib/analytics";
 
 export default function Hero() {
   return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 md:pt-0">
+    <section className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden pt-16 md:pt-0">
       {/* Dot-grid background */}
       <div className="bg-grid absolute inset-0" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10 w-full">
         <div className="text-center">
           {/* Main heading */}
           <motion.div
@@ -84,79 +84,44 @@ export default function Hero() {
             )}
           </motion.div>
 
-          {/* Social Links */}
-          <motion.div
-            className="flex items-center justify-center gap-4 mb-16"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <a
-              href={profile.social.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub profile"
-              className="text-muted hover:text-foreground transition-colors p-2"
-            >
-              <Github size={24} />
-            </a>
-            <a
-              href={profile.social.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn profile"
-              className="text-muted hover:text-foreground transition-colors p-2"
-            >
-              <Linkedin size={24} />
-            </a>
-            <a
-              href={profile.social.leetcode}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LeetCode profile"
-              className="text-muted hover:text-foreground transition-colors p-2"
-            >
-              <Code2 size={24} />
-            </a>
-          </motion.div>
-
           {/* Stats */}
           <motion.div
-            className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-2xl mx-auto"
+            className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            <GlassCard className="text-center" hover={false}>
-              <div className="text-3xl font-bold text-foreground mb-1">
+            <GlassCard className="!p-3 text-center" hover={false}>
+              <div className="text-xl font-bold text-foreground mb-0.5">
                 {profile.yearsOfExperience}+
               </div>
-              <div className="text-sm text-muted">Years Experience</div>
+              <div className="text-xs text-muted">Years Experience</div>
             </GlassCard>
-            <GlassCard className="text-center" hover={false}>
-              <div className="text-3xl font-bold text-foreground mb-1">
+            <GlassCard className="!p-3 text-center" hover={false}>
+              <div className="text-xl font-bold text-foreground mb-0.5">
                 {profile.projectsCompleted}+
               </div>
-              <div className="text-sm text-muted">Projects Completed</div>
+              <div className="text-xs text-muted">Projects Completed</div>
             </GlassCard>
-            <GlassCard className="text-center col-span-2 md:col-span-1" hover={false}>
-              <div className="text-3xl font-bold text-foreground mb-1">
+            <GlassCard className="!p-3 text-center col-span-2 md:col-span-1" hover={false}>
+              <div className="text-xl font-bold text-foreground mb-0.5">
                 {clientsData.clients.length}+
               </div>
-              <div className="text-sm text-muted">Clients</div>
+              <div className="text-xs text-muted">Clients</div>
             </GlassCard>
-          </motion.div>
-
-          {/* Client Logos */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-          >
-            <ClientMarquee />
           </motion.div>
         </div>
       </div>
+
+      {/* Client Logos — full-width trusted-by band */}
+      <motion.div
+        className="relative z-10 w-full mt-14 pt-8 border-t border-border/60"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+      >
+        <ClientMarquee />
+      </motion.div>
     </section>
   );
 }

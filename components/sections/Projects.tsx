@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowUpRight, ExternalLink, Github } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Github, Building2 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ProjectModal from "@/components/ui/ProjectModal";
 import ContentImage from "@/components/ui/ContentImage";
-import ClientBadge from "@/components/ui/ClientBadge";
 import projectsData from "@/content/projects.json";
-import { resolveClients } from "@/lib/clients";
 import type { Project } from "@/types";
 
 type ProjectItem = Project;
@@ -41,9 +39,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
 
         {/* Featured Projects */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
-          {displayProjects.map((project, idx) => {
-            const clients = resolveClients(project.client);
-            return (
+          {displayProjects.map((project, idx) => (
             <motion.div
               key={project.id}
               initial={{ opacity: 0, y: 30 }}
@@ -68,11 +64,10 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                   <h3 className="text-xl font-bold text-foreground mb-2">
                     {project.title}
                   </h3>
-                  {clients.length > 0 && (
-                    <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted mb-2">
-                      {clients.map((c) => (
-                        <ClientBadge key={c.id} client={c} iconSize={14} />
-                      ))}
+                  {project.client && (
+                    <p className="flex items-center gap-1.5 text-sm text-muted mb-2">
+                      <Building2 size={14} />
+                      {project.client}
                     </p>
                   )}
                   <p className="text-muted mb-4">{project.description}</p>
@@ -148,8 +143,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                 </div>
               </GlassCard>
             </motion.div>
-            );
-          })}
+          ))}
         </div>
 
         {/* Other Projects (only show on showAll or when there are non-featured) */}
@@ -159,9 +153,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
               Other Projects
             </h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {otherProjects.map((project, idx) => {
-                const clients = resolveClients(project.client);
-                return (
+              {otherProjects.map((project, idx) => (
                 <motion.div
                   key={project.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -176,11 +168,10 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                     <h4 className="text-lg font-semibold text-foreground mb-2 pr-8">
                       {project.title}
                     </h4>
-                    {clients.length > 0 && (
-                      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted mb-2">
-                        {clients.map((c) => (
-                          <ClientBadge key={c.id} client={c} iconSize={13} />
-                        ))}
+                    {project.client && (
+                      <p className="flex items-center gap-1.5 text-xs text-muted mb-2">
+                        <Building2 size={13} />
+                        {project.client}
                       </p>
                     )}
                     <p className="text-muted text-sm mb-3">
@@ -236,8 +227,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                     )}
                   </GlassCard>
                 </motion.div>
-                );
-              })}
+              ))}
             </div>
           </>
         )}

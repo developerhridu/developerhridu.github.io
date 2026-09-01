@@ -8,12 +8,10 @@ import { estimateReadingTime } from "@/lib/readingTime";
 import LightboxImage from "@/components/ui/LightboxImage";
 import RelatedContent from "@/components/ui/RelatedContent";
 import Comments from "@/components/ui/Comments";
-import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Tag, Building2 } from "lucide-react";
 import ViewCounter from "@/components/ui/ViewCounter";
 import ShareButtons from "@/components/ui/ShareButtons";
 import ReactionButton from "@/components/ui/ReactionButton";
-import ClientBadge from "@/components/ui/ClientBadge";
-import { resolveClients } from "@/lib/clients";
 
 const BASE_URL = "https://developerhridu.github.io";
 
@@ -80,7 +78,6 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
     : `${BASE_URL}/og-image/case-studies/${study.slug}`;
   const readingMinutes = estimateReadingTime(study.body, ...(study.sections?.map((s) => s.body) ?? []));
   const relatedCaseStudies = getRelatedCaseStudies(study);
-  const clients = resolveClients(study.client);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -150,11 +147,12 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                   year: "numeric",
                 })}
               </span>
-              {clients.map((c) => (
-                <span key={c.id} className="flex items-center gap-2">
-                  <ClientBadge client={c} iconSize={16} />
+              {study.client && (
+                <span className="flex items-center gap-2">
+                  <Building2 size={16} />
+                  {study.client}
                 </span>
-              ))}
+              )}
               <span className="flex items-center gap-2">
                 <Clock size={16} />
                 {readingMinutes} min read

@@ -15,19 +15,3 @@ export function parseClientNames(raw: string | undefined): string[] {
     .map((name) => name.trim())
     .filter(Boolean);
 }
-
-/**
- * Resolves a `client` field (a plain name, or several comma-separated names) against
- * the centralized client list so every renderer shows the same name+logo pairing.
- * A name with no match in content/clients.json still renders — just without a logo.
- */
-export function resolveClients(raw: string | undefined): Client[] {
-  return parseClientNames(raw).map(
-    (name) =>
-      CLIENTS.find((c) => c.name.toLowerCase() === name.toLowerCase()) ?? {
-        id: name,
-        name,
-        logo: undefined,
-      }
-  );
-}

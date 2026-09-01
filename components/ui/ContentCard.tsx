@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { Calendar, Clock, ArrowRight } from "lucide-react";
+import { Calendar, Clock, ArrowRight, Building2 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import ContentImage from "@/components/ui/ContentImage";
-import ClientBadge from "@/components/ui/ClientBadge";
-import { resolveClients } from "@/lib/clients";
 
 export interface ContentCardItem {
   slug: string;
@@ -23,8 +21,6 @@ interface ContentCardProps {
 }
 
 export default function ContentCard({ item, viewPath, showReadMore = false }: ContentCardProps) {
-  const clients = resolveClients(item.client);
-
   return (
     <Link href={`${viewPath}/${item.slug}`}>
       <GlassCard className="h-full flex flex-col group cursor-pointer">
@@ -64,9 +60,12 @@ export default function ContentCard({ item, viewPath, showReadMore = false }: Co
                 year: "numeric",
               })}
             </span>
-            {clients.map((c) => (
-              <ClientBadge key={c.id} client={c} iconSize={14} />
-            ))}
+            {item.client && (
+              <span className="flex items-center gap-1">
+                <Building2 size={14} />
+                {item.client}
+              </span>
+            )}
             <span className="flex items-center gap-1">
               <Clock size={14} />
               {item.readingMinutes} min read
