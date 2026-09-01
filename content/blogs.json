@@ -17,11 +17,15 @@
       "body": "# Building a Modern Portfolio with Next.js\n\nWelcome to my blog! In this first post, I'll walk you through how I built this portfolio website using modern web technologies.\n\n## The Tech Stack\n\nThis portfolio is built with a carefully chosen stack:\n\n- **Next.js 14+** - React framework with App Router\n- **TypeScript** - For type safety\n- **Tailwind CSS** - Utility-first styling\n- **Markdown** - Content for blog posts\n\n## Why File-Based Content?\n\nInstead of using a database or CMS, I opted for file-based content management:\n\n```json\n{\n  \"name\": \"Hridu\",\n  \"title\": \"Full-Stack Developer\",\n  \"skills\": [\n    { \"name\": \"React\", \"level\": 90 }\n  ]\n}\n```\n\nThis approach has several benefits:\n\n1. **Version Control** - All content changes are tracked in Git\n2. **No Database** - Simpler deployment, no external dependencies\n3. **Fast** - Content is built into static pages\n4. **Free Hosting** - Easily deploy to GitHub Pages\n\n## Key Features\n\n### Responsive Design\n\nThe site looks great on all devices, from mobile phones to large desktop monitors.\n\n### Dark Theme\n\nA sleek dark theme with subtle gradients and glassmorphism effects.\n\n### Blog with Markdown\n\nWrite blog posts in Markdown, stored as entries in a JSON file.\n\n## Getting Started\n\nIf you want to build something similar, here's how to get started:\n\n```bash\nnpx create-next-app@latest portfolio --typescript --tailwind --app\ncd portfolio\nnpm install react-markdown remark-gfm\n```\n\n",
       "sections": [
         {
-          "images": ["/images/blog/building-a-modern-portfolio-with-nextjs-section-0.jpg"],
+          "images": [
+            "/images/blog/building-a-modern-portfolio-with-nextjs-section-0.jpg"
+          ],
           "body": "## Conclusion\n\nBuilding a portfolio website is a great way to showcase your skills and learn new technologies. I hope this gives you some inspiration for your own portfolio!\n\nFeel free to reach out if you have any questions."
         },
         {
-          "images": ["/images/blog/building-a-modern-portfolio-with-nextjs-section-1.png"],
+          "images": [
+            "/images/blog/building-a-modern-portfolio-with-nextjs-section-1.png"
+          ],
           "body": "Thanks for reading"
         }
       ]
@@ -41,6 +45,20 @@
       "body": "# TypeScript Best Practices for 2024\n\nTypeScript has become essential for modern web development. Here are the best practices I follow in every project.\n\n## 1. Use Strict Mode\n\nAlways enable strict mode in your `tsconfig.json`:\n\n```json\n{\n  \"compilerOptions\": {\n    \"strict\": true\n  }\n}\n```\n\nThis catches potential issues early and makes your code more robust.\n\n## 2. Prefer Interfaces for Object Types\n\n```typescript\n// Prefer this\ninterface User {\n  id: string;\n  name: string;\n  email: string;\n}\n\n// Over this (for object shapes)\ntype User = {\n  id: string;\n  name: string;\n  email: string;\n};\n```\n\nInterfaces are more extensible and provide better error messages.\n\n## 3. Use Discriminated Unions\n\nFor handling different states:\n\n```typescript\ntype LoadingState =\n  | { status: 'idle' }\n  | { status: 'loading' }\n  | { status: 'success'; data: User[] }\n  | { status: 'error'; error: string };\n```\n\n## 4. Avoid `any`, Use `unknown`\n\n```typescript\n// Bad\nfunction processData(data: any) {\n  return data.value;\n}\n\n// Good\nfunction processData(data: unknown) {\n  if (isValidData(data)) {\n    return data.value;\n  }\n  throw new Error('Invalid data');\n}\n```\n\n## 5. Use Const Assertions\n\n```typescript\nconst config = {\n  api: 'https://api.example.com',\n  timeout: 5000,\n} as const;\n\n// config.api is now 'https://api.example.com' instead of string\n```\n\n## Conclusion\n\nFollowing these practices will make your TypeScript code more maintainable and catch bugs earlier in development.\n",
       "image": "/images/blog/typescript-best-practices-for-2024.jpeg",
       "sections": []
+    },
+    {
+      "id": "mtizz6bs",
+      "slug": "test",
+      "title": "Test",
+      "date": "2026-09-01",
+      "published": false,
+      "description": "",
+      "tags": [],
+      "image": "",
+      "client": "",
+      "body": "```\nhttps://www.linkedin.com/posts/developerhridu_dotnet-csharp-asyncawait-activity-7499357125823844352-GgYx?utm_source=share&utm_medium=member_desktop&rcm=ACoAABzCH6EBjQ3vs7dYkbbY1gUSF7kfnkEJ8l8\n\n```",
+      "sections": [],
+      "updatedAt": "2026-09-01T18:25:16.744Z"
     }
   ]
 }
