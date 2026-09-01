@@ -45,20 +45,6 @@
       "body": "# TypeScript Best Practices for 2024\n\nTypeScript has become essential for modern web development. Here are the best practices I follow in every project.\n\n## 1. Use Strict Mode\n\nAlways enable strict mode in your `tsconfig.json`:\n\n```json\n{\n  \"compilerOptions\": {\n    \"strict\": true\n  }\n}\n```\n\nThis catches potential issues early and makes your code more robust.\n\n## 2. Prefer Interfaces for Object Types\n\n```typescript\n// Prefer this\ninterface User {\n  id: string;\n  name: string;\n  email: string;\n}\n\n// Over this (for object shapes)\ntype User = {\n  id: string;\n  name: string;\n  email: string;\n};\n```\n\nInterfaces are more extensible and provide better error messages.\n\n## 3. Use Discriminated Unions\n\nFor handling different states:\n\n```typescript\ntype LoadingState =\n  | { status: 'idle' }\n  | { status: 'loading' }\n  | { status: 'success'; data: User[] }\n  | { status: 'error'; error: string };\n```\n\n## 4. Avoid `any`, Use `unknown`\n\n```typescript\n// Bad\nfunction processData(data: any) {\n  return data.value;\n}\n\n// Good\nfunction processData(data: unknown) {\n  if (isValidData(data)) {\n    return data.value;\n  }\n  throw new Error('Invalid data');\n}\n```\n\n## 5. Use Const Assertions\n\n```typescript\nconst config = {\n  api: 'https://api.example.com',\n  timeout: 5000,\n} as const;\n\n// config.api is now 'https://api.example.com' instead of string\n```\n\n## Conclusion\n\nFollowing these practices will make your TypeScript code more maintainable and catch bugs earlier in development.\n",
       "image": "/images/blog/typescript-best-practices-for-2024.jpeg",
       "sections": []
-    },
-    {
-      "id": "mtizz6bs",
-      "slug": "test",
-      "title": "Test",
-      "date": "2026-09-01",
-      "published": false,
-      "description": "",
-      "tags": [],
-      "image": "",
-      "client": "",
-      "body": "```\nhttps://www.linkedin.com/posts/developerhridu_dotnet-csharp-asyncawait-activity-7499357125823844352-GgYx?utm_source=share&utm_medium=member_desktop&rcm=ACoAABzCH6EBjQ3vs7dYkbbY1gUSF7kfnkEJ8l8\n\n```",
-      "sections": [],
-      "updatedAt": "2026-09-01T18:25:16.744Z"
     }
   ]
 }
