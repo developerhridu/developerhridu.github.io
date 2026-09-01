@@ -18,9 +18,11 @@ import {
   Eye,
   ArrowUp,
   ArrowDown,
+  Linkedin,
 } from "lucide-react";
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
 import ClientMultiSelect from "@/components/admin/ClientMultiSelect";
+import { parseLinkedInPostText, buildLinkedInEmbedBody } from "@/lib/linkedin";
 
 interface Section {
   images?: string[];
@@ -47,13 +49,22 @@ type ContentKind = "blog" | "case-study";
 
 const CONFIG: Record<
   ContentKind,
-  { path: string; arrayKey: string; label: string; hasClient: boolean; imageFolder: string; viewPath: string }
+  {
+    path: string;
+    arrayKey: string;
+    label: string;
+    hasClient: boolean;
+    hasLinkedInImport: boolean;
+    imageFolder: string;
+    viewPath: string;
+  }
 > = {
   blog: {
     path: "content/blogs.json",
     arrayKey: "posts",
     label: "Blog Posts",
     hasClient: false,
+    hasLinkedInImport: true,
     imageFolder: "blog",
     viewPath: "/blog",
   },
@@ -62,6 +73,7 @@ const CONFIG: Record<
     arrayKey: "caseStudies",
     label: "Case Studies",
     hasClient: true,
+    hasLinkedInImport: true,
     imageFolder: "case-studies",
     viewPath: "/case-studies",
   },
@@ -81,6 +93,17 @@ function referencedImagePaths(list: Entry[]): Set<string> {
       (e) => [e.image, ...(e.sections ?? []).flatMap((s) => s.images ?? [])].filter(Boolean) as string[]
     )
   );
+}
+
+function makeUniqueSlug(base: string, existingSlugs: string[]): string {
+  const baseSlug = slugify(base) || "post";
+  let candidate = baseSlug;
+  let n = 2;
+  while (existingSlugs.includes(candidate)) {
+    candidate = `${baseSlug}-${n}`;
+    n++;
+  }
+  return candidate;
 }
 
 function blankEntry(): Entry {
@@ -118,6 +141,10 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
   const [isNew, setIsNew] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [sectionImageFiles, setSectionImageFiles] = useState<(File | null)[][]>([]);
+
+  const [showLinkedInImport, setShowLinkedInImport] = useState(false);
+  const [linkedInUrl, setLinkedInUrl] = useState("");
+  const [linkedInText, setLinkedInText] = useState("");
 
   useEffect(() => {
     setEntries(null);
@@ -183,6 +210,37 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     setEditing(null);
     setImageFile(null);
     setSectionImageFiles([]);
+  }
+
+  function cancelLinkedInImport() {
+    setShowLinkedInImport(false);
+    setLinkedInUrl("");
+    setLinkedInText("");
+  }
+
+  function createDraftFromLinkedIn() {
+    if (!linkedInUrl.trim() || !linkedInText.trim()) {
+      setError("Paste both the post URL and the post text.");
+      return;
+    }
+
+    const parsed = parseLinkedInPostText(linkedInText);
+    const slug = makeUniqueSlug(parsed.title, (entries ?? []).map((e) => e.slug));
+
+    setEditing({
+      ...blankEntry(),
+      title: parsed.title,
+      slug,
+      description: parsed.description,
+      body: buildLinkedInEmbedBody(linkedInUrl.trim(), parsed.body),
+    });
+    setTagsText(parsed.tags.join(", "));
+    setIsNew(true);
+    setImageFile(null);
+    setSectionImageFiles([]);
+    setError(null);
+    setSuccessMsg(null);
+    cancelLinkedInImport();
   }
 
   function addSection() {
@@ -458,13 +516,79 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
         />
       ) : (
         <>
-          <button
-            onClick={startNew}
-            className="mb-4 flex items-center gap-1.5 px-4 py-2 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors"
-          >
-            <Plus size={16} />
-            New {kind === "blog" ? "Post" : "Case Study"}
-          </button>
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <button
+              onClick={startNew}
+              className="flex items-center gap-1.5 px-4 py-2 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors"
+            >
+              <Plus size={16} />
+              New {kind === "blog" ? "Post" : "Case Study"}
+            </button>
+            {CONFIG[kind].hasLinkedInImport && !showLinkedInImport && (
+              <button
+                onClick={() => setShowLinkedInImport(true)}
+                className="flex items-center gap-1.5 px-4 py-2 border border-border text-muted hover:text-foreground rounded-lg text-sm font-medium transition-colors"
+              >
+                <Linkedin size={16} />
+                Import from LinkedIn
+              </button>
+            )}
+          </div>
+
+          {showLinkedInImport && (
+            <div className="mb-4 bg-surface border border-border rounded-xl p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-foreground">Import from LinkedIn</h2>
+                <button
+                  onClick={cancelLinkedInImport}
+                  aria-label="Close"
+                  className="text-muted hover:text-foreground"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <p className="text-muted text-sm">
+                Paste the post&apos;s URL (from its <span className="whitespace-nowrap">•••</span> menu →
+                &quot;Copy link to post&quot;) and its text. This creates a draft with the post embedded and
+                its text as the body — review and edit before publishing.
+              </p>
+              <div>
+                <label className="block text-xs uppercase tracking-wide text-muted mb-1">
+                  LinkedIn Post URL
+                </label>
+                <input
+                  value={linkedInUrl}
+                  onChange={(e) => setLinkedInUrl(e.target.value)}
+                  placeholder="https://www.linkedin.com/posts/..."
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className="block text-xs uppercase tracking-wide text-muted mb-1">Post Text</label>
+                <textarea
+                  value={linkedInText}
+                  onChange={(e) => setLinkedInText(e.target.value)}
+                  rows={8}
+                  placeholder="Paste the post's text here…"
+                  className={`${inputClass} font-mono text-sm`}
+                />
+              </div>
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  onClick={createDraftFromLinkedIn}
+                  className="px-4 py-2.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors"
+                >
+                  Create Draft
+                </button>
+                <button
+                  onClick={cancelLinkedInImport}
+                  className="px-4 py-2.5 border border-border text-muted hover:text-foreground rounded-lg text-sm transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
 
           {loading && <p className="text-muted text-sm">Loading…</p>}
 

@@ -1,10 +1,6 @@
 import type { Components } from "react-markdown";
 import LinkedInEmbed from "@/components/ui/LinkedInEmbed";
-
-function extractLinkedInActivityId(text: string): string | null {
-  const match = text.match(/activity[:-](\d{15,21})/i);
-  return match ? match[1] : null;
-}
+import { extractLinkedInActivityId } from "@/lib/linkedin";
 
 interface CodeElementProps {
   className?: string;
