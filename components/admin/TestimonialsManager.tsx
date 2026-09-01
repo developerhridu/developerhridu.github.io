@@ -1,24 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  fetchContentFile,
-  commitFiles,
-  encodeBase64Unicode,
-  GitHubApiError,
-  type FileChange,
-} from "@/lib/github";
-import {
-  Pencil,
-  Trash2,
-  Plus,
-  ExternalLink,
-  X,
-  Upload,
-  ArrowUp,
-  ArrowDown,
-} from "lucide-react";
-import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
+import { useState } from "react";
+import { type FileChange } from "@/lib/github";
+import { Plus, X, Upload, ArrowUp, ArrowDown, Trash2 } from "lucide-react";
+import { inputClass, slugify, fileToBase64, confirmDeleteMessage } from "@/components/admin/shared";
+import { useContentCrud } from "@/components/admin/useContentCrud";
+import { ErrorBanner, SuccessBanner } from "@/components/admin/CrudBanners";
+import { ReorderControls } from "@/components/admin/ReorderControls";
+import { RowActions } from "@/components/admin/RowActions";
 
 interface Entry {
   id: string;
@@ -77,6 +66,14 @@ function makeId(base: string, existingIds: string[]): string {
   return candidate;
 }
 
+function normalizeLoaded(list: Entry[]): Entry[] {
+  return list.map((e) => ({
+    ...e,
+    verifyImages: e.verifyImages ?? [],
+    published: e.published ?? true,
+  }));
+}
+
 export default function TestimonialsManager({
   token,
   onAuthError,
@@ -84,76 +81,41 @@ export default function TestimonialsManager({
   token: string;
   onAuthError: () => void;
 }) {
-  const [entries, setEntries] = useState<Entry[] | null>(null);
-  const [fileSha, setFileSha] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const [loadedOrderIds, setLoadedOrderIds] = useState<string[]>([]);
+  const {
+    entries,
+    loading,
+    saving,
+    setSaving,
+    error,
+    setError,
+    successMsg,
+    orderDirty,
+    moveEntry,
+    commit,
+    saveOrder,
+    discardOrder,
+    clearMessages,
+    reportError,
+  } = useContentCrud<Entry>({
+    path: PATH,
+    arrayKey: ARRAY_KEY,
+    label: "testimonials",
+    token,
+    onAuthError,
+    normalizeLoaded,
+  });
 
   const [editing, setEditing] = useState<Entry | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [verifyImageFiles, setVerifyImageFiles] = useState<(File | null)[]>([]);
 
-  useEffect(() => {
-    void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function load() {
-    setLoading(true);
-    setError(null);
-    try {
-      const { content, sha } = await fetchContentFile(PATH, token);
-      const parsed = JSON.parse(content);
-      const loaded: Entry[] = (parsed[ARRAY_KEY] ?? []).map((e: Entry) => ({
-        ...e,
-        verifyImages: e.verifyImages ?? [],
-        published: e.published ?? true,
-      }));
-      setEntries(loaded);
-      setLoadedOrderIds(loaded.map((e) => e.id));
-      setFileSha(sha);
-    } catch (err) {
-      handleApiError(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const orderDirty =
-    entries !== null && entries.map((e) => e.id).join("|") !== loadedOrderIds.join("|");
-
-  function moveEntry(index: number, direction: -1 | 1) {
-    setEntries((prev) => {
-      if (!prev) return prev;
-      const target = index + direction;
-      if (target < 0 || target >= prev.length) return prev;
-      const next = [...prev];
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
-    });
-  }
-
-  function handleApiError(err: unknown) {
-    if (err instanceof GitHubApiError && (err.status === 401 || err.status === 403)) {
-      onAuthError();
-    } else if (err instanceof Error) {
-      setError(err.message);
-    } else {
-      setError("Something went wrong.");
-    }
-  }
-
   function startNew() {
     setEditing(blankEntry());
     setIsNew(true);
     setAvatarFile(null);
     setVerifyImageFiles([]);
-    setSuccessMsg(null);
-    setError(null);
+    clearMessages();
   }
 
   function startEdit(entry: Entry) {
@@ -162,8 +124,7 @@ export default function TestimonialsManager({
     setIsNew(false);
     setAvatarFile(null);
     setVerifyImageFiles(verifyImages.map(() => null));
-    setSuccessMsg(null);
-    setError(null);
+    clearMessages();
   }
 
   function cancelEdit() {
@@ -208,43 +169,6 @@ export default function TestimonialsManager({
 
   function setVerifyImageFile(index: number, file: File | null) {
     setVerifyImageFiles((prev) => prev.map((f, i) => (i === index ? file : f)));
-  }
-
-  async function commit(changes: FileChange[], newEntries: Entry[], message: string): Promise<boolean> {
-    if (!fileSha) {
-      setError("Missing file version — reload the list before saving.");
-      return false;
-    }
-    const payload = { [ARRAY_KEY]: newEntries };
-    const content = JSON.stringify(payload, null, 2) + "\n";
-    const allChanges = [...changes, { path: PATH, content: encodeBase64Unicode(content) }];
-
-    setSaving(true);
-    setError(null);
-    try {
-      await commitFiles(allChanges, message, token, { path: PATH, expectedSha: fileSha });
-      setEntries(newEntries);
-      setEditing(null);
-      setSuccessMsg(
-        "Saved and committed. The site will redeploy automatically — check the Actions tab in a minute or two."
-      );
-      await load();
-      return true;
-    } catch (err) {
-      handleApiError(err);
-      return false;
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleSaveOrder() {
-    if (!entries) return;
-    await commit([], entries, "content: reorder testimonials");
-  }
-
-  function discardOrder() {
-    void load();
   }
 
   async function handleSave() {
@@ -292,7 +216,7 @@ export default function TestimonialsManager({
       }
       verifyImages = uploaded.filter((v) => v.trim());
     } catch (err) {
-      handleApiError(err);
+      reportError(err);
       setSaving(false);
       return;
     }
@@ -313,13 +237,14 @@ export default function TestimonialsManager({
     }
 
     const message = isNew ? `content: add ${editing.name}` : `content: update ${editing.name}`;
-    await commit(changes, updated, message);
+    const success = await commit(changes, updated, message);
+    if (success) setEditing(null);
     setAvatarFile(null);
     setVerifyImageFiles(verifyImages.map(() => null));
   }
 
   async function handleDelete(entry: Entry) {
-    if (!confirm(`Delete "${entry.name}"? This cannot be undone.`)) return;
+    if (!confirm(confirmDeleteMessage(entry.name))) return;
     const current = entries ?? [];
     const updated = current.filter((e) => e.id !== entry.id);
 
@@ -336,24 +261,8 @@ export default function TestimonialsManager({
 
   return (
     <div>
-      {error && (
-        <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-          {error}
-        </div>
-      )}
-      {successMsg && (
-        <div className="mb-4 flex items-center justify-between gap-4 px-4 py-3 bg-accent/10 border border-accent/30 rounded-lg text-accent text-sm">
-          <span>{successMsg}</span>
-          <a
-            href="https://github.com/developerhridu/developerhridu.github.io/actions"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 whitespace-nowrap hover:underline"
-          >
-            View Actions <ExternalLink size={12} />
-          </a>
-        </div>
-      )}
+      <ErrorBanner message={error} />
+      <SuccessBanner message={successMsg} />
 
       {editing ? (
         <EntryForm
@@ -382,23 +291,7 @@ export default function TestimonialsManager({
               New Entry
             </button>
             {orderDirty && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted">Order changed</span>
-                <button
-                  onClick={() => void handleSaveOrder()}
-                  disabled={saving}
-                  className="px-3 py-1.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
-                >
-                  {saving ? "Saving…" : "Save order"}
-                </button>
-                <button
-                  onClick={discardOrder}
-                  disabled={saving}
-                  className="px-3 py-1.5 border border-border text-muted hover:text-foreground rounded-lg text-xs transition-colors"
-                >
-                  Discard
-                </button>
-              </div>
+              <ReorderControls saving={saving} onSave={() => void saveOrder()} onDiscard={discardOrder} />
             )}
           </div>
 
@@ -436,38 +329,15 @@ export default function TestimonialsManager({
                         </p>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => moveEntry(index, -1)}
-                            disabled={index === 0}
-                            aria-label={`Move ${entry.name} up`}
-                            className="p-2 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
-                          >
-                            <ArrowUp size={16} />
-                          </button>
-                          <button
-                            onClick={() => moveEntry(index, 1)}
-                            disabled={index === entries.length - 1}
-                            aria-label={`Move ${entry.name} down`}
-                            className="p-2 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
-                          >
-                            <ArrowDown size={16} />
-                          </button>
-                          <button
-                            onClick={() => startEdit(entry)}
-                            aria-label={`Edit ${entry.name}`}
-                            className="p-2 text-muted hover:text-foreground transition-colors"
-                          >
-                            <Pencil size={16} />
-                          </button>
-                          <button
-                            onClick={() => void handleDelete(entry)}
-                            aria-label={`Delete ${entry.name}`}
-                            className="p-2 text-muted hover:text-red-400 transition-colors"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
+                        <RowActions
+                          label={entry.name}
+                          canMoveUp={index !== 0}
+                          canMoveDown={index !== entries.length - 1}
+                          onMoveUp={() => moveEntry(index, -1)}
+                          onMoveDown={() => moveEntry(index, 1)}
+                          onEdit={() => startEdit(entry)}
+                          onDelete={() => void handleDelete(entry)}
+                        />
                       </td>
                     </tr>
                   ))}

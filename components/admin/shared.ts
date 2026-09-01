@@ -1,5 +1,14 @@
 export const TOKEN_KEY = "gh_pat";
 
+export const REPO_ACTIONS_URL = "https://github.com/developerhridu/developerhridu.github.io/actions";
+
+export const SAVED_AND_COMMITTED_MESSAGE =
+  "Saved and committed. The site will redeploy automatically — check the Actions tab in a minute or two.";
+
+export function confirmDeleteMessage(label: string): string {
+  return `Delete "${label}"? This cannot be undone.`;
+}
+
 export const inputClass =
   "w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors";
 
