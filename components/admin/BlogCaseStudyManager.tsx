@@ -20,6 +20,7 @@ import {
   ArrowDown,
 } from "lucide-react";
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
+import ClientMultiSelect from "@/components/admin/ClientMultiSelect";
 
 interface Section {
   images?: string[];
@@ -668,11 +669,10 @@ function EntryForm({
 
       {hasClient && (
         <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Client</label>
-          <input
+          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Client(s)</label>
+          <ClientMultiSelect
             value={entry.client ?? ""}
-            onChange={(e) => setEntry({ ...entry, client: e.target.value })}
-            className={inputClass}
+            onChange={(value) => setEntry({ ...entry, client: value })}
           />
         </div>
       )}

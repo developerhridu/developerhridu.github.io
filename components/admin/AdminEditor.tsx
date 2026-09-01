@@ -19,6 +19,7 @@ import {
   educationConfig,
   certificationsConfig,
   projectsConfig,
+  clientsConfig,
   menuConfig,
   adminMenuConfig,
   proficiencyConfig,
@@ -37,6 +38,7 @@ type Tab =
   | "certifications"
   | "testimonials"
   | "projects"
+  | "clients"
   | "menu"
   | "profile"
   | "skills"
@@ -218,6 +220,9 @@ export default function AdminEditor() {
       {tab === "testimonials" && <TestimonialsManager token={token} onAuthError={handleAuthError} />}
       {tab === "projects" && (
         <GenericArrayEditor config={projectsConfig} token={token} onAuthError={handleAuthError} />
+      )}
+      {tab === "clients" && (
+        <GenericArrayEditor config={clientsConfig} token={token} onAuthError={handleAuthError} />
       )}
       {tab === "menu" && <GenericArrayEditor config={menuConfig} token={token} onAuthError={handleAuthError} />}
       {tab === "admin-menu" && (

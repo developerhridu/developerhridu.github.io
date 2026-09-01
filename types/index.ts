@@ -27,6 +27,13 @@ export interface Profile {
   openToWorkLabel?: string;
 }
 
+// Client types
+export interface Client {
+  id: string;
+  name: string;
+  logo?: string;
+}
+
 // Project types
 export interface Project {
   id: string;

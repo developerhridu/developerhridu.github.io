@@ -1,0 +1,12 @@
+{
+  "clients": [
+    { "id": "firsttrip", "name": "FirstTrip", "logo": "/images/logos/firsttrip.png" },
+    { "id": "triplover", "name": "TripLover", "logo": "/images/logos/triplover.jpeg" },
+    { "id": "taketrip", "name": "TakeTrip", "logo": "/images/logos/taketrip.png" },
+    { "id": "travelchamp", "name": "TravelChamp", "logo": "/images/logos/travelchamp.png" },
+    { "id": "takeoff", "name": "TakeOff", "logo": "/images/logos/takeoff.png" },
+    { "id": "us-bangla-airlines", "name": "US-Bangla Airlines", "logo": "/images/logos/us-bangla-airline.png" },
+    { "id": "bdjobs", "name": "Bdjobs.com", "logo": "/images/logos/bdjobs.png" },
+    { "id": "foodi", "name": "Foodi", "logo": "/images/logos/foodi.jpg" }
+  ]
+}

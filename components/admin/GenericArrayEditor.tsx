@@ -10,8 +10,19 @@ import {
 } from "@/lib/github";
 import { Pencil, Trash2, Plus, ExternalLink, X, Upload, ArrowUp, ArrowDown } from "lucide-react";
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
+import ClientMultiSelect from "@/components/admin/ClientMultiSelect";
 
-type FieldType = "text" | "textarea" | "date" | "tags" | "list" | "boolean" | "url" | "image" | "number";
+type FieldType =
+  | "text"
+  | "textarea"
+  | "date"
+  | "tags"
+  | "list"
+  | "boolean"
+  | "url"
+  | "image"
+  | "number"
+  | "clients";
 
 interface FieldDef {
   key: string;
@@ -405,6 +416,11 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
                       value={String(form[field.key] ?? "")}
                       onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
                       className={inputClass}
+                    />
+                  ) : field.type === "clients" ? (
+                    <ClientMultiSelect
+                      value={String(form[field.key] ?? "")}
+                      onChange={(value) => setForm({ ...form, [field.key]: value })}
                     />
                   ) : (
                     <input

@@ -85,6 +85,36 @@ html {
   mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 40%, transparent 90%);
 }
 
+/* Infinite horizontal scroll for the client-logo marquee in the hero */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee-scroll 28s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
+
+/* Fades the marquee's edges so logos scroll in/out smoothly */
+.marquee-fade {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
 /* Small decorative corner brackets used on cards */
 .card-corners {
   position: relative;

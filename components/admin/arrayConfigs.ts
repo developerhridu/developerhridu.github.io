@@ -54,7 +54,7 @@ export const projectsConfig: ArrayConfig = {
     { key: "description", label: "Description", type: "textarea" },
     { key: "longDescription", label: "Long Description", type: "textarea" },
     { key: "image", label: "Image", type: "image" },
-    { key: "client", label: "Client", type: "text" },
+    { key: "client", label: "Client(s)", type: "clients" },
     { key: "tags", label: "Tags (comma separated)", type: "tags" },
     { key: "liveUrl", label: "Live URL", type: "url" },
     { key: "githubUrl", label: "GitHub URL (single repo)", type: "url" },
@@ -85,6 +85,18 @@ export const projectsConfig: ArrayConfig = {
     }
     return out;
   },
+};
+
+export const clientsConfig: ArrayConfig = {
+  path: "content/clients.json",
+  arrayKey: "clients",
+  label: "Clients",
+  titleField: "name",
+  imageFolder: "logos",
+  fields: [
+    { key: "name", label: "Name", type: "text" },
+    { key: "logo", label: "Logo", type: "image" },
+  ],
 };
 
 export const menuConfig: ArrayConfig = {

@@ -2,8 +2,10 @@
 
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, ExternalLink, Github, Building2 } from "lucide-react";
+import { X, ExternalLink, Github } from "lucide-react";
 import LightboxImage from "@/components/ui/LightboxImage";
+import ClientBadge from "@/components/ui/ClientBadge";
+import { resolveClients } from "@/lib/clients";
 
 interface ProjectModalProps {
   project: {
@@ -21,6 +23,8 @@ interface ProjectModalProps {
 }
 
 export default function ProjectModal({ project, onClose }: ProjectModalProps) {
+  const clients = resolveClients(project?.client);
+
   useEffect(() => {
     if (!project) return;
 
@@ -89,10 +93,11 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                 {project.title}
               </h2>
 
-              {project.client && (
-                <p className="flex items-center gap-2 text-sm text-muted mb-4">
-                  <Building2 size={16} />
-                  {project.client}
+              {clients.length > 0 && (
+                <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted mb-4">
+                  {clients.map((c) => (
+                    <ClientBadge key={c.id} client={c} iconSize={16} />
+                  ))}
                 </p>
               )}
 

@@ -4,7 +4,9 @@ import { motion } from "framer-motion";
 import { ArrowDown, Code2, ExternalLink, Github, Handshake, Linkedin } from "lucide-react";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
+import ClientMarquee from "@/components/ui/ClientMarquee";
 import profile from "@/content/profile.json";
+import clientsData from "@/content/clients.json";
 import { trackEvent } from "@/lib/analytics";
 
 export default function Hero() {
@@ -138,9 +140,20 @@ export default function Hero() {
               <div className="text-sm text-muted">Projects Completed</div>
             </GlassCard>
             <GlassCard className="text-center col-span-2 md:col-span-1" hover={false}>
-              <div className="text-3xl font-bold text-foreground mb-1">3</div>
-              <div className="text-sm text-muted">Companies</div>
+              <div className="text-3xl font-bold text-foreground mb-1">
+                {clientsData.clients.length}+
+              </div>
+              <div className="text-sm text-muted">Clients</div>
             </GlassCard>
+          </motion.div>
+
+          {/* Client Logos */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            <ClientMarquee />
           </motion.div>
         </div>
       </div>
