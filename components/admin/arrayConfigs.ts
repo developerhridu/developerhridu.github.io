@@ -96,6 +96,7 @@ export const clientsConfig: ArrayConfig = {
   fields: [
     { key: "name", label: "Name", type: "text" },
     { key: "logo", label: "Logo", type: "image" },
+    { key: "url", label: "Website URL", type: "url" },
   ],
 };
 

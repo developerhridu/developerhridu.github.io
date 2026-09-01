@@ -1,54 +1,58 @@
 {
   "clients": [
     {
-      "id": "technonext",
-      "name": "Technonext",
-      "logo": "/images/logos/technonext.jpg"
-    },
-    {
       "id": "us-bangla-airlines",
       "name": "US-Bangla Airlines",
-      "logo": "/images/logos/us-bangla-airline.png"
+      "logo": "/images/logos/us-bangla-airline.png",
+      "url": "https://www.usbair.com"
     },
     {
       "id": "foodi",
       "name": "Foodi",
-      "logo": "/images/logos/foodi.jpg"
+      "logo": "/images/logos/foodi.jpg",
+      "url": "https://foodibd.com"
     },
     {
       "id": "bdjobs",
       "name": "Bdjobs.com",
-      "logo": "/images/logos/bdjobs.png"
+      "logo": "/images/logos/bdjobs.png",
+      "url": "https://www.bdjobs.com"
     },
     {
       "id": "firsttrip",
       "name": "FirstTrip",
-      "logo": "/images/logos/firsttrip.png"
+      "logo": "/images/logos/firsttrip.png",
+      "url": "https://firsttrip.com"
     },
     {
       "id": "triplover",
       "name": "TripLover",
-      "logo": "/images/logos/triplover.jpeg"
+      "logo": "/images/logos/triplover.jpeg",
+      "url": "https://www.triplover.com"
     },
     {
       "id": "taketrip",
       "name": "TakeTrip",
-      "logo": "/images/logos/taketrip.png"
+      "logo": "/images/logos/taketrip.png",
+      "url": "https://taketrip.com"
     },
     {
       "id": "travelchamp",
       "name": "TravelChamp",
-      "logo": "/images/logos/travelchamp.png"
+      "logo": "/images/logos/travelchamp.png",
+      "url": "https://www.travelchamp.com"
     },
     {
       "id": "takeoff",
       "name": "TakeOff",
-      "logo": "/images/logos/takeoff.png"
+      "logo": "/images/logos/takeoff.png",
+      "url": "https://takeoffbd.com"
     },
     {
       "id": "edesh",
       "name": "E-Desh Ltd",
-      "logo": "/images/logos/Edesh.png"
+      "logo": "/images/logos/Edesh.png",
+      "url": "https://e-deshltd.com"
     }
   ]
 }

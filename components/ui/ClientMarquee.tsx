@@ -1,23 +1,43 @@
 import Image from "next/image";
 import clientsData from "@/content/clients.json";
+import type { Client } from "@/types";
 
-const CLIENTS_WITH_LOGOS = clientsData.clients.filter(
-  (client): client is typeof client & { logo: string } => !!client.logo
+const CLIENTS: Client[] = clientsData.clients;
+
+const CLIENTS_WITH_LOGOS = CLIENTS.filter(
+  (client): client is Client & { logo: string } => !!client.logo
 );
+
+const CHIP_CLASS =
+  "flex items-center justify-center w-36 h-24 shrink-0 rounded-xl bg-white/90 px-5 py-3 transition-transform hover:scale-105";
 
 function LogoTrack({ ariaHidden }: { ariaHidden: boolean }) {
   return (
     <div className="flex items-center gap-12 pr-12 shrink-0" aria-hidden={ariaHidden || undefined}>
-      {CLIENTS_WITH_LOGOS.map((client) => (
-        <div
-          key={client.id}
-          className="flex items-center justify-center w-36 h-24 shrink-0 rounded-xl bg-white/90 px-5 py-3 transition-transform hover:scale-105"
-        >
+      {CLIENTS_WITH_LOGOS.map((client) => {
+        const logo = (
           <div className="relative w-full h-full">
             <Image src={client.logo} alt={client.name} fill sizes="144px" className="object-contain" />
           </div>
-        </div>
-      ))}
+        );
+
+        return client.url ? (
+          <a
+            key={client.id}
+            href={client.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            tabIndex={ariaHidden ? -1 : undefined}
+            className={CHIP_CLASS}
+          >
+            {logo}
+          </a>
+        ) : (
+          <div key={client.id} className={CHIP_CLASS}>
+            {logo}
+          </div>
+        );
+      })}
     </div>
   );
 }

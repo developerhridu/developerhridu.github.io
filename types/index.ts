@@ -32,6 +32,7 @@ export interface Client {
   id: string;
   name: string;
   logo?: string;
+  url?: string;
 }
 
 // Project types
