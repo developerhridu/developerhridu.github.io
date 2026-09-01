@@ -45,6 +45,30 @@
       "body": "# TypeScript Best Practices for 2024\n\nTypeScript has become essential for modern web development. Here are the best practices I follow in every project.\n\n## 1. Use Strict Mode\n\nAlways enable strict mode in your `tsconfig.json`:\n\n```json\n{\n  \"compilerOptions\": {\n    \"strict\": true\n  }\n}\n```\n\nThis catches potential issues early and makes your code more robust.\n\n## 2. Prefer Interfaces for Object Types\n\n```typescript\n// Prefer this\ninterface User {\n  id: string;\n  name: string;\n  email: string;\n}\n\n// Over this (for object shapes)\ntype User = {\n  id: string;\n  name: string;\n  email: string;\n};\n```\n\nInterfaces are more extensible and provide better error messages.\n\n## 3. Use Discriminated Unions\n\nFor handling different states:\n\n```typescript\ntype LoadingState =\n  | { status: 'idle' }\n  | { status: 'loading' }\n  | { status: 'success'; data: User[] }\n  | { status: 'error'; error: string };\n```\n\n## 4. Avoid `any`, Use `unknown`\n\n```typescript\n// Bad\nfunction processData(data: any) {\n  return data.value;\n}\n\n// Good\nfunction processData(data: unknown) {\n  if (isValidData(data)) {\n    return data.value;\n  }\n  throw new Error('Invalid data');\n}\n```\n\n## 5. Use Const Assertions\n\n```typescript\nconst config = {\n  api: 'https://api.example.com',\n  timeout: 5000,\n} as const;\n\n// config.api is now 'https://api.example.com' instead of string\n```\n\n## Conclusion\n\nFollowing these practices will make your TypeScript code more maintainable and catch bugs earlier in development.\n",
       "image": "/images/blog/typescript-best-practices-for-2024.jpeg",
       "sections": []
+    },
+    {
+      "id": "mtj0o852",
+      "slug": "async-await-thread-code-run-common-mi",
+      "title": "“async/await মানেই সব সময় অন্য একটা Thread-এ code run করা”—এটা ইঞ্জিনিয়ারদের মধ্যে একটা common misconception",
+      "date": "2026-09-01",
+      "published": false,
+      "description": "“async/await মানেই সব সময় অন্য একটা Thread-এ code run করা”—এটা ইঞ্জিনিয়ারদের মধ্যে একটা common misconception। আসল ব্যাপার হলো: async/await নিজে থেকে নতুন Thr…",
+      "tags": [
+        "dotnet",
+        "csharp",
+        "asyncawait",
+        "softwareengineering",
+        "backenddevelopment",
+        "dotnetdeveloper",
+        "codinginterview",
+        "techinterview",
+        "programming"
+      ],
+      "image": "/images/blog/async-await-thread-code-run-common-mi.png",
+      "client": "",
+      "body": "```linkedin\nAdmin UI (Blog Posts tab only, not Case Studies): a new \"Import from LinkedIn\" button next to \"New Post\" opens a small form — paste the post URL and its text, click Create Draft. That lands you in the normal post-editing form, pre-filled with a generated title, slug, tags, description, and body (embed on top, your text below) — saved as a draft so you review before publishing. It reuses the exact same save/commit path as every other post, so nothing new to trust there.\n```\n\n“async/await মানেই সব সময় অন্য একটা Thread-এ code run করা”—এটা ইঞ্জিনিয়ারদের মধ্যে একটা common misconception।\n\nআসল ব্যাপার হলো:\nasync/await নিজে থেকে নতুন Thread তৈরি করে না বা automatically অন্য Thread-এ switch করে না।\n\nধরুন:\n           await Task.Delay(3000);\nতখন current Thread ৩ সেকেন্ডের জন্য block করে বসে থাকে না।\nবরং:\nAsync State Machine মনে রাখে কোথা থেকে পরে execution continue করতে হবে।\nCurrent Thread-টি অন্য কাজের জন্য free হয়ে যায়।\nTask.Delay complete হয়।\nতারপর continuation schedule হয়।\nSaved state থেকে method আবার resume করে।\nএখানে continuation same Thread-এও চলতে পারে, আবার ThreadPool-এর অন্য worker Thread-এও চলতে পারে—এটা application এবং SynchronizationContext-এর ওপর নির্ভর করে।\n\nতাই মনে রাখুন:\n🧠 async ≠ New Thread\n🧠 await ≠ Blocking\n🧠 Async ≠ Parallelism\n\nমূল উদ্দেশ্য হলো Thread-কে waiting অবস্থায় block না করা, বিশেষ করে I/O-bound operations-এর ক্ষেত্রে।\n\nআর একটা interesting experiment করতে পারেন।\nawait Task.Delay(3000);\nএই লাইনের আগে এবং পরে breakpoint দিয়ে Thread ID observe করুন।\nনিজের পিসিতে Debug করে Thread-এর behavior দেখুন—মজা পাবেন! 😄\n\nআপনারা চাইলে একদিন এটা নিয়ে একটা practical video/demo করে দেখাতে পারি।",
+      "sections": [],
+      "updatedAt": "2026-09-01T18:44:45.494Z"
     }
   ]
 }
