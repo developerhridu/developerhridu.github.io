@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { MapPin, Mail } from "lucide-react";
+import { MapPin, Mail, Github, Linkedin } from "lucide-react";
+import UpworkIcon from "@/components/ui/icons/UpworkIcon";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import profile from "@/content/profile.json";
@@ -74,6 +75,43 @@ export default function About({ showHeading = true }: AboutProps) {
                   {profile.email}
                 </a>
               </div>
+              {(profile.social.linkedin || profile.social.github || profile.social.upwork) && (
+                <div className="flex items-center gap-4 text-muted">
+                  {profile.social.linkedin && (
+                    <a
+                      href={profile.social.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 hover:text-foreground transition-colors"
+                    >
+                      <Linkedin size={18} />
+                      LinkedIn
+                    </a>
+                  )}
+                  {profile.social.github && (
+                    <a
+                      href={profile.social.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 hover:text-foreground transition-colors"
+                    >
+                      <Github size={18} />
+                      GitHub
+                    </a>
+                  )}
+                  {profile.social.upwork && (
+                    <a
+                      href={profile.social.upwork}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 hover:text-foreground transition-colors"
+                    >
+                      <UpworkIcon size={18} />
+                      Upwork
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </GlassCard>
 
