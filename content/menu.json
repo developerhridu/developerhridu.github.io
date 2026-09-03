@@ -36,17 +36,17 @@
       "published": true
     },
     {
-      "id": "training-certifications",
-      "name": "Training & Certifications",
-      "href": "/certifications",
-      "icon": "award",
-      "published": true
-    },
-    {
       "id": "case-studies",
       "name": "Case Studies",
       "href": "/case-studies",
       "icon": "layers",
+      "published": true
+    },
+    {
+      "id": "training-certifications",
+      "name": "Training & Certifications",
+      "href": "/certifications",
+      "icon": "award",
       "published": true
     },
     {

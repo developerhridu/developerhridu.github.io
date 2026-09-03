@@ -11,7 +11,7 @@ import { trackEvent } from "@/lib/analytics";
 
 export default function Hero() {
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden pt-16 md:pt-0">
+    <section id="home" className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden pt-16 md:pt-0">
       {/* Dot-grid background */}
       <div className="bg-grid absolute inset-0" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />

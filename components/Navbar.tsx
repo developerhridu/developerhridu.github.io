@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
@@ -38,6 +38,13 @@ function resolveHref(link: (typeof navLinks)[number]): string {
   return resolveCvHref(link, profile.resumeUrl);
 }
 
+// The homepage renders all sections inline; a couple of nav ids don't match the
+// section's actual DOM id (e.g. "Training & Certifications" renders as one combined
+// "education-certifications" section), so map those explicitly.
+const NAV_ID_TO_SECTION_ID: Record<string, string> = {
+  "training-certifications": "education-certifications",
+};
+
 const iconRegistry: Record<string, typeof Home> = {
   home: Home,
   user: User,
@@ -56,7 +63,40 @@ const iconRegistry: Record<string, typeof Home> = {
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname !== "/") return;
+
+    const sections = navLinks
+      .filter((link) => !link.external)
+      .map((link) => document.getElementById(NAV_ID_TO_SECTION_ID[link.id] ?? link.id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActiveSectionId(entry.target.id);
+        }
+      },
+      { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
+    );
+
+    for (const section of sections) observer.observe(section);
+    return () => observer.disconnect();
+  }, [pathname]);
+
+  function isLinkActive(link: (typeof navLinks)[number]): boolean {
+    if (link.href === "/") {
+      return pathname === "/" && (activeSectionId === null || activeSectionId === "home");
+    }
+    if (pathname === link.href) return true;
+    if (pathname !== "/" || !activeSectionId) return false;
+    return (NAV_ID_TO_SECTION_ID[link.id] ?? link.id) === activeSectionId;
+  }
 
   const Logo = (
     <Link href="/" className="flex items-center gap-2 text-xl font-bold text-foreground">
@@ -101,9 +141,9 @@ export default function Navbar() {
                 key={link.name}
                 href={link.href}
                 aria-label={link.name}
-                aria-current={pathname === link.href ? "page" : undefined}
+                aria-current={isLinkActive(link) ? "page" : undefined}
                 className={`group relative flex items-center justify-center w-11 h-11 rounded-lg transition-colors ${
-                  pathname === link.href
+                  isLinkActive(link)
                     ? "text-accent bg-accent/10"
                     : "text-muted hover:text-foreground hover:bg-surface-hover"
                 }`}
@@ -208,7 +248,7 @@ export default function Navbar() {
                     key={link.name}
                     href={link.href}
                     className={`block py-2 transition-colors ${
-                      pathname === link.href
+                      isLinkActive(link)
                         ? "text-accent"
                         : "text-muted hover:text-foreground"
                     }`}
