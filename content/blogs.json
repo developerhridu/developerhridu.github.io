@@ -51,7 +51,7 @@
       "slug": "async-await-thread-code-run",
       "title": "“async/await মানেই সব সময় অন্য একটা Thread-এ code run করা”—এটা ইঞ্জিনিয়ারদের মধ্যে একটা common misconception",
       "date": "2026-09-01",
-      "published": false,
+      "published": true,
       "description": "",
       "tags": [
         "dotnet",
@@ -68,7 +68,7 @@
       "client": "",
       "body": "```linkedin\nhttps://www.linkedin.com/posts/developerhridu_dotnet-csharp-asyncawait-activity-7499357125823844352-GgYx?utm_source=share&utm_medium=member_desktop&rcm=ACoAABzCH6EBjQ3vs7dYkbbY1gUSF7kfnkEJ8l8\n```",
       "sections": [],
-      "updatedAt": "2026-09-08T13:20:57.018Z"
+      "updatedAt": "2026-09-08T13:21:15.015Z"
     },
     {
       "id": "mtsn7nk6",
