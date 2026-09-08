@@ -177,7 +177,10 @@ export default function About({ showHeading = true, showKeyExpertise = false }: 
                 transition={{ duration: 0.5, delay: idx * 0.05 }}
               >
                 <div className="flex justify-between mb-1">
-                  <span className="text-muted">{skill.name}</span>
+                  <span className="flex items-center gap-1.5 text-muted">
+                    <TechIcon name={skill.name} className="w-4 h-4 shrink-0" />
+                    {skill.name}
+                  </span>
                   <span className="text-muted">{skill.level}%</span>
                 </div>
                 <div className="h-2 bg-surface-hover rounded-full overflow-hidden">

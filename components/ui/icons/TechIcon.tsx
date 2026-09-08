@@ -4,6 +4,7 @@ import {
   Activity,
   Boxes,
   Building2,
+  Cloud,
   Code2,
   Database,
   FileCode,
@@ -24,6 +25,7 @@ import { brandIcons, type BrandSlug } from "@/components/ui/icons/techBrandPaths
 const BRAND: Record<string, BrandSlug> = {
   ".net core": "dotnet",
   "asp.net mvc": "dotnet",
+  "asp.net core": "dotnet",
   rabbitmq: "rabbitmq",
   kafka: "apachekafka",
   redis: "redis",
@@ -31,6 +33,7 @@ const BRAND: Record<string, BrandSlug> = {
   typescript: "typescript",
   javascript: "javascript",
   react: "react",
+  "react/next": "react",
   "html/css": "html5",
   bootstrap: "bootstrap",
   postgresql: "postgresql",
@@ -66,6 +69,8 @@ const GENERIC: Record<string, LucideIcon> = {
   xunit: FlaskConical,
   mstest: FlaskConical,
   apm: Activity,
+  // simple-icons dropped the Amazon brand marks over trademark policy.
+  aws: Cloud,
 };
 
 const FALLBACK = Code2;
