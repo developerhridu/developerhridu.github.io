@@ -62,6 +62,13 @@
       "name": "E-Desh Ltd",
       "logo": "/images/logos/Edesh.png",
       "url": "https://e-deshltd.com"
+    },
+    {
+      "id": "personal-project",
+      "name": "Personal Project",
+      "logo": "",
+      "url": null,
+      "published": false
     }
   ]
 }
