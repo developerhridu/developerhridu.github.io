@@ -7,6 +7,7 @@ import UpworkIcon from "@/components/ui/icons/UpworkIcon";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Services from "@/components/sections/Services";
+import TechIcon from "@/components/ui/icons/TechIcon";
 import profile from "@/content/profile.json";
 import techStack from "@/content/tech-stack.json";
 import proficiencyData from "@/content/proficiency.json";
@@ -142,8 +143,9 @@ export default function About({ showHeading = true, showKeyExpertise = false }: 
                     {category.skills.map((skill) => (
                       <span
                         key={skill}
-                        className="px-3 py-1 bg-surface border border-border rounded-lg text-sm text-muted hover:border-accent/40 hover:text-foreground transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface border border-border rounded-lg text-sm text-muted hover:border-accent/40 hover:text-foreground transition-colors"
                       >
+                        <TechIcon name={skill} />
                         {skill}
                       </span>
                     ))}
