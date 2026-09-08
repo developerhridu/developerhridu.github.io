@@ -32,7 +32,7 @@ export default function Services({ showHeading = true, noSection = false }: Serv
       {showHeading && (
         <SectionHeading
           eyebrow="Services"
-          title="Services I Offer"
+          title="Key Expertise"
           subtitle="How I can help with your next project"
         />
       )}
