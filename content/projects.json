@@ -161,6 +161,19 @@
       "githubUrl": null,
       "featured": false,
       "published": false
+    },
+    {
+      "id": "my-bdjobs",
+      "title": "My Bdjobs",
+      "description": "App for Job Seakers",
+      "longDescription": "",
+      "image": "",
+      "client": "Bdjobs.com",
+      "tags": [],
+      "liveUrl": null,
+      "githubUrl": null,
+      "featured": false,
+      "published": false
     }
   ]
 }
