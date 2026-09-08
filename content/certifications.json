@@ -23,12 +23,12 @@
     },
     {
       "id": "certified-software-engineer",
-      "published": false,
       "name": "Certified Software Engineer",
       "issuer": "HackerRank",
-      "icon": "/images/logos/hackerrank.svg",
       "date": "January 2024",
-      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/bc1a30e19b7c"
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/bc1a30e19b7c",
+      "published": true,
+      "icon": "/images/logos/hackerrank.svg"
     },
     {
       "id": "certified-sql-advanced",
