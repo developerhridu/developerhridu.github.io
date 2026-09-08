@@ -83,6 +83,20 @@
       "body": "```linkedin\n<iframe src=\"https://www.linkedin.com/embed/feed/update/urn:li:share:7501916155738136576?collapsed=1\" height=\"668\" width=\"504\" frameborder=\"0\" allowfullscreen=\"\" title=\"Embedded post\"></iframe>\n```\n\nTesting LinkedIN",
       "sections": [],
       "updatedAt": "2026-09-08T12:25:39.078Z"
+    },
+    {
+      "id": "mtsndutl",
+      "slug": "test",
+      "title": "Test",
+      "date": "2026-09-08",
+      "published": false,
+      "description": "Test",
+      "tags": [],
+      "image": "",
+      "client": "",
+      "body": "```linkedin\nhttps://www.linkedin.com/posts/developerhridu_careergrowth-ai-navalravikant-activity-7502002729293127680-k3MB?utm_source=share&utm_medium=member_desktop&rcm=ACoAABzCH6EBjQ3vs7dYkbbY1gUSF7kfnkEJ8l8\n```\n\nTest",
+      "sections": [],
+      "updatedAt": "2026-09-08T12:30:28.425Z"
     }
   ]
 }
