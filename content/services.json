@@ -26,15 +26,15 @@
     },
     {
       "id": "third-party-integrations",
-      "published": true,
-      "title": "Third-Party & GDS/NDC API Integrations",
-      "icon": "plug",
+      "title": "Third-Party API & Payment System Integrations",
       "description": "Integrating airline GDS/NDC APIs, payment gateways, and other third-party services into production systems reliably.",
+      "icon": "plug",
       "highlights": [
-        "Airline GDS/NDC APIs",
+        "API Integration",
         "Payment gateways",
         "Webhook & event integrations"
-      ]
+      ],
+      "published": true
     },
     {
       "id": "performance-optimization",
