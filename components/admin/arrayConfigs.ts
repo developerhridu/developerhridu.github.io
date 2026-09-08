@@ -131,7 +131,7 @@ export const servicesConfig: ArrayConfig = {
       key: "icon",
       label: "Icon key",
       type: "text",
-      placeholder: "server, layers, plug, gauge, shield-check, refresh-cw…",
+      placeholder: "server, layers, plug, gauge, shield-check, refresh-cw, database…",
     },
     { key: "highlights", label: "Highlights (one per line, optional)", type: "list" },
     { key: "published", label: "Published (visible on the site)", type: "boolean", defaultBoolean: true },

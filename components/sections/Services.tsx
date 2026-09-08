@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Server, Layers, Plug, Gauge, ShieldCheck, RefreshCw, CheckCircle2, Wrench } from "lucide-react";
+import { Server, Layers, Plug, Gauge, ShieldCheck, RefreshCw, Database, CheckCircle2, Wrench } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import servicesData from "@/content/services.json";
@@ -20,6 +20,7 @@ const iconRegistry: Record<string, typeof Server> = {
   gauge: Gauge,
   "shield-check": ShieldCheck,
   "refresh-cw": RefreshCw,
+  database: Database,
 };
 
 export default function Services({ showHeading = true, noSection = false }: ServicesProps) {

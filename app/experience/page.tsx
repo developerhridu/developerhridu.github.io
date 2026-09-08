@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function ExperiencePage() {
   return (
     <div className="pt-16 md:pt-0">
-      <Experience />
+      <Experience showAll />
     </div>
   );
 }

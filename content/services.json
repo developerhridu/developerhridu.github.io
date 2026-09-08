@@ -58,6 +58,18 @@
         "Technical mentoring"
       ],
       "published": true
+    },
+    {
+      "id": "project-database-migration",
+      "title": "Project Database Migration",
+      "description": "Moving production databases between engines — including SQL Server to PostgreSQL — covering schema, data, and the application data-access layer.",
+      "icon": "database",
+      "highlights": [
+        "SQL Server → PostgreSQL",
+        "Schema & data migration",
+        "Licensing cost reduction"
+      ],
+      "published": true
     }
   ]
 }
