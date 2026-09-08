@@ -9,10 +9,10 @@
     },
     {
       "id": "foodi",
-      "published": false,
       "name": "Foodi",
       "logo": "/images/logos/foodi.jpg",
-      "url": "https://foodibd.com"
+      "url": "https://foodibd.com",
+      "published": true
     },
     {
       "id": "bdjobs",
