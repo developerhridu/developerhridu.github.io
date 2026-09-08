@@ -1,10 +1,8 @@
 import Image from "next/image";
-import clientsData from "@/content/clients.json";
+import { getPublishedClients } from "@/lib/clients";
 import type { Client } from "@/types";
 
-const CLIENTS: Client[] = clientsData.clients;
-
-const CLIENTS_WITH_LOGOS = CLIENTS.filter(
+const CLIENTS_WITH_LOGOS = getPublishedClients().filter(
   (client): client is Client & { logo: string } => !!client.logo
 );
 

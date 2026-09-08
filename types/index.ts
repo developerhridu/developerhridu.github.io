@@ -33,6 +33,7 @@ export interface Client {
   name: string;
   logo?: string;
   url?: string;
+  published?: boolean;
 }
 
 // Project types
@@ -47,6 +48,7 @@ export interface Project {
   liveUrl: string | null;
   githubUrl: string | null | { frontend?: string; backend?: string };
   featured: boolean;
+  published?: boolean;
 }
 
 // Experience types
@@ -90,6 +92,7 @@ export interface Certification {
   icons?: string[];
   date: string;
   verifyUrl?: string;
+  published?: boolean;
 }
 
 // Testimonial types

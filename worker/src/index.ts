@@ -469,6 +469,7 @@ interface ProjectEntry {
   title: string;
   description: string;
   tags?: string[];
+  published?: boolean;
 }
 
 interface EducationEntry {
@@ -481,6 +482,7 @@ interface CertificationEntry {
   name: string;
   issuer: string;
   date: string;
+  published?: boolean;
 }
 
 interface PostEntry {
@@ -530,6 +532,7 @@ async function buildContext(): Promise<string> {
   if (projects) {
     const projs = (projects as { projects?: ProjectEntry[] }).projects ?? [];
     const text = projs
+      .filter((p) => p.published !== false)
       .map((p) => `- ${p.title}: ${p.description} (Tech: ${(p.tags ?? []).join(", ")})`)
       .join("\n");
     parts.push(`PERSONAL/FEATURED PROJECTS:\n${text}`);
@@ -551,7 +554,10 @@ async function buildContext(): Promise<string> {
 
   if (certifications) {
     const certs = (certifications as { certifications?: CertificationEntry[] }).certifications ?? [];
-    const text = certs.map((c) => `- ${c.name} (${c.issuer}, ${c.date})`).join("\n");
+    const text = certs
+      .filter((c) => c.published !== false)
+      .map((c) => `- ${c.name} (${c.issuer}, ${c.date})`)
+      .join("\n");
     parts.push(`CERTIFICATIONS:\n${text}`);
   }
 

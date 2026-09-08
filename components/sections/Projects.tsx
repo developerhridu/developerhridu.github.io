@@ -8,6 +8,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import ProjectModal from "@/components/ui/ProjectModal";
 import ContentImage from "@/components/ui/ContentImage";
 import projectsData from "@/content/projects.json";
+import { isPublished } from "@/lib/published";
 import type { Project } from "@/types";
 
 type ProjectItem = Project;
@@ -18,7 +19,7 @@ interface ProjectsProps {
 }
 
 export default function Projects({ showHeading = true, showAll = false }: ProjectsProps) {
-  const projects = projectsData.projects as Project[];
+  const projects = (projectsData.projects as Project[]).filter(isPublished);
   const featuredProjects = projects.filter((p) => p.featured);
   const otherProjects = projects.filter((p) => !p.featured);
 

@@ -6,6 +6,7 @@ import { BadgeCheck, Calendar, ExternalLink } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import certificationsData from "@/content/certifications.json";
+import { isPublished } from "@/lib/published";
 import type { Certification } from "@/types";
 
 interface CertificationsProps {
@@ -14,7 +15,7 @@ interface CertificationsProps {
 }
 
 export default function Certifications({ showHeading = true, noSection = false }: CertificationsProps) {
-  const certifications = (certificationsData.certifications || []) as Certification[];
+  const certifications = ((certificationsData.certifications || []) as Certification[]).filter(isPublished);
 
   if (certifications.length === 0) return null;
 

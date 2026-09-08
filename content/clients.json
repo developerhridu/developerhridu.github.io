@@ -2,54 +2,63 @@
   "clients": [
     {
       "id": "us-bangla-airlines",
+      "published": true,
       "name": "US-Bangla Airlines",
       "logo": "/images/logos/us-bangla-airline.png",
       "url": "https://www.usbair.com"
     },
     {
       "id": "foodi",
+      "published": false,
       "name": "Foodi",
       "logo": "/images/logos/foodi.jpg",
       "url": "https://foodibd.com"
     },
     {
       "id": "bdjobs",
+      "published": true,
       "name": "Bdjobs.com",
       "logo": "/images/logos/bdjobs.png",
       "url": "https://www.bdjobs.com"
     },
     {
       "id": "firsttrip",
+      "published": true,
       "name": "FirstTrip",
       "logo": "/images/logos/firsttrip.png",
       "url": "https://firsttrip.com"
     },
     {
       "id": "triplover",
+      "published": true,
       "name": "TripLover",
       "logo": "/images/logos/triplover.jpeg",
       "url": "https://www.triplover.com"
     },
     {
       "id": "taketrip",
+      "published": true,
       "name": "TakeTrip",
       "logo": "/images/logos/taketrip.png",
       "url": "https://taketrip.com"
     },
     {
       "id": "travelchamp",
+      "published": true,
       "name": "TravelChamp",
       "logo": "/images/logos/travelchamp.png",
       "url": "https://www.travelchamp.com"
     },
     {
       "id": "takeoff",
+      "published": true,
       "name": "TakeOff",
       "logo": "/images/logos/takeoff.png",
       "url": "https://takeoffbd.com"
     },
     {
       "id": "edesh",
+      "published": true,
       "name": "E-Desh Ltd",
       "logo": "/images/logos/Edesh.png",
       "url": "https://e-deshltd.com"

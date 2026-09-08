@@ -30,6 +30,7 @@ export const certificationsConfig: ArrayConfig = {
     { key: "date", label: "Date", type: "text", placeholder: "June 2024" },
     { key: "verifyUrl", label: "Verify URL", type: "url" },
     { key: "icons", label: "Icon(s) (comma separated paths)", type: "tags" },
+    { key: "published", label: "Published (visible on the site)", type: "boolean", defaultBoolean: true },
   ],
   extraNormalizeIn: (raw) => ({
     icons: (raw.icon ? [raw.icon as string] : ((raw.icons as string[]) ?? [])).join(", "),
@@ -61,6 +62,7 @@ export const projectsConfig: ArrayConfig = {
     { key: "githubUrlFrontend", label: "GitHub Frontend URL", type: "url" },
     { key: "githubUrlBackend", label: "GitHub Backend URL", type: "url" },
     { key: "featured", label: "Featured", type: "boolean" },
+    { key: "published", label: "Published (visible on the site)", type: "boolean", defaultBoolean: true },
   ],
   extraNormalizeIn: (raw) => {
     const g = raw.githubUrl;
@@ -97,6 +99,7 @@ export const clientsConfig: ArrayConfig = {
     { key: "name", label: "Name", type: "text" },
     { key: "logo", label: "Logo", type: "image" },
     { key: "url", label: "Website URL", type: "url" },
+    { key: "published", label: "Published (visible on the site)", type: "boolean", defaultBoolean: true },
   ],
 };
 

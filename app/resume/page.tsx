@@ -2,9 +2,9 @@ import { Metadata } from "next";
 import {
   getProfile,
   getExperiences,
-  getProjects,
+  getPublishedProjects,
   getEducation,
-  getCertifications,
+  getPublishedCertifications,
   getSkillsCategory,
 } from "@/lib/content";
 import PrintButton from "@/components/ui/PrintButton";
@@ -56,9 +56,9 @@ export default function ResumePage() {
   const profile = getProfile();
   const experiences = getExperiences();
   const education = getEducation();
-  const certifications = getCertifications();
+  const certifications = getPublishedCertifications();
   const skills = getSkillsCategory();
-  const personalProjects = getProjects().filter((p) => p.githubUrl);
+  const personalProjects = getPublishedProjects().filter((p) => p.githubUrl);
   const summary = profile.bio.split("\n\n")[0];
 
   return (

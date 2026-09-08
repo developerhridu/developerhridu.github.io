@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { Profile, Project, Experience, Education, SkillsCategory, Certification, BlogPost, CaseStudy, Skill, Testimonial } from "@/types";
+import { isPublished } from "@/lib/published";
 
 const contentDirectory = path.join(process.cwd(), "content");
 
@@ -17,8 +18,12 @@ export function getProjects(): Project[] {
   return data.projects;
 }
 
+export function getPublishedProjects(): Project[] {
+  return getProjects().filter(isPublished);
+}
+
 export function getFeaturedProjects(): Project[] {
-  return getProjects().filter((project) => project.featured);
+  return getPublishedProjects().filter((project) => project.featured);
 }
 
 export function getExperiences(): Experience[] {
@@ -53,6 +58,10 @@ export function getCertifications(): Certification[] {
   const fileContents = fs.readFileSync(filePath, "utf8");
   const data = JSON.parse(fileContents);
   return data.certifications;
+}
+
+export function getPublishedCertifications(): Certification[] {
+  return getCertifications().filter(isPublished);
 }
 
 export function getTestimonials(): Testimonial[] {

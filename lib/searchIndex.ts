@@ -3,6 +3,7 @@ import menu from "@/content/menu.json";
 import blogsData from "@/content/blogs.json";
 import caseStudiesData from "@/content/case-studies.json";
 import projectsData from "@/content/projects.json";
+import { isPublished } from "@/lib/published";
 
 export interface SearchItem {
   title: string;
@@ -50,7 +51,7 @@ const caseStudyItems: SearchItem[] = (caseStudiesData.caseStudies ?? [])
     category: "Case Study",
   }));
 
-const projectItems: SearchItem[] = (projectsData.projects ?? []).map((p) => ({
+const projectItems: SearchItem[] = (projectsData.projects ?? []).filter(isPublished).map((p) => ({
   title: p.title,
   description: p.description,
   url: "/projects",

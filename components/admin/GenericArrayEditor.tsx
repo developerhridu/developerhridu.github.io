@@ -148,6 +148,8 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
   const [imageFiles, setImageFiles] = useState<Record<string, File | null>>({});
   const [loadedOrderIds, setLoadedOrderIds] = useState<string[]>([]);
 
+  const hasPublishedField = config.fields.some((f) => f.key === "published");
+
   useEffect(() => {
     setEntries(null);
     setEditingIndex(null);
@@ -529,7 +531,14 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
                     return (
                       <tr key={String(entry.id)} className="border-b border-border last:border-b-0">
                         <td className="px-4 py-3 min-w-0">
-                          <p className="text-foreground font-medium truncate">{title}</p>
+                          <p className="text-foreground font-medium truncate flex items-center gap-2">
+                            {title}
+                            {hasPublishedField && entry.published === false && (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-yellow-500/10 text-yellow-500 border border-yellow-500/30">
+                                Draft
+                              </span>
+                            )}
+                          </p>
                           {config.subtitleField && entry[config.subtitleField] != null && (
                             <p className="text-muted text-xs">
                               {config.subtitleFormat

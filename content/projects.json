@@ -2,6 +2,7 @@
   "projects": [
     {
       "id": "01",
+      "published": true,
       "title": "Online Travel Agency (OTA) Platform",
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
       "description": "Web-based travel booking platform enabling users to search, compare, and book flights from multiple airlines and GDS systems",
@@ -21,6 +22,7 @@
     },
     {
       "id": "02",
+      "published": false,
       "title": "Foodi CRM - Food Delivery System",
       "client": "Foodi",
       "description": "Full-stack customer relationship management system for food delivery businesses",
@@ -37,6 +39,7 @@
     },
     {
       "id": "03",
+      "published": true,
       "title": "Recruiter.Bdjobs.com",
       "client": "Bdjobs.com",
       "description": "Hiring management platform allowing employers to manage job posting to online assessments and interviews",
@@ -54,6 +57,7 @@
     },
     {
       "id": "04",
+      "published": true,
       "title": "Fare Comparison",
       "client": "US-Bangla Airlines",
       "description": "Airline fare intelligence platform comparing competitors' real-time fares, flight schedules, and seat availability for data-driven pricing",
@@ -72,6 +76,7 @@
     },
     {
       "id": "05",
+      "published": true,
       "title": "Booking Manager Service",
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
       "description": "Background service that automatically cancels un-ticketed bookings, saving ~$23K-$27K total across 6 OTA clients",
@@ -89,6 +94,7 @@
     },
     {
       "id": "07",
+      "published": true,
       "title": "Airline Supplier Integration Projects",
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
       "description": "8 cloud-native supplier integration projects connecting OTA platforms with major airlines and GDS systems",
@@ -108,6 +114,7 @@
     },
     {
       "id": "06",
+      "published": true,
       "title": "DevNote Blog-site",
       "client": "Personal Project",
       "description": "A blog platform allowing users to read and write blog posts",
@@ -128,6 +135,7 @@
     },
     {
       "id": "08",
+      "published": true,
       "title": "Expense Tracker",
       "client": "Personal Project",
       "description": "Cross-platform personal finance app to track expenses, income, and budgets with analytics",

@@ -5,6 +5,10 @@ import projectsData from "@/content/projects.json";
 import techStack from "@/content/tech-stack.json";
 import educationData from "@/content/education.json";
 import certificationsData from "@/content/certifications.json";
+import { isPublished } from "@/lib/published";
+
+const publishedProjects = projectsData.projects.filter(isPublished);
+const publishedCertifications = certificationsData.certifications.filter(isPublished);
 
 interface Intent {
   id: string;
@@ -25,9 +29,9 @@ const intents: Intent[] = [
       "what has he made",
     ],
     answer: () => {
-      const featured = projectsData.projects.filter((p) => p.featured).slice(0, 5);
+      const featured = publishedProjects.filter((p) => p.featured).slice(0, 5);
       const list = featured.map((p) => `• ${p.title} — ${p.description}`).join("\n");
-      return `He's worked on ${projectsData.projects.length}+ projects. A few highlights:\n\n${list}\n\nSee the Projects page for the full list.`;
+      return `He's worked on ${publishedProjects.length}+ projects. A few highlights:\n\n${list}\n\nSee the Projects page for the full list.`;
     },
   },
   {
@@ -126,8 +130,8 @@ const intents: Intent[] = [
       "courses he has completed",
     ],
     answer: () => {
-      const names = certificationsData.certifications.map((c) => c.name).join(", ");
-      return `He holds ${certificationsData.certifications.length} certifications and training credentials, including: ${names}. Full details with verification links are on the Training & Certifications page.`;
+      const names = publishedCertifications.map((c) => c.name).join(", ");
+      return `He holds ${publishedCertifications.length} certifications and training credentials, including: ${names}. Full details with verification links are on the Training & Certifications page.`;
     },
   },
   {

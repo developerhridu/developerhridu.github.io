@@ -6,8 +6,10 @@ import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import ClientMarquee from "@/components/ui/ClientMarquee";
 import profile from "@/content/profile.json";
-import clientsData from "@/content/clients.json";
+import { getPublishedClients } from "@/lib/clients";
 import { trackEvent } from "@/lib/analytics";
+
+const publishedClientCount = getPublishedClients().length;
 
 export default function Hero() {
   return (
@@ -105,7 +107,7 @@ export default function Hero() {
             </GlassCard>
             <GlassCard className="!p-3 text-center col-span-2 md:col-span-1" hover={false}>
               <div className="text-xl font-bold text-foreground mb-0.5">
-                {clientsData.clients.length}+
+                {publishedClientCount}+
               </div>
               <div className="text-xs text-muted">Clients</div>
             </GlassCard>
