@@ -15,18 +15,18 @@
       "published": true
     },
     {
+      "id": "services",
+      "name": "Services",
+      "href": "/services",
+      "icon": "wrench",
+      "published": true
+    },
+    {
       "id": "experience",
       "name": "Experience",
       "href": "/experience",
       "icon": "briefcase",
       "published": true
-    },
-    {
-      "id": "services",
-      "name": "Services",
-      "href": "/services",
-      "icon": "wrench",
-      "published": false
     },
     {
       "id": "projects",
