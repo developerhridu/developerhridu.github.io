@@ -6,6 +6,7 @@ import { MapPin, Mail, Github, Linkedin } from "lucide-react";
 import UpworkIcon from "@/components/ui/icons/UpworkIcon";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
+import Services from "@/components/sections/Services";
 import profile from "@/content/profile.json";
 import techStack from "@/content/tech-stack.json";
 import proficiencyData from "@/content/proficiency.json";
@@ -22,9 +23,12 @@ const skillCategories = [
 
 interface AboutProps {
   showHeading?: boolean;
+  /** Renders the services as a "Key Expertise" block under the tech stack. Opt-in, because
+   *  the home page already shows the same content in its own <Services /> section. */
+  showKeyExpertise?: boolean;
 }
 
-export default function About({ showHeading = true }: AboutProps) {
+export default function About({ showHeading = true, showKeyExpertise = false }: AboutProps) {
   return (
     <section id="about" className="py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -149,6 +153,14 @@ export default function About({ showHeading = true }: AboutProps) {
             </div>
           </GlassCard>
         </div>
+
+        {/* Key Expertise (services, without their own section wrapper or heading) */}
+        {showKeyExpertise && (
+          <div className="mt-12">
+            <h3 className="text-xl font-bold text-foreground mb-6 text-center">Key Expertise</h3>
+            <Services showHeading={false} noSection />
+          </div>
+        )}
 
         {/* Skills with Progress Bars */}
         <div className="mt-12">

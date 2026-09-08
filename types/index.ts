@@ -32,7 +32,8 @@ export interface Client {
   id: string;
   name: string;
   logo?: string;
-  url?: string;
+  /** `null` when cleared in the admin editor — `url` fields there write null, not "". */
+  url?: string | null;
   published?: boolean;
 }
 
@@ -91,7 +92,8 @@ export interface Certification {
   icon?: string;
   icons?: string[];
   date: string;
-  verifyUrl?: string;
+  /** `null` when cleared in the admin editor — `url` fields there write null, not "". */
+  verifyUrl?: string | null;
   published?: boolean;
 }
 
@@ -116,6 +118,7 @@ export interface Service {
   description: string;
   icon?: string;
   highlights?: string[];
+  published?: boolean;
 }
 
 // Tech stack / skills type

@@ -134,6 +134,7 @@ export const servicesConfig: ArrayConfig = {
       placeholder: "server, layers, plug, gauge, shield-check, refresh-cw…",
     },
     { key: "highlights", label: "Highlights (one per line, optional)", type: "list" },
+    { key: "published", label: "Published (visible on the site)", type: "boolean", defaultBoolean: true },
   ],
 };
 

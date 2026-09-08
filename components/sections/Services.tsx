@@ -5,6 +5,7 @@ import { Server, Layers, Plug, Gauge, ShieldCheck, RefreshCw, CheckCircle2, Wren
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import servicesData from "@/content/services.json";
+import { isPublished } from "@/lib/published";
 import type { Service } from "@/types";
 
 interface ServicesProps {
@@ -22,7 +23,7 @@ const iconRegistry: Record<string, typeof Server> = {
 };
 
 export default function Services({ showHeading = true, noSection = false }: ServicesProps) {
-  const services = (servicesData.services || []) as Service[];
+  const services = ((servicesData.services || []) as Service[]).filter(isPublished);
 
   if (services.length === 0) return null;
 
