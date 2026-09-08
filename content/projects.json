@@ -22,7 +22,7 @@
     },
     {
       "id": "02",
-      "published": false,
+      "published": true,
       "title": "Foodi CRM - Food Delivery System",
       "client": "Foodi",
       "description": "Full-stack customer relationship management system for food delivery businesses",
