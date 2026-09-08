@@ -27,20 +27,6 @@
         "/images/testimonials/ismile-sardar-verify-0.png"
       ],
       "published": false
-    },
-    {
-      "id": "3",
-      "name": "Daniel Lee",
-      "role": "CTO",
-      "company": "StartupXYZ",
-      "quote": "Mizanur owns problems end-to-end. Give him a vague requirement and he'll come back with a well-architected solution, clear documentation, and a plan for what comes next.",
-      "email": "daniel.lee@startupxyz.example",
-      "linkedinUrl": "https://linkedin.com/in/daniel-lee-placeholder",
-      "avatar": "https://api.dicebear.com/9.x/avataaars/svg?seed=Daniel%20Lee",
-      "verifyImages": [
-        "https://verify.example/proof/daniel-lee.jpg"
-      ],
-      "published": false
     }
   ]
 }
