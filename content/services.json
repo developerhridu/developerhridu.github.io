@@ -50,15 +50,14 @@
     },
     {
       "id": "legacy-modernization",
-      "published": true,
-      "title": "Legacy Modernization & Code Review",
-      "icon": "refresh-cw",
+      "title": "Legacy Modernization",
       "description": "Modernizing legacy .NET systems and mentoring teams through code review, without disrupting what already works.",
+      "icon": "refresh-cw",
       "highlights": [
         "Legacy system migration",
-        "Code review",
         "Technical mentoring"
-      ]
+      ],
+      "published": true
     }
   ]
 }
