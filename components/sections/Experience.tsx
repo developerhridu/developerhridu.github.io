@@ -11,17 +11,17 @@ import experienceData from "@/content/experience.json";
 
 interface ExperienceProps {
   showHeading?: boolean;
-  /** /experience passes this: every highlight renders expanded, and the Read-more
-   *  toggles and the "View Full Experience" footer link are hidden. */
+  /** /experience passes this: every highlight starts expanded (with a "Show less"
+   *  toggle available), and the "View Full Experience" footer link is hidden. */
   showAll?: boolean;
 }
 
-const VISIBLE_HIGHLIGHTS = 3;
+const VISIBLE_HIGHLIGHTS = 1;
 
-function ProjectHighlights({ highlights, showAll }: { highlights: string[]; showAll: boolean }) {
-  const [expanded, setExpanded] = useState(false);
-  const hasMore = !showAll && highlights.length > VISIBLE_HIGHLIGHTS;
-  const visible = showAll || expanded ? highlights : highlights.slice(0, VISIBLE_HIGHLIGHTS);
+function ProjectHighlights({ highlights, defaultExpanded }: { highlights: string[]; defaultExpanded: boolean }) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+  const hasMore = highlights.length > VISIBLE_HIGHLIGHTS;
+  const visible = expanded ? highlights : highlights.slice(0, VISIBLE_HIGHLIGHTS);
 
   return (
     <>
@@ -162,7 +162,7 @@ export default function Experience({ showHeading = true, showAll = false }: Expe
                             )}
 
                             {project.highlights.length > 0 && (
-                              <ProjectHighlights highlights={project.highlights} showAll={showAll} />
+                              <ProjectHighlights highlights={project.highlights} defaultExpanded={showAll} />
                             )}
                           </div>
 
