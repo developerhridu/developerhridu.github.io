@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import About from "@/components/sections/About";
 import Services from "@/components/sections/Services";
-import Education from "@/components/sections/Education";
+import EducationCertifications from "@/components/sections/EducationCertifications";
 
 export const metadata: Metadata = {
   title: "About | Mizanur Rahman — Full-Stack Software Engineer",
@@ -13,7 +13,7 @@ export default function AboutPage() {
   return (
     <div className="pt-16 md:pt-0">
       <About />
-      <Education />
+      <EducationCertifications />
     </div>
   );
 }
