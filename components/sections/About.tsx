@@ -23,6 +23,39 @@ const skillCategories = [
 
 interface AboutProps {
   showHeading?: boolean;
+  /** Home page passes false: the Tech Stack card is dropped and Skill Proficiency takes
+   *  its place in the two-column grid (single column) instead of as a separate section
+   *  below. /about keeps both (default true) — Tech Stack in the grid, Skill Proficiency
+   *  full-width underneath. */
+  showTechStack?: boolean;
+}
+
+/** A bio paragraph is either plain prose, or a lead-in line followed by "- " bullet
+ *  lines — rendered as a real <ul> instead of dashes running together in a <p>. */
+function BioParagraph({ text }: { text: string }) {
+  const lines = text.split("\n");
+  const firstBullet = lines.findIndex((line) => line.trimStart().startsWith("- "));
+
+  if (firstBullet === -1) {
+    return <p>{text}</p>;
+  }
+
+  const lead = lines.slice(0, firstBullet).join(" ").trim();
+  const items = lines.slice(firstBullet).map((line) => line.trim().replace(/^-\s*/, ""));
+
+  return (
+    <>
+      {lead && <p>{lead}</p>}
+      <ul className="space-y-1.5">
+        {items.map((item, idx) => (
+          <li key={idx} className="flex items-start gap-2">
+            <span className="text-accent mt-1 shrink-0">-</span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
 }
 
 export default function About({ showHeading = true }: AboutProps) {
@@ -58,7 +91,7 @@ export default function About({ showHeading = true }: AboutProps) {
 
             <div className="text-muted leading-relaxed mb-6 space-y-4">
               {profile.bio.split("\n\n").map((paragraph, idx) => (
-                <p key={idx}>{paragraph}</p>
+                <BioParagraph key={idx} text={paragraph} />
               ))}
             </div>
 
