@@ -58,7 +58,35 @@ function BioParagraph({ text }: { text: string }) {
   );
 }
 
-export default function About({ showHeading = true }: AboutProps) {
+function ProficiencyBar({ skill, idx }: { skill: { name: string; level: number }; idx: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: idx * 0.05 }}
+    >
+      <div className="flex justify-between mb-1">
+        <span className="flex items-center gap-1.5 text-muted">
+          <TechIcon name={skill.name} className="w-4 h-4 shrink-0" />
+          {skill.name}
+        </span>
+        <span className="text-muted">{skill.level}%</span>
+      </div>
+      <div className="h-2 bg-surface-hover rounded-full overflow-hidden">
+        <motion.div
+          className="h-full bg-gradient-to-r from-accent to-accent-hover rounded-full"
+          initial={{ width: 0 }}
+          whileInView={{ width: `${skill.level}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, delay: idx * 0.05 }}
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+export default function About({ showHeading = true, showTechStack = true }: AboutProps) {
   return (
     <section id="about" className="py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -149,74 +177,64 @@ export default function About({ showHeading = true }: AboutProps) {
             </div>
           </GlassCard>
 
-          {/* Skills Card */}
-          <GlassCard hover={false}>
-            <h3 className="text-xl font-bold text-foreground mb-6">Tech Stack</h3>
+          {/* Skills Card — Tech Stack on /about, Skill Proficiency on Home */}
+          {showTechStack ? (
+            <GlassCard hover={false}>
+              <h3 className="text-xl font-bold text-foreground mb-6">Tech Stack</h3>
 
-            <div className="space-y-6">
-              {skillCategories.map((category, idx) => (
-                <motion.div
-                  key={category.name}
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                >
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className={`w-2 h-2 rounded-full ${category.color}`} />
-                    <span className="text-sm font-medium text-muted">
-                      {category.name}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {category.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface border border-border rounded-lg text-sm text-muted hover:border-accent/40 hover:text-foreground transition-colors"
-                      >
-                        <TechIcon name={skill} />
-                        {skill}
+              <div className="space-y-6">
+                {skillCategories.map((category, idx) => (
+                  <motion.div
+                    key={category.name}
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className={`w-2 h-2 rounded-full ${category.color}`} />
+                      <span className="text-sm font-medium text-muted">
+                        {category.name}
                       </span>
-                    ))}
-                  </div>
-                </motion.div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {category.skills.map((skill) => (
+                        <span
+                          key={skill}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface border border-border rounded-lg text-sm text-muted hover:border-accent/40 hover:text-foreground transition-colors"
+                        >
+                          <TechIcon name={skill} />
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </GlassCard>
+          ) : (
+            <GlassCard hover={false}>
+              <h3 className="text-xl font-bold text-foreground mb-6">Skill Proficiency</h3>
+              <div className="space-y-4">
+                {proficiencyData.proficiency.map((skill, idx) => (
+                  <ProficiencyBar key={skill.name} skill={skill} idx={idx} />
+                ))}
+              </div>
+            </GlassCard>
+          )}
+        </div>
+
+        {/* Skills with Progress Bars — only on /about, where it isn't already in the grid above */}
+        {showTechStack && (
+          <div className="mt-12">
+            <h3 className="text-xl font-bold text-foreground mb-6 text-center">Skill Proficiency</h3>
+            <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+              {proficiencyData.proficiency.map((skill, idx) => (
+                <ProficiencyBar key={skill.name} skill={skill} idx={idx} />
               ))}
             </div>
-          </GlassCard>
-        </div>
-
-        {/* Skills with Progress Bars */}
-        <div className="mt-12">
-          <h3 className="text-xl font-bold text-foreground mb-6 text-center">Skill Proficiency</h3>
-          <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-            {proficiencyData.proficiency.map((skill, idx) => (
-              <motion.div
-                key={skill.name}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.05 }}
-              >
-                <div className="flex justify-between mb-1">
-                  <span className="flex items-center gap-1.5 text-muted">
-                    <TechIcon name={skill.name} className="w-4 h-4 shrink-0" />
-                    {skill.name}
-                  </span>
-                  <span className="text-muted">{skill.level}%</span>
-                </div>
-                <div className="h-2 bg-surface-hover rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full bg-gradient-to-r from-accent to-accent-hover rounded-full"
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${skill.level}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: idx * 0.05 }}
-                  />
-                </div>
-              </motion.div>
-            ))}
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

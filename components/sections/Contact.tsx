@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, MapPin, Send, Github, Linkedin, Code2, CheckCircle, AlertCircle } from "lucide-react";
+import UpworkIcon from "@/components/ui/icons/UpworkIcon";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Button from "@/components/ui/Button";
@@ -146,6 +147,16 @@ export default function Contact({ showHeading = true }: ContactProps) {
                 >
                   <Code2 size={20} />
                 </a>
+                {profile.social.upwork && (
+                  <a
+                    href={profile.social.upwork}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 bg-surface hover:bg-surface-hover border border-border hover:border-accent/40 rounded-lg flex items-center justify-center text-muted hover:text-foreground transition-all"
+                  >
+                    <UpworkIcon size={20} />
+                  </a>
+                )}
               </div>
             </GlassCard>
           </motion.div>

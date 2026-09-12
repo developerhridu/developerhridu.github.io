@@ -17,7 +17,7 @@ export default function Home() {
   return (
     <>
       <Hero />
-      {isPublished("about") && <About />}
+      {isPublished("about") && <About showTechStack={false} />}
       {isPublished("services") && <Services />}
       {isPublished("experience") && <Experience />}
       {isPublished("projects") && <Projects />}

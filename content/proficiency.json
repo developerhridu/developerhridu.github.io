@@ -11,18 +11,23 @@
       "level": 90
     },
     {
-      "id": "microservices",
-      "name": "Microservices",
-      "level": 85
-    },
-    {
       "id": "mssql-server",
       "name": "MSSQL Server",
       "level": 90
     },
     {
+      "id": "microservices",
+      "name": "Microservices",
+      "level": 85
+    },
+    {
       "id": "postgresql",
       "name": "PostgreSQL",
+      "level": 80
+    },
+    {
+      "id": "oracle",
+      "name": "Oracle",
       "level": 75
     },
     {
@@ -41,11 +46,6 @@
       "level": 80
     },
     {
-      "id": "typescript",
-      "name": "TypeScript",
-      "level": 75
-    },
-    {
       "id": "mongodb",
       "name": "MongoDB",
       "level": 90
@@ -57,8 +57,18 @@
     },
     {
       "id": "ef-core",
-      "name": "EF Core",
+      "name": "Entity Framework Core",
       "level": 90
+    },
+    {
+      "id": "unit-testing",
+      "name": "Unit Testing",
+      "level": 85
+    },
+    {
+      "id": "integration-testing",
+      "name": "Integration Testing",
+      "level": 85
     }
   ]
 }
