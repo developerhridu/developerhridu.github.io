@@ -58,13 +58,13 @@ function BioParagraph({ text }: { text: string }) {
   );
 }
 
-function ProficiencyBar({ skill, idx }: { skill: { name: string; level: number }; idx: number }) {
+function ProficiencyBar({ skill }: { skill: { name: string; level: number } }) {
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: idx * 0.05 }}
+      viewport={{ once: false, amount: 0.3 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
     >
       <div className="flex justify-between mb-1">
         <span className="flex items-center gap-1.5 text-muted">
@@ -75,11 +75,11 @@ function ProficiencyBar({ skill, idx }: { skill: { name: string; level: number }
       </div>
       <div className="h-2 bg-surface-hover rounded-full overflow-hidden">
         <motion.div
-          className="h-full bg-gradient-to-r from-accent to-accent-hover rounded-full"
-          initial={{ width: 0 }}
-          whileInView={{ width: `${skill.level}%` }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, delay: idx * 0.05 }}
+          className="h-full w-full origin-left bg-gradient-to-r from-accent to-accent-hover rounded-full"
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: skill.level / 100 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ duration: 1, ease: "easeOut" }}
         />
       </div>
     </motion.div>
@@ -216,8 +216,8 @@ export default function About({ showHeading = true, showTechStack = true }: Abou
             <GlassCard hover={false}>
               <h3 className="text-xl font-bold text-foreground mb-6">Skill Proficiency</h3>
               <div className="space-y-4">
-                {proficiencyData.proficiency.map((skill, idx) => (
-                  <ProficiencyBar key={skill.name} skill={skill} idx={idx} />
+                {proficiencyData.proficiency.map((skill) => (
+                  <ProficiencyBar key={skill.name} skill={skill} />
                 ))}
               </div>
             </GlassCard>
@@ -229,8 +229,8 @@ export default function About({ showHeading = true, showTechStack = true }: Abou
           <div className="mt-12">
             <h3 className="text-xl font-bold text-foreground mb-6 text-center">Skill Proficiency</h3>
             <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-              {proficiencyData.proficiency.map((skill, idx) => (
-                <ProficiencyBar key={skill.name} skill={skill} idx={idx} />
+              {proficiencyData.proficiency.map((skill) => (
+                <ProficiencyBar key={skill.name} skill={skill} />
               ))}
             </div>
           </div>

@@ -21,6 +21,11 @@
       "level": 85
     },
     {
+      "id": "ef-core",
+      "name": "Entity Framework Core",
+      "level": 90
+    },
+    {
       "id": "postgresql",
       "name": "PostgreSQL",
       "level": 80
@@ -54,11 +59,6 @@
       "id": "aws",
       "name": "AWS",
       "level": 70
-    },
-    {
-      "id": "ef-core",
-      "name": "Entity Framework Core",
-      "level": 90
     },
     {
       "id": "unit-testing",
