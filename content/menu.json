@@ -62,7 +62,7 @@
       "name": "Blogs",
       "href": "/blog",
       "icon": "newspaper",
-      "external": true,
+      "external": false,
       "published": true
     },
     {
