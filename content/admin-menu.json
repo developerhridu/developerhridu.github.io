@@ -94,6 +94,31 @@
       "id": "search-log",
       "label": "Search Log",
       "published": true
+    },
+    {
+      "id": "sections",
+      "label": "Section Copy",
+      "published": true
+    },
+    {
+      "id": "skill-categories",
+      "label": "Skill Categories",
+      "published": true
+    },
+    {
+      "id": "seo",
+      "label": "SEO / Metadata",
+      "published": true
+    },
+    {
+      "id": "ui-strings",
+      "label": "UI Strings",
+      "published": true
+    },
+    {
+      "id": "faq-script",
+      "label": "FAQ Script",
+      "published": true
     }
   ]
 }

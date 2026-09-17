@@ -7,8 +7,11 @@ import Footer from "@/components/Footer";
 import BackToTop from "@/components/ui/BackToTop";
 import AiChatWidget from "@/components/ui/AiChatWidget";
 import config from "@/content/config.json";
+import { getProfile } from "@/lib/content";
+import { getSeo } from "@/lib/seo";
 
 const GA_MEASUREMENT_ID = config.gaMeasurementId;
+const SITE_URL = config.siteUrl;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,30 +23,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const BASE_URL = "https://developerhridu.github.io";
+const homeSeo = getSeo("home");
 
 export const metadata: Metadata = {
-  title: "Hridu | Full-Stack Software Engineer",
-  description:
-    "Full-stack software engineer with 4+ years building scalable .NET microservices and modern frontends across travel, food delivery, and recruitment domains.",
-  keywords: [
-    "software engineer",
-    "full-stack",
-    "backend",
-    ".NET",
-    "ASP.NET Core",
-    "microservices",
-    "C#",
-    "Angular",
-    "React",
-    "developer",
-    "portfolio",
-    "Dhaka",
-    "Bangladesh",
-  ],
-  authors: [{ name: "Mizanur Rahman" }],
-  metadataBase: new URL(BASE_URL),
+  ...homeSeo,
+  authors: [{ name: getProfile().name }],
+  metadataBase: new URL(SITE_URL),
   alternates: {
+    ...homeSeo.alternates,
     types: { "application/rss+xml": "/blog/rss.xml" },
   },
   icons: {
@@ -55,43 +42,29 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",
-  openGraph: {
-    title: "Hridu | Full-Stack Software Engineer",
-    description:
-      "Full-stack software engineer with 4+ years building scalable .NET microservices and modern frontends across travel, food delivery, and recruitment domains.",
-    type: "website",
-    url: BASE_URL,
-    images: [{ url: "/images/profile/dp.png", width: 400, height: 400, alt: "Mizanur Rahman" }],
-  },
-  twitter: {
-    card: "summary",
-    title: "Hridu | Full-Stack Software Engineer",
-    description:
-      "Full-stack software engineer with 4+ years building scalable .NET microservices and modern frontends.",
-    images: ["/images/profile/dp.png"],
-  },
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Mizanur Rahman",
-  alternateName: "Hridu",
-  url: BASE_URL,
-  image: `${BASE_URL}/images/profile/dp.png`,
-  jobTitle: "Full-Stack Software Engineer",
-  worksFor: { "@type": "Organization", name: "TechnoNext Software" },
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "Dhaka",
-    addressCountry: "BD",
-  },
-  sameAs: [
-    "https://github.com/developerhridu",
-    "https://linkedin.com/in/developerhridu",
-    "https://leetcode.com/developerhridu",
-  ],
-};
+function buildJsonLd() {
+  const profile = getProfile();
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: profile.name,
+    alternateName: "Hridu",
+    url: SITE_URL,
+    image: `${SITE_URL}${profile.avatar}`,
+    jobTitle: profile.title,
+    worksFor: { "@type": "Organization", name: profile.currentEmployer },
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: profile.addressLocality,
+      addressCountry: profile.addressCountry,
+    },
+    sameAs: [profile.social.github, profile.social.linkedin, profile.social.leetcode],
+  };
+}
+
+const jsonLd = buildJsonLd();
 
 export default function RootLayout({
   children,

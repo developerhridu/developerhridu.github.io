@@ -5,6 +5,7 @@ import Link from "next/link";
 import { TrendingUp } from "lucide-react";
 import ContentCard, { type ContentCardItem } from "@/components/ui/ContentCard";
 import { WORKER_URL } from "@/lib/workerUrl";
+import uiStrings from "@/content/ui-strings.json";
 
 export type ContentListingItem = ContentCardItem;
 
@@ -42,7 +43,7 @@ export default function ContentListing({ type, items, emptyMessage }: ContentLis
       {popularItems.length > 0 && (
         <div className="mb-10">
           <p className="flex items-center gap-2 text-sm font-semibold text-foreground mb-3">
-            <TrendingUp size={16} className="text-accent" /> Most Read
+            <TrendingUp size={16} className="text-accent" /> {uiStrings.blogCaseStudyListing.mostRead}
           </p>
           <div className="flex flex-wrap gap-3">
             {popularItems.map((item) => (
@@ -68,7 +69,7 @@ export default function ContentListing({ type, items, emptyMessage }: ContentLis
                 : "border-border text-muted hover:text-foreground hover:border-accent/40"
             }`}
           >
-            All
+            {uiStrings.blogCaseStudyListing.allTag}
           </button>
           {tags.map((tag) => (
             <button

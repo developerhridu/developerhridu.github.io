@@ -13,6 +13,9 @@ export interface Profile {
   email: string;
   phone?: string;
   location: string;
+  currentEmployer?: string;
+  addressLocality?: string;
+  addressCountry?: string;
   yearsOfExperience: number;
   projectsCompleted: number;
   social: {
@@ -25,6 +28,39 @@ export interface Profile {
   resumeUrl: string;
   openToWork?: boolean;
   openToWorkLabel?: string;
+}
+
+// Section heading copy (eyebrow/title/subtitle shown via SectionHeading)
+export interface SectionCopy {
+  id: string;
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+}
+
+// Skill category display metadata (label + color), keyed to SkillsCategory
+export interface SkillCategoryMeta {
+  id: string;
+  key: keyof SkillsCategory;
+  label: string;
+  color: string;
+}
+
+// Per-route SEO metadata
+export interface SeoRoute {
+  id: string;
+  route: string;
+  title: string;
+  description: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  ogType?: string;
+  keywords?: string[];
+  image?: string;
+  imageAlt?: string;
+  noIndex?: boolean;
 }
 
 // Client types
@@ -168,4 +204,163 @@ export interface CaseStudy {
   image?: string;
   body: string;
   sections?: ContentSection[];
+}
+
+// Shared UI microcopy (ui-strings.json), mirrored 1:1
+export interface UiStrings {
+  hero: {
+    greeting: string;
+    ctaViewProjects: string;
+    ctaHireMe: string;
+    ctaViewResume: string;
+    statYearsExperience: string;
+    statProjectsCompleted: string;
+    statClients: string;
+  };
+  about: {
+    techStackHeading: string;
+    skillProficiencyHeading: string;
+  };
+  experience: {
+    showLess: string;
+    readMore: string;
+    verify: string;
+    viewFullExperience: string;
+  };
+  projects: {
+    otherProjects: string;
+    liveDemo: string;
+    sourceCode: string;
+    viewCode: string;
+    frontEnd: string;
+    backEnd: string;
+  };
+  projectModal: {
+    liveDemo: string;
+    viewLive: string;
+    sourceCode: string;
+    viewCode: string;
+    frontEnd: string;
+    backEnd: string;
+    closeAriaLabel: string;
+  };
+  certifications: {
+    verify: string;
+  };
+  educationCertifications: {
+    tabEducationLabel: string;
+    tabEducationNumber: string;
+    tabCertificationsLabel: string;
+    tabCertificationsNumber: string;
+  };
+  contact: {
+    letsConnectTitle: string;
+    letsConnectIntro: string;
+    emailLabel: string;
+    locationLabel: string;
+    sendMessageTitle: string;
+    messageSentTitle: string;
+    messageSentBody: string;
+    sendAnotherMessage: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    emailFieldLabel: string;
+    emailPlaceholder: string;
+    messageLabel: string;
+    messagePlaceholder: string;
+    errorText: string;
+    sending: string;
+    sendMessageButton: string;
+  };
+  testimonialSubmit: {
+    thankYouTitle: string;
+    thankYouBody: string;
+    submitAnother: string;
+    notConfiguredTitle: string;
+    notConfiguredBody: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    roleLabel: string;
+    rolePlaceholder: string;
+    companyLabel: string;
+    companyPlaceholder: string;
+    linkedinLabel: string;
+    linkedinPlaceholder: string;
+    quoteLabel: string;
+    quotePlaceholder: string;
+    errorText: string;
+    submitting: string;
+    submitButton: string;
+  };
+  testimonials: {
+    shareCta: string;
+  };
+  caseStudies: {
+    viewAll: string;
+  };
+  blogCaseStudyListing: {
+    mostRead: string;
+    allTag: string;
+    readMore: string;
+  };
+  blogEmptyMessage: string;
+  caseStudiesEmptyMessage: string;
+  searchPalette: {
+    placeholder: string;
+    closeAriaLabel: string;
+    noResults: string;
+    askAi: string;
+    navigateHint: string;
+    selectHint: string;
+    closeHint: string;
+  };
+  aiChatWidget: {
+    headerTitle: string;
+    closeChatAriaLabel: string;
+    introText: string;
+    thinking: string;
+    inputPlaceholder: string;
+    sendAriaLabel: string;
+    launcherPrompt: string;
+    dismissAriaLabel: string;
+    openAriaLabel: string;
+  };
+  navbar: {
+    searchAriaLabel: string;
+    hireMeLabel: string;
+    openMenuAriaLabel: string;
+    closeMenuAriaLabel: string;
+  };
+  footer: {
+    builtWithTemplate: string;
+    hireMeLabel: string;
+  };
+  notFound: {
+    title: string;
+    body: string;
+    goHome: string;
+  };
+  resume: {
+    summary: string;
+    technicalSkills: string;
+    experience: string;
+    projects: string;
+    education: string;
+    trainingAndCertifications: string;
+    techStackLabel: string;
+    verify: string;
+    code: string;
+    frontend: string;
+    backend: string;
+    verifyBracket: string;
+  };
+  socialLabels: {
+    github: string;
+    linkedin: string;
+    leetcode: string;
+    upwork: string;
+    portfolio: string;
+  };
 }

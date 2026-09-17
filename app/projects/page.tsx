@@ -1,11 +1,8 @@
 import { Metadata } from "next";
 import Projects from "@/components/sections/Projects";
+import { getSeo } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Projects | Mizanur Rahman — Portfolio",
-  description:
-    "Real-world backend projects: multi-tenant OTA platform, food delivery CRM, fare intelligence engine, and job portal modernization using .NET, microservices, and cloud-native patterns.",
-};
+export const metadata: Metadata = getSeo("projects");
 
 export default function ProjectsPage() {
   return (

@@ -7,42 +7,17 @@ import {
   getPublishedCertifications,
   getSkillsCategory,
 } from "@/lib/content";
+import { getSeo } from "@/lib/seo";
 import PrintButton from "@/components/ui/PrintButton";
 import ContentImage from "@/components/ui/ContentImage";
 import { Mail, Phone, MapPin, Github, Linkedin, Code2, Globe, ExternalLink } from "lucide-react";
-import type { SkillsCategory } from "@/types";
+import skillCategoriesData from "@/content/skill-categories.json";
+import uiStrings from "@/content/ui-strings.json";
 
-const BASE_URL = "https://developerhridu.github.io";
+export const metadata: Metadata = getSeo("resume");
 
-export const metadata: Metadata = {
-  title: "Resume | Mizanur Rahman — Full-Stack Software Engineer",
-  description:
-    "Live, always up-to-date resume: experience, technical skills, projects, education, and certifications.",
-  alternates: { canonical: `${BASE_URL}/resume` },
-  openGraph: {
-    title: "Resume | Mizanur Rahman",
-    description: "Live, always up-to-date resume for Mizanur Rahman, Full-Stack Software Engineer.",
-    type: "profile",
-    url: `${BASE_URL}/resume`,
-    images: [{ url: `${BASE_URL}/images/profile/dp.png`, width: 400, height: 400, alt: "Mizanur Rahman" }],
-  },
-  twitter: {
-    card: "summary",
-    title: "Resume | Mizanur Rahman",
-    description: "Live, always up-to-date resume for Mizanur Rahman, Full-Stack Software Engineer.",
-    images: [`${BASE_URL}/images/profile/dp.png`],
-  },
-};
-
-const SKILL_LABELS: [keyof SkillsCategory, string][] = [
-  ["backend", "Backend"],
-  ["architecture", "Architecture"],
-  ["messaging", "Messaging & Caching"],
-  ["frontend", "Frontend"],
-  ["database", "Database"],
-  ["devops", "DevOps & Observability"],
-  ["testing", "Testing"],
-];
+const t = uiStrings.resume;
+const socialLabels = uiStrings.socialLabels;
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -96,7 +71,7 @@ export default function ResumePage() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-1.5 hover:text-accent print:text-black"
                     >
-                      <Github size={14} /> GitHub
+                      <Github size={14} /> {socialLabels.github}
                     </a>
                   )}
                   {profile.social.linkedin && (
@@ -106,7 +81,7 @@ export default function ResumePage() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-1.5 hover:text-accent print:text-black"
                     >
-                      <Linkedin size={14} /> LinkedIn
+                      <Linkedin size={14} /> {socialLabels.linkedin}
                     </a>
                   )}
                   {profile.social.leetcode && (
@@ -116,7 +91,7 @@ export default function ResumePage() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-1.5 hover:text-accent print:text-black"
                     >
-                      <Code2 size={14} /> LeetCode
+                      <Code2 size={14} /> {socialLabels.leetcode}
                     </a>
                   )}
                   {profile.portfolioUrl && (
@@ -126,7 +101,7 @@ export default function ResumePage() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-1.5 hover:text-accent print:text-black"
                     >
-                      <Globe size={14} /> Portfolio
+                      <Globe size={14} /> {socialLabels.portfolio}
                     </a>
                   )}
                 </div>
@@ -144,17 +119,17 @@ export default function ResumePage() {
             {/* Summary */}
             {summary && (
               <section className="mb-10 print:mb-8">
-                <SectionHeading>Summary</SectionHeading>
+                <SectionHeading>{t.summary}</SectionHeading>
                 <p className="text-muted print:text-black leading-relaxed">{summary}</p>
               </section>
             )}
 
             {/* Technical Skills */}
             <section className="mb-10 print:mb-8">
-              <SectionHeading>Technical Skills</SectionHeading>
+              <SectionHeading>{t.technicalSkills}</SectionHeading>
               <div className="space-y-1.5">
-                {SKILL_LABELS.map(([key, label]) => {
-                  const values = skills[key];
+                {skillCategoriesData.categories.map(({ key, label }) => {
+                  const values = skills[key as keyof typeof skills];
                   if (!values || values.length === 0) return null;
                   return (
                     <p key={key} className="text-sm text-muted print:text-black">
@@ -168,7 +143,7 @@ export default function ResumePage() {
 
             {/* Experience */}
             <section className="mb-10 print:mb-8">
-              <SectionHeading>Experience</SectionHeading>
+              <SectionHeading>{t.experience}</SectionHeading>
               <div className="space-y-8">
                 {experiences.map((exp) => (
                   <div key={exp.id}>
@@ -201,7 +176,7 @@ export default function ResumePage() {
                             className="flex items-center gap-1 text-sm text-accent print:text-black hover:underline"
                           >
                             <ExternalLink size={12} />
-                            Verify
+                            {t.verify}
                           </a>
                         )}
                       </span>
@@ -220,7 +195,7 @@ export default function ResumePage() {
                           {project.technologies.length > 0 && (
                             <p className="text-xs text-muted print:text-black mb-1">
                               <span className="font-semibold text-foreground print:text-black">
-                                Tech-Stack:
+                                {t.techStackLabel}
                               </span>{" "}
                               {project.technologies.join(", ")}
                             </p>
@@ -249,7 +224,7 @@ export default function ResumePage() {
             {/* Projects */}
             {personalProjects.length > 0 && (
               <section className="mb-10 print:mb-8">
-                <SectionHeading>Projects</SectionHeading>
+                <SectionHeading>{t.projects}</SectionHeading>
                 <div className="space-y-4">
                   {personalProjects.map((project) => (
                     <div key={project.id}>
@@ -263,7 +238,7 @@ export default function ResumePage() {
                               rel="noopener noreferrer"
                               className="flex items-center gap-1 text-accent print:text-black hover:underline"
                             >
-                              Code <ExternalLink size={12} />
+                              {t.code} <ExternalLink size={12} />
                             </a>
                           )}
                           {project.githubUrl && typeof project.githubUrl === "object" && (
@@ -275,7 +250,7 @@ export default function ResumePage() {
                                   rel="noopener noreferrer"
                                   className="flex items-center gap-1 text-accent print:text-black hover:underline"
                                 >
-                                  Frontend <ExternalLink size={12} />
+                                  {t.frontend} <ExternalLink size={12} />
                                 </a>
                               )}
                               {project.githubUrl.backend && (
@@ -285,7 +260,7 @@ export default function ResumePage() {
                                   rel="noopener noreferrer"
                                   className="flex items-center gap-1 text-accent print:text-black hover:underline"
                                 >
-                                  Backend <ExternalLink size={12} />
+                                  {t.backend} <ExternalLink size={12} />
                                 </a>
                               )}
                             </>
@@ -296,7 +271,7 @@ export default function ResumePage() {
                       {project.tags.length > 0 && (
                         <p className="text-xs text-muted print:text-black">
                           <span className="font-semibold text-foreground print:text-black">
-                            Tech-Stack:
+                            {t.techStackLabel}
                           </span>{" "}
                           {project.tags.join(", ")}
                         </p>
@@ -309,7 +284,7 @@ export default function ResumePage() {
 
             {/* Education */}
             <section className="mb-10 print:mb-8">
-              <SectionHeading>Education</SectionHeading>
+              <SectionHeading>{t.education}</SectionHeading>
               <div className="space-y-4">
                 {education.map((edu) => (
                   <div key={edu.institution}>
@@ -332,7 +307,7 @@ export default function ResumePage() {
             {/* Training & Certifications */}
             {certifications.length > 0 && (
               <section>
-                <SectionHeading>Training and Certifications</SectionHeading>
+                <SectionHeading>{t.trainingAndCertifications}</SectionHeading>
                 <div className="space-y-2">
                   {certifications.map((cert) => (
                     <div
@@ -349,7 +324,7 @@ export default function ResumePage() {
                             rel="noopener noreferrer"
                             className="ml-2 text-accent print:text-black hover:underline"
                           >
-                            [Verify]
+                            {t.verifyBracket}
                           </a>
                         )}
                       </p>

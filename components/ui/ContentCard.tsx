@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Calendar, Clock, ArrowRight, Building2 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import ContentImage from "@/components/ui/ContentImage";
+import uiStrings from "@/content/ui-strings.json";
 
 export interface ContentCardItem {
   slug: string;
@@ -73,7 +74,7 @@ export default function ContentCard({ item, viewPath, showReadMore = false }: Co
           </div>
           {showReadMore && (
             <span className="flex items-center gap-1 text-sm text-accent group-hover:gap-2 transition-all shrink-0">
-              Read more <ArrowRight size={14} />
+              {uiStrings.blogCaseStudyListing.readMore} <ArrowRight size={14} />
             </span>
           )}
         </div>

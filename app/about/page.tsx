@@ -2,12 +2,9 @@ import { Metadata } from "next";
 import About from "@/components/sections/About";
 import Services from "@/components/sections/Services";
 import EducationCertifications from "@/components/sections/EducationCertifications";
+import { getSeo } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "About | Mizanur Rahman — Full-Stack Software Engineer",
-  description:
-    "4+ years building scalable .NET microservices. Expertise in C#, ASP.NET Core, microservices architecture, and distributed systems across travel, food delivery, and recruitment domains.",
-};
+export const metadata: Metadata = getSeo("about");
 
 export default function AboutPage() {
   return (

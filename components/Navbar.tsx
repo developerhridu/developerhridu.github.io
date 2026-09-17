@@ -25,6 +25,7 @@ import {
 import Image from "next/image";
 import menu from "@/content/menu.json";
 import profile from "@/content/profile.json";
+import uiStrings from "@/content/ui-strings.json";
 import { trackEvent } from "@/lib/analytics";
 import { resolveCvHref } from "@/lib/cv";
 import ThemeToggle from "@/components/ui/ThemeToggle";
@@ -159,7 +160,7 @@ export default function Navbar() {
 
         <button
           onClick={() => setSearchOpen(true)}
-          aria-label="Search"
+          aria-label={uiStrings.navbar.searchAriaLabel}
           className="mt-auto flex items-center justify-center w-11 h-11 rounded-lg text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
         >
           <Search size={20} />
@@ -170,13 +171,13 @@ export default function Navbar() {
           href={profile.social.upwork}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Hire Me"
+          aria-label={uiStrings.navbar.hireMeLabel}
           onClick={() => trackEvent("hire_me_click", { location: "navbar_desktop" })}
           className="group relative flex items-center justify-center w-11 h-11 rounded-lg bg-accent hover:bg-accent-hover text-accent-foreground transition-colors"
         >
           <Handshake size={20} />
           <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-surface border border-border px-2 py-1 text-sm text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-            Hire Me
+            {uiStrings.navbar.hireMeLabel}
           </span>
         </a>
       </motion.nav>
@@ -195,7 +196,7 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSearchOpen(true)}
-                aria-label="Search"
+                aria-label={uiStrings.navbar.searchAriaLabel}
                 className="flex items-center justify-center w-9 h-9 rounded-lg text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
               >
                 <Search size={18} />
@@ -209,11 +210,11 @@ export default function Navbar() {
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-accent-foreground text-sm transition-colors"
               >
                 <Handshake size={16} />
-                Hire Me
+                {uiStrings.navbar.hireMeLabel}
               </a>
               <button
                 className="text-foreground"
-                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+                aria-label={isMobileMenuOpen ? uiStrings.navbar.closeMenuAriaLabel : uiStrings.navbar.openMenuAriaLabel}
                 aria-expanded={isMobileMenuOpen}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >

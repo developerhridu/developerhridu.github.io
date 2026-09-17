@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Code2, Github, Handshake, Linkedin, Mail } from "lucide-react";
 import profile from "@/content/profile.json";
 import menu from "@/content/menu.json";
+import uiStrings from "@/content/ui-strings.json";
 import { trackEvent } from "@/lib/analytics";
 import { resolveCvHref } from "@/lib/cv";
 
@@ -25,7 +26,9 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-col md:flex-row items-center gap-4">
             <p className="text-muted text-sm">
-              {currentYear} {profile.name}. Built with Next.js & Tailwind CSS.
+              {uiStrings.footer.builtWithTemplate
+                .replace("{year}", String(currentYear))
+                .replace("{name}", profile.name)}
             </p>
             <div className="flex items-center gap-4 text-sm text-muted">
               {footerLinks.map((link) =>
@@ -62,7 +65,7 @@ export default function Footer() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-accent-foreground text-sm transition-colors"
             >
               <Handshake size={16} />
-              Hire Me
+              {uiStrings.footer.hireMeLabel}
             </a>
             <a
               href={profile.social.github}

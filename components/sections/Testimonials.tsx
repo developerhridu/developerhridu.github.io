@@ -9,6 +9,8 @@ import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import TestimonialModal from "@/components/ui/TestimonialModal";
 import testimonialsData from "@/content/testimonials.json";
+import uiStrings from "@/content/ui-strings.json";
+import { getSectionCopy } from "@/lib/sections";
 import type { Testimonial } from "@/types";
 
 interface TestimonialsProps {
@@ -21,6 +23,7 @@ export default function Testimonials({ showHeading = true, noSection = false }: 
     (t) => t.published !== false
   );
   const [selected, setSelected] = useState<Testimonial | null>(null);
+  const sectionCopy = getSectionCopy("testimonials");
 
   if (testimonials.length === 0) return null;
 
@@ -28,9 +31,9 @@ export default function Testimonials({ showHeading = true, noSection = false }: 
     <>
       {showHeading && (
         <SectionHeading
-          eyebrow="Testimonials"
-          title="What People Say"
-          subtitle="Feedback from people I've worked with"
+          eyebrow={sectionCopy.eyebrow}
+          title={sectionCopy.title}
+          subtitle={sectionCopy.subtitle}
         />
       )}
 
@@ -115,7 +118,7 @@ export default function Testimonials({ showHeading = true, noSection = false }: 
           className="flex items-center gap-2 text-sm text-accent hover:text-accent-hover transition-colors"
         >
           <PenLine size={16} />
-          Worked with me? Share your experience
+          {uiStrings.testimonials.shareCta}
         </Link>
       </div>
 

@@ -4,6 +4,8 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import ContentCard from "@/components/ui/ContentCard";
 import { getPublishedCaseStudies } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
+import uiStrings from "@/content/ui-strings.json";
+import { getSectionCopy } from "@/lib/sections";
 
 const FEATURED_COUNT = 3;
 
@@ -14,13 +16,15 @@ export default function CaseStudies() {
 
   if (caseStudies.length === 0) return null;
 
+  const sectionCopy = getSectionCopy("case-studies");
+
   return (
     <section id="case-studies" className="py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <SectionHeading
-          eyebrow="Case Studies"
-          title="Case Studies"
-          subtitle="In-depth looks at problems I've solved and how I solved them"
+          eyebrow={sectionCopy.eyebrow}
+          title={sectionCopy.title}
+          subtitle={sectionCopy.subtitle}
         />
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -54,7 +58,7 @@ export default function CaseStudies() {
             href="/case-studies"
             className="inline-flex items-center gap-2 px-5 py-2.5 border border-border hover:border-accent/40 rounded-lg text-sm text-muted hover:text-foreground transition-colors"
           >
-            View All Case Studies
+            {uiStrings.caseStudies.viewAll}
             <ArrowRight size={16} />
           </Link>
         </div>

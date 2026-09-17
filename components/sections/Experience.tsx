@@ -8,6 +8,8 @@ import { ArrowRight, Calendar, ChevronDown, ChevronUp, ExternalLink, MapPin } fr
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import experienceData from "@/content/experience.json";
+import uiStrings from "@/content/ui-strings.json";
+import { getSectionCopy } from "@/lib/sections";
 
 interface ExperienceProps {
   showHeading?: boolean;
@@ -41,11 +43,15 @@ function ProjectHighlights({ highlights, defaultExpanded }: { highlights: string
         >
           {expanded ? (
             <>
-              Show less <ChevronUp size={12} />
+              {uiStrings.experience.showLess} <ChevronUp size={12} />
             </>
           ) : (
             <>
-              Read more ({highlights.length - VISIBLE_HIGHLIGHTS} more) <ChevronDown size={12} />
+              {uiStrings.experience.readMore.replace(
+                "{count}",
+                String(highlights.length - VISIBLE_HIGHLIGHTS)
+              )}{" "}
+              <ChevronDown size={12} />
             </>
           )}
         </button>
@@ -56,15 +62,16 @@ function ProjectHighlights({ highlights, defaultExpanded }: { highlights: string
 
 export default function Experience({ showHeading = true, showAll = false }: ExperienceProps) {
   const experiences = experienceData.experiences;
+  const sectionCopy = getSectionCopy("experience");
 
   return (
     <section id="experience" className="py-16 lg:py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {showHeading && (
           <SectionHeading
-            eyebrow="Experience"
-            title="Experience"
-            subtitle="My professional journey and the roles I've held"
+            eyebrow={sectionCopy.eyebrow}
+            title={sectionCopy.title}
+            subtitle={sectionCopy.subtitle}
           />
         )}
 
@@ -140,7 +147,7 @@ export default function Experience({ showHeading = true, showAll = false }: Expe
                             className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover transition-colors"
                           >
                             <ExternalLink size={12} />
-                            <span>Verify</span>
+                            <span>{uiStrings.experience.verify}</span>
                           </a>
                         )}
                       </div>
@@ -194,7 +201,7 @@ export default function Experience({ showHeading = true, showAll = false }: Expe
               href="/experience"
               className="inline-flex items-center gap-2 px-5 py-2.5 border border-border hover:border-accent/40 rounded-lg text-sm text-muted hover:text-foreground transition-colors"
             >
-              View Full Experience
+              {uiStrings.experience.viewFullExperience}
               <ArrowRight size={16} />
             </Link>
           </div>

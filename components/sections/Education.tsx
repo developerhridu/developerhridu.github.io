@@ -6,6 +6,7 @@ import { GraduationCap, MapPin, Calendar, Award } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import educationData from "@/content/education.json";
+import { getSectionCopy } from "@/lib/sections";
 import type { Education as EducationType } from "@/types";
 
 interface EducationProps {
@@ -15,6 +16,7 @@ interface EducationProps {
 
 export default function Education({ showHeading = true, noSection = false }: EducationProps) {
   const education = (educationData.education || []) as EducationType[];
+  const sectionCopy = getSectionCopy("education");
 
   if (education.length === 0) return null;
 
@@ -22,9 +24,9 @@ export default function Education({ showHeading = true, noSection = false }: Edu
     <>
       {showHeading && (
         <SectionHeading
-          eyebrow="Education"
-          title="Education"
-          subtitle="My academic background and qualifications"
+          eyebrow={sectionCopy.eyebrow}
+          title={sectionCopy.title}
+          subtitle={sectionCopy.subtitle}
         />
       )}
 

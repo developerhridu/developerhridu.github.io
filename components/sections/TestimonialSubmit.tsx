@@ -8,9 +8,13 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import Button from "@/components/ui/Button";
 import { WORKER_URL } from "@/lib/workerUrl";
 import { trackEvent } from "@/lib/analytics";
+import uiStrings from "@/content/ui-strings.json";
+import { getSectionCopy } from "@/lib/sections";
 
 const inputClass =
   "w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors";
+
+const t = uiStrings.testimonialSubmit;
 
 export default function TestimonialSubmit() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error" | "not-configured">(
@@ -60,13 +64,15 @@ export default function TestimonialSubmit() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
 
+  const sectionCopy = getSectionCopy("testimonial-submit");
+
   return (
     <section className="py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <SectionHeading
-          eyebrow="Testimonials"
-          title="Share Your Experience"
-          subtitle="Worked with me? I'd love to hear about it — your testimonial will be reviewed before it's published."
+          eyebrow={sectionCopy.eyebrow}
+          title={sectionCopy.title}
+          subtitle={sectionCopy.subtitle}
         />
 
         <div className="max-w-xl mx-auto">
@@ -80,25 +86,25 @@ export default function TestimonialSubmit() {
               {status === "success" ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <CheckCircle className="text-green-400 mb-4" size={48} />
-                  <h4 className="text-xl font-semibold text-foreground mb-2">Thank you!</h4>
+                  <h4 className="text-xl font-semibold text-foreground mb-2">{t.thankYouTitle}</h4>
                   <p className="text-muted">
-                    Your testimonial has been submitted and will appear on the site once reviewed.
+                    {t.thankYouBody}
                   </p>
                   <button
                     onClick={() => setStatus("idle")}
                     className="mt-4 text-accent hover:text-accent-hover transition-colors"
                   >
-                    Submit another
+                    {t.submitAnother}
                   </button>
                 </div>
               ) : status === "not-configured" ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <AlertCircle className="text-yellow-500 mb-4" size={48} />
                   <h4 className="text-xl font-semibold text-foreground mb-2">
-                    Submissions aren&apos;t open yet
+                    {t.notConfiguredTitle}
                   </h4>
                   <p className="text-muted">
-                    This form isn&apos;t fully set up yet — please reach out via the Contact page instead.
+                    {t.notConfiguredBody}
                   </p>
                 </div>
               ) : (
@@ -117,7 +123,7 @@ export default function TestimonialSubmit() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="name" className="block text-sm text-muted mb-2">
-                        Name
+                        {t.nameLabel}
                       </label>
                       <input
                         type="text"
@@ -127,12 +133,12 @@ export default function TestimonialSubmit() {
                         onChange={handleChange}
                         required
                         className={inputClass}
-                        placeholder="Your name"
+                        placeholder={t.namePlaceholder}
                       />
                     </div>
                     <div>
                       <label htmlFor="email" className="block text-sm text-muted mb-2">
-                        Email
+                        {t.emailLabel}
                       </label>
                       <input
                         type="email"
@@ -142,7 +148,7 @@ export default function TestimonialSubmit() {
                         onChange={handleChange}
                         required
                         className={inputClass}
-                        placeholder="your@email.com"
+                        placeholder={t.emailPlaceholder}
                       />
                     </div>
                   </div>
@@ -150,7 +156,7 @@ export default function TestimonialSubmit() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="role" className="block text-sm text-muted mb-2">
-                        Role (optional)
+                        {t.roleLabel}
                       </label>
                       <input
                         type="text"
@@ -159,12 +165,12 @@ export default function TestimonialSubmit() {
                         value={formData.role}
                         onChange={handleChange}
                         className={inputClass}
-                        placeholder="Engineering Manager"
+                        placeholder={t.rolePlaceholder}
                       />
                     </div>
                     <div>
                       <label htmlFor="company" className="block text-sm text-muted mb-2">
-                        Company (optional)
+                        {t.companyLabel}
                       </label>
                       <input
                         type="text"
@@ -173,14 +179,14 @@ export default function TestimonialSubmit() {
                         value={formData.company}
                         onChange={handleChange}
                         className={inputClass}
-                        placeholder="Acme Inc"
+                        placeholder={t.companyPlaceholder}
                       />
                     </div>
                   </div>
 
                   <div>
                     <label htmlFor="linkedinUrl" className="block text-sm text-muted mb-2">
-                      LinkedIn URL (optional)
+                      {t.linkedinLabel}
                     </label>
                     <input
                       type="url"
@@ -189,13 +195,13 @@ export default function TestimonialSubmit() {
                       value={formData.linkedinUrl}
                       onChange={handleChange}
                       className={inputClass}
-                      placeholder="https://linkedin.com/in/..."
+                      placeholder={t.linkedinPlaceholder}
                     />
                   </div>
 
                   <div>
                     <label htmlFor="quote" className="block text-sm text-muted mb-2">
-                      Your testimonial
+                      {t.quoteLabel}
                     </label>
                     <textarea
                       id="quote"
@@ -205,24 +211,24 @@ export default function TestimonialSubmit() {
                       onChange={handleChange}
                       required
                       className={`${inputClass} resize-none`}
-                      placeholder="What was it like working together?"
+                      placeholder={t.quotePlaceholder}
                     />
                   </div>
 
                   {status === "error" && (
                     <div className="flex items-center gap-2 text-red-400 text-sm">
                       <AlertCircle size={16} />
-                      <span>Something went wrong. Please try again.</span>
+                      <span>{t.errorText}</span>
                     </div>
                   )}
 
                   <Button variant="primary" className="w-full justify-center" onClick={() => {}}>
                     {status === "loading" ? (
-                      "Submitting…"
+                      t.submitting
                     ) : (
                       <>
                         <Send size={18} />
-                        Submit Testimonial
+                        {t.submitButton}
                       </>
                     )}
                   </Button>

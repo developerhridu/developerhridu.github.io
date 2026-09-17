@@ -1,0 +1,157 @@
+{
+  "hero": {
+    "greeting": "Hi, I'm",
+    "ctaViewProjects": "View Projects",
+    "ctaHireMe": "Hire Me",
+    "ctaViewResume": "View Resume",
+    "statYearsExperience": "Years Experience",
+    "statProjectsCompleted": "Projects Completed",
+    "statClients": "Clients"
+  },
+  "about": {
+    "techStackHeading": "Tech Stack",
+    "skillProficiencyHeading": "Skill Proficiency"
+  },
+  "experience": {
+    "showLess": "Show less",
+    "readMore": "Read more ({count} more)",
+    "verify": "Verify",
+    "viewFullExperience": "View Full Experience"
+  },
+  "projects": {
+    "otherProjects": "Other Projects",
+    "liveDemo": "Live Demo",
+    "sourceCode": "Source Code",
+    "viewCode": "View Code",
+    "frontEnd": "Front-End",
+    "backEnd": "Back-End"
+  },
+  "projectModal": {
+    "liveDemo": "Live Demo",
+    "viewLive": "View Live",
+    "sourceCode": "Source Code",
+    "viewCode": "View Code",
+    "frontEnd": "Front-End",
+    "backEnd": "Back-End",
+    "closeAriaLabel": "Close"
+  },
+  "certifications": {
+    "verify": "Verify"
+  },
+  "educationCertifications": {
+    "tabEducationLabel": "Education",
+    "tabEducationNumber": "01",
+    "tabCertificationsLabel": "Training & Certifications",
+    "tabCertificationsNumber": "02"
+  },
+  "contact": {
+    "letsConnectTitle": "Let's Connect",
+    "letsConnectIntro": "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision. Feel free to reach out!",
+    "emailLabel": "Email",
+    "locationLabel": "Location",
+    "sendMessageTitle": "Send a Message",
+    "messageSentTitle": "Message Sent!",
+    "messageSentBody": "Thank you for reaching out. I'll get back to you soon.",
+    "sendAnotherMessage": "Send another message",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "emailFieldLabel": "Email",
+    "emailPlaceholder": "your@email.com",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Your message...",
+    "errorText": "Something went wrong. Please try again.",
+    "sending": "Sending...",
+    "sendMessageButton": "Send Message"
+  },
+  "testimonialSubmit": {
+    "thankYouTitle": "Thank you!",
+    "thankYouBody": "Your testimonial has been submitted and will appear on the site once reviewed.",
+    "submitAnother": "Submit another",
+    "notConfiguredTitle": "Submissions aren't open yet",
+    "notConfiguredBody": "This form isn't fully set up yet — please reach out via the Contact page instead.",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
+    "roleLabel": "Role (optional)",
+    "rolePlaceholder": "Engineering Manager",
+    "companyLabel": "Company (optional)",
+    "companyPlaceholder": "Acme Inc",
+    "linkedinLabel": "LinkedIn URL (optional)",
+    "linkedinPlaceholder": "https://linkedin.com/in/...",
+    "quoteLabel": "Your testimonial",
+    "quotePlaceholder": "What was it like working together?",
+    "errorText": "Something went wrong. Please try again.",
+    "submitting": "Submitting…",
+    "submitButton": "Submit Testimonial"
+  },
+  "testimonials": {
+    "shareCta": "Worked with me? Share your experience"
+  },
+  "caseStudies": {
+    "viewAll": "View All Case Studies"
+  },
+  "blogCaseStudyListing": {
+    "mostRead": "Most Read",
+    "allTag": "All",
+    "readMore": "Read more"
+  },
+  "blogEmptyMessage": "No blog posts yet. Check back soon!",
+  "caseStudiesEmptyMessage": "No case studies yet. Check back soon!",
+  "searchPalette": {
+    "placeholder": "Search pages, blog posts, case studies…",
+    "closeAriaLabel": "Close search",
+    "noResults": "No pages match “{query}”.",
+    "askAi": "Ask AI: “{query}”",
+    "navigateHint": "↑↓ Navigate",
+    "selectHint": "↵ Select",
+    "closeHint": "Esc Close"
+  },
+  "aiChatWidget": {
+    "headerTitle": "Ask about Mizanur",
+    "closeChatAriaLabel": "Close chat",
+    "introText": "Ask anything about his experience, projects, or skills — or try one of these:",
+    "thinking": "Thinking…",
+    "inputPlaceholder": "Ask a question…",
+    "sendAriaLabel": "Send",
+    "launcherPrompt": "Ask AI about Hridu",
+    "dismissAriaLabel": "Dismiss",
+    "openAriaLabel": "Ask about Mizanur"
+  },
+  "navbar": {
+    "searchAriaLabel": "Search",
+    "hireMeLabel": "Hire Me",
+    "openMenuAriaLabel": "Open menu",
+    "closeMenuAriaLabel": "Close menu"
+  },
+  "footer": {
+    "builtWithTemplate": "{year} {name}. Built with Next.js & Tailwind CSS.",
+    "hireMeLabel": "Hire Me"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "body": "The page you're looking for doesn't exist or has been moved.",
+    "goHome": "Go Home"
+  },
+  "resume": {
+    "summary": "Summary",
+    "technicalSkills": "Technical Skills",
+    "experience": "Experience",
+    "projects": "Projects",
+    "education": "Education",
+    "trainingAndCertifications": "Training and Certifications",
+    "techStackLabel": "Tech-Stack:",
+    "verify": "Verify",
+    "code": "Code",
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "verifyBracket": "[Verify]"
+  },
+  "socialLabels": {
+    "github": "GitHub",
+    "linkedin": "LinkedIn",
+    "leetcode": "LeetCode",
+    "upwork": "Upwork",
+    "portfolio": "Portfolio"
+  }
+}

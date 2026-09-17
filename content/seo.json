@@ -1,0 +1,92 @@
+{
+  "routes": [
+    {
+      "id": "home",
+      "route": "/",
+      "title": "Hridu | Full-Stack Software Engineer",
+      "description": "Full-stack software engineer with 4+ years building scalable .NET microservices and modern frontends across travel, food delivery, and recruitment domains.",
+      "twitterDescription": "Full-stack software engineer with 4+ years building scalable .NET microservices and modern frontends.",
+      "keywords": ["software engineer", "full-stack", "backend", ".NET", "ASP.NET Core", "microservices", "C#", "Angular", "React", "developer", "portfolio", "Dhaka", "Bangladesh"]
+    },
+    {
+      "id": "about",
+      "route": "/about",
+      "title": "About | Mizanur Rahman — Full-Stack Software Engineer",
+      "description": "4+ years building scalable .NET microservices. Expertise in C#, ASP.NET Core, microservices architecture, and distributed systems across travel, food delivery, and recruitment domains."
+    },
+    {
+      "id": "experience",
+      "route": "/experience",
+      "title": "Experience | Mizanur Rahman — Career Journey",
+      "description": "4+ years across TechnoNext Software (US-Bangla Group), Bdjobs.com, and E-Desh Limited. Built production systems in travel, recruitment, and logistics sectors."
+    },
+    {
+      "id": "projects",
+      "route": "/projects",
+      "title": "Projects | Mizanur Rahman — Portfolio",
+      "description": "Real-world backend projects: multi-tenant OTA platform, food delivery CRM, fare intelligence engine, and job portal modernization using .NET, microservices, and cloud-native patterns."
+    },
+    {
+      "id": "services",
+      "route": "/services",
+      "title": "Services | Mizanur Rahman — Full-Stack Software Engineer",
+      "description": "Backend, API, and microservices development services I offer."
+    },
+    {
+      "id": "certifications",
+      "route": "/certifications",
+      "title": "Training & Certifications | Mizanur Rahman",
+      "description": "HackerRank, Coursera (Meta), and ICT Division certifications covering C#, SQL, JavaScript, REST APIs, React, and full-stack development."
+    },
+    {
+      "id": "contact",
+      "route": "/contact",
+      "title": "Contact | Mizanur Rahman",
+      "description": "Open to backend engineering roles, consulting, and technical collaborations. Reach out via email or LinkedIn."
+    },
+    {
+      "id": "testimonials",
+      "route": "/testimonials",
+      "title": "Testimonials | Mizanur Rahman — Full-Stack Software Engineer",
+      "description": "Feedback and recommendations from people I've worked with."
+    },
+    {
+      "id": "testimonials-submit",
+      "route": "/testimonials/submit",
+      "title": "Share Your Experience | Mizanur Rahman",
+      "description": "Submit a testimonial about working with Mizanur Rahman."
+    },
+    {
+      "id": "blog",
+      "route": "/blog",
+      "title": "Blog | Mizanur Rahman — Software Engineering Insights",
+      "description": "Technical writing on backend architecture, .NET development, microservices patterns, and software engineering practices.",
+      "ogTitle": "Blog | Mizanur Rahman"
+    },
+    {
+      "id": "case-studies",
+      "route": "/case-studies",
+      "title": "Case Studies | Mizanur Rahman — Software Engineering Insights",
+      "description": "In-depth case studies on backend architecture, .NET development, microservices patterns, and software engineering practices.",
+      "ogTitle": "Case Studies | Mizanur Rahman"
+    },
+    {
+      "id": "admin",
+      "route": "/admin",
+      "title": "Admin | Content Editor",
+      "description": "Password-protected content editor for this site.",
+      "noIndex": true
+    },
+    {
+      "id": "resume",
+      "route": "/resume",
+      "title": "Resume | Mizanur Rahman — Full-Stack Software Engineer",
+      "description": "Live, always up-to-date resume: experience, technical skills, projects, education, and certifications.",
+      "ogTitle": "Resume | Mizanur Rahman",
+      "ogDescription": "Live, always up-to-date resume for Mizanur Rahman, Full-Stack Software Engineer.",
+      "twitterTitle": "Resume | Mizanur Rahman",
+      "twitterDescription": "Live, always up-to-date resume for Mizanur Rahman, Full-Stack Software Engineer.",
+      "ogType": "profile"
+    }
+  ]
+}

@@ -1,10 +1,8 @@
 import { Metadata } from "next";
 import Services from "@/components/sections/Services";
+import { getSeo } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Services | Mizanur Rahman — Full-Stack Software Engineer",
-  description: "Backend, API, and microservices development services I offer.",
-};
+export const metadata: Metadata = getSeo("services");
 
 export default function ServicesPage() {
   return (

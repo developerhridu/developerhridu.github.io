@@ -8,6 +8,9 @@ import { Search, X, Sparkles } from "lucide-react";
 import { searchIndex, type SearchItem } from "@/lib/searchIndex";
 import { dispatchAskAi } from "@/lib/askAiEvent";
 import { WORKER_URL } from "@/lib/workerUrl";
+import uiStrings from "@/content/ui-strings.json";
+
+const t = uiStrings.searchPalette;
 
 const fuse = new Fuse(searchIndex, {
   keys: ["title", "description"],
@@ -141,12 +144,12 @@ export default function SearchPalette({ open, onOpenChange }: SearchPaletteProps
                 value={query}
                 onChange={(e) => handleQueryChange(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Search pages, blog posts, case studies…"
+                placeholder={t.placeholder}
                 className="flex-1 min-w-0 bg-transparent text-foreground placeholder-muted focus:outline-none"
               />
               <button
                 onClick={() => onOpenChange(false)}
-                aria-label="Close search"
+                aria-label={t.closeAriaLabel}
                 className="text-muted hover:text-foreground transition-colors shrink-0"
               >
                 <X size={18} />
@@ -156,14 +159,14 @@ export default function SearchPalette({ open, onOpenChange }: SearchPaletteProps
             <div className="max-h-96 overflow-y-auto py-2">
               {results.length === 0 && (
                 <div className="px-4 py-6 text-center">
-                  <p className="text-sm text-muted mb-3">No pages match &ldquo;{query}&rdquo;.</p>
+                  <p className="text-sm text-muted mb-3">{t.noResults.replace("{query}", query)}</p>
                   {query.trim() && (
                     <button
                       onClick={askAi}
                       className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-lg border border-accent/40 text-accent hover:bg-accent/10 transition-colors"
                     >
                       <Sparkles size={14} />
-                      Ask AI: &ldquo;{query}&rdquo;
+                      {t.askAi.replace("{query}", query)}
                     </button>
                   )}
                 </div>
@@ -191,9 +194,9 @@ export default function SearchPalette({ open, onOpenChange }: SearchPaletteProps
             </div>
 
             <div className="flex items-center gap-4 px-4 py-2 border-t border-border text-[11px] text-muted">
-              <span>↑↓ Navigate</span>
-              <span>↵ Select</span>
-              <span>Esc Close</span>
+              <span>{t.navigateHint}</span>
+              <span>{t.selectHint}</span>
+              <span>{t.closeHint}</span>
             </div>
           </motion.div>
         </motion.div>

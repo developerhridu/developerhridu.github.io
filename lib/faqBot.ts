@@ -5,6 +5,7 @@ import projectsData from "@/content/projects.json";
 import techStack from "@/content/tech-stack.json";
 import educationData from "@/content/education.json";
 import certificationsData from "@/content/certifications.json";
+import faqScript from "@/content/faq-script.json";
 import { isPublished } from "@/lib/published";
 
 const publishedProjects = projectsData.projects.filter(isPublished);
@@ -161,20 +162,9 @@ const intents: Intent[] = [
   },
 ];
 
-const GREETING_ANSWER = () =>
-  `Hi! I can answer questions about ${profile.name}'s experience, projects, tech stack, and background. Try one of the suggestions below, or ask your own question.`;
+const GREETING_ANSWER = () => faqScript.greetingAnswer.replace("{name}", profile.name);
 
-const GREETINGS = new Set([
-  "hi",
-  "hello",
-  "hey",
-  "yo",
-  "hii",
-  "hiya",
-  "good morning",
-  "good evening",
-  "good afternoon",
-]);
+const GREETINGS = new Set(faqScript.greetings);
 
 const searchCorpus = intents.flatMap((intent) =>
   intent.phrases.map((phrase) => ({ phrase, intentId: intent.id }))
@@ -192,13 +182,12 @@ export interface ChatAnswer {
   matched: boolean;
 }
 
-const FALLBACK_ANSWER =
-  "I don't have a good answer for that yet. Try asking about his projects, tech stack, experience, education, or how to get in touch.";
+const FALLBACK_ANSWER = faqScript.fallbackAnswer;
 
 export function askFaqBot(query: string): ChatAnswer {
   const trimmed = query.trim();
   if (!trimmed) {
-    return { text: "Ask me something about Mizanur's experience, projects, or skills!", matched: false };
+    return { text: faqScript.emptyQueryAnswer.replace("{name}", profile.name), matched: false };
   }
 
   const normalized = trimmed.toLowerCase().replace(/[!?.,]/g, "").trim();
@@ -220,9 +209,4 @@ export function askFaqBot(query: string): ChatAnswer {
   return { text: intent.answer(), matched: true };
 }
 
-export const STARTER_QUESTIONS = [
-  "What projects has Mizanur worked on?",
-  "What technologies does he use?",
-  "Tell me about his microservices experience.",
-  "Why should I hire him?",
-];
+export const STARTER_QUESTIONS = faqScript.starterQuestions;

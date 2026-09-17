@@ -5,24 +5,35 @@ import { motion } from "framer-motion";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Education from "@/components/sections/Education";
 import Certifications from "@/components/sections/Certifications";
+import uiStrings from "@/content/ui-strings.json";
+import { getSectionCopy } from "@/lib/sections";
 
 type Tab = "education" | "certifications";
 
 const tabs: { id: Tab; label: string; number: string }[] = [
-  { id: "education", label: "Education", number: "01" },
-  { id: "certifications", label: "Training & Certifications", number: "02" },
+  {
+    id: "education",
+    label: uiStrings.educationCertifications.tabEducationLabel,
+    number: uiStrings.educationCertifications.tabEducationNumber,
+  },
+  {
+    id: "certifications",
+    label: uiStrings.educationCertifications.tabCertificationsLabel,
+    number: uiStrings.educationCertifications.tabCertificationsNumber,
+  },
 ];
 
 export default function EducationCertifications() {
   const [activeTab, setActiveTab] = useState<Tab>("education");
+  const sectionCopy = getSectionCopy("education-certifications");
 
   return (
     <section id="education-certifications" className="py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <SectionHeading
-          eyebrow="Education & Certifications"
-          title="Education & Certifications"
-          subtitle="My academic background and completed courses"
+          eyebrow={sectionCopy.eyebrow}
+          title={sectionCopy.title}
+          subtitle={sectionCopy.subtitle}
         />
 
         {/* Tab Bar */}

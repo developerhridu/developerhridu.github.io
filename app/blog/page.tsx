@@ -3,30 +3,11 @@ import { getPublishedBlogPosts } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ContentListing from "@/components/ui/ContentListing";
+import { getSeo } from "@/lib/seo";
+import { getSectionCopy } from "@/lib/sections";
+import uiStrings from "@/content/ui-strings.json";
 
-const BASE_URL = "https://developerhridu.github.io";
-
-export const metadata: Metadata = {
-  title: "Blog | Mizanur Rahman — Software Engineering Insights",
-  description:
-    "Technical writing on backend architecture, .NET development, microservices patterns, and software engineering practices.",
-  alternates: { canonical: `${BASE_URL}/blog` },
-  openGraph: {
-    title: "Blog | Mizanur Rahman",
-    description:
-      "Technical writing on backend architecture, .NET development, microservices patterns, and software engineering practices.",
-    type: "website",
-    url: `${BASE_URL}/blog`,
-    images: [{ url: `${BASE_URL}/images/profile/dp.png`, width: 400, height: 400, alt: "Mizanur Rahman" }],
-  },
-  twitter: {
-    card: "summary",
-    title: "Blog | Mizanur Rahman",
-    description:
-      "Technical writing on backend architecture, .NET development, microservices patterns, and software engineering practices.",
-    images: [`${BASE_URL}/images/profile/dp.png`],
-  },
-};
+export const metadata: Metadata = getSeo("blog");
 
 export default function BlogPage() {
   const posts = [...getPublishedBlogPosts()].sort(
@@ -43,17 +24,19 @@ export default function BlogPage() {
     readingMinutes: estimateReadingTime(post.body, ...(post.sections?.map((s) => s.body) ?? [])),
   }));
 
+  const sectionCopy = getSectionCopy("blog");
+
   return (
     <div className="pt-16 md:pt-0">
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <SectionHeading
-            eyebrow="Blog"
-            title="Blog"
-            subtitle="Thoughts, tutorials, and insights on software development"
+            eyebrow={sectionCopy.eyebrow}
+            title={sectionCopy.title}
+            subtitle={sectionCopy.subtitle}
           />
 
-          <ContentListing type="blog" items={items} emptyMessage="No blog posts yet. Check back soon!" />
+          <ContentListing type="blog" items={items} emptyMessage={uiStrings.blogEmptyMessage} />
         </div>
       </section>
     </div>

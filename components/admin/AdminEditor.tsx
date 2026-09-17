@@ -11,6 +11,8 @@ import ExperienceManager from "@/components/admin/ExperienceManager";
 import TestimonialsManager from "@/components/admin/TestimonialsManager";
 import ProfileEditor from "@/components/admin/ProfileEditor";
 import SkillsEditor from "@/components/admin/SkillsEditor";
+import UiStringsEditor from "@/components/admin/UiStringsEditor";
+import FaqScriptEditor from "@/components/admin/FaqScriptEditor";
 import ChatLogViewer from "@/components/admin/ChatLogViewer";
 import SearchLogViewer from "@/components/admin/SearchLogViewer";
 import Dashboard from "@/components/admin/Dashboard";
@@ -24,6 +26,9 @@ import {
   adminMenuConfig,
   proficiencyConfig,
   servicesConfig,
+  sectionsConfig,
+  skillCategoriesConfig,
+  seoConfig,
 } from "@/components/admin/arrayConfigs";
 
 const PASSWORD_OK_KEY = "admin_pw_ok";
@@ -46,7 +51,12 @@ type Tab =
   | "admin-menu"
   | "chat-log"
   | "search-log"
-  | "tasks";
+  | "tasks"
+  | "sections"
+  | "skill-categories"
+  | "seo"
+  | "ui-strings"
+  | "faq-script";
 
 const TABS: { key: Tab; label: string }[] = adminMenuData.tabs
   .filter((t) => t.published !== false)
@@ -236,6 +246,15 @@ export default function AdminEditor() {
       {tab === "chat-log" && <ChatLogViewer token={token} onAuthError={handleAuthError} />}
       {tab === "search-log" && <SearchLogViewer token={token} onAuthError={handleAuthError} />}
       {tab === "tasks" && <TasksManager token={token} onAuthError={handleAuthError} />}
+      {tab === "sections" && (
+        <GenericArrayEditor config={sectionsConfig} token={token} onAuthError={handleAuthError} />
+      )}
+      {tab === "skill-categories" && (
+        <GenericArrayEditor config={skillCategoriesConfig} token={token} onAuthError={handleAuthError} />
+      )}
+      {tab === "seo" && <GenericArrayEditor config={seoConfig} token={token} onAuthError={handleAuthError} />}
+      {tab === "ui-strings" && <UiStringsEditor token={token} onAuthError={handleAuthError} />}
+      {tab === "faq-script" && <FaqScriptEditor token={token} onAuthError={handleAuthError} />}
     </div>
   );
 }

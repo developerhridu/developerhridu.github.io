@@ -1,11 +1,8 @@
 import { Metadata } from "next";
 import Certifications from "@/components/sections/Certifications";
+import { getSeo } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Training & Certifications | Mizanur Rahman",
-  description:
-    "HackerRank, Coursera (Meta), and ICT Division certifications covering C#, SQL, JavaScript, REST APIs, React, and full-stack development.",
-};
+export const metadata: Metadata = getSeo("certifications");
 
 export default function CertificationsPage() {
   return (

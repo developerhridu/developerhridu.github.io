@@ -5,6 +5,7 @@ import { Server, Layers, Plug, Gauge, ShieldCheck, RefreshCw, Database, CheckCir
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import servicesData from "@/content/services.json";
+import { getSectionCopy } from "@/lib/sections";
 import { isPublished } from "@/lib/published";
 import type { Service } from "@/types";
 
@@ -25,6 +26,7 @@ const iconRegistry: Record<string, typeof Server> = {
 
 export default function Services({ showHeading = true, noSection = false }: ServicesProps) {
   const services = ((servicesData.services || []) as Service[]).filter(isPublished);
+  const sectionCopy = getSectionCopy("services");
 
   if (services.length === 0) return null;
 
@@ -32,9 +34,9 @@ export default function Services({ showHeading = true, noSection = false }: Serv
     <>
       {showHeading && (
         <SectionHeading
-          eyebrow="Services"
-          title="Key Expertise"
-          subtitle="How I can help with your next project"
+          eyebrow={sectionCopy.eyebrow}
+          title={sectionCopy.title}
+          subtitle={sectionCopy.subtitle}
         />
       )}
 

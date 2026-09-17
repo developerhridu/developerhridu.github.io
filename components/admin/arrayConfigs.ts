@@ -150,6 +150,51 @@ export const adminMenuConfig: ArrayConfig = {
   ],
 };
 
+export const sectionsConfig: ArrayConfig = {
+  path: "content/sections.json",
+  arrayKey: "sections",
+  label: "Section Copy",
+  titleField: "title",
+  subtitleField: "id",
+  fields: [
+    { key: "eyebrow", label: "Eyebrow", type: "text" },
+    { key: "title", label: "Title", type: "text" },
+    { key: "subtitle", label: "Subtitle", type: "textarea" },
+  ],
+};
+
+export const skillCategoriesConfig: ArrayConfig = {
+  path: "content/skill-categories.json",
+  arrayKey: "categories",
+  label: "Skill Categories",
+  titleField: "label",
+  subtitleField: "key",
+  fields: [
+    { key: "key", label: "Tech-Stack Key (must match tech-stack.json)", type: "text" },
+    { key: "label", label: "Display Label", type: "text" },
+    { key: "color", label: "Tailwind Color Class", type: "text", placeholder: "bg-accent, bg-pink-500…" },
+  ],
+};
+
+export const seoConfig: ArrayConfig = {
+  path: "content/seo.json",
+  arrayKey: "routes",
+  label: "SEO / Metadata",
+  titleField: "title",
+  subtitleField: "route",
+  fields: [
+    { key: "route", label: "Route", type: "text", placeholder: "/about" },
+    { key: "title", label: "Title", type: "text" },
+    { key: "description", label: "Description", type: "textarea" },
+    { key: "ogTitle", label: "OG Title (optional)", type: "text" },
+    { key: "ogDescription", label: "OG Description (optional)", type: "textarea" },
+    { key: "twitterTitle", label: "Twitter Title (optional)", type: "text" },
+    { key: "twitterDescription", label: "Twitter Description (optional)", type: "textarea" },
+    { key: "keywords", label: "Keywords (comma separated, optional)", type: "tags" },
+    { key: "noIndex", label: "Hide from search engines (noindex)", type: "boolean" },
+  ],
+};
+
 export const proficiencyConfig: ArrayConfig = {
   path: "content/proficiency.json",
   arrayKey: "proficiency",

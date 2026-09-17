@@ -8,6 +8,9 @@ import { askAi, type AiChatHistoryMessage } from "@/lib/aiChat";
 import { trackEvent } from "@/lib/analytics";
 import { ASK_AI_EVENT } from "@/lib/askAiEvent";
 import config from "@/content/config.json";
+import uiStrings from "@/content/ui-strings.json";
+
+const t = uiStrings.aiChatWidget;
 
 interface Message {
   role: "user" | "bot";
@@ -100,11 +103,11 @@ export default function AiChatWidget() {
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-hover">
               <div className="flex items-center gap-2">
                 <Sparkles size={16} className="text-accent" />
-                <span className="text-sm font-semibold text-foreground">Ask about Mizanur</span>
+                <span className="text-sm font-semibold text-foreground">{t.headerTitle}</span>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                aria-label="Close chat"
+                aria-label={t.closeChatAriaLabel}
                 className="text-muted hover:text-foreground transition-colors"
               >
                 <X size={18} />
@@ -115,7 +118,7 @@ export default function AiChatWidget() {
               {messages.length === 0 && (
                 <div>
                   <p className="text-sm text-muted mb-3">
-                    Ask anything about his experience, projects, or skills — or try one of these:
+                    {t.introText}
                   </p>
                   <div className="flex flex-col gap-2">
                     {STARTER_QUESTIONS.map((q) => (
@@ -149,7 +152,7 @@ export default function AiChatWidget() {
               {loading && (
                 <div className="flex justify-start">
                   <p className="bg-surface-hover text-muted border border-border rounded-xl px-3 py-2 text-sm">
-                    Thinking…
+                    {t.thinking}
                   </p>
                 </div>
               )}
@@ -159,13 +162,13 @@ export default function AiChatWidget() {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask a question…"
+                placeholder={t.inputPlaceholder}
                 disabled={loading}
                 className="flex-1 min-w-0 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors disabled:opacity-60"
               />
               <button
                 type="submit"
-                aria-label="Send"
+                aria-label={t.sendAriaLabel}
                 disabled={!input.trim() || loading}
                 className="p-2 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg transition-colors disabled:opacity-40"
               >
@@ -187,11 +190,11 @@ export default function AiChatWidget() {
           >
             <Sparkles size={16} className="text-accent shrink-0" />
             <button onClick={handleOpen} className="flex-1 text-left text-sm text-foreground">
-              Ask AI about Hridu
+              {t.launcherPrompt}
             </button>
             <button
               onClick={dismissPrompt}
-              aria-label="Dismiss"
+              aria-label={t.dismissAriaLabel}
               className="text-muted hover:text-foreground transition-colors shrink-0"
             >
               <X size={14} />
@@ -202,7 +205,7 @@ export default function AiChatWidget() {
 
       <button
         onClick={() => (open ? setOpen(false) : handleOpen())}
-        aria-label={open ? "Close chat" : "Ask about Mizanur"}
+        aria-label={open ? t.closeChatAriaLabel : t.openAriaLabel}
         className="fixed bottom-6 right-6 z-50 p-4 rounded-full bg-accent hover:bg-accent-hover text-accent-foreground shadow-lg shadow-accent/25 transition-colors"
       >
         {open ? <X size={22} /> : <MessageCircle size={22} />}

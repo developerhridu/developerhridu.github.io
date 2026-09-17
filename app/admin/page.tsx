@@ -1,10 +1,8 @@
 import { Metadata } from "next";
 import AdminEditor from "@/components/admin/AdminEditor";
+import { getSeo } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Admin | Content Editor",
-  robots: { index: false, follow: false },
-};
+export const metadata: Metadata = getSeo("admin");
 
 export default function AdminPage() {
   return (

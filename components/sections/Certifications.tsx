@@ -6,6 +6,8 @@ import { BadgeCheck, Calendar, ExternalLink } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import certificationsData from "@/content/certifications.json";
+import uiStrings from "@/content/ui-strings.json";
+import { getSectionCopy } from "@/lib/sections";
 import { isPublished } from "@/lib/published";
 import type { Certification } from "@/types";
 
@@ -16,6 +18,7 @@ interface CertificationsProps {
 
 export default function Certifications({ showHeading = true, noSection = false }: CertificationsProps) {
   const certifications = ((certificationsData.certifications || []) as Certification[]).filter(isPublished);
+  const sectionCopy = getSectionCopy("certifications");
 
   if (certifications.length === 0) return null;
 
@@ -23,9 +26,9 @@ export default function Certifications({ showHeading = true, noSection = false }
     <>
       {showHeading && (
         <SectionHeading
-          eyebrow="Certifications"
-          title="Training & Certifications"
-          subtitle="Courses and certifications I've completed"
+          eyebrow={sectionCopy.eyebrow}
+          title={sectionCopy.title}
+          subtitle={sectionCopy.subtitle}
         />
       )}
 
@@ -85,7 +88,7 @@ export default function Certifications({ showHeading = true, noSection = false }
                         className="flex items-center gap-1 text-accent hover:text-accent-hover transition-colors"
                       >
                         <ExternalLink className="w-4 h-4" />
-                        <span>Verify</span>
+                        <span>{uiStrings.certifications.verify}</span>
                       </a>
                     )}
                   </div>

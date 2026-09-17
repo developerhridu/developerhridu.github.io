@@ -1,10 +1,8 @@
 import { Metadata } from "next";
 import TestimonialSubmit from "@/components/sections/TestimonialSubmit";
+import { getSeo } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Share Your Experience | Mizanur Rahman",
-  description: "Submit a testimonial about working with Mizanur Rahman.",
-};
+export const metadata: Metadata = getSeo("testimonials-submit");
 
 export default function TestimonialSubmitPage() {
   return (

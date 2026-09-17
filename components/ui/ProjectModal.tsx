@@ -4,6 +4,9 @@ import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, ExternalLink, Github, Building2 } from "lucide-react";
 import LightboxImage from "@/components/ui/LightboxImage";
+import uiStrings from "@/content/ui-strings.json";
+
+const t = uiStrings.projectModal;
 
 interface ProjectModalProps {
   project: {
@@ -59,7 +62,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           >
             <button
               onClick={onClose}
-              aria-label="Close"
+              aria-label={t.closeAriaLabel}
               className="absolute top-4 right-4 z-10 flex items-center justify-center w-9 h-9 rounded-full bg-accent hover:bg-accent-hover text-accent-foreground transition-colors"
             >
               <X size={18} />
@@ -107,7 +110,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                 {project.liveUrl && (
                   <div>
                     <p className="text-xs uppercase tracking-wide text-muted mb-1">
-                      Live Demo
+                      {t.liveDemo}
                     </p>
                     <a
                       href={project.liveUrl}
@@ -116,7 +119,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                       className="flex items-center gap-1.5 text-accent hover:text-accent-hover transition-colors"
                     >
                       <ExternalLink size={16} />
-                      View Live
+                      {t.viewLive}
                     </a>
                   </div>
                 )}
@@ -124,7 +127,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                 {typeof project.githubUrl === "string" && project.githubUrl && (
                   <div>
                     <p className="text-xs uppercase tracking-wide text-muted mb-1">
-                      Source Code
+                      {t.sourceCode}
                     </p>
                     <a
                       href={project.githubUrl}
@@ -133,7 +136,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                       className="flex items-center gap-1.5 text-accent hover:text-accent-hover transition-colors"
                     >
                       <Github size={16} />
-                      View Code
+                      {t.viewCode}
                     </a>
                   </div>
                 )}
@@ -141,7 +144,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                 {project.githubUrl && typeof project.githubUrl === "object" && (
                   <div>
                     <p className="text-xs uppercase tracking-wide text-muted mb-1">
-                      Source Code
+                      {t.sourceCode}
                     </p>
                     <div className="flex flex-col gap-1.5">
                       {project.githubUrl.frontend && (
@@ -152,7 +155,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                           className="flex items-center gap-1.5 text-accent hover:text-accent-hover transition-colors"
                         >
                           <Github size={16} />
-                          Front-End
+                          {t.frontEnd}
                         </a>
                       )}
                       {project.githubUrl.backend && (
@@ -163,7 +166,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                           className="flex items-center gap-1.5 text-accent hover:text-accent-hover transition-colors"
                         >
                           <Github size={16} />
-                          Back-End
+                          {t.backEnd}
                         </a>
                       )}
                     </div>

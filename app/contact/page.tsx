@@ -1,11 +1,8 @@
 import { Metadata } from "next";
 import Contact from "@/components/sections/Contact";
+import { getSeo } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Contact | Mizanur Rahman",
-  description:
-    "Open to backend engineering roles, consulting, and technical collaborations. Reach out via email or LinkedIn.",
-};
+export const metadata: Metadata = getSeo("contact");
 
 export default function ContactPage() {
   return (

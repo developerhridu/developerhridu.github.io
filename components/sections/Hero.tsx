@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import ClientMarquee from "@/components/ui/ClientMarquee";
 import profile from "@/content/profile.json";
+import uiStrings from "@/content/ui-strings.json";
 import { getPublishedClients } from "@/lib/clients";
 import { trackEvent } from "@/lib/analytics";
 
@@ -38,7 +39,7 @@ export default function Hero() {
               </div>
             )}
             <p className="font-mono text-s tracking-widest text-accent mb-4">
-              Hi, I'm
+              {uiStrings.hero.greeting}
             </p>
             <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6">
               {profile.name}
@@ -59,7 +60,7 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <Button href="/projects" variant="primary">
-              View Projects
+              {uiStrings.hero.ctaViewProjects}
               <ArrowDown size={18} />
             </Button>
             <Button
@@ -70,7 +71,7 @@ export default function Hero() {
               onClick={() => trackEvent("hire_me_click", { location: "hero" })}
             >
               <Handshake size={18} />
-              Hire Me
+              {uiStrings.hero.ctaHireMe}
             </Button>
             {profile.resumeUrl && (
               <Button
@@ -81,7 +82,7 @@ export default function Hero() {
                 onClick={() => trackEvent("resume_view", { location: "hero" })}
               >
                 <ExternalLink size={18} />
-                View Resume
+                {uiStrings.hero.ctaViewResume}
               </Button>
             )}
           </motion.div>
@@ -97,19 +98,19 @@ export default function Hero() {
               <div className="text-xl font-bold text-foreground mb-0.5">
                 {profile.yearsOfExperience}+
               </div>
-              <div className="text-xs text-muted">Years Experience</div>
+              <div className="text-xs text-muted">{uiStrings.hero.statYearsExperience}</div>
             </GlassCard>
             <GlassCard className="!p-3 text-center" hover={false}>
               <div className="text-xl font-bold text-foreground mb-0.5">
                 {profile.projectsCompleted}+
               </div>
-              <div className="text-xs text-muted">Projects Completed</div>
+              <div className="text-xs text-muted">{uiStrings.hero.statProjectsCompleted}</div>
             </GlassCard>
             <GlassCard className="!p-3 text-center col-span-2 md:col-span-1" hover={false}>
               <div className="text-xl font-bold text-foreground mb-0.5">
                 {publishedClientCount}+
               </div>
-              <div className="text-xs text-muted">Clients</div>
+              <div className="text-xs text-muted">{uiStrings.hero.statClients}</div>
             </GlassCard>
           </motion.div>
         </div>

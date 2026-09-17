@@ -9,13 +9,18 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import Button from "@/components/ui/Button";
 import profile from "@/content/profile.json";
 import config from "@/content/config.json";
+import uiStrings from "@/content/ui-strings.json";
+import { getSectionCopy } from "@/lib/sections";
 import { trackEvent } from "@/lib/analytics";
+
+const t = uiStrings.contact;
 
 interface ContactProps {
   showHeading?: boolean;
 }
 
 export default function Contact({ showHeading = true }: ContactProps) {
+  const sectionCopy = getSectionCopy("contact");
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [formData, setFormData] = useState({
     name: "",
@@ -70,9 +75,9 @@ export default function Contact({ showHeading = true }: ContactProps) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {showHeading && (
           <SectionHeading
-            eyebrow="Get In Touch"
-            title="Get In Touch"
-            subtitle="Have a project in mind or want to chat? I'd love to hear from you."
+            eyebrow={sectionCopy.eyebrow}
+            title={sectionCopy.title}
+            subtitle={sectionCopy.subtitle}
           />
         )}
 
@@ -86,12 +91,11 @@ export default function Contact({ showHeading = true }: ContactProps) {
           >
             <GlassCard hover={false} className="h-full">
               <h3 className="text-xl font-bold text-foreground mb-6">
-                Let&apos;s Connect
+                {t.letsConnectTitle}
               </h3>
 
               <p className="text-muted mb-8">
-                I&apos;m always open to discussing new projects, creative ideas, or
-                opportunities to be part of your vision. Feel free to reach out!
+                {t.letsConnectIntro}
               </p>
 
               <div className="space-y-4 mb-8">
@@ -100,7 +104,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                     <Mail className="text-accent" size={20} />
                   </div>
                   <div>
-                    <p className="text-sm text-muted">Email</p>
+                    <p className="text-sm text-muted">{t.emailLabel}</p>
                     <a
                       href={`mailto:${profile.email}`}
                       className="text-foreground hover:text-accent transition-colors"
@@ -115,7 +119,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                     <MapPin className="text-accent" size={20} />
                   </div>
                   <div>
-                    <p className="text-sm text-muted">Location</p>
+                    <p className="text-sm text-muted">{t.locationLabel}</p>
                     <p className="text-foreground">{profile.location}</p>
                   </div>
                 </div>
@@ -170,21 +174,21 @@ export default function Contact({ showHeading = true }: ContactProps) {
           >
             <GlassCard hover={false} className="h-full">
               <h3 className="text-xl font-bold text-foreground mb-6">
-                Send a Message
+                {t.sendMessageTitle}
               </h3>
 
               {formStatus === "success" ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <CheckCircle className="text-green-400 mb-4" size={48} />
-                  <h4 className="text-xl font-semibold text-foreground mb-2">Message Sent!</h4>
+                  <h4 className="text-xl font-semibold text-foreground mb-2">{t.messageSentTitle}</h4>
                   <p className="text-muted">
-                    Thank you for reaching out. I&apos;ll get back to you soon.
+                    {t.messageSentBody}
                   </p>
                   <button
                     onClick={() => setFormStatus("idle")}
                     className="mt-4 text-accent hover:text-accent-hover transition-colors"
                   >
-                    Send another message
+                    {t.sendAnotherMessage}
                   </button>
                 </div>
               ) : (
@@ -194,7 +198,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                       htmlFor="name"
                       className="block text-sm text-muted mb-2"
                     >
-                      Name
+                      {t.nameLabel}
                     </label>
                     <input
                       type="text"
@@ -204,7 +208,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors"
-                      placeholder="Your name"
+                      placeholder={t.namePlaceholder}
                     />
                   </div>
 
@@ -213,7 +217,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                       htmlFor="email"
                       className="block text-sm text-muted mb-2"
                     >
-                      Email
+                      {t.emailFieldLabel}
                     </label>
                     <input
                       type="email"
@@ -223,7 +227,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors"
-                      placeholder="your@email.com"
+                      placeholder={t.emailPlaceholder}
                     />
                   </div>
 
@@ -232,7 +236,7 @@ export default function Contact({ showHeading = true }: ContactProps) {
                       htmlFor="message"
                       className="block text-sm text-muted mb-2"
                     >
-                      Message
+                      {t.messageLabel}
                     </label>
                     <textarea
                       id="message"
@@ -242,14 +246,14 @@ export default function Contact({ showHeading = true }: ContactProps) {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors resize-none"
-                      placeholder="Your message..."
+                      placeholder={t.messagePlaceholder}
                     />
                   </div>
 
                   {formStatus === "error" && (
                     <div className="flex items-center gap-2 text-red-400 text-sm">
                       <AlertCircle size={16} />
-                      <span>Something went wrong. Please try again.</span>
+                      <span>{t.errorText}</span>
                     </div>
                   )}
 
@@ -276,12 +280,12 @@ export default function Contact({ showHeading = true }: ContactProps) {
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           />
                         </svg>
-                        Sending...
+                        {t.sending}
                       </span>
                     ) : (
                       <>
                         <Send size={18} />
-                        Send Message
+                        {t.sendMessageButton}
                       </>
                     )}
                   </Button>

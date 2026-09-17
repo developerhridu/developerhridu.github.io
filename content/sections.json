@@ -1,0 +1,16 @@
+{
+  "sections": [
+    { "id": "about", "eyebrow": "About", "title": "About Me", "subtitle": "Get to know me and the technologies I work with" },
+    { "id": "experience", "eyebrow": "Experience", "title": "Experience", "subtitle": "My professional journey and the roles I've held" },
+    { "id": "projects", "eyebrow": "Projects", "title": "Projects", "subtitle": "A selection of projects I've worked on" },
+    { "id": "services", "eyebrow": "Services", "title": "Key Expertise", "subtitle": "How I can help with your next project" },
+    { "id": "certifications", "eyebrow": "Certifications", "title": "Training & Certifications", "subtitle": "Courses and certifications I've completed" },
+    { "id": "education", "eyebrow": "Education", "title": "Education", "subtitle": "My academic background and qualifications" },
+    { "id": "education-certifications", "eyebrow": "Education & Certifications", "title": "Education & Certifications", "subtitle": "My academic background and completed courses" },
+    { "id": "contact", "eyebrow": "Get In Touch", "title": "Get In Touch", "subtitle": "Have a project in mind or want to chat? I'd love to hear from you." },
+    { "id": "testimonials", "eyebrow": "Testimonials", "title": "What People Say", "subtitle": "Feedback from people I've worked with" },
+    { "id": "testimonial-submit", "eyebrow": "Testimonials", "title": "Share Your Experience", "subtitle": "Worked with me? I'd love to hear about it — your testimonial will be reviewed before it's published." },
+    { "id": "case-studies", "eyebrow": "Case Studies", "title": "Case Studies", "subtitle": "In-depth looks at problems I've solved and how I solved them" },
+    { "id": "blog", "eyebrow": "Blog", "title": "Blog", "subtitle": "Thoughts, tutorials, and insights on software development" }
+  ]
+}

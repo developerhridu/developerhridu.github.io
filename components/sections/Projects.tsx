@@ -8,6 +8,8 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import ProjectModal from "@/components/ui/ProjectModal";
 import ContentImage from "@/components/ui/ContentImage";
 import projectsData from "@/content/projects.json";
+import uiStrings from "@/content/ui-strings.json";
+import { getSectionCopy } from "@/lib/sections";
 import { isPublished } from "@/lib/published";
 import type { Project } from "@/types";
 
@@ -26,15 +28,16 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
   const displayProjects = showAll ? projects : featuredProjects;
 
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
+  const sectionCopy = getSectionCopy("projects");
 
   return (
     <section id="projects" className="py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {showHeading && (
           <SectionHeading
-            eyebrow="Projects"
-            title="Projects"
-            subtitle="A selection of projects I've worked on"
+            eyebrow={sectionCopy.eyebrow}
+            title={sectionCopy.title}
+            subtitle={sectionCopy.subtitle}
           />
         )}
 
@@ -101,7 +104,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                       className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                     >
                       <ExternalLink size={16} />
-                      Live Demo
+                      {uiStrings.projects.liveDemo}
                     </a>
                   )}
                   {typeof project.githubUrl === "string" && project.githubUrl && (
@@ -112,7 +115,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                       className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                     >
                       <Github size={16} />
-                      Source Code
+                      {uiStrings.projects.sourceCode}
                     </a>
                   )}
                   {project.githubUrl && typeof project.githubUrl === "object" && (
@@ -125,7 +128,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                           className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                         >
                           <Github size={16} />
-                          Front-End
+                          {uiStrings.projects.frontEnd}
                         </a>
                       )}
                       {project.githubUrl.backend && (
@@ -136,7 +139,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                           className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                         >
                           <Github size={16} />
-                          Back-End
+                          {uiStrings.projects.backEnd}
                         </a>
                       )}
                     </>
@@ -151,7 +154,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
         {!showAll && otherProjects.length > 0 && (
           <>
             <h3 className="text-xl font-semibold text-foreground mb-4">
-              Other Projects
+              {uiStrings.projects.otherProjects}
             </h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {otherProjects.map((project, idx) => (
@@ -197,7 +200,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                         className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                       >
                         <Github size={14} />
-                        View Code
+                        {uiStrings.projects.viewCode}
                       </a>
                     )}
                     {project.githubUrl && typeof project.githubUrl === "object" && (
@@ -210,7 +213,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                             className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                           >
                             <Github size={14} />
-                            Front-End
+                            {uiStrings.projects.frontEnd}
                           </a>
                         )}
                         {project.githubUrl.backend && (
@@ -221,7 +224,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                             className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
                           >
                             <Github size={14} />
-                            Back-End
+                            {uiStrings.projects.backEnd}
                           </a>
                         )}
                       </div>

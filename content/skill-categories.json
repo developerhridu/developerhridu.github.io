@@ -1,0 +1,11 @@
+{
+  "categories": [
+    { "id": "backend", "key": "backend", "label": "Backend", "color": "bg-accent" },
+    { "id": "architecture", "key": "architecture", "label": "Architecture", "color": "bg-pink-500" },
+    { "id": "messaging", "key": "messaging", "label": "Messaging & Caching", "color": "bg-yellow-500" },
+    { "id": "frontend", "key": "frontend", "label": "Frontend", "color": "bg-blue-500" },
+    { "id": "database", "key": "database", "label": "Database", "color": "bg-cyan-500" },
+    { "id": "devops", "key": "devops", "label": "DevOps & Observability", "color": "bg-emerald-500" },
+    { "id": "testing", "key": "testing", "label": "Testing", "color": "bg-orange-500" }
+  ]
+}

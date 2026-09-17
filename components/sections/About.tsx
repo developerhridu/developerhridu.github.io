@@ -10,16 +10,18 @@ import TechIcon from "@/components/ui/icons/TechIcon";
 import profile from "@/content/profile.json";
 import techStack from "@/content/tech-stack.json";
 import proficiencyData from "@/content/proficiency.json";
+import skillCategoriesData from "@/content/skill-categories.json";
+import uiStrings from "@/content/ui-strings.json";
+import { getSectionCopy } from "@/lib/sections";
+import type { SkillsCategory } from "@/types";
 
-const skillCategories = [
-  { name: "Backend", skills: techStack.backend, color: "bg-accent" },
-  { name: "Architecture", skills: techStack.architecture, color: "bg-pink-500" },
-  { name: "Messaging & Caching", skills: techStack.messaging, color: "bg-yellow-500" },
-  { name: "Frontend", skills: techStack.frontend, color: "bg-blue-500" },
-  { name: "Database", skills: techStack.database, color: "bg-cyan-500" },
-  { name: "DevOps & Observability", skills: techStack.devops, color: "bg-emerald-500" },
-  { name: "Testing", skills: techStack.testing, color: "bg-orange-500" },
-];
+const sectionCopy = getSectionCopy("about");
+
+const skillCategories = skillCategoriesData.categories.map((category) => ({
+  name: category.label,
+  skills: techStack[category.key as keyof SkillsCategory],
+  color: category.color,
+}));
 
 interface AboutProps {
   showHeading?: boolean;
@@ -92,9 +94,9 @@ export default function About({ showHeading = true, showTechStack = true }: Abou
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {showHeading && (
           <SectionHeading
-            eyebrow="About"
-            title="About Me"
-            subtitle="Get to know me and the technologies I work with"
+            eyebrow={sectionCopy.eyebrow}
+            title={sectionCopy.title}
+            subtitle={sectionCopy.subtitle}
           />
         )}
 
@@ -147,7 +149,7 @@ export default function About({ showHeading = true, showTechStack = true }: Abou
                       className="flex items-center gap-2 hover:text-foreground transition-colors"
                     >
                       <Linkedin size={18} />
-                      LinkedIn
+                      {uiStrings.socialLabels.linkedin}
                     </a>
                   )}
                   {profile.social.github && (
@@ -158,7 +160,7 @@ export default function About({ showHeading = true, showTechStack = true }: Abou
                       className="flex items-center gap-2 hover:text-foreground transition-colors"
                     >
                       <Github size={18} />
-                      GitHub
+                      {uiStrings.socialLabels.github}
                     </a>
                   )}
                   {profile.social.upwork && (
@@ -169,7 +171,7 @@ export default function About({ showHeading = true, showTechStack = true }: Abou
                       className="flex items-center gap-2 hover:text-foreground transition-colors"
                     >
                       <UpworkIcon size={18} />
-                      Upwork
+                      {uiStrings.socialLabels.upwork}
                     </a>
                   )}
                 </div>
@@ -180,7 +182,7 @@ export default function About({ showHeading = true, showTechStack = true }: Abou
           {/* Skills Card — Tech Stack on /about, Skill Proficiency on Home */}
           {showTechStack ? (
             <GlassCard hover={false}>
-              <h3 className="text-xl font-bold text-foreground mb-6">Tech Stack</h3>
+              <h3 className="text-xl font-bold text-foreground mb-6">{uiStrings.about.techStackHeading}</h3>
 
               <div className="space-y-6">
                 {skillCategories.map((category, idx) => (
@@ -214,7 +216,7 @@ export default function About({ showHeading = true, showTechStack = true }: Abou
             </GlassCard>
           ) : (
             <GlassCard hover={false}>
-              <h3 className="text-xl font-bold text-foreground mb-6">Skill Proficiency</h3>
+              <h3 className="text-xl font-bold text-foreground mb-6">{uiStrings.about.skillProficiencyHeading}</h3>
               <div className="space-y-4">
                 {proficiencyData.proficiency.map((skill) => (
                   <ProficiencyBar key={skill.name} skill={skill} />
@@ -227,7 +229,7 @@ export default function About({ showHeading = true, showTechStack = true }: Abou
         {/* Skills with Progress Bars — only on /about, where it isn't already in the grid above */}
         {showTechStack && (
           <div className="mt-12">
-            <h3 className="text-xl font-bold text-foreground mb-6 text-center">Skill Proficiency</h3>
+            <h3 className="text-xl font-bold text-foreground mb-6 text-center">{uiStrings.about.skillProficiencyHeading}</h3>
             <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
               {proficiencyData.proficiency.map((skill) => (
                 <ProficiencyBar key={skill.name} skill={skill} />
