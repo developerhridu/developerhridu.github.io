@@ -9,6 +9,11 @@
       "id": "not-a-single-hard-coded-line-should-be-there-section-title-in-section-json",
       "text": "Not a single hard coded line should be there, section title in section json",
       "done": true
+    },
+    {
+      "id": "live-cv-or-build-cv-menu-that-present-in-admin-cms-optimize-it-with-live-data",
+      "text": "Live CV or Build CV menu that Present in admin CMS. Optimize it with live data",
+      "done": false
     }
   ]
 }
