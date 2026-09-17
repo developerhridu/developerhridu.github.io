@@ -13,7 +13,7 @@
     {
       "id": "not-a-single-hard-coded-line-should-be-there-section-title-in-section-json",
       "text": "Not a single hard coded line should be there, section title in section json",
-      "done": false
+      "done": true
     }
   ]
 }
