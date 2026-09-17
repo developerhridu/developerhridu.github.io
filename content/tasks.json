@@ -9,6 +9,11 @@
       "id": "set-up-content-pat-so-testimonial-submissions-go-live",
       "text": "Set up CONTENT_PAT so testimonial submissions go live",
       "done": true
+    },
+    {
+      "id": "not-a-single-hard-coded-line-should-be-there-section-title-in-section-json",
+      "text": "Not a single hard coded line should be there, section title in section json",
+      "done": false
     }
   ]
 }
