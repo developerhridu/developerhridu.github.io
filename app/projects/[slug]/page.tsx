@@ -7,7 +7,8 @@ import { ArrowLeft } from "lucide-react";
 import { markdownComponents } from "@/components/ui/markdownComponents";
 import ProjectDetail from "@/components/ui/ProjectDetail";
 import ShareButtons from "@/components/ui/ShareButtons";
-import { getProjects, getProject } from "@/lib/content";
+import RelatedContent from "@/components/ui/RelatedContent";
+import { getProjects, getProject, getPublishedCaseStudies } from "@/lib/content";
 import config from "@/content/config.json";
 
 const BASE_URL = config.siteUrl;
@@ -69,6 +70,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     ? `${BASE_URL}${project.image}`
     : `${BASE_URL}/og-image/projects/${project.slug}`;
 
+  const linkedCaseStudies = getPublishedCaseStudies().filter((study) =>
+    (project.caseStudies ?? []).includes(study.slug)
+  );
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
@@ -125,6 +130,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               </ReactMarkdown>
             </div>
           )}
+
+          <RelatedContent
+            items={linkedCaseStudies}
+            basePath="/case-studies"
+            heading="Deep Dives"
+          />
 
           <div className="mt-12 pt-8 border-t border-border">
             <Link

@@ -468,6 +468,7 @@ interface ExperienceEntry {
 interface ProjectEntry {
   title: string;
   description: string;
+  longDescription?: string;
   tags?: string[];
   published?: boolean;
 }
@@ -533,7 +534,10 @@ async function buildContext(): Promise<string> {
     const projs = (projects as { projects?: ProjectEntry[] }).projects ?? [];
     const text = projs
       .filter((p) => p.published !== false)
-      .map((p) => `- ${p.title}: ${p.description} (Tech: ${(p.tags ?? []).join(", ")})`)
+      .map((p) => {
+        const detail = p.longDescription ? `\n  ${p.longDescription}` : "";
+        return `- ${p.title}: ${p.description} (Tech: ${(p.tags ?? []).join(", ")})${detail}`;
+      })
       .join("\n");
     parts.push(`PERSONAL/FEATURED PROJECTS:\n${text}`);
   }

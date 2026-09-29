@@ -8,6 +8,13 @@
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
       "description": "Web-based travel booking platform enabling users to search, compare, and book flights from multiple airlines and GDS systems",
       "longDescription": "A comprehensive travel booking platform integrating multiple airlines (Novo Air, US-Bangla Airlines, Jazeera Airways, AirAstra, Air Arabia, IndiGo) and Global Distribution Systems (Amadeus, Sabre, Travelport). Built with scalable microservices architecture to handle high-volume flight searches and bookings.",
+      "body": "## What it does\n\nA multi-tenant OTA platform that lets travel agencies search, compare, book, and manage flights, hotels, holiday packages, and other travel services. One codebase serves multiple client brands with isolated configuration, supporting both B2B and B2C business models.\n\n## Scale\n\n- **6 live client brands** — TripLover, TravelChamp, FirstTrip, TakeTrip, TakeOff, and TripLover Dubai\n- **36+ services** in the ecosystem, built for high availability and fault tolerance\n- **30 integrated GDS/NDC suppliers** — a single flight search fans out to all of them and returns 200-300 feeds spanning 40-50 unique airlines\n- Airline and GDS coverage including Amadeus, Sabre, Travelport, Novo Air, US-Bangla Airlines, Jazeera Airways, AirAstra, Air Arabia, and IndiGo\n\n## My role\n\nI architected and led development of the multi-tenant SaaS platform. Beyond the core architecture, I:\n\n- Led the migration of the core database from SQL Server to PostgreSQL, cutting licensing costs and unblocking Linux hosting\n- Migrated 8 legacy .NET Framework applications to .NET Core for cross-platform deployment\n- Built an automated xUnit API integration test suite covering 30+ supplier integration projects\n- Integrated APM monitoring with Elasticsearch-based structured logging, **cutting production failure rates by 30%**\n- Implemented Progressive Search, Search Ranking, Universal Split PNR, Refund Reissue, and PNR Details\n- Contributed to CI/CD pipelines and code reviews, and mentored new team members\n\n## Why this stack\n\nA **modular monolith** on .NET Core rather than full microservices — the modules share a deployment boundary while staying independently maintainable, which suits a platform where a single search has to coordinate 30 suppliers with low latency. **Dapper** over EF Core keeps the hot search path close to raw SQL. **RabbitMQ** decouples the long-running booking and ticketing workflows, with MSSQL and MongoDB each serving the workloads they fit.",
+      "caseStudies": [
+        "automated-booking-cancellation-service",
+        "redis-stampede-thundering-herd-ota-search-ranking",
+        "progressive-search-30-suppliers-ota",
+        "sql-server-to-postgresql-migration"
+      ],
       "tags": [
         ".NET Core",
         "MSSQL Server",
@@ -29,6 +36,7 @@
       "client": "Foodi",
       "description": "Full-stack customer relationship management system for food delivery businesses",
       "longDescription": "Foodi CRM is a comprehensive customer relationship management system for food delivery businesses, enabling order tracking, restaurant management, delivery partner monitoring, and customer interaction. Built with a scalable microservices architecture focused on performance and usability.",
+      "body": "## What it does\n\nA food delivery platform and the CRM behind it — customers browse restaurants, place orders, pay, and track deliveries in real time, while the operations team manages restaurants, delivery partners, and customer communication from one place.\n\n## My role\n\nI designed and developed the **Engagement Automation** feature for Foodi-CRM, streamlining the communication workflows between customers and the operations team. I also implemented a **read/write Redis caching strategy** that improved API response times and made the platform more scalable under load.\n\n## Why this stack\n\nA genuine microservices split here, unlike the OTA platform's modular monolith — ordering, delivery tracking, and CRM have different scaling profiles and change at different rates. **Kafka and RabbitMQ** carry the event flow between them: order placed, driver assigned, status changed. Polyglot by design — .NET Core and EF Core for the transactional core, **Go** and **Node.js** where throughput or ecosystem fit mattered more, PostgreSQL underneath, React on the front.",
       "tags": [
         ".NET Core",
         "Microservices",
@@ -47,6 +55,10 @@
       "client": "Bdjobs.com",
       "description": "Hiring management platform allowing employers to manage job posting to online assessments and interviews",
       "longDescription": "A comprehensive recruitment platform that allows employers to manage the entire hiring process from job posting to online assessments and interviews. Built with Angular frontend and ASP.NET Core backend, integrated with Bangladesh's largest job portal ecosystem.",
+      "body": "## What it does\n\nThe employer side of Bdjobs.com, Bangladesh's largest job portal — a hiring platform covering the full recruitment workflow from posting a job through online assessments and interviews, with application management and resume handling in between.\n\n## My role\n\nI worked with product, backend, and QA teams to migrate the Bdjobs.com corporate panel from **legacy ASP to Angular and ASP.NET Core**, modernizing the stack while keeping a high-traffic platform running.\n\nI built two features that moved the business number directly — the **Employer Job Posting and Hiring System** and the **Candidate SkillMatch Score** — which together **increased platform sales by 17%**.\n\nI also implemented a **CQRS-style architecture with an ETL pipeline** that separated the read and write databases for job listings, and optimized queries to cut search time.\n\n## Why this stack\n\nAngular and ASP.NET Core were the target of the legacy-ASP migration, so the choice was set by where the platform was heading. The interesting decision was architectural rather than technological: employers posting jobs and job seekers searching them are two workloads with opposite needs, and forcing both through one normalized MSSQL schema was what made search slow. The ETL split let each side have the shape it wanted.",
+      "caseStudies": [
+        "cqrs-etl-mssql-mongodb-job-search"
+      ],
       "tags": [
         "Angular",
         "ASP.NET Core",
@@ -66,6 +78,10 @@
       "client": "US-Bangla Airlines",
       "description": "Airline fare intelligence platform comparing competitors' real-time fares, flight schedules, and seat availability for data-driven pricing",
       "longDescription": "An airline fare intelligence platform that enables airlines to compare competitors' real time fares, flight schedules, and seat availability, providing data-driven pricing recommendations to maximize revenue and profitability. Integrated multiple GDS and NDC suppliers to aggregate and normalize competitor data, and engineered pricing-intelligence logic to help airlines optimize ticket pricing.",
+      "body": "## What it does\n\nAn airline fare intelligence platform. Airlines use it to see what competitors are charging in real time — fares, flight schedules, and seat availability — and get data-driven pricing recommendations from that picture.\n\n## My role\n\nI designed and built the platform end to end, from the supplier integrations through to the React dashboard airlines actually work in.\n\nThe integration layer pulls from **multiple GDS and NDC suppliers**, each returning data in its own shape and updating constantly. A large part of the work was normalizing those feeds into something comparable. On top of that I engineered the **pricing-intelligence logic** that analyzes the aggregated market data and generates fare recommendations.\n\n## Why this stack\n\n**Hangfire** drives the recurring collection jobs — competitor fares have to be pulled continuously, not on demand, so the dashboard reads from data that is already there. **EF Core** rather than Dapper here, because this is a write-heavy aggregation workload where schema modelling matters more than raw read latency. PostgreSQL stores the normalized fare history that the comparison logic runs against.",
+      "caseStudies": [
+        "airline-fare-intelligence-platform"
+      ],
       "image": "/images/projects/fare-comparison.png",
       "tags": [
         ".NET Core",
@@ -86,6 +102,10 @@
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
       "description": "Background service that automatically cancels un-ticketed bookings, saving ~$23K-$27K total across 6 OTA clients",
       "longDescription": "Developed a critical background service using ASP.NET Core & Hangfire that automatically cancels un-ticketed bookings before the last ticketing time. This solution reduced ADM penalties by $4,500-$6,400 per month per OTA, achieving total savings of ~$23,000-$27,000 across 6 clients.",
+      "body": "## What it does\n\nA background service that watches bookings approaching their last ticketing time and automatically cancels the ones still un-ticketed — before the airline can charge an Agency Debit Memo penalty for holding them.\n\n## Scale\n\nRunning across **6 OTA client platforms**, it reduced ADM penalties by **$4,500-$6,400 per month per OTA**, for a total saving of roughly **$23,000-$27,000**.\n\n## My role\n\nBuilt it end to end.\n\n## Why this stack\n\n**Hangfire** on ASP.NET Core for recurring job scheduling with retry semantics, backed by **SQLite** for persistence — deliberately lightweight, since the service only needs to survive restarts with its own job state intact, not share a database with the platform it protects. Keeping it isolated means a problem here can't take the booking flow down with it.",
+      "caseStudies": [
+        "automated-booking-cancellation-service"
+      ],
       "tags": [
         ".NET Core",
         "Hangfire",
@@ -105,6 +125,10 @@
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
       "description": "8 cloud-native supplier integration projects connecting OTA platforms with major airlines and GDS systems",
       "longDescription": "Developed 8 cloud-native supplier integration projects (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, Indigo) to integrate supplier APIs into client OTA platforms. These integrations increased flight search feed by 27% and enabled seamless booking across multiple airline systems.",
+      "body": "## What it does\n\nEight cloud-native integration projects that connect OTA platforms to airline and GDS supplier APIs: **Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, and IndiGo**.\n\n## Scale\n\nThese integrations **increased the flight search feed by 27%** — more suppliers answering a search means more inventory and better fares reaching the user.\n\n## My role\n\nDelivered all eight. Each supplier exposes its own protocol, authentication model, and data shape, so each integration is a separate normalization problem behind a common internal contract — which is what lets the search pipeline treat 30 suppliers as one feed.\n\nI also built the automated xUnit API integration test suite that covers these projects, so supplier behaviour changes surface at release validation rather than in production.\n\n## Why this stack\n\nDeliberately split into separate cloud-native services rather than folded into the platform: suppliers change their APIs on their own schedules, and a failure or redeploy for one must not touch the other 29. The mix of **REST, SOAP, and NDC** isn't a choice so much as the reality of what each supplier offers.",
+      "caseStudies": [
+        "progressive-search-30-suppliers-ota"
+      ],
       "tags": [
         ".NET Core",
         "Microservices",
@@ -126,6 +150,7 @@
       "client": "Personal Project",
       "description": "A blog platform allowing users to read and write blog posts",
       "longDescription": "A full-stack blog platform that allows users to read and write blog posts. Features include user authentication, rich text editing, and responsive design. Built with Angular for the frontend and ASP.NET Core for the backend API.",
+      "body": "## What it does\n\nA full-stack blog platform where users can read and write posts, with user authentication, rich text editing, and a responsive layout.\n\n## My role\n\nPersonal project — built both the Angular frontend and the ASP.NET Core API, which are open source and linked above.\n\n## Why this stack\n\nAngular and ASP.NET Core, the same pairing I work in professionally — a personal project is a good place to go deeper on a stack you already use daily, with the frontend and API kept as separate repos so each can stand on its own.",
       "tags": [
         "Angular",
         "ASP.NET Core",
@@ -148,6 +173,7 @@
       "client": "Personal Project",
       "description": "Cross-platform personal finance app to track expenses, income, and budgets with analytics",
       "longDescription": "A cross-platform personal finance application for Android and iOS that enables users to track cash and credit card expenses, record income, manage budgets, categorize transactions, and monitor spending through interactive reports and analytics.",
+      "body": "## What it does\n\nA cross-platform personal finance app for Android and iOS. Track cash and credit card expenses, record income, manage budgets, categorize transactions, and review spending through interactive reports and analytics.\n\n## My role\n\nPersonal project, built solo. Source is open and linked above.\n\n## Why this stack\n\n**Flutter** for a single codebase across Android and iOS, and **Firebase** for authentication and data sync so the app works across a user's devices without me running a backend for it — the same instinct behind this portfolio's own serverless setup.",
       "tags": [
         "Flutter",
         "Firebase"
@@ -163,6 +189,10 @@
       "title": "DataFlow: Database Migration Tool",
       "description": "Tool to migrate from ome database to another database. Migrate Table without lossing a single data.",
       "longDescription": "",
+      "body": "## What it does\n\nA tool for migrating data from one database to another, moving tables across without losing a single row.\n\n## My role\n\nPersonal project, built solo.\n\n## Why this stack\n\nBuilt out of the same problem the OTA platform's SQL Server to PostgreSQL migration presented at production scale — moving a live schema between engines is mostly a data-fidelity problem, and having a tool that verifies nothing was dropped in transit matters more than raw transfer speed.",
+      "caseStudies": [
+        "sql-server-to-postgresql-migration"
+      ],
       "image": "",
       "client": "Personal Project",
       "tags": [],
@@ -177,6 +207,10 @@
       "title": "My Bdjobs",
       "description": "App for Job Seakers",
       "longDescription": "",
+      "body": "## What it does\n\nThe job seeker side of Bdjobs.com — searching and browsing job listings, submitting resumes, and managing applications.\n\n## My role\n\nWorked on the platform as part of the Bdjobs.com engineering team, where I implemented the CQRS-style architecture and ETL pipeline that separated read and write databases for job listings, and optimized the queries behind job search.",
+      "caseStudies": [
+        "cqrs-etl-mssql-mongodb-job-search"
+      ],
       "image": "",
       "client": "Bdjobs.com",
       "tags": [],
@@ -191,6 +225,7 @@
       "title": "E-desh Api",
       "description": "Api project thay manage courier",
       "longDescription": "",
+      "body": "## What it does\n\nThe API behind a courier and logistics platform — parcel booking, real-time tracking, last-mile delivery, reverse logistics, fulfillment, and cross-border shipping, managed from one central system.\n\n## My role\n\nWorked with a team of remote developers to design and build the platform. I crafted the React frontend, built the APIs, and optimized the existing codebase and database, improving the site's performance and responsiveness.",
       "image": "",
       "client": "E-Desh Ltd",
       "tags": [],
