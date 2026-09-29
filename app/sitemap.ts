@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { getPublishedBlogPosts, getPublishedCaseStudies } from "@/lib/content";
+import { getPublishedBlogPosts, getPublishedCaseStudies, getPublishedProjects } from "@/lib/content";
 
 export const dynamic = "force-static";
 
@@ -11,6 +11,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: BASE_URL, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 1 },
     { url: `${BASE_URL}/about`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/projects`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.9 },
+    ...getPublishedProjects().map((project) => ({
+      url: `${BASE_URL}/projects/${project.slug}`,
+      lastModified: LAST_MODIFIED,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
     { url: `${BASE_URL}/experience`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/certifications`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/resume`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.7 },

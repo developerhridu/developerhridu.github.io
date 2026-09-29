@@ -22,6 +22,10 @@ export function getPublishedProjects(): Project[] {
   return getProjects().filter(isPublished);
 }
 
+export function getProject(slug: string): Project | null {
+  return getProjects().find((project) => project.slug === slug) ?? null;
+}
+
 export function getFeaturedProjects(): Project[] {
   return getPublishedProjects().filter((project) => project.featured);
 }

@@ -34,7 +34,8 @@
     "viewCode": "View Code",
     "frontEnd": "Front-End",
     "backEnd": "Back-End",
-    "closeAriaLabel": "Close"
+    "closeAriaLabel": "Close",
+    "viewFullPage": "View Full Page"
   },
   "certifications": {
     "verify": "Verify"

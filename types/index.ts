@@ -77,9 +77,11 @@ export interface Client {
 // Project types
 export interface Project {
   id: string;
+  slug: string;
   title: string;
   description: string;
   longDescription?: string;
+  body?: string;
   image: string;
   client?: string;
   tags: string[];

@@ -54,7 +54,7 @@ const caseStudyItems: SearchItem[] = (caseStudiesData.caseStudies ?? [])
 const projectItems: SearchItem[] = (projectsData.projects ?? []).filter(isPublished).map((p) => ({
   title: p.title,
   description: p.description,
-  url: "/projects",
+  url: `/projects/${p.slug}`,
   category: "Project",
 }));
 

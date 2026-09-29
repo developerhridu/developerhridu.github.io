@@ -2,6 +2,7 @@
   "projects": [
     {
       "id": "01",
+      "slug": "ota-platform",
       "published": true,
       "title": "Online Travel Agency (OTA) Platform",
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
@@ -22,6 +23,7 @@
     },
     {
       "id": "02",
+      "slug": "foodi-crm",
       "published": true,
       "title": "Foodi CRM - Food Delivery System",
       "client": "Foodi",
@@ -39,6 +41,7 @@
     },
     {
       "id": "03",
+      "slug": "recruiter-bdjobs",
       "published": true,
       "title": "Recruiter.Bdjobs.com",
       "client": "Bdjobs.com",
@@ -57,6 +60,7 @@
     },
     {
       "id": "04",
+      "slug": "fare-comparison",
       "published": true,
       "title": "Fare Comparison",
       "client": "US-Bangla Airlines",
@@ -76,6 +80,7 @@
     },
     {
       "id": "05",
+      "slug": "booking-manager-service",
       "published": true,
       "title": "Booking Manager Service",
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
@@ -94,6 +99,7 @@
     },
     {
       "id": "07",
+      "slug": "airline-supplier-integration",
       "published": true,
       "title": "Airline Supplier Integration Projects",
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
@@ -114,6 +120,7 @@
     },
     {
       "id": "06",
+      "slug": "devnote-blog",
       "published": true,
       "title": "DevNote Blog-site",
       "client": "Personal Project",
@@ -135,6 +142,7 @@
     },
     {
       "id": "08",
+      "slug": "expense-tracker",
       "published": true,
       "title": "Expense Tracker",
       "client": "Personal Project",
@@ -151,6 +159,7 @@
     },
     {
       "id": "dataflow-database-migration-tool",
+      "slug": "dataflow-database-migration-tool",
       "title": "DataFlow: Database Migration Tool",
       "description": "Tool to migrate from ome database to another database. Migrate Table without lossing a single data.",
       "longDescription": "",
@@ -164,6 +173,7 @@
     },
     {
       "id": "my-bdjobs",
+      "slug": "my-bdjobs",
       "title": "My Bdjobs",
       "description": "App for Job Seakers",
       "longDescription": "",
@@ -177,6 +187,7 @@
     },
     {
       "id": "e-desh-api",
+      "slug": "e-desh-api",
       "title": "E-desh Api",
       "description": "Api project thay manage courier",
       "longDescription": "",

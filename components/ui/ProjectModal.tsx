@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, ExternalLink, Github, Building2 } from "lucide-react";
-import LightboxImage from "@/components/ui/LightboxImage";
+import { X, ArrowRight } from "lucide-react";
+import ProjectDetail from "@/components/ui/ProjectDetail";
+import Button from "@/components/ui/Button";
 import uiStrings from "@/content/ui-strings.json";
 
 const t = uiStrings.projectModal;
@@ -11,6 +12,7 @@ const t = uiStrings.projectModal;
 interface ProjectModalProps {
   project: {
     id: string;
+    slug: string;
     title: string;
     description: string;
     longDescription?: string;
@@ -68,111 +70,17 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
               <X size={18} />
             </button>
 
-            <LightboxImage
-              src={project.image}
-              alt={project.title}
-              wrapperClassName="h-56 md:h-80 rounded-t-2xl overflow-hidden"
-              initials={project.title.split(" ").map((w) => w[0]).join("")}
-              initialsClassName="text-6xl"
+            <ProjectDetail
+              project={project}
+              as="h2"
+              imageWrapperClassName="h-56 md:h-80 rounded-t-2xl overflow-hidden"
             />
 
-            <div className="p-6 md:p-8">
-              <div className="flex flex-wrap gap-2 mb-4">
-                {project.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="font-mono px-2 py-1 bg-accent/10 text-accent border border-accent/20 rounded text-xs uppercase tracking-wide"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                {project.title}
-              </h2>
-
-              {project.client && (
-                <p className="flex items-center gap-2 text-sm text-muted mb-4">
-                  <Building2 size={16} />
-                  {project.client}
-                </p>
-              )}
-
-              <p className="text-muted mb-2">{project.description}</p>
-              {project.longDescription && (
-                <p className="text-muted text-sm mb-6">
-                  {project.longDescription}
-                </p>
-              )}
-
-              <div className="grid sm:grid-cols-2 gap-6 pt-6 border-t border-border">
-                {project.liveUrl && (
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-muted mb-1">
-                      {t.liveDemo}
-                    </p>
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-accent hover:text-accent-hover transition-colors"
-                    >
-                      <ExternalLink size={16} />
-                      {t.viewLive}
-                    </a>
-                  </div>
-                )}
-
-                {typeof project.githubUrl === "string" && project.githubUrl && (
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-muted mb-1">
-                      {t.sourceCode}
-                    </p>
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-accent hover:text-accent-hover transition-colors"
-                    >
-                      <Github size={16} />
-                      {t.viewCode}
-                    </a>
-                  </div>
-                )}
-
-                {project.githubUrl && typeof project.githubUrl === "object" && (
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-muted mb-1">
-                      {t.sourceCode}
-                    </p>
-                    <div className="flex flex-col gap-1.5">
-                      {project.githubUrl.frontend && (
-                        <a
-                          href={project.githubUrl.frontend}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 text-accent hover:text-accent-hover transition-colors"
-                        >
-                          <Github size={16} />
-                          {t.frontEnd}
-                        </a>
-                      )}
-                      {project.githubUrl.backend && (
-                        <a
-                          href={project.githubUrl.backend}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 text-accent hover:text-accent-hover transition-colors"
-                        >
-                          <Github size={16} />
-                          {t.backEnd}
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+            <div className="px-6 md:px-8 pb-6 md:pb-8">
+              <Button href={`/projects/${project.slug}`} variant="primary">
+                {t.viewFullPage}
+                <ArrowRight size={18} />
+              </Button>
             </div>
           </motion.div>
         </motion.div>

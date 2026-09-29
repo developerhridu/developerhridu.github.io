@@ -46,6 +46,7 @@ const FIELDS: FieldDef[] = [
   { section: "projectModal", key: "frontEnd", label: "Project Modal: Front-End link" },
   { section: "projectModal", key: "backEnd", label: "Project Modal: Back-End link" },
   { section: "projectModal", key: "closeAriaLabel", label: "Project Modal: Close button aria-label" },
+  { section: "projectModal", key: "viewFullPage", label: "Project Modal: View Full Page button" },
 
   { section: "certifications", key: "verify", label: "Certifications: Verify link" },
 

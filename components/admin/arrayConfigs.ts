@@ -52,8 +52,10 @@ export const projectsConfig: ArrayConfig = {
   imageFolder: "projects",
   fields: [
     { key: "title", label: "Title", type: "text" },
+    { key: "slug", label: "URL slug", type: "text" },
     { key: "description", label: "Description", type: "textarea" },
     { key: "longDescription", label: "Long Description", type: "textarea" },
+    { key: "body", label: "Body (markdown, optional)", type: "textarea" },
     { key: "image", label: "Image", type: "image" },
     { key: "client", label: "Client(s)", type: "clients" },
     { key: "tags", label: "Tags (comma separated)", type: "tags" },
