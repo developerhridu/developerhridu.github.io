@@ -14,7 +14,7 @@ const footerLinks = menu.navLinks.filter(
 );
 
 function resolveHref(link: (typeof footerLinks)[number]): string {
-  return resolveCvHref(link, profile.resumeUrl);
+  return resolveCvHref(link);
 }
 
 export default function Footer() {

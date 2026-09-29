@@ -156,3 +156,49 @@ html {
 .skip-to-content:focus {
   top: 0;
 }
+
+/* ---------------------------------------------------------------
+   Print / Save-as-PDF — targets the /resume page.
+   Browser print is used rather than a JS PDF library so that the
+   output keeps real, clickable hyperlinks and selectable text.
+   --------------------------------------------------------------- */
+@page {
+  size: A4;
+  margin: 12mm 13mm;
+}
+
+@media print {
+  /* Compact the whole document: Tailwind's rem-based type and spacing
+     scale down together, matching the density of the source resume. */
+  html {
+    font-size: 12.5px;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* Links stay real links in the PDF — black and underlined, as in the original. */
+  a {
+    color: #000 !important;
+    text-decoration: underline;
+  }
+
+  /* Never print a URL after a link; the anchor itself is clickable. */
+  a::after {
+    content: none !important;
+  }
+
+  .print-avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* A heading must never be the last thing on a page. */
+  .print-keep-with-next {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+}

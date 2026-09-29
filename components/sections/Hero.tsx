@@ -75,9 +75,7 @@ export default function Hero() {
             </Button>
             {profile.resumeUrl && (
               <Button
-                href={profile.resumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/resume"
                 variant="secondary"
                 onClick={() => trackEvent("resume_view", { location: "hero" })}
               >

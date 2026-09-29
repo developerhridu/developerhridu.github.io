@@ -21,7 +21,7 @@ const socialLabels = uiStrings.socialLabels;
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-sm font-bold uppercase tracking-widest text-foreground pb-2 mb-4 border-b-2 border-accent">
+    <h2 className="print-keep-with-next text-sm font-bold uppercase tracking-widest text-foreground pb-2 mb-4 border-b-2 border-accent print:text-black print:border-b print:border-neutral-400 print:tracking-wide print:mb-2 print:pb-1">
       {children}
     </h2>
   );
@@ -41,7 +41,7 @@ export default function ResumePage() {
       <section className="py-12 print:py-0">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 print:px-0 print:max-w-none">
           <div className="flex justify-end mb-6 print:hidden">
-            <PrintButton />
+            <PrintButton documentName={`${profile.name} - Resume`} />
           </div>
 
           <div className="bg-surface border border-border rounded-2xl p-6 md:p-12 print:bg-white print:text-black print:border-none print:rounded-none print:p-0">
@@ -54,13 +54,19 @@ export default function ResumePage() {
                 <p className="text-lg text-accent print:text-black mb-4">{profile.title}</p>
                 <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted print:text-black">
                   {profile.phone && (
-                    <span className="flex items-center gap-1.5">
+                    <a
+                      href={`tel:${profile.phone.replace(/[^+\d]/g, "")}`}
+                      className="flex items-center gap-1.5 hover:text-accent print:text-black"
+                    >
                       <Phone size={14} /> {profile.phone}
-                    </span>
+                    </a>
                   )}
-                  <span className="flex items-center gap-1.5">
+                  <a
+                    href={`mailto:${profile.email}`}
+                    className="flex items-center gap-1.5 hover:text-accent print:text-black"
+                  >
                     <Mail size={14} /> {profile.email}
-                  </span>
+                  </a>
                   <span className="flex items-center gap-1.5">
                     <MapPin size={14} /> {profile.location}
                   </span>
@@ -146,7 +152,7 @@ export default function ResumePage() {
               <SectionHeading>{t.experience}</SectionHeading>
               <div className="space-y-8">
                 {experiences.map((exp) => (
-                  <div key={exp.id}>
+                  <div key={exp.id} className="print:break-before-auto">
                     <div className="flex flex-wrap items-baseline justify-between gap-x-4">
                       {exp.companyUrl ? (
                         <a
@@ -183,7 +189,7 @@ export default function ResumePage() {
                     </div>
                     <div className="space-y-4">
                       {exp.projects.map((project) => (
-                        <div key={project.name}>
+                        <div key={project.name} className="print-avoid-break">
                           <h4 className="text-sm font-semibold text-foreground print:text-black italic">
                             {project.name}
                           </h4>
@@ -227,7 +233,7 @@ export default function ResumePage() {
                 <SectionHeading>{t.projects}</SectionHeading>
                 <div className="space-y-4">
                   {personalProjects.map((project) => (
-                    <div key={project.id}>
+                    <div key={project.id} className="print-avoid-break">
                       <div className="flex flex-wrap items-baseline justify-between gap-x-4">
                         <h3 className="font-bold text-foreground print:text-black">{project.title}</h3>
                         <span className="flex items-center gap-3 text-sm">
@@ -287,7 +293,7 @@ export default function ResumePage() {
               <SectionHeading>{t.education}</SectionHeading>
               <div className="space-y-4">
                 {education.map((edu) => (
-                  <div key={edu.institution}>
+                  <div key={edu.institution} className="print-avoid-break">
                     <div className="flex flex-wrap items-baseline justify-between gap-x-4">
                       <h3 className="font-bold text-foreground print:text-black">{edu.institution}</h3>
                       <span className="text-sm text-muted print:text-black">{edu.period}</span>
@@ -312,11 +318,10 @@ export default function ResumePage() {
                   {certifications.map((cert) => (
                     <div
                       key={cert.id}
-                      className="flex flex-wrap items-baseline justify-between gap-x-4 text-sm"
+                      className="print-avoid-break flex flex-wrap items-baseline gap-x-2 text-sm print:grid print:grid-cols-[minmax(0,1fr)_minmax(0,13rem)_auto] print:gap-x-4"
                     >
                       <p className="text-foreground print:text-black">
-                        <span className="font-semibold">{cert.name}</span>{" "}
-                        <span className="text-muted print:text-black">— {cert.issuer}</span>
+                        <span className="font-semibold">{cert.name}</span>
                         {cert.verifyUrl && (
                           <a
                             href={cert.verifyUrl}
@@ -328,7 +333,13 @@ export default function ResumePage() {
                           </a>
                         )}
                       </p>
-                      <span className="text-muted print:text-black whitespace-nowrap">{cert.date}</span>
+                      <p className="text-muted print:text-black">
+                        <span className="print:hidden">— </span>
+                        {cert.issuer}
+                      </p>
+                      <span className="ml-auto print:ml-0 text-muted print:text-black whitespace-nowrap">
+                        {cert.date}
+                      </span>
                     </div>
                   ))}
                 </div>

@@ -36,7 +36,7 @@ const navLinks = menu.navLinks.filter(
 );
 
 function resolveHref(link: (typeof navLinks)[number]): string {
-  return resolveCvHref(link, profile.resumeUrl);
+  return resolveCvHref(link);
 }
 
 // The homepage renders all sections inline; a couple of nav ids don't match the
