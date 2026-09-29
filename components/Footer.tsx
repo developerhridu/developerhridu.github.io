@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Code2, Github, Handshake, Linkedin, Mail } from "lucide-react";
+import { CalendarDays, Code2, Github, Handshake, Linkedin, Mail } from "lucide-react";
 import profile from "@/content/profile.json";
 import menu from "@/content/menu.json";
 import uiStrings from "@/content/ui-strings.json";
@@ -57,6 +57,18 @@ export default function Footer() {
           </div>
 
           <div className="flex items-center gap-4">
+            {profile.bookingUrl && (
+              <a
+                href={profile.bookingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent("booking_click", { location: "footer" })}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface border border-border text-muted hover:text-foreground hover:border-accent/40 text-sm transition-colors"
+              >
+                <CalendarDays size={16} />
+                {uiStrings.footer.bookCallLabel}
+              </a>
+            )}
             <a
               href={profile.social.upwork}
               target="_blank"

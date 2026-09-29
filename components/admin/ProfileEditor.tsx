@@ -24,7 +24,7 @@ interface ProfileForm {
   projectsCompleted: string;
   servicesWorkWith: string;
   resumeUrl: string;
-  portfolioUrl: string;
+  bookingUrl: string;
   openToWork: boolean;
   openToWorkLabel: string;
   social: { github: string; linkedin: string; leetcode: string; upwork: string };
@@ -44,7 +44,7 @@ const KNOWN_KEYS = new Set([
   "projectsCompleted",
   "servicesWorkWith",
   "resumeUrl",
-  "portfolioUrl",
+  "bookingUrl",
   "openToWork",
   "openToWorkLabel",
   "social",
@@ -64,7 +64,7 @@ function blankForm(): ProfileForm {
     projectsCompleted: "0",
     servicesWorkWith: "0",
     resumeUrl: "",
-    portfolioUrl: "",
+    bookingUrl: "",
     openToWork: false,
     openToWorkLabel: "Open to work",
     social: { github: "", linkedin: "", leetcode: "", upwork: "" },
@@ -111,7 +111,7 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
         projectsCompleted: String(parsed.projectsCompleted ?? 0),
         servicesWorkWith: String(parsed.servicesWorkWith ?? 0),
         resumeUrl: parsed.resumeUrl ?? "",
-        portfolioUrl: parsed.portfolioUrl ?? "",
+        bookingUrl: parsed.bookingUrl ?? "",
         openToWork: parsed.openToWork ?? false,
         openToWorkLabel: parsed.openToWorkLabel ?? "Open to work",
         social: {
@@ -206,7 +206,7 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
           upwork: form.social.upwork.trim(),
         },
         resumeUrl: resumeUrl.trim(),
-        portfolioUrl: form.portfolioUrl.trim(),
+        bookingUrl: form.bookingUrl.trim(),
       };
 
       const content = JSON.stringify(payload, null, 2) + "\n";
@@ -351,6 +351,21 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
           />
         </div>
 
+        <div>
+          <label className="block text-xs uppercase tracking-wide text-muted mb-1">
+            Booking URL (Cal.com / Calendly)
+          </label>
+          <input
+            value={form.bookingUrl}
+            onChange={(e) => setForm({ ...form, bookingUrl: e.target.value })}
+            placeholder="https://cal.com/your-handle/30min"
+            className={inputClass}
+          />
+          <p className="text-muted text-xs mt-1">
+            Leave empty to hide the Book a Call buttons across the site.
+          </p>
+        </div>
+
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs uppercase tracking-wide text-muted mb-1">Resume URL</label>
@@ -370,11 +385,6 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
               />
             </label>
           </div>
-          <Field
-            label="Portfolio URL"
-            value={form.portfolioUrl}
-            onChange={(v) => setForm({ ...form, portfolioUrl: v })}
-          />
         </div>
 
         <div className="pt-2">

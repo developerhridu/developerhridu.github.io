@@ -10,7 +10,7 @@ import {
 import { getSeo } from "@/lib/seo";
 import PrintButton from "@/components/ui/PrintButton";
 import ContentImage from "@/components/ui/ContentImage";
-import { Mail, Phone, MapPin, Github, Linkedin, Code2, Globe, ExternalLink } from "lucide-react";
+import { Mail, Phone, MapPin, Github, Linkedin, Code2, ExternalLink } from "lucide-react";
 import skillCategoriesData from "@/content/skill-categories.json";
 import uiStrings from "@/content/ui-strings.json";
 
@@ -98,16 +98,6 @@ export default function ResumePage() {
                       className="flex items-center gap-1.5 hover:text-accent print:text-black"
                     >
                       <Code2 size={14} /> {socialLabels.leetcode}
-                    </a>
-                  )}
-                  {profile.portfolioUrl && (
-                    <a
-                      href={profile.portfolioUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 hover:text-accent print:text-black"
-                    >
-                      <Globe size={14} /> {socialLabels.portfolio}
                     </a>
                   )}
                 </div>

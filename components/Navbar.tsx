@@ -16,6 +16,7 @@ import {
   FileText,
   FileUser,
   Handshake,
+  CalendarDays,
   Newspaper,
   Layers,
   Search,
@@ -180,6 +181,22 @@ export default function Navbar() {
             {uiStrings.navbar.hireMeLabel}
           </span>
         </a>
+
+        {profile.bookingUrl && (
+          <a
+            href={profile.bookingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={uiStrings.navbar.bookCallLabel}
+            onClick={() => trackEvent("booking_click", { location: "navbar_desktop" })}
+            className="group relative flex items-center justify-center w-11 h-11 mt-2 rounded-lg bg-surface border border-border text-muted hover:text-foreground hover:border-accent/40 transition-colors"
+          >
+            <CalendarDays size={20} />
+            <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-lg bg-surface border border-border px-2 py-1 text-sm text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+              {uiStrings.navbar.bookCallLabel}
+            </span>
+          </a>
+        )}
       </motion.nav>
 
       {/* Mobile Top Bar */}
@@ -202,6 +219,18 @@ export default function Navbar() {
                 <Search size={18} />
               </button>
               <ThemeToggle className="w-9 h-9" />
+              {profile.bookingUrl && (
+                <a
+                  href={profile.bookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={uiStrings.navbar.bookCallLabel}
+                  onClick={() => trackEvent("booking_click", { location: "navbar_mobile" })}
+                  className="flex items-center justify-center w-9 h-9 rounded-lg bg-surface border border-border text-muted hover:text-foreground hover:border-accent/40 transition-colors"
+                >
+                  <CalendarDays size={18} />
+                </a>
+              )}
               <a
                 href={profile.social.upwork}
                 target="_blank"

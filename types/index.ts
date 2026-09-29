@@ -25,8 +25,8 @@ export interface Profile {
     leetcode: string;
     upwork?: string;
   };
-  portfolioUrl?: string;
   resumeUrl: string;
+  bookingUrl?: string;
   openToWork?: boolean;
   openToWorkLabel?: string;
 }

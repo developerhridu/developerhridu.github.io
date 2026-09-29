@@ -4,6 +4,7 @@
     "ctaViewProjects": "View Projects",
     "ctaHireMe": "Hire Me",
     "ctaViewResume": "View Resume",
+    "ctaBookCall": "Book a Call",
     "statYearsExperience": "Years Experience",
     "statProjectsCompleted": "Projects Completed",
     "statServices": "Services Built & Maintained",
@@ -63,7 +64,8 @@
     "messagePlaceholder": "Your message...",
     "errorText": "Something went wrong. Please try again.",
     "sending": "Sending...",
-    "sendMessageButton": "Send Message"
+    "sendMessageButton": "Send Message",
+    "bookCallLabel": "Book a Call"
   },
   "testimonialSubmit": {
     "thankYouTitle": "Thank you!",
@@ -123,12 +125,14 @@
   "navbar": {
     "searchAriaLabel": "Search",
     "hireMeLabel": "Hire Me",
+    "bookCallLabel": "Book a Call",
     "openMenuAriaLabel": "Open menu",
     "closeMenuAriaLabel": "Close menu"
   },
   "footer": {
     "builtWithTemplate": "{year} {name}. Built with Next.js & Tailwind CSS.",
-    "hireMeLabel": "Hire Me"
+    "hireMeLabel": "Hire Me",
+    "bookCallLabel": "Book a Call"
   },
   "notFound": {
     "title": "Page Not Found",
@@ -153,7 +157,6 @@
     "github": "GitHub",
     "linkedin": "LinkedIn",
     "leetcode": "LeetCode",
-    "upwork": "Upwork",
-    "portfolio": "Portfolio"
+    "upwork": "Upwork"
   }
 }

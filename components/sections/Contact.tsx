@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, MapPin, Send, Github, Linkedin, Code2, CheckCircle, AlertCircle } from "lucide-react";
+import { Mail, MapPin, Send, Github, Linkedin, Code2, CheckCircle, AlertCircle, CalendarDays } from "lucide-react";
 import UpworkIcon from "@/components/ui/icons/UpworkIcon";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -124,6 +124,21 @@ export default function Contact({ showHeading = true }: ContactProps) {
                   </div>
                 </div>
               </div>
+
+              {profile.bookingUrl && (
+                <div className="mb-8">
+                  <Button
+                    href={profile.bookingUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    variant="primary"
+                    onClick={() => trackEvent("booking_click", { location: "contact" })}
+                  >
+                    <CalendarDays size={18} />
+                    {t.bookCallLabel}
+                  </Button>
+                </div>
+              )}
 
               {/* Social Links */}
               <div className="flex gap-3">

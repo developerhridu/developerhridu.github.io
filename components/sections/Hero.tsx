@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, ExternalLink, Handshake } from "lucide-react";
+import { ArrowDown, CalendarDays, ExternalLink, Handshake } from "lucide-react";
 import Button from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import ClientMarquee from "@/components/ui/ClientMarquee";
@@ -73,9 +73,23 @@ export default function Hero() {
               <Handshake size={18} />
               {uiStrings.hero.ctaHireMe}
             </Button>
+            {profile.bookingUrl && (
+              <Button
+                href={profile.bookingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="secondary"
+                onClick={() => trackEvent("booking_click", { location: "hero" })}
+              >
+                <CalendarDays size={18} />
+                {uiStrings.hero.ctaBookCall}
+              </Button>
+            )}
             {profile.resumeUrl && (
               <Button
-                href="/resume"
+                href={profile.resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 variant="secondary"
                 onClick={() => trackEvent("resume_view", { location: "hero" })}
               >

@@ -19,6 +19,10 @@ const FIELDS: FieldDef[] = [
   { section: "hero", key: "ctaViewProjects", label: "Hero: View Projects button" },
   { section: "hero", key: "ctaHireMe", label: "Hero: Hire Me button" },
   { section: "hero", key: "ctaViewResume", label: "Hero: View Resume button" },
+  { section: "hero", key: "ctaBookCall", label: "Hero: Book a Call button" },
+  { section: "navbar", key: "bookCallLabel", label: "Navbar: Book a Call label" },
+  { section: "footer", key: "bookCallLabel", label: "Footer: Book a Call label" },
+  { section: "contact", key: "bookCallLabel", label: "Contact: Book a Call button" },
   { section: "hero", key: "statYearsExperience", label: "Hero: Years Experience stat label" },
   { section: "hero", key: "statProjectsCompleted", label: "Hero: Projects Completed stat label" },
   { section: "hero", key: "statServices", label: "Hero: Services stat label" },
@@ -165,7 +169,6 @@ const FIELDS: FieldDef[] = [
   { section: "socialLabels", key: "linkedin", label: "Social label: LinkedIn" },
   { section: "socialLabels", key: "leetcode", label: "Social label: LeetCode" },
   { section: "socialLabels", key: "upwork", label: "Social label: Upwork" },
-  { section: "socialLabels", key: "portfolio", label: "Social label: Portfolio" },
 ];
 
 function fieldPath(f: FieldDef): string {
