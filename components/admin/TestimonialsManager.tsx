@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import TestimonialRequestLinks from "@/components/admin/TestimonialRequestLinks";
 import IconButton from "@/components/ui/IconButton";
 import { type FileChange } from "@/lib/github";
 import { Plus, X, Upload, ArrowUp, ArrowDown, Trash2 } from "lucide-react";
@@ -283,6 +284,8 @@ export default function TestimonialsManager({
         />
       ) : (
         <>
+          <TestimonialRequestLinks />
+
           <div className="flex items-center justify-between gap-3 mb-4">
             <button
               onClick={startNew}

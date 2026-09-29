@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Send, CheckCircle, AlertCircle } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Button from "@/components/ui/Button";
 import { WORKER_URL } from "@/lib/workerUrl";
+import { getClients } from "@/lib/clients";
 import { trackEvent } from "@/lib/analytics";
 import uiStrings from "@/content/ui-strings.json";
 import { getSectionCopy } from "@/lib/sections";
@@ -29,6 +31,34 @@ export default function TestimonialSubmit() {
     quote: "",
     honeypot: "",
   });
+
+  // A request link carries who this is for — ?from=<client id or name>, plus
+  // optional ?name= and ?role= — so the client lands on a form already filled in.
+  // Read after mount: on a static export the params aren't known at prerender.
+  const searchParams = useSearchParams();
+  const [prefilled, setPrefilled] = useState(false);
+
+  const from = searchParams.get("from") ?? "";
+  const client = from
+    ? getClients().find((c) => c.id === from || c.name.toLowerCase() === from.toLowerCase())
+    : undefined;
+  const prefill = {
+    name: searchParams.get("name") ?? "",
+    role: searchParams.get("role") ?? "",
+    company: client?.name ?? searchParams.get("company") ?? "",
+  };
+
+  // Applied during render rather than in an effect: the params aren't known
+  // until hydration, and an effect here would cause a cascading re-render.
+  if (!prefilled && (prefill.name || prefill.role || prefill.company)) {
+    setPrefilled(true);
+    setFormData((prev) => ({
+      ...prev,
+      name: prev.name || prefill.name,
+      role: prev.role || prefill.role,
+      company: prev.company || prefill.company,
+    }));
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
