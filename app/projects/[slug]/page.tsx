@@ -139,8 +139,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <LightboxImage
             src={project.image}
             alt={project.title}
-            wrapperClassName="mb-12 rounded-2xl"
-            imgClassName="w-full h-auto"
+            wrapperClassName="mb-12 rounded-2xl aspect-video bg-background border border-border"
+            imgClassName="w-full h-full object-contain"
             initials={project.title.split(" ").map((w) => w[0]).join("")}
             initialsClassName="text-6xl"
           />

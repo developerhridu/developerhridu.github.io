@@ -219,12 +219,26 @@ html {
    utility string that was copy-pasted into the blog, case-study and
    project detail pages. */
 .prose-content {
-  @apply prose prose-invert prose-lg max-w-none
-    prose-headings:text-foreground prose-p:text-muted prose-a:text-accent
-    prose-strong:text-foreground prose-code:text-accent
-    prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5
-    prose-code:rounded prose-pre:bg-surface prose-pre:border
-    prose-pre:border-border;
+  @apply prose prose-lg max-w-none prose-code:bg-surface-hover
+    prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+    prose-pre:border prose-pre:border-border;
+
+  --tw-prose-body: var(--muted);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-lead: var(--muted);
+  --tw-prose-links: var(--accent);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-counters: var(--muted);
+  --tw-prose-bullets: var(--border);
+  --tw-prose-hr: var(--border);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--accent);
+  --tw-prose-captions: var(--muted);
+  --tw-prose-code: var(--accent);
+  --tw-prose-pre-code: var(--foreground);
+  --tw-prose-pre-bg: var(--surface);
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--border);
 }
 
 /* Honour the OS "reduce motion" setting for every CSS animation and

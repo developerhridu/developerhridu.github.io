@@ -56,7 +56,8 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                 <ContentImage
                   src={project.image}
                   alt={project.title}
-                  wrapperClassName="relative h-48 rounded-lg mb-4"
+                  wrapperClassName="relative aspect-video rounded-lg mb-4 bg-background border border-border"
+                  imgClassName="w-full h-full object-contain"
                   initials={project.title.split(" ").map((w) => w[0]).join("")}
                 >
                   <div className="absolute bottom-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-accent text-accent-foreground opacity-0 group-hover:opacity-100 transition-opacity">
@@ -75,11 +76,6 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                     </p>
                   )}
                   <p className="text-muted mb-4">{project.description}</p>
-                  {project.longDescription && (
-                    <p className="text-muted text-sm mb-4">
-                      {project.longDescription}
-                    </p>
-                  )}
 
                   {/* Tech Stack */}
                   <div className="flex flex-wrap gap-2 mb-4">
