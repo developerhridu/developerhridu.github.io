@@ -1,8 +1,6 @@
-import { ExternalLink, Github, Building2 } from "lucide-react";
 import LightboxImage from "@/components/ui/LightboxImage";
-import uiStrings from "@/content/ui-strings.json";
-
-const t = uiStrings.projectModal;
+import ProjectLinks from "@/components/ui/ProjectLinks";
+import ClientLinks from "@/components/ui/ClientLinks";
 
 interface ProjectDetailProps {
   project: {
@@ -26,10 +24,6 @@ export default function ProjectDetail({
   imageWrapperClassName = "h-56 md:h-80",
   titleClassName = "text-2xl md:text-3xl",
 }: ProjectDetailProps) {
-  const linkClass =
-    "flex items-center gap-1.5 text-accent hover:text-accent-hover transition-colors";
-  const linkLabelClass = "text-xs uppercase tracking-wide text-muted mb-1";
-
   return (
     <>
       <LightboxImage
@@ -56,79 +50,14 @@ export default function ProjectDetail({
           {project.title}
         </Heading>
 
-        {project.client && (
-          <p className="flex items-center gap-2 text-sm text-muted mb-4">
-            <Building2 size={16} />
-            {project.client}
-          </p>
-        )}
+        <ClientLinks client={project.client} className="text-sm mb-4" />
 
         <p className="text-muted mb-2">{project.description}</p>
         {project.longDescription && (
           <p className="text-muted text-sm mb-6">{project.longDescription}</p>
         )}
 
-        <div className="grid sm:grid-cols-2 gap-6 pt-6 border-t border-border">
-          {project.liveUrl && (
-            <div>
-              <p className={linkLabelClass}>{t.liveDemo}</p>
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={linkClass}
-              >
-                <ExternalLink size={16} />
-                {t.viewLive}
-              </a>
-            </div>
-          )}
-
-          {typeof project.githubUrl === "string" && project.githubUrl && (
-            <div>
-              <p className={linkLabelClass}>{t.sourceCode}</p>
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={linkClass}
-              >
-                <Github size={16} />
-                {t.viewCode}
-              </a>
-            </div>
-          )}
-
-          {project.githubUrl && typeof project.githubUrl === "object" && (
-            <div>
-              <p className={linkLabelClass}>{t.sourceCode}</p>
-              <div className="flex flex-col gap-1.5">
-                {project.githubUrl.frontend && (
-                  <a
-                    href={project.githubUrl.frontend}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={linkClass}
-                  >
-                    <Github size={16} />
-                    {t.frontEnd}
-                  </a>
-                )}
-                {project.githubUrl.backend && (
-                  <a
-                    href={project.githubUrl.backend}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={linkClass}
-                  >
-                    <Github size={16} />
-                    {t.backEnd}
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+        <ProjectLinks liveUrl={project.liveUrl} githubUrl={project.githubUrl} />
       </div>
     </>
   );

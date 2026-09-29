@@ -187,6 +187,7 @@ export interface BlogPost {
   date: string;
   updatedAt?: string;
   published?: boolean;
+  client?: string;
   description: string;
   tags: string[];
   image?: string;

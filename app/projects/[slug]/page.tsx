@@ -3,9 +3,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Tag } from "lucide-react";
 import { markdownComponents } from "@/components/ui/markdownComponents";
-import ProjectDetail from "@/components/ui/ProjectDetail";
+import LightboxImage from "@/components/ui/LightboxImage";
+import ProjectLinks from "@/components/ui/ProjectLinks";
+import ClientLinks from "@/components/ui/ClientLinks";
 import ShareButtons from "@/components/ui/ShareButtons";
 import RelatedContent from "@/components/ui/RelatedContent";
 import { getProjects, getProject, getPublishedCaseStudies } from "@/lib/content";
@@ -110,26 +112,56 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </div>
           )}
 
-          <div className="rounded-2xl border border-border bg-surface overflow-hidden">
-            <ProjectDetail
-              project={project}
-              as="h1"
-              imageWrapperClassName="h-56 md:h-80"
-              titleClassName="text-3xl md:text-4xl"
-            />
-          </div>
+          <header className="mb-12">
+            <div className="flex flex-wrap gap-2 mb-4">
+              {project.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="font-mono inline-flex items-center gap-1 px-3 py-1 bg-accent/10 text-accent border border-accent/20 rounded-full text-sm uppercase tracking-wide"
+                >
+                  <Tag size={12} />
+                  {tag}
+                </span>
+              ))}
+            </div>
 
-          <div className="mt-6">
-            <ShareButtons url={url} title={project.title} />
-          </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">{project.title}</h1>
+
+            <p className="text-xl text-muted mb-6">{project.description}</p>
+
+            <ClientLinks client={project.client} />
+
+            <div className="mt-4">
+              <ShareButtons url={url} title={project.title} />
+            </div>
+          </header>
+
+          <LightboxImage
+            src={project.image}
+            alt={project.title}
+            wrapperClassName="mb-12 rounded-2xl"
+            imgClassName="w-full h-auto"
+            initials={project.title.split(" ").map((w) => w[0]).join("")}
+            initialsClassName="text-6xl"
+          />
+
+          {project.longDescription && (
+            <p className="text-lg text-muted leading-relaxed mb-8">{project.longDescription}</p>
+          )}
 
           {project.body && (
-            <div className="mt-12 prose prose-invert prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted prose-a:text-accent prose-strong:text-foreground prose-code:text-accent prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-surface prose-pre:border prose-pre:border-border">
+            <div className="prose prose-invert prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted prose-a:text-accent prose-strong:text-foreground prose-code:text-accent prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-surface prose-pre:border prose-pre:border-border">
               <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                 {project.body}
               </ReactMarkdown>
             </div>
           )}
+
+          <ProjectLinks
+            liveUrl={project.liveUrl}
+            githubUrl={project.githubUrl}
+            className="mt-12"
+          />
 
           <RelatedContent
             items={linkedCaseStudies}

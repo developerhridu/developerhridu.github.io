@@ -9,9 +9,10 @@ import { estimateReadingTime } from "@/lib/readingTime";
 import LightboxImage from "@/components/ui/LightboxImage";
 import RelatedContent from "@/components/ui/RelatedContent";
 import Comments from "@/components/ui/Comments";
-import { ArrowLeft, Calendar, Clock, Tag, Building2 } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
 import ViewCounter from "@/components/ui/ViewCounter";
 import ShareButtons from "@/components/ui/ShareButtons";
+import ClientLinks from "@/components/ui/ClientLinks";
 import ReactionButton from "@/components/ui/ReactionButton";
 
 const BASE_URL = "https://developerhridu.github.io";
@@ -148,12 +149,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                   year: "numeric",
                 })}
               </span>
-              {study.client && (
-                <span className="flex items-center gap-2">
-                  <Building2 size={16} />
-                  {study.client}
-                </span>
-              )}
+              <ClientLinks client={study.client} />
               <span className="flex items-center gap-2">
                 <Clock size={16} />
                 {readingMinutes} min read

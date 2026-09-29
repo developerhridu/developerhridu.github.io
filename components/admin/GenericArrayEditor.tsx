@@ -11,6 +11,7 @@ import {
 import { Pencil, Trash2, Plus, ExternalLink, X, Upload, ArrowUp, ArrowDown } from "lucide-react";
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
 import ClientMultiSelect from "@/components/admin/ClientMultiSelect";
+import CaseStudyMultiSelect from "@/components/admin/CaseStudyMultiSelect";
 
 type FieldType =
   | "text"
@@ -22,7 +23,8 @@ type FieldType =
   | "url"
   | "image"
   | "number"
-  | "clients";
+  | "clients"
+  | "caseStudies";
 
 interface FieldDef {
   key: string;
@@ -55,7 +57,7 @@ function normalizeIn(raw: RawEntry, config: ArrayConfig): FormState {
   for (const f of config.fields) {
     if (f.type === "boolean") {
       form[f.key] = (raw[f.key] as boolean | undefined) ?? f.defaultBoolean ?? false;
-    } else if (f.type === "tags") {
+    } else if (f.type === "tags" || f.type === "caseStudies") {
       form[f.key] = Array.isArray(raw[f.key]) ? (raw[f.key] as string[]).join(", ") : "";
     } else if (f.type === "list") {
       form[f.key] = Array.isArray(raw[f.key]) ? (raw[f.key] as string[]).join("\n") : "";
@@ -72,7 +74,7 @@ function transformOut(form: FormState, config: ArrayConfig): RawEntry {
     const val = form[f.key];
     if (f.type === "boolean") {
       out[f.key] = Boolean(val);
-    } else if (f.type === "tags") {
+    } else if (f.type === "tags" || f.type === "caseStudies") {
       out[f.key] = String(val ?? "")
         .split(",")
         .map((t) => t.trim())
@@ -421,6 +423,11 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
                     />
                   ) : field.type === "clients" ? (
                     <ClientMultiSelect
+                      value={String(form[field.key] ?? "")}
+                      onChange={(value) => setForm({ ...form, [field.key]: value })}
+                    />
+                  ) : field.type === "caseStudies" ? (
+                    <CaseStudyMultiSelect
                       value={String(form[field.key] ?? "")}
                       onChange={(value) => setForm({ ...form, [field.key]: value })}
                     />

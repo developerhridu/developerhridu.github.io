@@ -11,6 +11,7 @@ import RelatedContent from "@/components/ui/RelatedContent";
 import Comments from "@/components/ui/Comments";
 import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
 import ViewCounter from "@/components/ui/ViewCounter";
+import ClientLinks from "@/components/ui/ClientLinks";
 import ShareButtons from "@/components/ui/ShareButtons";
 import ReactionButton from "@/components/ui/ReactionButton";
 
@@ -138,7 +139,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
             <p className="text-xl text-muted mb-6">{post.description}</p>
 
-            <div className="flex items-center gap-4 text-muted">
+            <div className="flex flex-wrap items-center gap-4 text-muted">
               <span className="flex items-center gap-2">
                 <Calendar size={16} />
                 {new Date(post.date).toLocaleDateString("en-US", {
@@ -147,6 +148,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   year: "numeric",
                 })}
               </span>
+              <ClientLinks client={post.client} />
               <span className="flex items-center gap-2">
                 <Clock size={16} />
                 {readingMinutes} min read
