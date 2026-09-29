@@ -101,7 +101,7 @@ export default function Navbar() {
 
   const Logo = (
     <Link href="/" className="flex items-center gap-2 text-xl font-bold text-foreground">
-      <div className="relative w-12 h-12 overflow-hidden shrink-0 rounded-md">
+      <div className="relative w-12 h-12 overflow-hidden shrink-0 rounded-md ring-1 ring-border">
         <Image src={profile.avatar} alt={profile.name} fill sizes="48px" className="object-cover" />
       </div>
       {/* Portfolio */}
