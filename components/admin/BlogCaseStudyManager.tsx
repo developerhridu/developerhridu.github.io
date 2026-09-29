@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import IconButton from "@/components/ui/IconButton";
 import {
   fetchContentFile,
   commitFiles,
@@ -632,20 +633,19 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
                           >
                             <Eye size={16} />
                           </a>
-                          <button
+                          <IconButton
                             onClick={() => startEdit(entry)}
                             aria-label={`Edit ${entry.title}`}
-                            className="p-2 text-muted hover:text-foreground transition-colors"
                           >
                             <Pencil size={16} />
-                          </button>
-                          <button
+                          </IconButton>
+                          <IconButton
                             onClick={() => void handleDelete(entry)}
                             aria-label={`Delete ${entry.title}`}
-                            className="p-2 text-muted hover:text-red-400 transition-colors"
+                            tone={"danger"}
                           >
                             <Trash2 size={16} />
-                          </button>
+                          </IconButton>
                         </div>
                       </td>
                     </tr>
@@ -848,29 +848,30 @@ function EntryForm({
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted">Section {i + 1}</span>
                 <div className="flex items-center gap-1">
-                  <button
+                  <IconButton
                     onClick={() => onMoveSection(i, -1)}
                     disabled={i === 0}
                     aria-label={`Move section ${i + 1} up`}
-                    className="p-1.5 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
+                    size={"sm"}
                   >
                     <ArrowUp size={14} />
-                  </button>
-                  <button
+                  </IconButton>
+                  <IconButton
                     onClick={() => onMoveSection(i, 1)}
                     disabled={i === entry.sections.length - 1}
                     aria-label={`Move section ${i + 1} down`}
-                    className="p-1.5 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
+                    size={"sm"}
                   >
                     <ArrowDown size={14} />
-                  </button>
-                  <button
+                  </IconButton>
+                  <IconButton
                     onClick={() => onRemoveSection(i)}
                     aria-label={`Remove section ${i + 1}`}
-                    className="p-1.5 text-muted hover:text-red-400 transition-colors"
+                    size={"sm"}
+                    tone={"danger"}
                   >
                     <Trash2 size={14} />
-                  </button>
+                  </IconButton>
                 </div>
               </div>
 

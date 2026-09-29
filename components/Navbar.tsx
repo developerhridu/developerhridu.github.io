@@ -101,7 +101,7 @@ export default function Navbar() {
 
   const Logo = (
     <Link href="/" className="flex items-center gap-2 text-xl font-bold text-foreground">
-      <div className="relative w-12 h-12 overflow-hidden shrink-0 rounded-md ring-1 ring-border">
+      <div className="relative w-12 h-12 overflow-hidden shrink-0 rounded-lg ring-1 ring-border">
         <Image src={profile.avatar} alt={profile.name} fill sizes="48px" className="object-cover" />
       </div>
       {/* Portfolio */}
@@ -133,7 +133,7 @@ export default function Navbar() {
                 className="group relative flex items-center justify-center w-11 h-11 rounded-lg text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
               >
                 <Icon size={20} />
-                <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-surface border border-border px-2 py-1 text-sm text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-lg bg-surface border border-border px-2 py-1 text-sm text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                   {link.name}
                 </span>
               </a>
@@ -150,7 +150,7 @@ export default function Navbar() {
                 }`}
               >
                 <Icon size={20} />
-                <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-surface border border-border px-2 py-1 text-sm text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-lg bg-surface border border-border px-2 py-1 text-sm text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                   {link.name}
                 </span>
               </Link>
@@ -176,7 +176,7 @@ export default function Navbar() {
           className="group relative flex items-center justify-center w-11 h-11 rounded-lg bg-accent hover:bg-accent-hover text-accent-foreground transition-colors"
         >
           <Handshake size={20} />
-          <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-surface border border-border px-2 py-1 text-sm text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-lg bg-surface border border-border px-2 py-1 text-sm text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
             {uiStrings.navbar.hireMeLabel}
           </span>
         </a>

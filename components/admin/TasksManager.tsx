@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import IconButton from "@/components/ui/IconButton";
 import { fetchContentFile, commitFiles, encodeBase64Unicode, GitHubApiError } from "@/lib/github";
 import { Plus, Trash2, ArrowUp, ArrowDown, Check } from "lucide-react";
 import { inputClass, slugify } from "@/components/admin/shared";
@@ -260,29 +261,27 @@ export default function TasksManager({
               </div>
 
               <div className="flex items-center gap-1 shrink-0">
-                <button
+                <IconButton
                   onClick={() => moveEntry(index, -1)}
                   disabled={index === 0}
                   aria-label={`Move "${task.text}" up`}
-                  className="p-2 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
                 >
                   <ArrowUp size={16} />
-                </button>
-                <button
+                </IconButton>
+                <IconButton
                   onClick={() => moveEntry(index, 1)}
                   disabled={index === entries.length - 1}
                   aria-label={`Move "${task.text}" down`}
-                  className="p-2 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
                 >
                   <ArrowDown size={16} />
-                </button>
-                <button
+                </IconButton>
+                <IconButton
                   onClick={() => void handleDelete(task)}
                   aria-label={`Delete "${task.text}"`}
-                  className="p-2 text-muted hover:text-red-400 transition-colors"
+                  tone={"danger"}
                 >
                   <Trash2 size={16} />
-                </button>
+                </IconButton>
               </div>
             </div>
           ))}

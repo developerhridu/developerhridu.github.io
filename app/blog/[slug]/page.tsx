@@ -170,7 +170,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           />
 
           {/* Post Content */}
-          <div className="prose prose-invert prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted prose-a:text-accent prose-strong:text-foreground prose-code:text-accent prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-surface prose-pre:border prose-pre:border-border">
+          <div className="prose-content">
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
               {post.body}
             </ReactMarkdown>
@@ -199,7 +199,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                       ))}
                     </div>
                   )}
-                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted prose-a:text-accent prose-strong:text-foreground prose-code:text-accent prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-surface prose-pre:border prose-pre:border-border">
+                  <div className="prose-content">
                     <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                       {section.body}
                     </ReactMarkdown>

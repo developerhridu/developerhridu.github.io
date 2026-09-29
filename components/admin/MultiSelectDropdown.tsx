@@ -89,7 +89,7 @@ export default function MultiSelectDropdown({
             return (
               <span
                 key={value}
-                className="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-md bg-accent/10 border border-accent/30 text-xs text-foreground"
+                className="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-lg bg-accent/10 border border-accent/30 text-xs text-foreground"
               >
                 {option?.icon}
                 {option?.label ?? value}
@@ -120,7 +120,7 @@ export default function MultiSelectDropdown({
                 key={option.value}
                 role="option"
                 aria-selected={isSelected}
-                className={`flex items-start gap-2 px-2 py-1.5 rounded-md text-sm cursor-pointer transition-colors ${
+                className={`flex items-start gap-2 px-2 py-1.5 rounded-lg text-sm cursor-pointer transition-colors ${
                   isSelected ? "bg-accent/10 text-foreground" : "text-muted hover:bg-surface-hover"
                 }`}
               >

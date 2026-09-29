@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import IconButton from "@/components/ui/IconButton";
 import { type FileChange } from "@/lib/github";
 import { Plus, X, Upload, ArrowUp, ArrowDown, Trash2 } from "lucide-react";
 import { inputClass, slugify, fileToBase64, confirmDeleteMessage } from "@/components/admin/shared";
@@ -503,29 +504,30 @@ function EntryForm({
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted">Image {i + 1}</span>
                 <div className="flex items-center gap-1">
-                  <button
+                  <IconButton
                     onClick={() => onMoveVerifyImage(i, -1)}
                     disabled={i === 0}
                     aria-label={`Move image ${i + 1} up`}
-                    className="p-1.5 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
+                    size={"sm"}
                   >
                     <ArrowUp size={14} />
-                  </button>
-                  <button
+                  </IconButton>
+                  <IconButton
                     onClick={() => onMoveVerifyImage(i, 1)}
                     disabled={i === entry.verifyImages.length - 1}
                     aria-label={`Move image ${i + 1} down`}
-                    className="p-1.5 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
+                    size={"sm"}
                   >
                     <ArrowDown size={14} />
-                  </button>
-                  <button
+                  </IconButton>
+                  <IconButton
                     onClick={() => onRemoveVerifyImage(i)}
                     aria-label={`Remove image ${i + 1}`}
-                    className="p-1.5 text-muted hover:text-red-400 transition-colors"
+                    size={"sm"}
+                    tone={"danger"}
                   >
                     <Trash2 size={14} />
-                  </button>
+                  </IconButton>
                 </div>
               </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import IconButton from "@/components/ui/IconButton";
 import {
   fetchContentFile,
   commitFiles,
@@ -591,36 +592,33 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center justify-end gap-1">
-                            <button
+                            <IconButton
                               onClick={() => moveEntry(index, -1)}
                               disabled={index === 0}
                               aria-label={`Move ${title} up`}
-                              className="p-2 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
                             >
                               <ArrowUp size={16} />
-                            </button>
-                            <button
+                            </IconButton>
+                            <IconButton
                               onClick={() => moveEntry(index, 1)}
                               disabled={index === entries.length - 1}
                               aria-label={`Move ${title} down`}
-                              className="p-2 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
                             >
                               <ArrowDown size={16} />
-                            </button>
-                            <button
+                            </IconButton>
+                            <IconButton
                               onClick={() => startEdit(index)}
                               aria-label={`Edit ${title}`}
-                              className="p-2 text-muted hover:text-foreground transition-colors"
                             >
                               <Pencil size={16} />
-                            </button>
-                            <button
+                            </IconButton>
+                            <IconButton
                               onClick={() => void handleDelete(index)}
                               aria-label={`Delete ${title}`}
-                              className="p-2 text-muted hover:text-red-400 transition-colors"
+                              tone={"danger"}
                             >
                               <Trash2 size={16} />
-                            </button>
+                            </IconButton>
                           </div>
                         </td>
                       </tr>

@@ -202,3 +202,43 @@ html {
     page-break-after: avoid;
   }
 }
+
+/* ---------------------------------------------------------------
+   Shared UI primitives
+   --------------------------------------------------------------- */
+
+/* Keyboard focus. Previously only .skip-to-content styled :focus at all, so
+   every other control fell back to the browser default (or nothing). */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Long-form article body. This rule replaces an identical 200-character
+   utility string that was copy-pasted into the blog, case-study and
+   project detail pages. */
+.prose-content {
+  @apply prose prose-invert prose-lg max-w-none
+    prose-headings:text-foreground prose-p:text-muted prose-a:text-accent
+    prose-strong:text-foreground prose-code:text-accent
+    prose-code:bg-surface-hover prose-code:px-1 prose-code:py-0.5
+    prose-code:rounded prose-pre:bg-surface prose-pre:border
+    prose-pre:border-border;
+}
+
+/* Honour the OS "reduce motion" setting for every CSS animation and
+   transition on the site, including the client marquee and smooth scroll. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

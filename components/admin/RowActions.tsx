@@ -1,6 +1,7 @@
 "use client";
 
 import { Pencil, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import IconButton from "@/components/ui/IconButton";
 
 interface RowActionsProps {
   label: string;
@@ -23,36 +24,18 @@ export function RowActions({
 }: RowActionsProps) {
   return (
     <div className="flex items-center justify-end gap-1">
-      <button
-        onClick={onMoveUp}
-        disabled={!canMoveUp}
-        aria-label={`Move ${label} up`}
-        className="p-2 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
-      >
+      <IconButton onClick={onMoveUp} disabled={!canMoveUp} aria-label={`Move ${label} up`}>
         <ArrowUp size={16} />
-      </button>
-      <button
-        onClick={onMoveDown}
-        disabled={!canMoveDown}
-        aria-label={`Move ${label} down`}
-        className="p-2 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:hover:text-muted"
-      >
+      </IconButton>
+      <IconButton onClick={onMoveDown} disabled={!canMoveDown} aria-label={`Move ${label} down`}>
         <ArrowDown size={16} />
-      </button>
-      <button
-        onClick={onEdit}
-        aria-label={`Edit ${label}`}
-        className="p-2 text-muted hover:text-foreground transition-colors"
-      >
+      </IconButton>
+      <IconButton onClick={onEdit} aria-label={`Edit ${label}`}>
         <Pencil size={16} />
-      </button>
-      <button
-        onClick={onDelete}
-        aria-label={`Delete ${label}`}
-        className="p-2 text-muted hover:text-red-400 transition-colors"
-      >
+      </IconButton>
+      <IconButton onClick={onDelete} tone="danger" aria-label={`Delete ${label}`}>
         <Trash2 size={16} />
-      </button>
+      </IconButton>
     </div>
   );
 }
