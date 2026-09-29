@@ -9,6 +9,8 @@ import { trackEvent } from "@/lib/analytics";
 import { ASK_AI_EVENT } from "@/lib/askAiEvent";
 import config from "@/content/config.json";
 import uiStrings from "@/content/ui-strings.json";
+import profile from "@/content/profile.json";
+import ContentImage from "@/components/ui/ContentImage";
 
 const t = uiStrings.aiChatWidget;
 
@@ -18,6 +20,8 @@ interface Message {
 }
 
 const AI_WORKER_URL = config.aiChatWorkerUrl;
+
+const INITIALS = profile.name.split(" ").map(n => n[0]).join("");
 
 export default function AiChatWidget() {
   const [open, setOpen] = useState(false);
@@ -102,7 +106,14 @@ export default function AiChatWidget() {
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface-hover">
               <div className="flex items-center gap-2">
-                <Sparkles size={16} className="text-accent" />
+                <ContentImage
+                  src={profile.avatar}
+                  alt={profile.name}
+                  wrapperClassName="w-6 h-6 rounded-full shrink-0 ring-1 ring-accent/40"
+                  imgClassName="w-full h-full object-cover"
+                  initials={INITIALS}
+                  initialsClassName="text-[9px]"
+                />
                 <span className="text-sm font-semibold text-foreground">{t.headerTitle}</span>
               </div>
               <button
@@ -206,9 +217,25 @@ export default function AiChatWidget() {
       <button
         onClick={() => (open ? setOpen(false) : handleOpen())}
         aria-label={open ? t.closeChatAriaLabel : t.openAriaLabel}
-        className="fixed bottom-6 right-6 z-50 p-4 rounded-full bg-accent hover:bg-accent-hover text-accent-foreground shadow-lg shadow-accent/25 transition-colors"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 flex items-center justify-center rounded-full bg-accent hover:bg-accent-hover text-accent-foreground shadow-lg shadow-accent/25 ring-2 ring-accent transition-colors"
       >
-        {open ? <X size={22} /> : <MessageCircle size={22} />}
+        {open ? (
+          <X size={22} />
+        ) : (
+          <>
+            <ContentImage
+              src={profile.avatar}
+              alt=""
+              wrapperClassName="w-full h-full rounded-full"
+              imgClassName="w-full h-full object-cover"
+              initials={INITIALS}
+              initialsClassName="text-base"
+            />
+            <span className="absolute bottom-0 right-0 flex items-center justify-center w-5 h-5 rounded-full bg-accent ring-2 ring-background text-accent-foreground pointer-events-none">
+              <MessageCircle size={12} />
+            </span>
+          </>
+        )}
       </button>
     </div>
   );
