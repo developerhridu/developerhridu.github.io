@@ -34,6 +34,30 @@ interface FieldDef {
   defaultBoolean?: boolean;
   min?: number;
   max?: number;
+  /** Heading this field is grouped under. Fields without one land in the first, unlabelled group. */
+  section?: string;
+  /** Overrides the type's default column span in the two-column grid. */
+  width?: "half" | "full";
+  /** Textarea height. Defaults to 3 rows (5 for `list`). */
+  rows?: number;
+}
+
+/** Long-form and picker inputs need the full row; short scalars pair up two-across. */
+const FULL_WIDTH_TYPES: FieldType[] = ["textarea", "list", "image", "clients", "caseStudies"];
+
+function isFullWidth(field: FieldDef): boolean {
+  return field.width ? field.width === "full" : FULL_WIDTH_TYPES.includes(field.type);
+}
+
+function groupFields(fields: FieldDef[]): { section: string | null; fields: FieldDef[] }[] {
+  const groups: { section: string | null; fields: FieldDef[] }[] = [];
+  for (const field of fields) {
+    const section = field.section ?? null;
+    const last = groups[groups.length - 1];
+    if (last && last.section === section) last.fields.push(field);
+    else groups.push({ section, fields: [field] });
+  }
+  return groups;
 }
 
 type RawEntry = Record<string, unknown>;
@@ -373,97 +397,108 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
             </button>
           </div>
 
-          {config.fields.map((field) => (
-            <div key={field.key}>
-              {field.type === "boolean" ? (
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={Boolean(form[field.key])}
-                    onChange={(e) => setForm({ ...form, [field.key]: e.target.checked })}
-                    className="w-4 h-4 accent-accent"
-                  />
-                  <span className="text-sm text-foreground">{field.label}</span>
-                </label>
-              ) : (
-                <>
-                  <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-                    {field.label}
-                  </label>
-                  {field.type === "textarea" ? (
-                    <textarea
-                      value={String(form[field.key] ?? "")}
-                      onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                      rows={3}
-                      className={`${inputClass} resize-none`}
-                    />
-                  ) : field.type === "list" ? (
-                    <textarea
-                      value={String(form[field.key] ?? "")}
-                      onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                      rows={5}
-                      className={`${inputClass} resize-none`}
-                      placeholder={field.placeholder}
-                    />
-                  ) : field.type === "date" ? (
-                    <input
-                      type="date"
-                      value={String(form[field.key] ?? "")}
-                      onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                      className={inputClass}
-                    />
-                  ) : field.type === "number" ? (
-                    <input
-                      type="number"
-                      min={field.min}
-                      max={field.max}
-                      value={String(form[field.key] ?? "")}
-                      onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                      className={inputClass}
-                    />
-                  ) : field.type === "clients" ? (
-                    <ClientMultiSelect
-                      value={String(form[field.key] ?? "")}
-                      onChange={(value) => setForm({ ...form, [field.key]: value })}
-                    />
-                  ) : field.type === "caseStudies" ? (
-                    <CaseStudyMultiSelect
-                      value={String(form[field.key] ?? "")}
-                      onChange={(value) => setForm({ ...form, [field.key]: value })}
-                    />
-                  ) : (
-                    <input
-                      value={String(form[field.key] ?? "")}
-                      onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                      placeholder={field.placeholder}
-                      className={inputClass}
-                    />
-                  )}
-                  {field.type === "image" && (
-                    <>
-                      <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
-                        <Upload size={16} className="text-muted shrink-0" />
-                        <span className="truncate">
-                          {imageFiles[field.key] ? imageFiles[field.key]!.name : "Or upload an image file…"}
-                        </span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) =>
-                            setImageFiles({ ...imageFiles, [field.key]: e.target.files?.[0] ?? null })
-                          }
-                        />
-                      </label>
-                      {imageFiles[field.key] && (
-                        <p className="text-muted text-xs mt-1">
-                          Uploaded to the repo and set as the URL above when you save.
-                        </p>
-                      )}
-                    </>
-                  )}
-                </>
+          {groupFields(config.fields).map((group, groupIndex) => (
+            <div key={group.section ?? `group-${groupIndex}`} className="space-y-4">
+              {group.section && (
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-accent pt-2 border-t border-border">
+                  {group.section}
+                </h3>
               )}
+              <div className="grid sm:grid-cols-2 gap-4">
+                {group.fields.map((field) => (
+                  <div key={field.key} className={isFullWidth(field) ? "sm:col-span-2" : ""}>
+                    {field.type === "boolean" ? (
+                      <label className="flex items-center gap-2 cursor-pointer h-full">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(form[field.key])}
+                          onChange={(e) => setForm({ ...form, [field.key]: e.target.checked })}
+                          className="w-4 h-4 accent-accent"
+                        />
+                        <span className="text-sm text-foreground">{field.label}</span>
+                      </label>
+                    ) : (
+                      <>
+                        <label className="block text-xs uppercase tracking-wide text-muted mb-1">
+                          {field.label}
+                        </label>
+                        {field.type === "textarea" ? (
+                          <textarea
+                            value={String(form[field.key] ?? "")}
+                            onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
+                            rows={field.rows ?? 3}
+                            className={`${inputClass} resize-y`}
+                          />
+                        ) : field.type === "list" ? (
+                          <textarea
+                            value={String(form[field.key] ?? "")}
+                            onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
+                            rows={field.rows ?? 5}
+                            className={`${inputClass} resize-y`}
+                            placeholder={field.placeholder}
+                          />
+                        ) : field.type === "date" ? (
+                          <input
+                            type="date"
+                            value={String(form[field.key] ?? "")}
+                            onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
+                            className={inputClass}
+                          />
+                        ) : field.type === "number" ? (
+                          <input
+                            type="number"
+                            min={field.min}
+                            max={field.max}
+                            value={String(form[field.key] ?? "")}
+                            onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
+                            className={inputClass}
+                          />
+                        ) : field.type === "clients" ? (
+                          <ClientMultiSelect
+                            value={String(form[field.key] ?? "")}
+                            onChange={(value) => setForm({ ...form, [field.key]: value })}
+                          />
+                        ) : field.type === "caseStudies" ? (
+                          <CaseStudyMultiSelect
+                            value={String(form[field.key] ?? "")}
+                            onChange={(value) => setForm({ ...form, [field.key]: value })}
+                          />
+                        ) : (
+                          <input
+                            value={String(form[field.key] ?? "")}
+                            onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
+                            placeholder={field.placeholder}
+                            className={inputClass}
+                          />
+                        )}
+                        {field.type === "image" && (
+                          <>
+                            <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
+                              <Upload size={16} className="text-muted shrink-0" />
+                              <span className="truncate">
+                                {imageFiles[field.key] ? imageFiles[field.key]!.name : "Or upload an image file…"}
+                              </span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) =>
+                                  setImageFiles({ ...imageFiles, [field.key]: e.target.files?.[0] ?? null })
+                                }
+                              />
+                            </label>
+                            {imageFiles[field.key] && (
+                              <p className="text-muted text-xs mt-1">
+                                Uploaded to the repo and set as the URL above when you save.
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
 
