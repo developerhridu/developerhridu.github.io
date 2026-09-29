@@ -18,6 +18,7 @@ export interface Profile {
   addressCountry?: string;
   yearsOfExperience: number;
   projectsCompleted: number;
+  servicesWorkWith: number;
   social: {
     github: string;
     linkedin: string;

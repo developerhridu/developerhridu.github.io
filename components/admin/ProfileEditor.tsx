@@ -22,6 +22,7 @@ interface ProfileForm {
   location: string;
   yearsOfExperience: string;
   projectsCompleted: string;
+  servicesWorkWith: string;
   resumeUrl: string;
   portfolioUrl: string;
   openToWork: boolean;
@@ -41,6 +42,7 @@ const KNOWN_KEYS = new Set([
   "location",
   "yearsOfExperience",
   "projectsCompleted",
+  "servicesWorkWith",
   "resumeUrl",
   "portfolioUrl",
   "openToWork",
@@ -60,6 +62,7 @@ function blankForm(): ProfileForm {
     location: "",
     yearsOfExperience: "0",
     projectsCompleted: "0",
+    servicesWorkWith: "0",
     resumeUrl: "",
     portfolioUrl: "",
     openToWork: false,
@@ -106,6 +109,7 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
         location: parsed.location ?? "",
         yearsOfExperience: String(parsed.yearsOfExperience ?? 0),
         projectsCompleted: String(parsed.projectsCompleted ?? 0),
+        servicesWorkWith: String(parsed.servicesWorkWith ?? 0),
         resumeUrl: parsed.resumeUrl ?? "",
         portfolioUrl: parsed.portfolioUrl ?? "",
         openToWork: parsed.openToWork ?? false,
@@ -192,6 +196,7 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
         location: form.location.trim(),
         yearsOfExperience: Number(form.yearsOfExperience) || 0,
         projectsCompleted: Number(form.projectsCompleted) || 0,
+        servicesWorkWith: Number(form.servicesWorkWith) || 0,
         openToWork: form.openToWork,
         openToWorkLabel: form.openToWorkLabel.trim() || "Open to work",
         social: {
@@ -296,6 +301,11 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
             label="Projects Completed"
             value={form.projectsCompleted}
             onChange={(v) => setForm({ ...form, projectsCompleted: v })}
+          />
+          <Field
+            label="Services Built & Maintained"
+            value={form.servicesWorkWith}
+            onChange={(v) => setForm({ ...form, servicesWorkWith: v })}
           />
         </div>
 

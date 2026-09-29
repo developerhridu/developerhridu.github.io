@@ -21,6 +21,7 @@ const FIELDS: FieldDef[] = [
   { section: "hero", key: "ctaViewResume", label: "Hero: View Resume button" },
   { section: "hero", key: "statYearsExperience", label: "Hero: Years Experience stat label" },
   { section: "hero", key: "statProjectsCompleted", label: "Hero: Projects Completed stat label" },
+  { section: "hero", key: "statServices", label: "Hero: Services stat label" },
   { section: "hero", key: "statClients", label: "Hero: Clients stat label" },
 
   { section: "about", key: "techStackHeading", label: "About: Tech Stack heading" },

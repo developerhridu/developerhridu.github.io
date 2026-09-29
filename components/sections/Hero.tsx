@@ -89,7 +89,7 @@ export default function Hero() {
 
           {/* Stats */}
           <motion.div
-            className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-xl mx-auto"
+            className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
@@ -106,7 +106,13 @@ export default function Hero() {
               </div>
               <div className="text-xs text-muted">{uiStrings.hero.statProjectsCompleted}</div>
             </GlassCard>
-            <GlassCard className="!p-3 text-center col-span-2 md:col-span-1" hover={false}>
+            <GlassCard className="!p-3 text-center" hover={false}>
+              <div className="text-xl font-bold text-foreground mb-0.5">
+                {profile.servicesWorkWith}+
+              </div>
+              <div className="text-xs text-muted">{uiStrings.hero.statServices}</div>
+            </GlassCard>
+            <GlassCard className="!p-3 text-center" hover={false}>
               <div className="text-xl font-bold text-foreground mb-0.5">
                 {publishedClientCount}+
               </div>
