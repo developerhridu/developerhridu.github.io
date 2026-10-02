@@ -79,6 +79,13 @@
       "icon": "file-user",
       "external": true,
       "published": true
+    },
+    {
+      "id": "admin",
+      "name": "Admin",
+      "href": "/admin",
+      "icon": "shield",
+      "published": true
     }
   ]
 }

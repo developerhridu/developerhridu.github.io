@@ -28,7 +28,7 @@ const pageDescriptions: Record<string, string> = {
 // Sourced from menu.json, same published !== false convention as blog/case-study posts.
 const staticPages: SearchItem[] = [
   ...menu.navLinks
-    .filter((link) => !link.external && link.published !== false)
+    .filter((link) => !link.external && link.id !== "admin" && link.published !== false)
     .map((link) => ({
       title: link.name,
       description: pageDescriptions[link.id] ?? link.name,

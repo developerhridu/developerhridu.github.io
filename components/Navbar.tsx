@@ -71,9 +71,7 @@ export default function Navbar() {
   const [hasValidToken, setHasValidToken] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
   const pathname = usePathname();
-  const visibleNavLinks = hasValidToken
-    ? [...navLinks, { id: "admin", name: "Admin", href: "/admin", icon: "shield", published: true }]
-    : navLinks;
+  const visibleNavLinks = navLinks.filter((link) => link.id !== "admin" || hasValidToken);
 
   useEffect(() => {
     let controller: AbortController | undefined;
