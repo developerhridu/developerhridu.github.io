@@ -7,22 +7,22 @@ import { motion } from "framer-motion";
 import {
   Menu,
   X,
-  Home,
-  User,
-  FolderKanban,
-  Briefcase,
-  Award,
+  House,
+  UserRound,
+  FolderCode,
+  BriefcaseBusiness,
+  GraduationCap,
   Mail,
   FileText,
   FileUser,
   Handshake,
   CalendarDays,
   Newspaper,
-  Layers,
+  BookOpenCheck,
   Search,
   Quote,
   Wrench,
-  Shield,
+  LayoutDashboard,
 } from "lucide-react";
 import Image from "next/image";
 import menu from "@/content/menu.json";
@@ -49,20 +49,20 @@ const NAV_ID_TO_SECTION_ID: Record<string, string> = {
   "training-certifications": "education-certifications",
 };
 
-const iconRegistry: Record<string, typeof Home> = {
-  home: Home,
-  user: User,
-  "folder-kanban": FolderKanban,
-  briefcase: Briefcase,
-  award: Award,
+const iconRegistry: Record<string, typeof House> = {
+  house: House,
+  "user-round": UserRound,
+  "folder-code": FolderCode,
+  "briefcase-business": BriefcaseBusiness,
+  "graduation-cap": GraduationCap,
   mail: Mail,
   "file-text": FileText,
   "file-user": FileUser,
   newspaper: Newspaper,
-  layers: Layers,
+  "book-open-check": BookOpenCheck,
   quote: Quote,
   wrench: Wrench,
-  shield: Shield,
+  "layout-dashboard": LayoutDashboard,
 };
 
 export default function Navbar() {

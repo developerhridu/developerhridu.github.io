@@ -4,14 +4,14 @@
       "id": "home",
       "name": "Home",
       "href": "/",
-      "icon": "home",
+      "icon": "house",
       "published": true
     },
     {
       "id": "about",
       "name": "About",
       "href": "/about",
-      "icon": "user",
+      "icon": "user-round",
       "published": true
     },
     {
@@ -25,28 +25,28 @@
       "id": "experience",
       "name": "Experience",
       "href": "/experience",
-      "icon": "briefcase",
+      "icon": "briefcase-business",
       "published": true
     },
     {
       "id": "projects",
       "name": "Projects",
       "href": "/projects",
-      "icon": "folder-kanban",
+      "icon": "folder-code",
       "published": true
     },
     {
       "id": "case-studies",
       "name": "Case Studies",
       "href": "/case-studies",
-      "icon": "layers",
+      "icon": "book-open-check",
       "published": true
     },
     {
       "id": "training-certifications",
       "name": "Training & Certifications",
       "href": "/certifications",
-      "icon": "award",
+      "icon": "graduation-cap",
       "published": true
     },
     {
@@ -84,7 +84,7 @@
       "id": "admin",
       "name": "Admin",
       "href": "/admin",
-      "icon": "shield",
+      "icon": "layout-dashboard",
       "published": true
     }
   ]
