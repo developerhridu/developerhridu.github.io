@@ -21,11 +21,6 @@
       "published": true
     },
     {
-      "id": "testimonials",
-      "label": "Testimonials",
-      "visible": true
-    },
-    {
       "id": "experience",
       "label": "Experience",
       "published": true

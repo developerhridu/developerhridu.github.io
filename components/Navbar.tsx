@@ -22,6 +22,7 @@ import {
   Search,
   Quote,
   Wrench,
+  Shield,
 } from "lucide-react";
 import Image from "next/image";
 import menu from "@/content/menu.json";
@@ -31,6 +32,7 @@ import { trackEvent } from "@/lib/analytics";
 import { resolveCvHref } from "@/lib/cv";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import SearchPalette from "@/components/ui/SearchPalette";
+import { TOKEN_KEY, TOKEN_CHANGED_EVENT } from "@/components/admin/shared";
 
 const navLinks = menu.navLinks.filter(
   (link) => link.published !== false && (link.id !== "cv" || !!profile.resumeUrl)
@@ -60,13 +62,65 @@ const iconRegistry: Record<string, typeof Home> = {
   layers: Layers,
   quote: Quote,
   wrench: Wrench,
+  shield: Shield,
 };
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [hasValidToken, setHasValidToken] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
   const pathname = usePathname();
+  const visibleNavLinks = hasValidToken
+    ? [...navLinks, { id: "admin", name: "Admin", href: "/admin", icon: "shield", published: true }]
+    : navLinks;
+
+  useEffect(() => {
+    let controller: AbortController | undefined;
+
+    async function validateToken() {
+      controller?.abort();
+      const request = new AbortController();
+      controller = request;
+      setHasValidToken(false);
+
+      try {
+        const token = localStorage.getItem(TOKEN_KEY)?.trim();
+        if (!token) return;
+
+        const response = await fetch("https://api.github.com/user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+          },
+          cache: "no-store",
+          signal: request.signal,
+        });
+
+        if (!request.signal.aborted) {
+          setHasValidToken(response.ok && localStorage.getItem(TOKEN_KEY)?.trim() === token);
+        }
+      } catch {
+        if (!request.signal.aborted) setHasValidToken(false);
+      }
+    }
+
+    function handleStorage(event: StorageEvent) {
+      if (event.key === TOKEN_KEY || event.key === null) void validateToken();
+    }
+
+    void validateToken();
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener(TOKEN_CHANGED_EVENT, validateToken);
+    window.addEventListener("focus", validateToken);
+    return () => {
+      controller?.abort();
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener(TOKEN_CHANGED_EVENT, validateToken);
+      window.removeEventListener("focus", validateToken);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     if (pathname !== "/") return;
@@ -121,7 +175,7 @@ export default function Navbar() {
       >
         <div className="mb-8">{Logo}</div>
         <div className="flex flex-col items-center gap-1">
-          {navLinks.map((link) => {
+          {visibleNavLinks.map((link) => {
             const Icon = iconRegistry[link.icon] ?? FileText;
             return link.external ? (
               <a
@@ -258,7 +312,7 @@ export default function Navbar() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              {navLinks.map((link) =>
+              {visibleNavLinks.map((link) =>
                 link.external ? (
                   <a
                     key={link.name}

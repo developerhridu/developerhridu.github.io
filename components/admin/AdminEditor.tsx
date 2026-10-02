@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { LogOut, FileText } from "lucide-react";
 import configData from "@/content/config.json";
 import adminMenuData from "@/content/admin-menu.json";
-import { inputClass, TOKEN_KEY } from "@/components/admin/shared";
+import { inputClass, TOKEN_KEY, TOKEN_CHANGED_EVENT } from "@/components/admin/shared";
 import BlogCaseStudyManager from "@/components/admin/BlogCaseStudyManager";
 import GenericArrayEditor from "@/components/admin/GenericArrayEditor";
 import ExperienceManager from "@/components/admin/ExperienceManager";
@@ -96,6 +96,7 @@ export default function AdminEditor() {
     const trimmed = tokenInput.trim();
     if (!trimmed) return;
     localStorage.setItem(TOKEN_KEY, trimmed);
+    window.dispatchEvent(new Event(TOKEN_CHANGED_EVENT));
     setToken(trimmed);
     setTokenInput("");
     setTokenError(null);
@@ -103,6 +104,7 @@ export default function AdminEditor() {
 
   function handleAuthError() {
     localStorage.removeItem(TOKEN_KEY);
+    window.dispatchEvent(new Event(TOKEN_CHANGED_EVENT));
     setToken(null);
     setTokenError("Token rejected. It may be invalid, expired, or missing repo access — please paste a new one.");
   }

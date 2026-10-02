@@ -1,4 +1,5 @@
 export const TOKEN_KEY = "gh_pat";
+export const TOKEN_CHANGED_EVENT = "github-token-changed";
 
 export const REPO_ACTIONS_URL = "https://github.com/developerhridu/developerhridu.github.io/actions";
 
