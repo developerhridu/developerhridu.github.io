@@ -1,6 +1,16 @@
 {
   "greetingAnswer": "Hi! I can answer questions about {name}'s experience, projects, tech stack, and background. Try one of the suggestions below, or ask your own question.",
-  "greetings": ["hi", "hello", "hey", "yo", "hii", "hiya", "good morning", "good evening", "good afternoon"],
+  "greetings": [
+    "hi",
+    "hello",
+    "hey",
+    "yo",
+    "hii",
+    "hiya",
+    "good morning",
+    "good evening",
+    "good afternoon"
+  ],
   "emptyQueryAnswer": "Ask me something about {name}'s experience, projects, or skills!",
   "fallbackAnswer": "I don't have a good answer for that yet. Try asking about his projects, tech stack, experience, education, or how to get in touch.",
   "starterQuestions": [

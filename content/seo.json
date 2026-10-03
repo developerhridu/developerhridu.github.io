@@ -6,7 +6,21 @@
       "title": "Hridu | Full-Stack Software Engineer",
       "description": "Full-stack software engineer with 4+ years building scalable .NET microservices and modern frontends across travel, food delivery, and recruitment domains.",
       "twitterDescription": "Full-stack software engineer with 4+ years building scalable .NET microservices and modern frontends.",
-      "keywords": ["software engineer", "full-stack", "backend", ".NET", "ASP.NET Core", "microservices", "C#", "Angular", "React", "developer", "portfolio", "Dhaka", "Bangladesh"]
+      "keywords": [
+        "software engineer",
+        "full-stack",
+        "backend",
+        ".NET",
+        "ASP.NET Core",
+        "microservices",
+        "C#",
+        "Angular",
+        "React",
+        "developer",
+        "portfolio",
+        "Dhaka",
+        "Bangladesh"
+      ]
     },
     {
       "id": "about",
