@@ -185,19 +185,19 @@
     },
     {
       "id": "dataflow-database-migration-tool",
+      "title": "O2P: Database Migration Tool",
       "slug": "dataflow-database-migration-tool",
-      "title": "DataFlow: Database Migration Tool",
+      "client": "Personal Project",
+      "tags": [],
       "description": "Tool to migrate from ome database to another database. Migrate Table without lossing a single data.",
       "longDescription": "",
       "body": "## What it does\n\nA tool for migrating data from one database to another, moving tables across without losing a single row.\n\n## My role\n\nPersonal project, built solo.\n\n## Why this stack\n\nBuilt out of the same problem the OTA platform's SQL Server to PostgreSQL migration presented at production scale — moving a live schema between engines is mostly a data-fidelity problem, and having a tool that verifies nothing was dropped in transit matters more than raw transfer speed.",
-      "caseStudies": [
-        "sql-server-to-postgresql-migration"
-      ],
       "image": "",
-      "client": "Personal Project",
-      "tags": [],
       "liveUrl": null,
       "githubUrl": null,
+      "caseStudies": [
+        "oracle-to-postgresql-migration-bangladesh"
+      ],
       "featured": false,
       "published": false
     },
