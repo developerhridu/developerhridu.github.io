@@ -17,6 +17,8 @@ import {
   X,
   Upload,
   Eye,
+  ArrowLeft,
+  ArrowRight,
   ArrowUp,
   ArrowDown,
   Linkedin,
@@ -41,6 +43,7 @@ interface Entry {
   description: string;
   tags: string[];
   image?: string;
+  photos?: string[];
   client?: string;
   body: string;
   sections: Section[];
@@ -109,7 +112,7 @@ function toRepoPath(publicPath: string): string {
 function referencedImagePaths(list: Entry[]): Set<string> {
   return new Set(
     list.flatMap(
-      (e) => [e.image, ...(e.sections ?? []).flatMap((s) => s.images ?? [])].filter(Boolean) as string[]
+      (e) => [e.image, ...(e.photos ?? []), ...(e.sections ?? []).flatMap((s) => s.images ?? [])].filter(Boolean) as string[]
     )
   );
 }
@@ -163,6 +166,7 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
   const [isNew, setIsNew] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [sectionImageFiles, setSectionImageFiles] = useState<(File | null)[][]>([]);
+  const [photoFiles, setPhotoFiles] = useState<(File | null)[]>([]);
   const [loadedOrderIds, setLoadedOrderIds] = useState<string[]>([]);
 
   const [showLinkedInImport, setShowLinkedInImport] = useState(false);
@@ -218,6 +222,7 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
     setIsNew(true);
     setImageFile(null);
     setSectionImageFiles([]);
+    setPhotoFiles([]);
     setSuccessMsg(null);
     setError(null);
   }
@@ -230,6 +235,7 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
     setIsNew(false);
     setImageFile(null);
     setSectionImageFiles(sections.map((s) => (s.images ?? []).map(() => null)));
+    setPhotoFiles((entry.photos ?? []).map(() => null));
     setSuccessMsg(null);
     setError(null);
   }
@@ -238,6 +244,7 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
     setEditing(null);
     setImageFile(null);
     setSectionImageFiles([]);
+    setPhotoFiles([]);
   }
 
   function cancelLinkedInImport() {
@@ -267,6 +274,7 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
     setIsNew(true);
     setImageFile(null);
     setSectionImageFiles([]);
+    setPhotoFiles([]);
     setError(null);
     setSuccessMsg(null);
     cancelLinkedInImport();
@@ -348,6 +356,37 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
     );
   }
 
+  function addPhoto() {
+    if (!editing) return;
+    setEditing({ ...editing, photos: [...(editing.photos ?? []), ""] });
+    setPhotoFiles((previous) => [...previous, null]);
+  }
+
+  function updatePhoto(index: number, value: string) {
+    if (!editing) return;
+    setEditing({ ...editing, photos: (editing.photos ?? []).map((photo, i) => i === index ? value : photo) });
+  }
+
+  function removePhoto(index: number) {
+    if (!editing) return;
+    setEditing({ ...editing, photos: (editing.photos ?? []).filter((_, i) => i !== index) });
+    setPhotoFiles((previous) => previous.filter((_, i) => i !== index));
+  }
+
+  function movePhoto(index: number, direction: -1 | 1) {
+    if (!editing) return;
+    const target = index + direction;
+    const photos = [...(editing.photos ?? [])];
+    if (target < 0 || target >= photos.length) return;
+    [photos[index], photos[target]] = [photos[target], photos[index]];
+    setEditing({ ...editing, photos });
+    setPhotoFiles((previous) => {
+      const next = [...previous];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
+  }
+
   async function commit(changes: FileChange[], newEntries: Entry[], message: string): Promise<boolean> {
     if (!fileSha) {
       setError("Missing file version — reload the list before saving.");
@@ -399,6 +438,7 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
     const previousEntry = !isNew ? current.find((e) => e.id === editing.id) : undefined;
     const oldManagedPaths = [
       previousEntry?.image,
+      ...(previousEntry?.photos ?? []),
       ...(previousEntry?.sections ?? []).flatMap((s) => s.images ?? []),
     ].filter((p): p is string => isManagedImage(p, kind));
 
@@ -408,6 +448,7 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
     const changes: FileChange[] = [];
     let image = editing.image;
     let sections: Section[];
+    const photos: string[] = [];
 
     try {
       if (imageFile) {
@@ -416,6 +457,18 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
         const base64 = await fileToBase64(imageFile);
         changes.push({ path: repoPath, content: base64 });
         image = `/images/${CONFIG[kind].imageFolder}/${slug}.${ext}`;
+      }
+
+      for (let i = 0; i < (editing.photos ?? []).length; i++) {
+        let photo = editing.photos![i];
+        const file = photoFiles[i];
+        if (file) {
+          const ext = file.name.split(".").pop()?.toLowerCase() || "png";
+          const repoPath = `public/images/${CONFIG[kind].imageFolder}/${slug}-photo-${i}.${ext}`;
+          changes.push({ path: repoPath, content: await fileToBase64(file) });
+          photo = `/images/${CONFIG[kind].imageFolder}/${slug}-photo-${i}.${ext}`;
+        }
+        if (photo.trim()) photos.push(photo.trim());
       }
 
       const uploadedSections: Section[] = [];
@@ -452,6 +505,7 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
       slug,
       tags,
       image,
+      photos,
       sections,
       updatedAt: new Date().toISOString(),
     };
@@ -488,6 +542,7 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
     if (await commit(changes, updated, message)) {
       setImageFile(null);
       setSectionImageFiles(sections.map((s) => (s.images ?? []).map(() => null)));
+      setPhotoFiles(photos.map(() => null));
     }
   }
 
@@ -496,7 +551,7 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
     const current = entries ?? [];
     const updated = current.filter((e) => e.id !== entry.id);
 
-    const oldPaths = [entry.image, ...(entry.sections ?? []).flatMap((s) => s.images ?? [])].filter(
+    const oldPaths = [entry.image, ...(entry.photos ?? []), ...(entry.sections ?? []).flatMap((s) => s.images ?? [])].filter(
       (p): p is string => isManagedImage(p, kind)
     );
     const stillReferenced = referencedImagePaths(updated);
@@ -601,11 +656,28 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
           {mode === "view" ? (
             <div className="border border-border rounded-xl overflow-hidden">
               <p className="border-b border-border px-6 py-3 text-sm text-muted">Preview of your current edits.</p>
+              {(editing.photos ?? []).length > 1 && (
+                <div className="flex flex-wrap items-center gap-2 border-b border-border px-6 py-3">
+                  <span className="mr-1 text-sm text-muted">Reorder photos:</span>
+                  {(editing.photos ?? []).map((_, index) => (
+                    <div key={index} className="inline-flex items-center gap-1">
+                      <span className="text-xs text-muted">{index + 1}</span>
+                      <IconButton onClick={() => movePhoto(index, -1)} disabled={index === 0} aria-label={`Move photo ${index + 1} left`} size="sm">
+                        <ArrowLeft size={14} />
+                      </IconButton>
+                      <IconButton onClick={() => movePhoto(index, 1)} disabled={index === (editing.photos?.length ?? 0) - 1} aria-label={`Move photo ${index + 1} right`} size="sm">
+                        <ArrowRight size={14} />
+                      </IconButton>
+                    </div>
+                  ))}
+                </div>
+              )}
               <ArticlePreview
                 kind={kind}
                 entry={{ ...editing, tags: tagsText.split(",").map((tag) => tag.trim()).filter(Boolean) }}
                 imageFile={imageFile}
                 sectionImageFiles={sectionImageFiles}
+                photoFiles={photoFiles}
               />
             </div>
           ) : (
@@ -620,6 +692,11 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
               imageFile={imageFile}
               setImageFile={setImageFile}
               sectionImageFiles={sectionImageFiles}
+              photoFiles={photoFiles}
+              onAddPhoto={addPhoto}
+              onUpdatePhoto={updatePhoto}
+              onRemovePhoto={removePhoto}
+              onPhotoFileChange={(index, file) => setPhotoFiles((prev) => prev.map((item, i) => i === index ? file : item))}
               onAddSection={addSection}
               onUpdateSection={updateSection}
               onRemoveSection={removeSection}
@@ -816,6 +893,11 @@ function EntryForm({
   imageFile,
   setImageFile,
   sectionImageFiles,
+  photoFiles,
+  onAddPhoto,
+  onUpdatePhoto,
+  onRemovePhoto,
+  onPhotoFileChange,
   onAddSection,
   onUpdateSection,
   onRemoveSection,
@@ -838,6 +920,11 @@ function EntryForm({
   imageFile: File | null;
   setImageFile: (f: File | null) => void;
   sectionImageFiles: (File | null)[][];
+  photoFiles: (File | null)[];
+  onAddPhoto: () => void;
+  onUpdatePhoto: (index: number, value: string) => void;
+  onRemovePhoto: (index: number) => void;
+  onPhotoFileChange: (index: number, file: File | null) => void;
   onAddSection: () => void;
   onUpdateSection: (index: number, patch: Partial<Section>) => void;
   onRemoveSection: (index: number) => void;
@@ -1134,6 +1221,31 @@ function EntryForm({
           {entry.sections.length === 0 && (
             <p className="text-muted text-xs">No additional sections yet.</p>
           )}
+        </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-xs uppercase tracking-wide text-muted">Photo Gallery (optional)</label>
+          <button onClick={onAddPhoto} type="button" className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover">
+            <Plus size={14} /> Add Photo
+          </button>
+        </div>
+        <div className="space-y-2">
+          {(entry.photos ?? []).map((photo, index) => (
+            <div key={index} className="flex items-start gap-2">
+              <div className="flex-1">
+                <input value={photo} onChange={(e) => onUpdatePhoto(index, e.target.value)} placeholder={`/images/${CONFIG[kind].imageFolder}/example-photo.png`} className={inputClass} />
+                <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
+                  <Upload size={16} className="text-muted shrink-0" />
+                  <span className="truncate">{photoFiles[index]?.name ?? "Or upload a photo…"}</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => onPhotoFileChange(index, e.target.files?.[0] ?? null)} />
+                </label>
+              </div>
+              <button type="button" onClick={() => onRemovePhoto(index)} aria-label={`Remove photo ${index + 1}`} className="p-1.5 mt-1 text-muted hover:text-red-400 transition-colors"><Trash2 size={14} /></button>
+            </div>
+          ))}
+          {(entry.photos ?? []).length === 0 && <p className="text-muted text-xs">No gallery photos added.</p>}
         </div>
       </div>
 

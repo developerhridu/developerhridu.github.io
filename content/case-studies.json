@@ -211,22 +211,18 @@
           ],
           "alt": "",
           "body": "Each layer had its own validation mechanism, and the migration moved toward production only after the target behavior had been exercised.\n\n---\n\n## What I Actually Engineered\n\nThe most important part of this project was not the amount of SQL I converted. It was the **migration system around the conversion work**.\n\nI designed and implemented:\n\n- **O2P**, an Oracle-to-PostgreSQL schema/data migration and incremental synchronization tool;\n- an **agentic database-object conversion workflow** with target execution and repair loops;\n- an **application migration workflow** for Oracle ADO.NET → Npgsql;\n- **4,000+ repository-level integration tests** to validate migrated application behavior;\n- an **Apache Airflow synchronization architecture** to replace Oracle DB Links; and\n- the end-to-end migration and cutover workflow across database, application, data, and integration layers.\n\n> \n**Core engineering principle:** AI-generated code was never considered migrated because it looked correct. It had to survive **execution, testing, failure analysis, correction, and retesting**.\n\n>\n\n---\n\n## Results\n\n| Engineering outcome | Result |\n| --- | --- |\n| Production migration | Oracle → PostgreSQL completed in **13 working days** |\n| Data | Approximately **1 TB** migrated |\n| Database estate | **550+ tables** and **1,700+ stored procedures/database objects** migrated |\n| Applications | **23 projects** migrated to PostgreSQL/Npgsql |\n| Validation | **4,000+ repository-level integration tests** created |\n| Integration architecture | Oracle DB Links replaced with **Airflow-managed synchronization** |\n| QA | **0 migration-related bugs reported** |\n| Production | **0 migration-related bugs reported after deployment** |\n\n---\n\n## Final Takeaway\n\n> **The achievement was not simply converting Oracle to PostgreSQL in 13 working days. It was engineering a migration platform and validation loop that allowed one engineer to operate across a production estate of ~1 TB, 550+ tables, 1,700+ database objects, and 23 applications—while keeping migration-related regressions from being reported in QA or production.**\n> \n\nThe project reinforced a principle I now apply broadly to AI-assisted engineering:\n\n> **AI + context + automation + execution + testing + human engineering judgment** is far more powerful than code generation alone.\n>\n\n## Proof of Work Documents\nO2P Project github repository: https://github.com/developerhridu/O2P"
-        },
-        {
-          "images": [
-            "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-0.png",
-            "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-1.png",
-            "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-2.png",
-            "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-3.png",
-            "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-4.png"
-          ],
-          "alt": "",
-          "body": ""
         }
       ],
       "updatedAt": "2026-10-04T16:06:47.530Z",
       "client": "Banglalink Digital",
-      "image": "/images/case-studies/oracle-to-postgresql-migration-bangladesh.png"
+      "image": "/images/case-studies/oracle-to-postgresql-migration-bangladesh.png",
+      "photos": [
+        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-4.png",
+        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-3.png",
+        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-2.png",
+        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-1.png",
+        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-0.png"
+      ]
     }
   ]
 }

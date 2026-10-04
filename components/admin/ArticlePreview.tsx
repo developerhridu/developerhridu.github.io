@@ -10,12 +10,13 @@ interface ArticlePreviewProps {
   entry: ArticleDetailProps["entry"] & Partial<Pick<Project, "liveUrl" | "githubUrl">>;
   imageFile: File | null;
   sectionImageFiles: (File | null)[][];
+  photoFiles: (File | null)[];
 }
 
-export default function ArticlePreview({ kind, entry, imageFile, sectionImageFiles }: ArticlePreviewProps) {
+export default function ArticlePreview({ kind, entry, imageFile, sectionImageFiles, photoFiles }: ArticlePreviewProps) {
   const files = useMemo(
-    () => [...new Set([imageFile, ...sectionImageFiles.flat()].filter((file): file is File => file !== null))],
-    [imageFile, sectionImageFiles]
+    () => [...new Set([imageFile, ...sectionImageFiles.flat(), ...photoFiles].filter((file): file is File => file !== null))],
+    [imageFile, sectionImageFiles, photoFiles]
   );
   const [imageUrls, setImageUrls] = useState<Map<File, string>>(new Map());
 
@@ -40,6 +41,7 @@ export default function ArticlePreview({ kind, entry, imageFile, sectionImageFil
         return file ? imageUrls.get(file) ?? "" : image;
       }).filter((image) => image.trim()),
     })).filter((section) => section.body.trim() || section.images.length > 0),
+    photos: (entry.photos ?? []).map((photo, index) => photoFiles[index] ? imageUrls.get(photoFiles[index]!) ?? "" : photo).filter((photo) => photo.trim()),
   };
 
   return (
