@@ -21,6 +21,11 @@
       "published": true
     },
     {
+      "id": "projects",
+      "label": "Projects",
+      "published": true
+    },
+    {
       "id": "experience",
       "label": "Experience",
       "published": true
@@ -43,11 +48,6 @@
     {
       "id": "testimonials",
       "label": "Testimonials",
-      "published": true
-    },
-    {
-      "id": "projects",
-      "label": "Projects",
       "published": true
     },
     {
