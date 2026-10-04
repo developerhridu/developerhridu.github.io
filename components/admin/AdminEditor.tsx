@@ -31,7 +31,7 @@ import {
   seoConfig,
 } from "@/components/admin/arrayConfigs";
 
-const PASSWORD_OK_KEY = "admin_pw_ok";
+const PASSWORD_KEY = "admin_password";
 
 type Tab =
   | "dashboard"
@@ -63,6 +63,7 @@ const TABS: { key: Tab; label: string }[] = adminMenuData.tabs
   .map((t) => ({ key: t.id as Tab, label: t.label }));
 
 export default function AdminEditor() {
+  const [credentialsLoaded, setCredentialsLoaded] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [passwordError, setPasswordError] = useState<string | null>(null);
@@ -73,16 +74,22 @@ export default function AdminEditor() {
 
   const [tab, setTab] = useState<Tab>("dashboard");
 
+  /* eslint-disable react-hooks/set-state-in-effect -- Restore browser-only credentials after hydration. */
   useEffect(() => {
-    if (sessionStorage.getItem(PASSWORD_OK_KEY) === "1") setUnlocked(true);
+    const savedPassword = localStorage.getItem(PASSWORD_KEY);
+    if (savedPassword) {
+      setUnlocked(true);
+    }
     const savedToken = localStorage.getItem(TOKEN_KEY);
     if (savedToken) setToken(savedToken);
+    setCredentialsLoaded(true);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (passwordInput === configData.password) {
-      sessionStorage.setItem(PASSWORD_OK_KEY, "1");
+      localStorage.setItem(PASSWORD_KEY, passwordInput);
       setUnlocked(true);
       setPasswordError(null);
       setPasswordInput("");
@@ -110,8 +117,12 @@ export default function AdminEditor() {
   }
 
   function handleLogout() {
-    sessionStorage.removeItem(PASSWORD_OK_KEY);
+    localStorage.removeItem(PASSWORD_KEY);
     setUnlocked(false);
+  }
+
+  if (!credentialsLoaded) {
+    return <p role="status" className="text-muted text-sm">Loading content editor...</p>;
   }
 
   if (!unlocked) {

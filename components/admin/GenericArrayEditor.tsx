@@ -9,7 +9,7 @@ import {
   GitHubApiError,
   type FileChange,
 } from "@/lib/github";
-import { Pencil, Trash2, Plus, ExternalLink, X, Upload, ArrowUp, ArrowDown } from "lucide-react";
+import { Pencil, Trash2, Plus, ExternalLink, Eye, X, Upload, ArrowUp, ArrowDown } from "lucide-react";
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
 import ClientMultiSelect from "@/components/admin/ClientMultiSelect";
 import CaseStudyMultiSelect from "@/components/admin/CaseStudyMultiSelect";
@@ -72,6 +72,7 @@ export interface ArrayConfig {
   subtitleField?: string;
   subtitleFormat?: (value: unknown) => string;
   imageFolder?: string;
+  viewPath?: string;
   fields: FieldDef[];
   extraNormalizeIn?: (raw: RawEntry) => Record<string, string>;
   extraTransformOut?: (out: RawEntry, form: FormState) => RawEntry;
@@ -571,6 +572,9 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
                 <tbody>
                   {entries.map((entry, index) => {
                     const title = String(entry[config.titleField] ?? "Untitled");
+                    const viewUrl = config.viewPath && typeof entry.slug === "string" && entry.slug.trim()
+                      ? `${config.viewPath}/${encodeURIComponent(entry.slug)}`
+                      : null;
                     return (
                       <tr key={String(entry.id)} className="border-b border-border last:border-b-0">
                         <td className="px-4 py-3 min-w-0">
@@ -606,6 +610,17 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
                             >
                               <ArrowDown size={16} />
                             </IconButton>
+                            {viewUrl && (
+                              <a
+                                href={viewUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`View ${title}`}
+                                className="p-2 text-muted hover:text-foreground transition-colors"
+                              >
+                                <Eye size={16} />
+                              </a>
+                            )}
                             <IconButton
                               onClick={() => startEdit(index)}
                               aria-label={`Edit ${title}`}

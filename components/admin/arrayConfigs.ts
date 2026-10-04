@@ -50,6 +50,7 @@ export const projectsConfig: ArrayConfig = {
   label: "Projects",
   titleField: "title",
   imageFolder: "projects",
+  viewPath: "/projects",
   fields: [
     { key: "title", label: "Title", type: "text" },
     { key: "slug", label: "URL slug", type: "text" },
