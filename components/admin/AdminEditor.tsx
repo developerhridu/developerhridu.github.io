@@ -274,12 +274,12 @@ export default function AdminEditor() {
           <button
             type="button"
             onClick={() => setAdminMenuOpen((open) => !open)}
+            aria-label="Admin menu"
             aria-haspopup="menu"
             aria-expanded={adminMenuOpen}
-            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted hover:text-foreground hover:bg-surface transition-colors"
+            className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-muted hover:text-foreground hover:bg-surface transition-colors"
           >
             <AdminMenuIcon size={16} aria-hidden="true" />
-            Admin Menu
             <ChevronDown size={16} className={`transition-transform ${adminMenuOpen ? "rotate-180" : ""}`} />
           </button>
           {adminMenuOpen && (
