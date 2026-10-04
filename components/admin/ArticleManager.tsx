@@ -23,19 +23,18 @@ import {
 } from "lucide-react";
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
 import ClientMultiSelect from "@/components/admin/ClientMultiSelect";
+import CaseStudyMultiSelect from "@/components/admin/CaseStudyMultiSelect";
+import { ReorderControls } from "@/components/admin/ReorderControls";
+import type { ContentSection, Project } from "@/types";
 import { parseLinkedInPostText, buildLinkedInEmbedBody } from "@/lib/linkedin";
 
-interface Section {
-  images?: string[];
-  alt?: string;
-  body: string;
-}
+type Section = ContentSection;
 
 interface Entry {
   id: string;
   slug: string;
   title: string;
-  date: string;
+  date?: string;
   updatedAt?: string;
   published: boolean;
   description: string;
@@ -44,9 +43,14 @@ interface Entry {
   client?: string;
   body: string;
   sections: Section[];
+  longDescription?: string;
+  liveUrl?: Project["liveUrl"];
+  githubUrl?: Project["githubUrl"];
+  caseStudies?: string[];
+  featured?: boolean;
 }
 
-type ContentKind = "blog" | "case-study";
+type ContentKind = "blog" | "case-study" | "project";
 
 const CONFIG: Record<
   ContentKind,
@@ -54,6 +58,7 @@ const CONFIG: Record<
     path: string;
     arrayKey: string;
     label: string;
+    singularLabel: string;
     hasClient: boolean;
     hasLinkedInImport: boolean;
     imageFolder: string;
@@ -64,6 +69,7 @@ const CONFIG: Record<
     path: "content/blogs.json",
     arrayKey: "posts",
     label: "Blog Posts",
+    singularLabel: "Post",
     hasClient: false,
     hasLinkedInImport: true,
     imageFolder: "blog",
@@ -73,10 +79,21 @@ const CONFIG: Record<
     path: "content/case-studies.json",
     arrayKey: "caseStudies",
     label: "Case Studies",
+    singularLabel: "Case Study",
     hasClient: true,
     hasLinkedInImport: true,
     imageFolder: "case-studies",
     viewPath: "/case-studies",
+  },
+  project: {
+    path: "content/projects.json",
+    arrayKey: "projects",
+    label: "Projects",
+    singularLabel: "Project",
+    hasClient: true,
+    hasLinkedInImport: false,
+    imageFolder: "projects",
+    viewPath: "/projects",
   },
 };
 
@@ -107,12 +124,14 @@ function makeUniqueSlug(base: string, existingSlugs: string[]): string {
   return candidate;
 }
 
-function blankEntry(): Entry {
+function blankEntry(kind: ContentKind): Entry {
   return {
     id: "",
     slug: "",
     title: "",
-    date: new Date().toISOString().slice(0, 10),
+    ...(kind === "project"
+      ? { longDescription: "", liveUrl: null, githubUrl: null, caseStudies: [], featured: false }
+      : { date: new Date().toISOString().slice(0, 10) }),
     published: false,
     description: "",
     tags: [],
@@ -123,13 +142,13 @@ function blankEntry(): Entry {
   };
 }
 
-interface BlogCaseStudyManagerProps {
+interface ArticleManagerProps {
   kind: ContentKind;
   token: string;
   onAuthError: () => void;
 }
 
-export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogCaseStudyManagerProps) {
+export default function ArticleManager({ kind, token, onAuthError }: ArticleManagerProps) {
   const [entries, setEntries] = useState<Entry[] | null>(null);
   const [fileSha, setFileSha] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -142,6 +161,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
   const [isNew, setIsNew] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [sectionImageFiles, setSectionImageFiles] = useState<(File | null)[][]>([]);
+  const [loadedOrderIds, setLoadedOrderIds] = useState<string[]>([]);
 
   const [showLinkedInImport, setShowLinkedInImport] = useState(false);
   const [linkedInUrl, setLinkedInUrl] = useState("");
@@ -152,6 +172,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     setEditing(null);
     setError(null);
     setSuccessMsg(null);
+    setShowLinkedInImport(false);
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kind]);
@@ -164,10 +185,12 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
       const parsed = JSON.parse(content);
       const loaded: Entry[] = (parsed[CONFIG[kind].arrayKey] ?? []).map((e: Entry) => ({
         ...e,
+        body: e.body ?? "",
         sections: e.sections ?? [],
         published: e.published ?? true,
       }));
       setEntries(loaded);
+      setLoadedOrderIds(loaded.map((entry) => entry.id));
       setFileSha(sha);
     } catch (err) {
       handleApiError(err);
@@ -187,7 +210,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
   }
 
   function startNew() {
-    setEditing(blankEntry());
+    setEditing(blankEntry(kind));
     setTagsText("");
     setIsNew(true);
     setImageFile(null);
@@ -229,7 +252,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     const slug = makeUniqueSlug(parsed.title, (entries ?? []).map((e) => e.slug));
 
     setEditing({
-      ...blankEntry(),
+      ...blankEntry(kind),
       title: parsed.title,
       slug,
       description: parsed.description,
@@ -427,6 +450,21 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
       sections,
       updatedAt: new Date().toISOString(),
     };
+    if (kind === "project") {
+      finalEntry.liveUrl = editing.liveUrl?.trim() || null;
+      const github = editing.githubUrl;
+      if (github && typeof github === "object") {
+        const frontend = github.frontend?.trim();
+        const backend = github.backend?.trim();
+        finalEntry.githubUrl = frontend || backend
+          ? { ...(frontend ? { frontend } : {}), ...(backend ? { backend } : {}) }
+          : null;
+      } else {
+        finalEntry.githubUrl = github?.trim() || null;
+      }
+      finalEntry.featured = editing.featured ?? false;
+      finalEntry.caseStudies = editing.caseStudies ?? [];
+    }
     let updated: Entry[];
 
     if (isNew) {
@@ -442,9 +480,10 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     }
 
     const message = isNew ? `content: add ${editing.title}` : `content: update ${editing.title}`;
-    await commit(changes, updated, message);
-    setImageFile(null);
-    setSectionImageFiles(sections.map((s) => (s.images ?? []).map(() => null)));
+    if (await commit(changes, updated, message)) {
+      setImageFile(null);
+      setSectionImageFiles(sections.map((s) => (s.images ?? []).map(() => null)));
+    }
   }
 
   async function handleDelete(entry: Entry) {
@@ -463,9 +502,25 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
     await commit(changes, updated, `content: delete ${entry.title}`);
   }
 
-  const sortedEntries = entries
-    ? [...entries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    : null;
+  const orderDirty = kind === "project" && entries !== null &&
+    entries.map((entry) => entry.id).join("|") !== loadedOrderIds.join("|");
+
+  function moveEntry(index: number, direction: -1 | 1) {
+    setEntries((previous) => {
+      if (!previous) return previous;
+      const target = index + direction;
+      if (target < 0 || target >= previous.length) return previous;
+      const next = [...previous];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
+  }
+
+  const sortedEntries = kind === "project"
+    ? entries
+    : entries && [...entries].sort(
+      (a, b) => new Date(b.date ?? "").getTime() - new Date(a.date ?? "").getTime()
+    );
 
   return (
     <div>
@@ -490,6 +545,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
 
       {editing ? (
         <EntryForm
+          kind={kind}
           entry={editing}
           setEntry={setEditing}
           tagsText={tagsText}
@@ -523,7 +579,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
               className="flex items-center gap-1.5 px-4 py-2 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors"
             >
               <Plus size={16} />
-              New {kind === "blog" ? "Post" : "Case Study"}
+              New {CONFIG[kind].singularLabel}
             </button>
             {CONFIG[kind].hasLinkedInImport && !showLinkedInImport && (
               <button
@@ -533,6 +589,13 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
                 <Linkedin size={16} />
                 Import from LinkedIn
               </button>
+            )}
+            {orderDirty && (
+              <ReorderControls
+                saving={saving}
+                onSave={() => { if (entries) void commit([], entries, "content: reorder Projects"); }}
+                onDiscard={() => void load()}
+              />
             )}
           </div>
 
@@ -607,7 +670,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedEntries.map((entry) => (
+                  {sortedEntries.map((entry, index) => (
                     <tr key={entry.id} className="border-b border-border last:border-b-0">
                       <td className="px-4 py-3 min-w-0">
                         <p className="text-foreground font-medium truncate flex items-center gap-2">
@@ -619,11 +682,29 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
                           )}
                         </p>
                         <p className="text-muted text-xs">
-                          {entry.date} · /{entry.slug}
+                          {entry.date ? `${entry.date} · ` : ""}/{entry.slug}
                         </p>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2">
+                          {kind === "project" && (
+                            <>
+                              <IconButton
+                                onClick={() => moveEntry(index, -1)}
+                                disabled={saving || index === 0}
+                                aria-label={`Move ${entry.title} up`}
+                              >
+                                <ArrowUp size={16} />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => moveEntry(index, 1)}
+                                disabled={saving || index === sortedEntries.length - 1}
+                                aria-label={`Move ${entry.title} down`}
+                              >
+                                <ArrowDown size={16} />
+                              </IconButton>
+                            </>
+                          )}
                           <a
                             href={`${CONFIG[kind].viewPath}/${entry.slug}`}
                             target="_blank"
@@ -661,6 +742,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
 }
 
 function EntryForm({
+  kind,
   entry,
   setEntry,
   tagsText,
@@ -682,6 +764,7 @@ function EntryForm({
   onSave,
   onTitleBlur,
 }: {
+  kind: ContentKind;
   entry: Entry;
   setEntry: (e: Entry) => void;
   tagsText: string;
@@ -733,16 +816,18 @@ function EntryForm({
         />
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Date</label>
-          <input
-            type="date"
-            value={entry.date}
-            onChange={(e) => setEntry({ ...entry, date: e.target.value })}
-            className={inputClass}
-          />
-        </div>
+      <div className={`grid gap-4 ${kind !== "project" ? "sm:grid-cols-2" : ""}`}>
+        {kind !== "project" && (
+          <div>
+            <label className="block text-xs uppercase tracking-wide text-muted mb-1">Date</label>
+            <input
+              type="date"
+              value={entry.date ?? ""}
+              onChange={(e) => setEntry({ ...entry, date: e.target.value })}
+              className={inputClass}
+            />
+          </div>
+        )}
         <div>
           <label className="block text-xs uppercase tracking-wide text-muted mb-1">
             Cover / Thumbnail Image URL
@@ -750,7 +835,7 @@ function EntryForm({
           <input
             value={entry.image ?? ""}
             onChange={(e) => setEntry({ ...entry, image: e.target.value })}
-            placeholder="/images/blog/example.png"
+            placeholder={`/images/${CONFIG[kind].imageFolder}/example.png`}
             className={inputClass}
           />
         </div>
@@ -764,9 +849,21 @@ function EntryForm({
           className="w-4 h-4 accent-accent"
         />
         <span className="text-sm text-foreground">
-          Published <span className="text-muted">(visible in listings, sitemap &amp; RSS — unchecked stays a draft, still previewable via View)</span>
+          Published <span className="text-muted">(visible in listings and sitemap{kind !== "project" && " & RSS"} — unchecked stays a draft, still previewable via View)</span>
         </span>
       </label>
+
+      {kind === "project" && (
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={entry.featured ?? false}
+            onChange={(e) => setEntry({ ...entry, featured: e.target.checked })}
+            className="w-4 h-4 accent-accent"
+          />
+          <span className="text-sm text-foreground">Featured</span>
+        </label>
+      )}
 
       <div>
         <label className="block text-xs uppercase tracking-wide text-muted mb-1">
@@ -820,6 +917,21 @@ function EntryForm({
           className={`${inputClass} resize-none`}
         />
       </div>
+
+      {kind === "project" && (
+        <div>
+          <label htmlFor="project-long-description" className="block text-xs uppercase tracking-wide text-muted mb-1">
+            Long Description
+          </label>
+          <textarea
+            id="project-long-description"
+            value={entry.longDescription ?? ""}
+            onChange={(e) => setEntry({ ...entry, longDescription: e.target.value })}
+            rows={4}
+            className={`${inputClass} resize-y`}
+          />
+        </div>
+      )}
 
       <div>
         <label className="block text-xs uppercase tracking-wide text-muted mb-1">Body (Markdown)</label>
@@ -895,7 +1007,7 @@ function EntryForm({
                         <input
                           value={image}
                           onChange={(e) => onUpdateSectionImageUrl(i, j, e.target.value)}
-                          placeholder="/images/blog/example-section.png"
+                          placeholder={`/images/${CONFIG[kind].imageFolder}/example-section.png`}
                           className={inputClass}
                         />
                         <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
@@ -961,6 +1073,8 @@ function EntryForm({
         </div>
       </div>
 
+      {kind === "project" && <ProjectLinkFields entry={entry} setEntry={setEntry} />}
+
       <div className="flex items-center gap-3 pt-2">
         <button
           onClick={onSave}
@@ -976,6 +1090,65 @@ function EntryForm({
         >
           Cancel
         </button>
+      </div>
+    </div>
+  );
+}
+
+function ProjectLinkFields({ entry, setEntry }: { entry: Entry; setEntry: (entry: Entry) => void }) {
+  const repositories = typeof entry.githubUrl === "object" ? entry.githubUrl : null;
+  const fields = [
+    {
+      key: "live",
+      label: "Live URL",
+      value: entry.liveUrl ?? "",
+      onChange: (value: string) => setEntry({ ...entry, liveUrl: value }),
+    },
+    {
+      key: "repository",
+      label: "GitHub URL (single repo)",
+      value: typeof entry.githubUrl === "string" ? entry.githubUrl : "",
+      onChange: (value: string) => setEntry({ ...entry, githubUrl: value }),
+    },
+    {
+      key: "frontend",
+      label: "GitHub Frontend URL",
+      value: repositories?.frontend ?? "",
+      onChange: (value: string) => setEntry({ ...entry, githubUrl: { ...repositories, frontend: value } }),
+    },
+    {
+      key: "backend",
+      label: "GitHub Backend URL",
+      value: repositories?.backend ?? "",
+      onChange: (value: string) => setEntry({ ...entry, githubUrl: { ...repositories, backend: value } }),
+    },
+  ];
+
+  return (
+    <div className="space-y-4 border-t border-border pt-4">
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-accent">Project Links</h3>
+      <p className="text-xs text-muted">Use a single GitHub repository or separate frontend and backend repositories.</p>
+      <div className="grid sm:grid-cols-2 gap-4">
+        {fields.map((field) => (
+          <div key={field.key}>
+            <label htmlFor={`project-${field.key}`} className="block text-xs uppercase tracking-wide text-muted mb-1">
+              {field.label}
+            </label>
+            <input
+              id={`project-${field.key}`}
+              value={field.value}
+              onChange={(e) => field.onChange(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+        ))}
+      </div>
+      <div>
+        <label className="block text-xs uppercase tracking-wide text-muted mb-1">Related Case Studies</label>
+        <CaseStudyMultiSelect
+          value={(entry.caseStudies ?? []).join(", ")}
+          onChange={(value) => setEntry({ ...entry, caseStudies: value.split(",").map((slug) => slug.trim()).filter(Boolean) })}
+        />
       </div>
     </div>
   );

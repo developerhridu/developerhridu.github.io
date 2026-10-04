@@ -82,6 +82,7 @@ export interface Project {
   description: string;
   longDescription?: string;
   body?: string;
+  sections?: ContentSection[];
   caseStudies?: string[];
   image: string;
   client?: string;

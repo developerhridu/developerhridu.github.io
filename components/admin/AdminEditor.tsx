@@ -5,7 +5,7 @@ import { LogOut, FileText } from "lucide-react";
 import configData from "@/content/config.json";
 import adminMenuData from "@/content/admin-menu.json";
 import { inputClass, TOKEN_KEY, TOKEN_CHANGED_EVENT } from "@/components/admin/shared";
-import BlogCaseStudyManager from "@/components/admin/BlogCaseStudyManager";
+import ArticleManager from "@/components/admin/ArticleManager";
 import GenericArrayEditor from "@/components/admin/GenericArrayEditor";
 import ExperienceManager from "@/components/admin/ExperienceManager";
 import TestimonialsManager from "@/components/admin/TestimonialsManager";
@@ -20,7 +20,6 @@ import TasksManager from "@/components/admin/TasksManager";
 import {
   educationConfig,
   certificationsConfig,
-  projectsConfig,
   clientsConfig,
   menuConfig,
   adminMenuConfig,
@@ -226,9 +225,9 @@ export default function AdminEditor() {
       </div>
 
       {tab === "dashboard" && <Dashboard token={token} onAuthError={handleAuthError} />}
-      {tab === "blog" && <BlogCaseStudyManager kind="blog" token={token} onAuthError={handleAuthError} />}
+      {tab === "blog" && <ArticleManager key="blog" kind="blog" token={token} onAuthError={handleAuthError} />}
       {tab === "case-study" && (
-        <BlogCaseStudyManager kind="case-study" token={token} onAuthError={handleAuthError} />
+        <ArticleManager key="case-study" kind="case-study" token={token} onAuthError={handleAuthError} />
       )}
       {tab === "experience" && <ExperienceManager token={token} onAuthError={handleAuthError} />}
       {tab === "services" && (
@@ -242,7 +241,7 @@ export default function AdminEditor() {
       )}
       {tab === "testimonials" && <TestimonialsManager token={token} onAuthError={handleAuthError} />}
       {tab === "projects" && (
-        <GenericArrayEditor config={projectsConfig} token={token} onAuthError={handleAuthError} />
+        <ArticleManager key="project" kind="project" token={token} onAuthError={handleAuthError} />
       )}
       {tab === "clients" && (
         <GenericArrayEditor config={clientsConfig} token={token} onAuthError={handleAuthError} />

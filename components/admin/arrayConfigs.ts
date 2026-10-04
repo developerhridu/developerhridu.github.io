@@ -44,58 +44,6 @@ export const certificationsConfig: ArrayConfig = {
   },
 };
 
-export const projectsConfig: ArrayConfig = {
-  path: "content/projects.json",
-  arrayKey: "projects",
-  label: "Projects",
-  titleField: "title",
-  imageFolder: "projects",
-  viewPath: "/projects",
-  fields: [
-    { key: "title", label: "Title", type: "text" },
-    { key: "slug", label: "URL slug", type: "text" },
-    { key: "client", label: "Client(s)", type: "clients" },
-    { key: "tags", label: "Tags (comma separated)", type: "tags", width: "full" },
-
-    { key: "description", label: "Short description", type: "textarea", section: "Content", rows: 2 },
-    { key: "longDescription", label: "Long description", type: "textarea", section: "Content", rows: 4 },
-    { key: "body", label: "Body (markdown, optional)", type: "textarea", section: "Content", rows: 14 },
-    { key: "image", label: "Image", type: "image", section: "Content" },
-
-    { key: "liveUrl", label: "Live URL", type: "url", section: "Links" },
-    { key: "githubUrl", label: "GitHub URL (single repo)", type: "url", section: "Links" },
-    { key: "githubUrlFrontend", label: "GitHub Frontend URL", type: "url", section: "Links" },
-    { key: "githubUrlBackend", label: "GitHub Backend URL", type: "url", section: "Links" },
-    { key: "caseStudies", label: "Related Case Studies", type: "caseStudies", section: "Links" },
-
-    { key: "featured", label: "Featured", type: "boolean", section: "Visibility" },
-    { key: "published", label: "Published (visible on the site)", type: "boolean", defaultBoolean: true, section: "Visibility" },
-  ],
-  extraNormalizeIn: (raw) => {
-    const g = raw.githubUrl;
-    if (g && typeof g === "object") {
-      const obj = g as { frontend?: string; backend?: string };
-      return { githubUrl: "", githubUrlFrontend: obj.frontend ?? "", githubUrlBackend: obj.backend ?? "" };
-    }
-    return { githubUrl: (g as string) ?? "", githubUrlFrontend: "", githubUrlBackend: "" };
-  },
-  extraTransformOut: (out, form) => {
-    const single = String(form.githubUrl ?? "").trim();
-    const fe = String(form.githubUrlFrontend ?? "").trim();
-    const be = String(form.githubUrlBackend ?? "").trim();
-    delete out.githubUrlFrontend;
-    delete out.githubUrlBackend;
-    if (fe || be) {
-      out.githubUrl = { ...(fe ? { frontend: fe } : {}), ...(be ? { backend: be } : {}) };
-    } else if (single) {
-      out.githubUrl = single;
-    } else {
-      out.githubUrl = null;
-    }
-    return out;
-  },
-};
-
 export const clientsConfig: ArrayConfig = {
   path: "content/clients.json",
   arrayKey: "clients",
