@@ -111,6 +111,9 @@ const ICONS: Record<string, LucideIcon> = {
   quote: Quote,
 };
 
+const adminMenuIconKey = adminMenuData.tabs.find((item) => item.id === "admin-menu")?.icon;
+const AdminMenuIcon = ICONS[adminMenuIconKey ?? ""] ?? CircleHelp;
+
 export default function AdminEditor() {
   const [credentialsLoaded, setCredentialsLoaded] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
@@ -124,6 +127,8 @@ export default function AdminEditor() {
   const [tab, setTab] = useState<Tab>("dashboard");
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const adminMenuRef = useRef<HTMLDivElement>(null);
+  const selectedTab = TABS.find((item) => item.key === tab);
+  const SelectedTabIcon = selectedTab ? ICONS[selectedTab.icon] ?? CircleHelp : CircleHelp;
 
   /* eslint-disable react-hooks/set-state-in-effect -- Restore browser-only credentials after hydration. */
   useEffect(() => {
@@ -259,8 +264,12 @@ export default function AdminEditor() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Content Editor</h1>
+      <div className="flex items-center justify-between gap-3 mb-6">
+        <h1 className="shrink-0 text-2xl font-bold text-foreground">Content Editor</h1>
+        <div className="flex min-w-0 flex-1 items-center justify-center gap-2 text-sm font-medium text-foreground" aria-live="polite">
+          <SelectedTabIcon size={17} className="shrink-0 text-accent" aria-hidden="true" />
+          <span className="truncate">{selectedTab?.label ?? "Dashboard"}</span>
+        </div>
         <div className="relative" ref={adminMenuRef}>
           <button
             type="button"
@@ -269,6 +278,7 @@ export default function AdminEditor() {
             aria-expanded={adminMenuOpen}
             className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted hover:text-foreground hover:bg-surface transition-colors"
           >
+            <AdminMenuIcon size={16} aria-hidden="true" />
             Admin Menu
             <ChevronDown size={16} className={`transition-transform ${adminMenuOpen ? "rotate-180" : ""}`} />
           </button>
