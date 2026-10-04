@@ -6,8 +6,8 @@
       "published": true
     },
     {
-      "id": "tasks",
-      "label": "Tasks",
+      "id": "case-study",
+      "label": "Case Studies",
       "published": true
     },
     {
@@ -16,13 +16,13 @@
       "published": true
     },
     {
-      "id": "case-study",
-      "label": "Case Studies",
+      "id": "projects",
+      "label": "Projects",
       "published": true
     },
     {
-      "id": "projects",
-      "label": "Projects",
+      "id": "tasks",
+      "label": "Tasks",
       "published": true
     },
     {
