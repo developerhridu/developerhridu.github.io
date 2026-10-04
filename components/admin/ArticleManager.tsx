@@ -24,6 +24,7 @@ import {
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
 import ClientMultiSelect from "@/components/admin/ClientMultiSelect";
 import CaseStudyMultiSelect from "@/components/admin/CaseStudyMultiSelect";
+import ArticlePreview from "@/components/admin/ArticlePreview";
 import { ReorderControls } from "@/components/admin/ReorderControls";
 import type { ContentSection, Project } from "@/types";
 import { parseLinkedInPostText, buildLinkedInEmbedBody } from "@/lib/linkedin";
@@ -157,6 +158,7 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const [editing, setEditing] = useState<Entry | null>(null);
+  const [mode, setMode] = useState<"edit" | "view">("edit");
   const [tagsText, setTagsText] = useState("");
   const [isNew, setIsNew] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -210,6 +212,7 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
   }
 
   function startNew() {
+    setMode("edit");
     setEditing(blankEntry(kind));
     setTagsText("");
     setIsNew(true);
@@ -219,7 +222,8 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
     setError(null);
   }
 
-  function startEdit(entry: Entry) {
+  function startEdit(entry: Entry, nextMode: "edit" | "view" = "edit") {
+    setMode(nextMode);
     const sections = entry.sections ?? [];
     setEditing({ ...entry, sections });
     setTagsText(entry.tags.join(", "));
@@ -251,6 +255,7 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
     const parsed = parseLinkedInPostText(linkedInText);
     const slug = makeUniqueSlug(parsed.title, (entries ?? []).map((e) => e.slug));
 
+    setMode("edit");
     setEditing({
       ...blankEntry(kind),
       title: parsed.title,
@@ -544,33 +549,95 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
       )}
 
       {editing ? (
-        <EntryForm
-          kind={kind}
-          entry={editing}
-          setEntry={setEditing}
-          tagsText={tagsText}
-          setTagsText={setTagsText}
-          hasClient={CONFIG[kind].hasClient}
-          saving={saving}
-          imageFile={imageFile}
-          setImageFile={setImageFile}
-          sectionImageFiles={sectionImageFiles}
-          onAddSection={addSection}
-          onUpdateSection={updateSection}
-          onRemoveSection={removeSection}
-          onMoveSection={moveSection}
-          onAddSectionImage={addSectionImage}
-          onUpdateSectionImageUrl={updateSectionImageUrl}
-          onRemoveSectionImage={removeSectionImage}
-          onSectionImageFileChange={setSectionImageFile}
-          onCancel={cancelEdit}
-          onSave={() => void handleSave()}
-          onTitleBlur={() => {
-            if (isNew && editing && !editing.slug) {
-              setEditing({ ...editing, slug: slugify(editing.title) });
-            }
-          }}
-        />
+        <div>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2" role="group" aria-label="Article mode">
+              {(["edit", "view"] as const).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={mode === value}
+                  onClick={() => setMode(value)}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                    mode === value ? "bg-accent text-accent-foreground" : "border border-border text-muted hover:text-foreground"
+                  }`}
+                >
+                  {value === "edit" ? <Pencil size={16} /> : <Eye size={16} />}
+                  {value === "edit" ? "Edit" : "View"}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              {!isNew && (
+                <a
+                  href={`${CONFIG[kind].viewPath}/${encodeURIComponent(entries?.find((entry) => entry.id === editing.id)?.slug ?? editing.slug)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground"
+                >
+                  Open live page <ExternalLink size={14} />
+                </a>
+              )}
+              {mode === "view" && (
+                <button
+                  type="button"
+                  onClick={() => void handleSave()}
+                  disabled={saving}
+                  className="px-4 py-2 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                >
+                  {saving ? "Saving…" : "Save"}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={cancelEdit}
+                disabled={saving}
+                className="text-sm text-muted hover:text-foreground disabled:opacity-50"
+              >
+                Back to {CONFIG[kind].label}
+              </button>
+            </div>
+          </div>
+          {mode === "view" ? (
+            <div className="border border-border rounded-xl overflow-hidden">
+              <p className="border-b border-border px-6 py-3 text-sm text-muted">Preview of your current edits.</p>
+              <ArticlePreview
+                kind={kind}
+                entry={{ ...editing, tags: tagsText.split(",").map((tag) => tag.trim()).filter(Boolean) }}
+                imageFile={imageFile}
+                sectionImageFiles={sectionImageFiles}
+              />
+            </div>
+          ) : (
+            <EntryForm
+              kind={kind}
+              entry={editing}
+              setEntry={setEditing}
+              tagsText={tagsText}
+              setTagsText={setTagsText}
+              hasClient={CONFIG[kind].hasClient}
+              saving={saving}
+              imageFile={imageFile}
+              setImageFile={setImageFile}
+              sectionImageFiles={sectionImageFiles}
+              onAddSection={addSection}
+              onUpdateSection={updateSection}
+              onRemoveSection={removeSection}
+              onMoveSection={moveSection}
+              onAddSectionImage={addSectionImage}
+              onUpdateSectionImageUrl={updateSectionImageUrl}
+              onRemoveSectionImage={removeSectionImage}
+              onSectionImageFileChange={setSectionImageFile}
+              onCancel={cancelEdit}
+              onSave={() => void handleSave()}
+              onTitleBlur={() => {
+                if (isNew && editing && !editing.slug) {
+                  setEditing({ ...editing, slug: slugify(editing.title) });
+                }
+              }}
+            />
+          )}
+        </div>
       ) : (
         <>
           <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -705,15 +772,12 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
                               </IconButton>
                             </>
                           )}
-                          <a
-                            href={`${CONFIG[kind].viewPath}/${entry.slug}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <IconButton
+                            onClick={() => startEdit(entry, "view")}
                             aria-label={`View ${entry.title}`}
-                            className="p-2 text-muted hover:text-foreground transition-colors"
                           >
                             <Eye size={16} />
-                          </a>
+                          </IconButton>
                           <IconButton
                             onClick={() => startEdit(entry)}
                             aria-label={`Edit ${entry.title}`}

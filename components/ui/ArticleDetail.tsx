@@ -86,7 +86,7 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />}
       <article className={preview ? "py-8" : "py-20"}>
-        <div className="max-w-3xl lg:max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {!preview && <Link
             href={labels.path}
             className="inline-flex items-center gap-2 text-muted hover:text-foreground transition-colors mb-8"
@@ -97,7 +97,7 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
 
           {entry.published === false && (
             <div className="mb-8 px-4 py-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-500 text-sm">
-              {labels.draftMessage}
+              {preview ? "Draft — this entry isn't published." : labels.draftMessage}
             </div>
           )}
 
