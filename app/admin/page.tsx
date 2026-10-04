@@ -7,7 +7,7 @@ export const metadata: Metadata = getSeo("admin");
 export default function AdminPage() {
   return (
     <div className="pt-16 md:pt-0">
-      <section className="py-12">
+      <section className="pt-5 pb-12">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <AdminEditor />
         </div>

@@ -205,7 +205,7 @@ export default function AdminEditor() {
   if (!unlocked) {
     return (
       <div className="max-w-md mx-auto">
-        <h1 className="text-2xl font-bold text-foreground mb-2">Content Editor</h1>
+        {/* <h1 className="text-2xl font-bold text-foreground mb-2">Content Editor</h1> */}
         <p className="text-muted text-sm mb-6">Enter the admin password to continue.</p>
         {passwordError && (
           <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
@@ -234,7 +234,7 @@ export default function AdminEditor() {
 
   if (!token) {
     return (
-      <div className="max-w-md mx-auto">
+      <div className="max-w-md mx-auto -mt-3">
         <h1 className="text-2xl font-bold text-foreground mb-2">Content Editor</h1>
         <p className="text-muted text-sm mb-6">Paste Token</p>
         {tokenError && (
