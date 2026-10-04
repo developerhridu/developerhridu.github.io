@@ -90,8 +90,8 @@ export default function LightboxImage({
           imgClassName={imgClassName}
           initials={initials}
           initialsClassName={initialsClassName}
-          natural={!fixedSize}
-          wrapperClassName={fixedSize ? "absolute inset-0" : undefined}
+          natural
+          wrapperClassName={fixedSize ? "h-full w-full" : undefined}
         />
         <span className="absolute top-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity">
           <Maximize2 size={16} />

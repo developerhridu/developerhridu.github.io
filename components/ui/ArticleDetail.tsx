@@ -188,14 +188,14 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
 
           {entry.photos && entry.photos.length > 0 && (
             <section className="mt-12" aria-label="Photo gallery">
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {entry.photos.map((photo, index) => (
                   <LightboxImage
                     key={`${photo}-${index}`}
                     src={photo}
                     alt={`${entry.title} — photo ${index + 1}`}
-                    wrapperClassName="rounded-xl aspect-square"
-                    imgClassName="w-full h-full object-cover"
+                    wrapperClassName="rounded-lg aspect-video bg-background border border-border"
+                    imgClassName="w-full h-full object-contain"
                     initials={String(index + 1)}
                     fixedSize
                     galleryImages={entry.photos}
