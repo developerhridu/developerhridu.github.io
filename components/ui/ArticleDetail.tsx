@@ -188,8 +188,7 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
 
           {entry.photos && entry.photos.length > 0 && (
             <section className="mt-12" aria-label="Photo gallery">
-              <h2 className="text-2xl font-semibold text-foreground mb-5">Photo Gallery</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 {entry.photos.map((photo, index) => (
                   <LightboxImage
                     key={`${photo}-${index}`}
@@ -198,6 +197,9 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
                     wrapperClassName="rounded-xl aspect-square"
                     imgClassName="w-full h-full object-cover"
                     initials={String(index + 1)}
+                    fixedSize
+                    galleryImages={entry.photos}
+                    galleryIndex={index}
                   />
                 ))}
               </div>
