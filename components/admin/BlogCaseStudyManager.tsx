@@ -412,7 +412,7 @@ export default function BlogCaseStudyManager({ kind, token, onAuthError }: BlogC
           images: uploadedImages.filter((u) => u.trim()),
         });
       }
-      sections = uploadedSections.filter((s) => s.body.trim());
+      sections = uploadedSections.filter((s) => s.body.trim() || (s.images?.length ?? 0) > 0);
     } catch (err) {
       handleApiError(err);
       setSaving(false);
@@ -943,12 +943,13 @@ function EntryForm({
 
               <div>
                 <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-                  Section Body (Markdown)
+                  Section Body (Markdown, optional)
                 </label>
                 <textarea
                   value={section.body}
                   onChange={(e) => onUpdateSection(i, { body: e.target.value })}
                   rows={8}
+                  placeholder="Optional text to accompany the images. Leave blank for an image-only section."
                   className={`${inputClass} font-mono text-sm`}
                 />
               </div>

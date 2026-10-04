@@ -172,7 +172,7 @@ export interface SkillsCategory {
   testing: string[];
 }
 
-// Shared content section type (any number of images + required body)
+// Shared content section type (images, text, or both; body may be empty for image-only sections)
 export interface ContentSection {
   images?: string[];
   alt?: string;

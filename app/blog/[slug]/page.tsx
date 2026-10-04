@@ -183,7 +183,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 <div key={idx}>
                   {section.images && section.images.length > 0 && (
                     <div
-                      className={`mb-6 ${
+                      className={`${section.body.trim() ? "mb-6" : ""} ${
                         section.images.length > 1 ? "grid sm:grid-cols-2 gap-4" : ""
                       }`}
                     >
@@ -199,11 +199,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                       ))}
                     </div>
                   )}
-                  <div className="prose-content">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-                      {section.body}
-                    </ReactMarkdown>
-                  </div>
+                  {section.body.trim() && (
+                    <div className="prose-content">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                        {section.body}
+                      </ReactMarkdown>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
