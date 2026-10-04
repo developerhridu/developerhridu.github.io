@@ -1,7 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { LogOut, FileText } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  BriefcaseBusiness,
+  BookOpenCheck,
+  ChartNoAxesColumnIncreasing,
+  ChevronDown,
+  CircleHelp,
+  FileText,
+  FolderCode,
+  GraduationCap,
+  Languages,
+  LayoutDashboard,
+  ListTree,
+  ListTodo,
+  LogOut,
+  Menu as MenuIcon,
+  MessagesSquare,
+  Newspaper,
+  PanelsTopLeft,
+  Search,
+  SearchCheck,
+  Tags,
+  UserRound,
+  UsersRound,
+  Wrench,
+  Quote,
+  type LucideIcon,
+} from "lucide-react";
 import configData from "@/content/config.json";
 import adminMenuData from "@/content/admin-menu.json";
 import { inputClass, TOKEN_KEY, TOKEN_CHANGED_EVENT } from "@/components/admin/shared";
@@ -57,9 +83,33 @@ type Tab =
   | "ui-strings"
   | "faq-script";
 
-const TABS: { key: Tab; label: string }[] = adminMenuData.tabs
+const TABS: { key: Tab; label: string; icon: string }[] = adminMenuData.tabs
   .filter((t) => t.published !== false)
-  .map((t) => ({ key: t.id as Tab, label: t.label }));
+  .map((t) => ({ key: t.id as Tab, label: t.label, icon: t.icon }));
+
+const ICONS: Record<string, LucideIcon> = {
+  "briefcase-business": BriefcaseBusiness,
+  "book-open-check": BookOpenCheck,
+  "chart-no-axes-column-increasing": ChartNoAxesColumnIncreasing,
+  "circle-help": CircleHelp,
+  "folder-code": FolderCode,
+  "graduation-cap": GraduationCap,
+  languages: Languages,
+  "layout-dashboard": LayoutDashboard,
+  "list-todo": ListTodo,
+  "list-tree": ListTree,
+  menu: MenuIcon,
+  "messages-square": MessagesSquare,
+  newspaper: Newspaper,
+  "panels-top-left": PanelsTopLeft,
+  search: Search,
+  "search-check": SearchCheck,
+  tags: Tags,
+  "user-round": UserRound,
+  "users-round": UsersRound,
+  wrench: Wrench,
+  quote: Quote,
+};
 
 export default function AdminEditor() {
   const [credentialsLoaded, setCredentialsLoaded] = useState(false);
@@ -72,6 +122,8 @@ export default function AdminEditor() {
   const [tokenError, setTokenError] = useState<string | null>(null);
 
   const [tab, setTab] = useState<Tab>("dashboard");
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  const adminMenuRef = useRef<HTMLDivElement>(null);
 
   /* eslint-disable react-hooks/set-state-in-effect -- Restore browser-only credentials after hydration. */
   useEffect(() => {
@@ -83,6 +135,26 @@ export default function AdminEditor() {
     if (savedToken) setToken(savedToken);
     setCredentialsLoaded(true);
   }, []);
+
+  useEffect(() => {
+    if (!adminMenuOpen) return;
+
+    function closeOnOutsideClick(event: MouseEvent) {
+      if (event.target instanceof Node && !adminMenuRef.current?.contains(event.target)) {
+        setAdminMenuOpen(false);
+      }
+    }
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setAdminMenuOpen(false);
+    }
+
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [adminMenuOpen]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   function handlePasswordSubmit(e: React.FormEvent) {
@@ -117,6 +189,7 @@ export default function AdminEditor() {
 
   function handleLogout() {
     localStorage.removeItem(PASSWORD_KEY);
+    setAdminMenuOpen(false);
     setUnlocked(false);
   }
 
@@ -188,40 +261,58 @@ export default function AdminEditor() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground">Content Editor</h1>
-        <div className="flex items-center gap-4">
-          <a
-            href="/resume"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors"
-          >
-            <FileText size={14} />
-            View Live Resume
-          </a>
+        <div className="relative" ref={adminMenuRef}>
           <button
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors"
+            type="button"
+            onClick={() => setAdminMenuOpen((open) => !open)}
+            aria-haspopup="menu"
+            aria-expanded={adminMenuOpen}
+            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted hover:text-foreground hover:bg-surface transition-colors"
           >
-            <LogOut size={14} />
-            Sign out
+            Admin Menu
+            <ChevronDown size={16} className={`transition-transform ${adminMenuOpen ? "rotate-180" : ""}`} />
           </button>
+          {adminMenuOpen && (
+            <div role="menu" aria-label="Admin menu" className="absolute right-0 top-full z-50 mt-2 max-h-[min(70vh,32rem)] w-64 overflow-y-auto rounded-xl border border-border bg-surface p-2 shadow-xl">
+              {TABS.map((item) => {
+                const Icon = ICONS[item.icon] ?? CircleHelp;
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    role="menuitem"
+                    onClick={() => { setTab(item.key); setAdminMenuOpen(false); }}
+                    className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors ${tab === item.key ? "bg-accent/10 text-accent" : "text-muted hover:bg-background hover:text-foreground"}`}
+                  >
+                    <Icon size={16} className="shrink-0" aria-hidden="true" />
+                    {item.label}
+                  </button>
+                );
+              })}
+              <div className="my-2 border-t border-border" />
+              <a
+                href="/resume"
+                target="_blank"
+                rel="noopener noreferrer"
+                role="menuitem"
+                onClick={() => setAdminMenuOpen(false)}
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted hover:bg-background hover:text-foreground transition-colors"
+              >
+                <FileText size={15} />
+                View Live Resume
+              </a>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={handleLogout}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-muted hover:bg-background hover:text-foreground transition-colors"
+              >
+                <LogOut size={15} />
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
-      </div>
-
-      <div className="flex flex-wrap gap-2 mb-6 border-b border-border">
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-              tab === t.key
-                ? "border-accent text-accent"
-                : "border-transparent text-muted hover:text-foreground"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
       </div>
 
       {tab === "dashboard" && <Dashboard token={token} onAuthError={handleAuthError} />}

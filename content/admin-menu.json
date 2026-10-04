@@ -3,116 +3,139 @@
     {
       "id": "dashboard",
       "label": "Dashboard",
+      "icon": "layout-dashboard",
       "published": true
     },
     {
       "id": "case-study",
       "label": "Case Studies",
+      "icon": "book-open-check",
       "published": true
     },
     {
       "id": "blog",
       "label": "Blog Posts",
+      "icon": "newspaper",
       "published": true
     },
     {
       "id": "projects",
       "label": "Projects",
+      "icon": "folder-code",
       "published": true
     },
     {
       "id": "tasks",
       "label": "Tasks",
+      "icon": "list-todo",
       "published": true
     },
     {
       "id": "experience",
       "label": "Experience",
+      "icon": "briefcase-business",
       "published": true
     },
     {
       "id": "services",
       "label": "Services",
+      "icon": "wrench",
       "published": true
     },
     {
       "id": "education",
       "label": "Education",
+      "icon": "graduation-cap",
       "published": true
     },
     {
       "id": "certifications",
       "label": "Certifications",
+      "icon": "graduation-cap",
       "published": true
     },
     {
       "id": "testimonials",
       "label": "Testimonials",
+      "icon": "quote",
       "published": true
     },
     {
       "id": "clients",
       "label": "Clients",
+      "icon": "users-round",
       "published": true
     },
     {
       "id": "menu",
       "label": "Menu",
+      "icon": "menu",
       "published": true
     },
     {
       "id": "admin-menu",
       "label": "Admin Menu",
+      "icon": "list-tree",
       "published": true
     },
     {
       "id": "profile",
       "label": "Profile",
+      "icon": "user-round",
       "published": true
     },
     {
       "id": "skills",
       "label": "Skills",
+      "icon": "wrench",
       "published": true
     },
     {
       "id": "proficiency",
       "label": "Proficiency",
+      "icon": "chart-no-axes-column-increasing",
       "published": true
     },
     {
       "id": "chat-log",
       "label": "Chat Log",
+      "icon": "messages-square",
       "published": true
     },
     {
       "id": "search-log",
       "label": "Search Log",
+      "icon": "search",
       "published": true
     },
     {
       "id": "sections",
       "label": "Section Copy",
+      "icon": "panels-top-left",
       "published": true
     },
     {
       "id": "skill-categories",
       "label": "Skill Categories",
+      "icon": "tags",
       "published": true
     },
     {
       "id": "seo",
       "label": "SEO / Metadata",
+      "icon": "search-check",
       "published": true
     },
     {
       "id": "ui-strings",
       "label": "UI Strings",
+      "icon": "languages",
       "published": true
     },
     {
       "id": "faq-script",
       "label": "FAQ Script",
+      "icon": "circle-help",
       "published": true
     }
   ]

@@ -101,6 +101,7 @@ export const adminMenuConfig: ArrayConfig = {
   subtitleField: "id",
   fields: [
     { key: "label", label: "Label", type: "text" },
+    { key: "icon", label: "Icon key", type: "text", placeholder: "layout-dashboard, newspaper, folder-code, wrench…" },
     { key: "published", label: "Published", type: "boolean", defaultBoolean: true },
   ],
 };
