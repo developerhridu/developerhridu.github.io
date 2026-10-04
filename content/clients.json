@@ -69,6 +69,13 @@
       "logo": "",
       "url": null,
       "published": false
+    },
+    {
+      "id": "banglalink-digital",
+      "name": "Banglalink Digital",
+      "logo": "/images/logos/banglalink-digital.jpeg",
+      "url": "https://www.banglalink.net/",
+      "published": true
     }
   ]
 }
