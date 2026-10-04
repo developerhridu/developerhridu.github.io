@@ -160,7 +160,7 @@
       "slug": "oracle-to-postgresql-migration-bangladesh",
       "title": "How I Single Handedly Migrated a Large Oracle Ecosystem to PostgreSQL in 13 Working Days — with Near-Zero Downtime",
       "date": "2026-10-04",
-      "published": false,
+      "published": true,
       "description": "Inside the migration of ~1 TB of production data, 550+ tables, 1,700+ stored procedures/database objects, and 23 application projects from Oracle to PostgreSQL—while redesigning cross-database integration and building an executable validation loop.",
       "tags": [
         "Oracle",
@@ -224,7 +224,7 @@
           "body": ""
         }
       ],
-      "updatedAt": "2026-10-04T13:28:11.657Z",
+      "updatedAt": "2026-10-04T13:34:17.761Z",
       "client": "Banglalink Digital",
       "image": "/images/case-studies/oracle-to-postgresql-migration-bangladesh.png"
     }
