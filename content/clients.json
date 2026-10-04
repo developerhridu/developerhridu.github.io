@@ -1,6 +1,13 @@
 {
   "clients": [
     {
+      "id": "banglalink-digital",
+      "name": "Banglalink Digital",
+      "logo": "/images/logos/banglalink-digital.jpeg",
+      "url": "https://www.banglalink.net/",
+      "published": true
+    },
+    {
       "id": "us-bangla-airlines",
       "published": true,
       "name": "US-Bangla Airlines",
@@ -69,13 +76,6 @@
       "logo": "",
       "url": null,
       "published": false
-    },
-    {
-      "id": "banglalink-digital",
-      "name": "Banglalink Digital",
-      "logo": "/images/logos/banglalink-digital.jpeg",
-      "url": "https://www.banglalink.net/",
-      "published": true
     }
   ]
 }
