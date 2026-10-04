@@ -182,7 +182,7 @@
             "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-1-0.png"
           ],
           "alt": "",
-          "body": "Instead of forcing ~1 TB through a single downtime window, the heavy transfer happened ahead of cutover. The final window was primarily about synchronizing the remaining delta and validating readiness.\n\n**Engineering impact:** the data migration became **repeatable and convergent**, reducing the risk of missing records changed between initial migration and production cutover.\n\nRead More about the project: https://developerhridu.github.io/projects/dataflow-database-migration-tool\n---\n\n## Challenge 2 — Converting 1,700+ Oracle Procedures and Database Objects\n\n### Risk\n\nThe database contained more than 1,700 stored procedures plus other Oracle-specific objects. Manual line-by-line conversion within 13 working days was not realistic, while naive AI translation would create a different risk: **syntactically plausible but behaviorally incorrect code**.\n\n### Engineering decision — AI inside an execution loop\n\nI built an **agentic migration workflow** using Claude, MCP-based tooling, custom migration skills, structured migration instructions, database context, and access to the target PostgreSQL environment.\n\nThe important design choice was that **generation was never the definition of success**."
+          "body": "Instead of forcing ~1 TB through a single downtime window, the heavy transfer happened ahead of cutover. The final window was primarily about synchronizing the remaining delta and validating readiness.\n\n**Engineering impact:** the data migration became **repeatable and convergent**, reducing the risk of missing records changed between initial migration and production cutover.\n\nRead More about the project: https://developerhridu.github.io/projects/dataflow-database-migration-tool\n\n---\n\n## Challenge 2 — Converting 1,700+ Oracle Procedures and Database Objects\n\n### Risk\n\nThe database contained more than 1,700 stored procedures plus other Oracle-specific objects. Manual line-by-line conversion within 13 working days was not realistic, while naive AI translation would create a different risk: **syntactically plausible but behaviorally incorrect code**.\n\n### Engineering decision — AI inside an execution loop\n\nI built an **agentic migration workflow** using Claude, MCP-based tooling, custom migration skills, structured migration instructions, database context, and access to the target PostgreSQL environment.\n\nThe important design choice was that **generation was never the definition of success**."
         },
         {
           "images": [
@@ -224,7 +224,7 @@
           "body": ""
         }
       ],
-      "updatedAt": "2026-10-04T13:34:17.761Z",
+      "updatedAt": "2026-10-04T14:07:25.777Z",
       "client": "Banglalink Digital",
       "image": "/images/case-studies/oracle-to-postgresql-migration-bangladesh.png"
     }
