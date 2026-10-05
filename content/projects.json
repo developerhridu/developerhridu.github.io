@@ -26,7 +26,8 @@
         "sql-server-to-postgresql-migration"
       ],
       "featured": true,
-      "published": true
+      "published": true,
+      "sections": []
     },
     {
       "id": "02",
@@ -45,7 +46,8 @@
       "image": "/images/projects/foodi.jpg",
       "liveUrl": null,
       "githubUrl": null,
-      "featured": true
+      "featured": true,
+      "sections": []
     },
     {
       "id": "03",
@@ -68,7 +70,8 @@
       "image": "/images/projects/bdjobs.png",
       "liveUrl": "https://recruiter.bdjobs.com/jobposting/job-information",
       "githubUrl": null,
-      "featured": true
+      "featured": true,
+      "sections": []
     },
     {
       "id": "04",
@@ -92,7 +95,8 @@
       ],
       "liveUrl": null,
       "githubUrl": null,
-      "featured": true
+      "featured": true,
+      "sections": []
     },
     {
       "id": "05",
@@ -115,7 +119,8 @@
       "image": "/images/projects/bcs.png",
       "liveUrl": null,
       "githubUrl": null,
-      "featured": false
+      "featured": false,
+      "sections": []
     },
     {
       "id": "07",
@@ -140,7 +145,8 @@
       "image": "/images/projects/supplier.png",
       "liveUrl": null,
       "githubUrl": null,
-      "featured": false
+      "featured": false,
+      "sections": []
     },
     {
       "id": "06",
@@ -163,7 +169,8 @@
         "frontend": "https://github.com/developerhridu/DevNote.UI",
         "backend": "https://github.com/developerhridu/DevNote.API"
       },
-      "featured": false
+      "featured": false,
+      "sections": []
     },
     {
       "id": "08",
@@ -181,25 +188,33 @@
       "image": "/images/projects/expense-tracker.png",
       "liveUrl": null,
       "githubUrl": "https://github.com/developerhridu/ExpenseTracker",
-      "featured": false
+      "featured": false,
+      "sections": []
     },
     {
       "id": "dataflow-database-migration-tool",
       "title": "O2P: Database Migration Tool",
       "slug": "dataflow-database-migration-tool",
       "client": "Personal Project",
-      "tags": [],
-      "description": "Tool to migrate from ome database to another database. Migrate Table without lossing a single data.",
+      "tags": [
+        "Oracle",
+        "PostgreSQL",
+        "Migration"
+      ],
+      "description": "I built O2P (Oracle to PostgreSQL) while migrating a production ecosystem from Oracle to PostgreSQL. That broader effort involved approximately 1 TB of data, more than 550 tables, over 1,700 database objects, and 23 applications, with a 13-working-day delivery window. The data transfer alone needed more than an export script: the source stayed active, tables varied widely in size and shape, and a failed load had to be recoverable without blindly starting over.\n\nO2P is the part of that effort I turned into a reusable tool. It discovers Oracle tables, maps their columns to PostgreSQL types, prepares target tables, copies data in bounded parallel batches, records progress, and checks source and target row counts. For eligible tables, an operator can later run Copy changes to apply inserts, updates, and deletes recorded in Oracle's redo history. A web interface makes those steps visible and repeatable across test and live environments.",
       "longDescription": "",
       "body": "## What it does\n\nA tool for migrating data from one database to another, moving tables across without losing a single row.\n\n## My role\n\nPersonal project, built solo.\n\n## Why this stack\n\nBuilt out of the same problem the OTA platform's SQL Server to PostgreSQL migration presented at production scale — moving a live schema between engines is mostly a data-fidelity problem, and having a tool that verifies nothing was dropped in transit matters more than raw transfer speed.",
-      "image": "",
+      "image": "/images/projects/dataflow-database-migration-tool.png",
       "liveUrl": null,
       "githubUrl": null,
       "caseStudies": [
         "oracle-to-postgresql-migration-bangladesh"
       ],
       "featured": false,
-      "published": false
+      "published": true,
+      "sections": [],
+      "photos": [],
+      "updatedAt": "2026-10-05T06:05:46.085Z"
     },
     {
       "id": "my-bdjobs",
@@ -217,7 +232,8 @@
       "liveUrl": null,
       "githubUrl": null,
       "featured": false,
-      "published": false
+      "published": false,
+      "sections": []
     },
     {
       "id": "e-desh-api",
@@ -232,7 +248,8 @@
       "liveUrl": null,
       "githubUrl": null,
       "featured": false,
-      "published": false
+      "published": false,
+      "sections": []
     }
   ]
 }
