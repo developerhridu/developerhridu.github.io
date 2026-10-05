@@ -74,6 +74,51 @@
       "sections": []
     },
     {
+      "id": "07",
+      "slug": "airline-supplier-integration",
+      "published": true,
+      "title": "Airline Supplier Integration Projects",
+      "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
+      "description": "8 cloud-native supplier integration projects connecting OTA platforms with major airlines and GDS systems",
+      "longDescription": "Developed 8 cloud-native supplier integration projects (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, Indigo) to integrate supplier APIs into client OTA platforms. These integrations increased flight search feed by 27% and enabled seamless booking across multiple airline systems.",
+      "body": "## What it does\n\nEight cloud-native integration projects that connect OTA platforms to airline and GDS supplier APIs: **Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, and IndiGo**.\n\n## Scale\n\nThese integrations **increased the flight search feed by 27%** — more suppliers answering a search means more inventory and better fares reaching the user.\n\n## My role\n\nDelivered all eight. Each supplier exposes its own protocol, authentication model, and data shape, so each integration is a separate normalization problem behind a common internal contract — which is what lets the search pipeline treat 30 suppliers as one feed.\n\nI also built the automated xUnit API integration test suite that covers these projects, so supplier behaviour changes surface at release validation rather than in production.\n\n## Why this stack\n\nDeliberately split into separate cloud-native services rather than folded into the platform: suppliers change their APIs on their own schedules, and a failure or redeploy for one must not touch the other 29. The mix of **REST, SOAP, and NDC** isn't a choice so much as the reality of what each supplier offers.",
+      "caseStudies": [
+        "progressive-search-30-suppliers-ota"
+      ],
+      "tags": [
+        ".NET Core",
+        "Microservices",
+        "REST APIs",
+        "SOAP",
+        "NDC",
+        "Azure"
+      ],
+      "image": "/images/projects/supplier.png",
+      "liveUrl": null,
+      "githubUrl": null,
+      "featured": false,
+      "sections": []
+    },
+    {
+      "id": "my-bdjobs",
+      "slug": "my-bdjobs",
+      "title": "My Bdjobs",
+      "description": "App for Job Seakers",
+      "longDescription": "",
+      "body": "## What it does\n\nThe job seeker side of Bdjobs.com — searching and browsing job listings, submitting resumes, and managing applications.\n\n## My role\n\nWorked on the platform as part of the Bdjobs.com engineering team, where I implemented the CQRS-style architecture and ETL pipeline that separated read and write databases for job listings, and optimized the queries behind job search.",
+      "caseStudies": [
+        "cqrs-etl-mssql-mongodb-job-search"
+      ],
+      "image": "",
+      "client": "Bdjobs.com",
+      "tags": [],
+      "liveUrl": null,
+      "githubUrl": null,
+      "featured": false,
+      "published": false,
+      "sections": []
+    },
+    {
       "id": "04",
       "slug": "fare-comparison",
       "published": true,
@@ -99,6 +144,46 @@
       "sections": []
     },
     {
+      "id": "dataflow-database-migration-tool",
+      "title": "O2P — A Reliable Oracle-to-PostgreSQL Data Migration Tool",
+      "slug": "dataflow-database-migration-tool",
+      "client": "Personal Project",
+      "tags": [
+        "Oracle",
+        "PostgreSQL",
+        "Migration"
+      ],
+      "description": "I built O2P to solve one of the highest-risk parts of a large Oracle-to-PostgreSQL migration: moving large, changing production datasets reliably without turning every table into a manual migration exercise.",
+      "longDescription": "",
+      "body": "\nRole\tDesigned and built the O2P migration tool\nProblem\tReliable, observable and recoverable Oracle → PostgreSQL data migration\nStack\t.NET 8 · React · Oracle · PostgreSQL · Oracle LogMiner\nMigration Context\t~1 TB · 550+ tables · 1,700+ database objects · 23 applications\nKey Capabilities\tParallel batch copy · retry/recovery · validation · progress tracking · incremental catch-up\nOutcome\tTurned data migration into a controlled, repeatable workflow instead of one-off transfers\nWhy I Built It\nDuring a large Oracle-to-PostgreSQL migration, moving the data looked simple at first: read rows from Oracle and write them to PostgreSQL.\n\nAt production scale, that becomes a different engineering problem.\n\nSome tables are huge. Some contain LOBs. A transfer can fail after running for hours. Running too many copies in parallel can overload the Oracle source. Meanwhile, the source may continue changing while the baseline migration is running.\n\nA simple script could move rows, but it could not answer the operational questions that mattered:\n\nWhat has already completed?\nWhere exactly did a failed migration stop?\nCan I retry without loading committed data twice?\nHow much parallelism is safe for the source database?\nHow do I know the destination is complete?\nWhat happens to changes made after the initial copy starts?\nI built O2P (Oracle to PostgreSQL) to make those concerns part of the migration system itself.\n\nWhat O2P Does\nO2P discovers Oracle tables, prepares PostgreSQL targets, divides large tables into manageable batches, copies them with controlled parallelism, tracks execution state, validates results, and can catch up later source changes for eligible tables.",
+      "image": "/images/projects/dataflow-database-migration-tool.png",
+      "liveUrl": null,
+      "githubUrl": "https://github.com/developerhridu/O2P",
+      "caseStudies": [
+        "oracle-to-postgresql-migration-bangladesh"
+      ],
+      "featured": false,
+      "published": true,
+      "sections": [
+        {
+          "images": [
+            "/images/projects/dataflow-database-migration-tool-section-0-0.png"
+          ],
+          "alt": "",
+          "body": "The goal was not simply **maximum transfer speed**. The goal was **controlled throughput with recoverability and visibility**.\n\n## How It Works"
+        },
+        {
+          "images": [
+            "/images/projects/dataflow-database-migration-tool-section-1-0.png"
+          ],
+          "alt": "",
+          "body": "### 1. Discover and prepare\n\nO2P reads Oracle metadata, discovers tables and columns, and maps supported Oracle types to PostgreSQL types. An operator can migrate a full schema or select individual tables.\n\n### 2. Break large tables into batches\n\nInstead of treating a large table as one long operation, O2P plans smaller units of work. Depending on the table, it can use ROWID ranges, partitions, numeric primary-key ranges, or fallback strategies.\n\nThis reduces the failure boundary: one failed batch does not automatically mean starting an entire large table again.\n\n### 3. Copy with bounded parallelism\n\nWorkers stream Oracle rows into PostgreSQL using binary COPY. Concurrency, Oracle sessions, batch sizes and optional throughput limits are bounded.\n\nThis was an important design decision: **migration speed should not come at the cost of destabilizing the production source**.\n\n### 4. Make retries safer\n\nExecution state is persisted instead of living only in process memory. Each committed PostgreSQL batch also receives a target-side marker.\n\nIf the process is interrupted, O2P can determine which work is still pending and avoid blindly loading an already committed batch again.\n\n### 5. Validate the result\n\nAfter bulk migration, O2P compares source and destination row counts and stores the validation result.\n\nRow counts are intentionally treated as a **migration gate, not absolute proof of data correctness**. Critical migrations still require business-level and application-level validation.\n\n### 6. Catch up later changes\n\nFor eligible tables, O2P can use Oracle LogMiner to identify changes after the baseline copy and apply the current row state to PostgreSQL.\n\nThis is an **on-demand catch-up mechanism**, not a continuous replication platform. Oracle LogMiner analyzes redo information and has logging/configuration prerequisites.\n\n## Engineering Decisions That Mattered\n\n**Batches instead of whole-table jobs.** Smaller batches create smaller failure domains, measurable progress and more practical retries.\n\n**Bounded concurrency instead of maximum concurrency.** More workers can improve throughput, but they also increase source sessions and database pressure. O2P treats concurrency as a controlled resource.\n\n**Streaming instead of loading tables into memory.** A bounded producer/consumer pipeline keeps memory usage predictable while Oracle reads and PostgreSQL writes proceed concurrently.\n\n**Target-side commit markers.** A Worker can fail immediately after PostgreSQL commits. Recording a batch marker in the target transaction provides stronger evidence of completion than relying only on Worker state.\n\n**Bulk copy plus explicit catch-up.** O2P separates the baseline copy from an explicit change-capture step instead of pretending a long-running migration is automatically one consistent snapshot.\n\n## Impact\n\nThe most important impact was operational: **data movement became a repeatable process that could be observed, controlled and recovered**, rather than a sequence of manually managed transfers.\n\nO2P introduced visible table- and batch-level progress, controlled Oracle source pressure, smaller failure boundaries, persistent retry state, protection against reloading committed batches, source/target row-count validation, and an incremental catch-up path for eligible tables.\n\nO2P was built as part of a broader production migration covering approximately **1 TB of data, 550+ tables, 1,700+ database objects and 23 applications** within **13 working days**.\n\nThe wider migration reported **no migration-related bugs in QA or after deployment**. That outcome reflects the entire migration effort—including database conversion, application changes, testing and validation—not O2P alone.\n\n## Run O2P Yourself\n\nClone the [O2P GitHub repository](https://github.com/developerhridu/O2P) and use this quick start for a local test migration. You need the .NET 8 SDK, Node.js/npm, Docker, access to an Oracle source, and a PostgreSQL 14+ target. Create the target schema before starting.\n\n---\n\n**Technologies:** Oracle · PostgreSQL 14+ · .NET 8 · React · Oracle LogMiner · PostgreSQL Binary COPY · EF Core · ASP.NET Data Protection"
+        }
+      ],
+      "photos": [],
+      "updatedAt": "2026-10-05T06:47:50.028Z"
+    },
+    {
       "id": "05",
       "slug": "booking-manager-service",
       "published": true,
@@ -117,32 +202,6 @@
         "Background Services"
       ],
       "image": "/images/projects/bcs.png",
-      "liveUrl": null,
-      "githubUrl": null,
-      "featured": false,
-      "sections": []
-    },
-    {
-      "id": "07",
-      "slug": "airline-supplier-integration",
-      "published": true,
-      "title": "Airline Supplier Integration Projects",
-      "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
-      "description": "8 cloud-native supplier integration projects connecting OTA platforms with major airlines and GDS systems",
-      "longDescription": "Developed 8 cloud-native supplier integration projects (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, Indigo) to integrate supplier APIs into client OTA platforms. These integrations increased flight search feed by 27% and enabled seamless booking across multiple airline systems.",
-      "body": "## What it does\n\nEight cloud-native integration projects that connect OTA platforms to airline and GDS supplier APIs: **Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, and IndiGo**.\n\n## Scale\n\nThese integrations **increased the flight search feed by 27%** — more suppliers answering a search means more inventory and better fares reaching the user.\n\n## My role\n\nDelivered all eight. Each supplier exposes its own protocol, authentication model, and data shape, so each integration is a separate normalization problem behind a common internal contract — which is what lets the search pipeline treat 30 suppliers as one feed.\n\nI also built the automated xUnit API integration test suite that covers these projects, so supplier behaviour changes surface at release validation rather than in production.\n\n## Why this stack\n\nDeliberately split into separate cloud-native services rather than folded into the platform: suppliers change their APIs on their own schedules, and a failure or redeploy for one must not touch the other 29. The mix of **REST, SOAP, and NDC** isn't a choice so much as the reality of what each supplier offers.",
-      "caseStudies": [
-        "progressive-search-30-suppliers-ota"
-      ],
-      "tags": [
-        ".NET Core",
-        "Microservices",
-        "REST APIs",
-        "SOAP",
-        "NDC",
-        "Azure"
-      ],
-      "image": "/images/projects/supplier.png",
       "liveUrl": null,
       "githubUrl": null,
       "featured": false,
@@ -189,65 +248,6 @@
       "liveUrl": null,
       "githubUrl": "https://github.com/developerhridu/ExpenseTracker",
       "featured": false,
-      "sections": []
-    },
-    {
-      "id": "dataflow-database-migration-tool",
-      "title": "O2P — A Reliable Oracle-to-PostgreSQL Data Migration Tool",
-      "slug": "dataflow-database-migration-tool",
-      "client": "Personal Project",
-      "tags": [
-        "Oracle",
-        "PostgreSQL",
-        "Migration"
-      ],
-      "description": "I built O2P to solve one of the highest-risk parts of a large Oracle-to-PostgreSQL migration: moving large, changing production datasets reliably without turning every table into a manual migration exercise.",
-      "longDescription": "",
-      "body": "\nRole\tDesigned and built the O2P migration tool\nProblem\tReliable, observable and recoverable Oracle → PostgreSQL data migration\nStack\t.NET 8 · React · Oracle · PostgreSQL · Oracle LogMiner\nMigration Context\t~1 TB · 550+ tables · 1,700+ database objects · 23 applications\nKey Capabilities\tParallel batch copy · retry/recovery · validation · progress tracking · incremental catch-up\nOutcome\tTurned data migration into a controlled, repeatable workflow instead of one-off transfers\nWhy I Built It\nDuring a large Oracle-to-PostgreSQL migration, moving the data looked simple at first: read rows from Oracle and write them to PostgreSQL.\n\nAt production scale, that becomes a different engineering problem.\n\nSome tables are huge. Some contain LOBs. A transfer can fail after running for hours. Running too many copies in parallel can overload the Oracle source. Meanwhile, the source may continue changing while the baseline migration is running.\n\nA simple script could move rows, but it could not answer the operational questions that mattered:\n\nWhat has already completed?\nWhere exactly did a failed migration stop?\nCan I retry without loading committed data twice?\nHow much parallelism is safe for the source database?\nHow do I know the destination is complete?\nWhat happens to changes made after the initial copy starts?\nI built O2P (Oracle to PostgreSQL) to make those concerns part of the migration system itself.\n\nWhat O2P Does\nO2P discovers Oracle tables, prepares PostgreSQL targets, divides large tables into manageable batches, copies them with controlled parallelism, tracks execution state, validates results, and can catch up later source changes for eligible tables.",
-      "image": "/images/projects/dataflow-database-migration-tool.png",
-      "liveUrl": null,
-      "githubUrl": "https://github.com/developerhridu/O2P",
-      "caseStudies": [
-        "oracle-to-postgresql-migration-bangladesh"
-      ],
-      "featured": false,
-      "published": true,
-      "sections": [
-        {
-          "images": [
-            "/images/projects/dataflow-database-migration-tool-section-0-0.png"
-          ],
-          "alt": "",
-          "body": "The goal was not simply **maximum transfer speed**. The goal was **controlled throughput with recoverability and visibility**.\n\n## How It Works"
-        },
-        {
-          "images": [
-            "/images/projects/dataflow-database-migration-tool-section-1-0.png"
-          ],
-          "alt": "",
-          "body": "### 1. Discover and prepare\n\nO2P reads Oracle metadata, discovers tables and columns, and maps supported Oracle types to PostgreSQL types. An operator can migrate a full schema or select individual tables.\n\n### 2. Break large tables into batches\n\nInstead of treating a large table as one long operation, O2P plans smaller units of work. Depending on the table, it can use ROWID ranges, partitions, numeric primary-key ranges, or fallback strategies.\n\nThis reduces the failure boundary: one failed batch does not automatically mean starting an entire large table again.\n\n### 3. Copy with bounded parallelism\n\nWorkers stream Oracle rows into PostgreSQL using binary COPY. Concurrency, Oracle sessions, batch sizes and optional throughput limits are bounded.\n\nThis was an important design decision: **migration speed should not come at the cost of destabilizing the production source**.\n\n### 4. Make retries safer\n\nExecution state is persisted instead of living only in process memory. Each committed PostgreSQL batch also receives a target-side marker.\n\nIf the process is interrupted, O2P can determine which work is still pending and avoid blindly loading an already committed batch again.\n\n### 5. Validate the result\n\nAfter bulk migration, O2P compares source and destination row counts and stores the validation result.\n\nRow counts are intentionally treated as a **migration gate, not absolute proof of data correctness**. Critical migrations still require business-level and application-level validation.\n\n### 6. Catch up later changes\n\nFor eligible tables, O2P can use Oracle LogMiner to identify changes after the baseline copy and apply the current row state to PostgreSQL.\n\nThis is an **on-demand catch-up mechanism**, not a continuous replication platform. Oracle LogMiner analyzes redo information and has logging/configuration prerequisites.\n\n## Engineering Decisions That Mattered\n\n**Batches instead of whole-table jobs.** Smaller batches create smaller failure domains, measurable progress and more practical retries.\n\n**Bounded concurrency instead of maximum concurrency.** More workers can improve throughput, but they also increase source sessions and database pressure. O2P treats concurrency as a controlled resource.\n\n**Streaming instead of loading tables into memory.** A bounded producer/consumer pipeline keeps memory usage predictable while Oracle reads and PostgreSQL writes proceed concurrently.\n\n**Target-side commit markers.** A Worker can fail immediately after PostgreSQL commits. Recording a batch marker in the target transaction provides stronger evidence of completion than relying only on Worker state.\n\n**Bulk copy plus explicit catch-up.** O2P separates the baseline copy from an explicit change-capture step instead of pretending a long-running migration is automatically one consistent snapshot.\n\n## Impact\n\nThe most important impact was operational: **data movement became a repeatable process that could be observed, controlled and recovered**, rather than a sequence of manually managed transfers.\n\nO2P introduced visible table- and batch-level progress, controlled Oracle source pressure, smaller failure boundaries, persistent retry state, protection against reloading committed batches, source/target row-count validation, and an incremental catch-up path for eligible tables.\n\nO2P was built as part of a broader production migration covering approximately **1 TB of data, 550+ tables, 1,700+ database objects and 23 applications** within **13 working days**.\n\nThe wider migration reported **no migration-related bugs in QA or after deployment**. That outcome reflects the entire migration effort—including database conversion, application changes, testing and validation—not O2P alone.\n\n## Run O2P Yourself\n\nClone the [O2P GitHub repository](https://github.com/developerhridu/O2P) and use this quick start for a local test migration. You need the .NET 8 SDK, Node.js/npm, Docker, access to an Oracle source, and a PostgreSQL 14+ target. Create the target schema before starting.\n\n---\n\n**Technologies:** Oracle · PostgreSQL 14+ · .NET 8 · React · Oracle LogMiner · PostgreSQL Binary COPY · EF Core · ASP.NET Data Protection"
-        }
-      ],
-      "photos": [],
-      "updatedAt": "2026-10-05T06:47:50.028Z"
-    },
-    {
-      "id": "my-bdjobs",
-      "slug": "my-bdjobs",
-      "title": "My Bdjobs",
-      "description": "App for Job Seakers",
-      "longDescription": "",
-      "body": "## What it does\n\nThe job seeker side of Bdjobs.com — searching and browsing job listings, submitting resumes, and managing applications.\n\n## My role\n\nWorked on the platform as part of the Bdjobs.com engineering team, where I implemented the CQRS-style architecture and ETL pipeline that separated read and write databases for job listings, and optimized the queries behind job search.",
-      "caseStudies": [
-        "cqrs-etl-mssql-mongodb-job-search"
-      ],
-      "image": "",
-      "client": "Bdjobs.com",
-      "tags": [],
-      "liveUrl": null,
-      "githubUrl": null,
-      "featured": false,
-      "published": false,
       "sections": []
     },
     {
