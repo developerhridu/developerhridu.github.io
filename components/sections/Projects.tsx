@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { ArrowUpRight, ExternalLink, Github, Building2 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
-import AddArticleButton from "@/components/ui/AddArticleButton";
 import ProjectModal from "@/components/ui/ProjectModal";
 import ContentImage from "@/components/ui/ContentImage";
 import projectsData from "@/content/projects.json";
@@ -41,8 +40,6 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
             subtitle={sectionCopy.subtitle}
           />
         )}
-
-        {showAll && <AddArticleButton kind="project" />}
 
         {/* Featured Projects */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">

@@ -84,9 +84,11 @@ function makeId(base: string, existingIds: string[]): string {
 export default function ExperienceManager({
   token,
   onAuthError,
+  initialNew = false,
 }: {
   token: string;
   onAuthError: () => void;
+  initialNew?: boolean;
 }) {
   const [entries, setEntries] = useState<Entry[] | null>(null);
   const [fileSha, setFileSha] = useState<string | null>(null);
@@ -96,8 +98,8 @@ export default function ExperienceManager({
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [loadedOrderIds, setLoadedOrderIds] = useState<string[]>([]);
 
-  const [editing, setEditing] = useState<Entry | null>(null);
-  const [isNew, setIsNew] = useState(false);
+  const [editing, setEditing] = useState<Entry | null>(() => initialNew ? blankEntry() : null);
+  const [isNew, setIsNew] = useState(initialNew);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [projectTechText, setProjectTechText] = useState<string[]>([]);
   const [projectHighlightsText, setProjectHighlightsText] = useState<string[]>([]);

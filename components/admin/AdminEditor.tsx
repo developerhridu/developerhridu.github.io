@@ -125,7 +125,7 @@ export default function AdminEditor() {
   const [tokenError, setTokenError] = useState<string | null>(null);
 
   const [tab, setTab] = useState<Tab>("dashboard");
-  const [linkedArticle, setLinkedArticle] = useState<{ tab: Tab; slug?: string; create?: boolean } | null>(null);
+  const [linkedEditor, setLinkedEditor] = useState<{ tab: Tab; slug?: string; create?: boolean } | null>(null);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const adminMenuRef = useRef<HTMLDivElement>(null);
   const selectedTab = TABS.find((item) => item.key === tab);
@@ -137,9 +137,13 @@ export default function AdminEditor() {
     const requestedTab = params.get("tab");
     const slug = params.get("slug");
     const create = params.get("action") === "new";
-    if ((slug || create) && (requestedTab === "blog" || requestedTab === "case-study" || requestedTab === "projects")) {
-      setTab(requestedTab);
-      setLinkedArticle({ tab: requestedTab, ...(slug ? { slug } : { create }) });
+    if (requestedTab && TABS.some((item) => item.key === requestedTab)) {
+      setTab(requestedTab as Tab);
+      const articleTab = requestedTab === "blog" || requestedTab === "case-study" || requestedTab === "projects";
+      const newEntryTab = requestedTab === "certifications" || requestedTab === "experience" || requestedTab === "services";
+      if ((articleTab && (slug || create)) || (newEntryTab && create)) {
+        setLinkedEditor({ tab: requestedTab, ...(slug ? { slug } : { create }) });
+      }
     }
 
     const savedPassword = localStorage.getItem(PASSWORD_KEY);
@@ -306,7 +310,7 @@ export default function AdminEditor() {
                     key={item.key}
                     type="button"
                     role="menuitem"
-                    onClick={() => { setTab(item.key); setLinkedArticle(null); setAdminMenuOpen(false); }}
+                    onClick={() => { setTab(item.key); setLinkedEditor(null); setAdminMenuOpen(false); }}
                     className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors ${tab === item.key ? "bg-accent/10 text-accent" : "text-muted hover:bg-background hover:text-foreground"}`}
                   >
                     <Icon size={16} className="shrink-0" aria-hidden="true" />
@@ -347,8 +351,8 @@ export default function AdminEditor() {
           kind="blog"
           token={token}
           onAuthError={handleAuthError}
-          initialSlug={linkedArticle?.tab === "blog" ? linkedArticle.slug : undefined}
-          initialNew={linkedArticle?.tab === "blog" && linkedArticle.create === true}
+          initialSlug={linkedEditor?.tab === "blog" ? linkedEditor.slug : undefined}
+          initialNew={linkedEditor?.tab === "blog" && linkedEditor.create === true}
         />
       )}
       {tab === "case-study" && (
@@ -357,19 +361,35 @@ export default function AdminEditor() {
           kind="case-study"
           token={token}
           onAuthError={handleAuthError}
-          initialSlug={linkedArticle?.tab === "case-study" ? linkedArticle.slug : undefined}
-          initialNew={linkedArticle?.tab === "case-study" && linkedArticle.create === true}
+          initialSlug={linkedEditor?.tab === "case-study" ? linkedEditor.slug : undefined}
+          initialNew={linkedEditor?.tab === "case-study" && linkedEditor.create === true}
         />
       )}
-      {tab === "experience" && <ExperienceManager token={token} onAuthError={handleAuthError} />}
+      {tab === "experience" && (
+        <ExperienceManager
+          token={token}
+          onAuthError={handleAuthError}
+          initialNew={linkedEditor?.tab === "experience" && linkedEditor.create === true}
+        />
+      )}
       {tab === "services" && (
-        <GenericArrayEditor config={servicesConfig} token={token} onAuthError={handleAuthError} />
+        <GenericArrayEditor
+          config={servicesConfig}
+          token={token}
+          onAuthError={handleAuthError}
+          initialNew={linkedEditor?.tab === "services" && linkedEditor.create === true}
+        />
       )}
       {tab === "education" && (
         <GenericArrayEditor config={educationConfig} token={token} onAuthError={handleAuthError} />
       )}
       {tab === "certifications" && (
-        <GenericArrayEditor config={certificationsConfig} token={token} onAuthError={handleAuthError} />
+        <GenericArrayEditor
+          config={certificationsConfig}
+          token={token}
+          onAuthError={handleAuthError}
+          initialNew={linkedEditor?.tab === "certifications" && linkedEditor.create === true}
+        />
       )}
       {tab === "testimonials" && <TestimonialsManager token={token} onAuthError={handleAuthError} />}
       {tab === "projects" && (
@@ -378,8 +398,8 @@ export default function AdminEditor() {
           kind="project"
           token={token}
           onAuthError={handleAuthError}
-          initialSlug={linkedArticle?.tab === "projects" ? linkedArticle.slug : undefined}
-          initialNew={linkedArticle?.tab === "projects" && linkedArticle.create === true}
+          initialSlug={linkedEditor?.tab === "projects" ? linkedEditor.slug : undefined}
+          initialNew={linkedEditor?.tab === "projects" && linkedEditor.create === true}
         />
       )}
       {tab === "clients" && (

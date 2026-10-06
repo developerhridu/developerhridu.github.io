@@ -159,9 +159,10 @@ interface GenericArrayEditorProps {
   config: ArrayConfig;
   token: string;
   onAuthError: () => void;
+  initialNew?: boolean;
 }
 
-export default function GenericArrayEditor({ config, token, onAuthError }: GenericArrayEditorProps) {
+export default function GenericArrayEditor({ config, token, onAuthError, initialNew = false }: GenericArrayEditorProps) {
   const [entries, setEntries] = useState<RawEntry[] | null>(null);
   const [fileSha, setFileSha] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -180,7 +181,9 @@ export default function GenericArrayEditor({ config, token, onAuthError }: Gener
 
   useEffect(() => {
     setEntries(null);
-    setEditingIndex(null);
+    setEditingIndex(initialNew ? -1 : null);
+    setIsNew(initialNew);
+    if (initialNew) setForm(blankForm(config));
     setError(null);
     setSuccessMsg(null);
     void load();

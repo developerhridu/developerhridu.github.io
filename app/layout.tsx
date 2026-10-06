@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/ui/BackToTop";
 import AiChatWidget from "@/components/ui/AiChatWidget";
+import EditPageButton from "@/components/ui/EditPageButton";
 import config from "@/content/config.json";
 import { getProfile } from "@/lib/content";
 import { getSeo } from "@/lib/seo";
@@ -99,7 +100,10 @@ export default function RootLayout({
         </a>
         <Navbar />
         <div className="md:pl-20 print:pl-0">
-          <main id="main-content">{children}</main>
+          <main id="main-content" className="relative">
+            <EditPageButton />
+            {children}
+          </main>
           <Footer />
         </div>
         <BackToTop />

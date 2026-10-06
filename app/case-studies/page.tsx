@@ -3,7 +3,6 @@ import { getPublishedCaseStudies } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ContentListing from "@/components/ui/ContentListing";
-import AddArticleButton from "@/components/ui/AddArticleButton";
 import { getSeo } from "@/lib/seo";
 import { getSectionCopy } from "@/lib/sections";
 import uiStrings from "@/content/ui-strings.json";
@@ -37,8 +36,6 @@ export default function CaseStudiesPage() {
             title={sectionCopy.title}
             subtitle={sectionCopy.subtitle}
           />
-
-          <AddArticleButton kind="case-study" />
 
           <ContentListing
             type="case-study"
