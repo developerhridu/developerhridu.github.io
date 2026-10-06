@@ -27,7 +27,17 @@
       ],
       "featured": true,
       "published": true,
-      "sections": []
+      "sections": [],
+      "photos": [
+        "/images/projects/ota-platform-photo-0.png",
+        "/images/projects/ota-platform-photo-1.png",
+        "/images/projects/ota-platform-photo-2.png",
+        "/images/projects/ota-platform-photo-3.png",
+        "/images/projects/ota-platform-photo-4.png",
+        "/images/projects/ota-platform-photo-5.png",
+        "/images/projects/ota-platform-photo-6.png"
+      ],
+      "updatedAt": "2026-10-06T05:27:34.279Z"
     },
     {
       "id": "02",
