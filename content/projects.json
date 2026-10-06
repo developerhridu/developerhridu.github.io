@@ -213,7 +213,7 @@
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
       "description": "Background service that automatically cancels un-ticketed bookings, saving ~$23K-$27K total across 6 OTA clients",
       "longDescription": "Developed a critical background service using ASP.NET Core & Hangfire that automatically cancels un-ticketed bookings before the last ticketing time. This solution reduced ADM penalties by $4,500-$6,400 per month per OTA, achieving total savings of ~$23,000-$27,000 across 6 clients.",
-      "body": "## What it does\n\nA background service that watches bookings approaching their last ticketing time and automatically cancels the ones still un-ticketed — before the airline can charge an Agency Debit Memo penalty for holding them.\n\n## Scale\n\nRunning across **6 OTA client platforms**, it reduced ADM penalties by **$4,500-$6,400 per month per OTA**, for a total saving of roughly **$23,000-$27,000**.\n\n## My role\n\nBuilt it end to end.\n\n## Why this stack\n\n**Hangfire** on ASP.NET Core for recurring job scheduling with retry semantics, backed by **SQLite** for persistence — deliberately lightweight, since the service only needs to survive restarts with its own job state intact, not share a database with the platform it protects. Keeping it isolated means a problem here can't take the booking flow down with it.",
+      "body": "## What it does\n\nA background service that watches bookings approaching their last ticketing time and automatically cancels the ones still un-ticketed — before the airline can charge an Agency Debit Memo penalty for holding them.\n\n## Scale\n\nRunning across **6 OTA client platforms**, it reduced ADM penalties by **$4,500-$6,400 per month per OTA**, for a total saving of roughly **$23,000-$27,000**.\n\n## My role\n\nBuilt it end to end.\n\n## Why this stack\n\n**Hangfire** on ASP.NET Core for recurring job scheduling with retry semantics, backed by **SQLite** for persistence — deliberately lightweight, since the service only needs to survive restarts with its own job state intact, not share a database with the platform it protects. Keeping it isolated means a problem here can't take the booking flow down with it.\n\n## Proof of work documents",
       "caseStudies": [
         "automated-booking-cancellation-service"
       ],
@@ -227,7 +227,16 @@
       "liveUrl": null,
       "githubUrl": null,
       "featured": false,
-      "sections": []
+      "sections": [],
+      "photos": [
+        "/images/projects/booking-manager-service-photo-0.png",
+        "/images/projects/booking-manager-service-photo-1.png",
+        "/images/projects/booking-manager-service-photo-2.png",
+        "/images/projects/booking-manager-service-photo-3.png",
+        "/images/projects/booking-manager-service-photo-4.png",
+        "/images/projects/booking-manager-service-photo-5.png"
+      ],
+      "updatedAt": "2026-10-06T05:37:46.708Z"
     },
     {
       "id": "06",
