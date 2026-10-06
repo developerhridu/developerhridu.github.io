@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import IconButton from "@/components/ui/IconButton";
 import {
   fetchContentFile,
@@ -150,9 +150,11 @@ interface ArticleManagerProps {
   kind: ContentKind;
   token: string;
   onAuthError: () => void;
+  initialSlug?: string;
 }
 
-export default function ArticleManager({ kind, token, onAuthError }: ArticleManagerProps) {
+export default function ArticleManager({ kind, token, onAuthError, initialSlug }: ArticleManagerProps) {
+  const pendingSlug = useRef(initialSlug);
   const [entries, setEntries] = useState<Entry[] | null>(null);
   const [fileSha, setFileSha] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -198,6 +200,13 @@ export default function ArticleManager({ kind, token, onAuthError }: ArticleMana
       setEntries(loaded);
       setLoadedOrderIds(loaded.map((entry) => entry.id));
       setFileSha(sha);
+      if (pendingSlug.current) {
+        const slug = pendingSlug.current;
+        pendingSlug.current = undefined;
+        const entry = loaded.find((item) => item.slug === slug);
+        if (entry) startEdit(entry);
+        else setError(`Could not find ${CONFIG[kind].singularLabel.toLowerCase()} "${slug}" in the CMS.`);
+      }
     } catch (err) {
       handleApiError(err);
     } finally {

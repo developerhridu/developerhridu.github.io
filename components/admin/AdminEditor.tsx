@@ -125,6 +125,7 @@ export default function AdminEditor() {
   const [tokenError, setTokenError] = useState<string | null>(null);
 
   const [tab, setTab] = useState<Tab>("dashboard");
+  const [linkedArticle, setLinkedArticle] = useState<{ tab: Tab; slug: string } | null>(null);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const adminMenuRef = useRef<HTMLDivElement>(null);
   const selectedTab = TABS.find((item) => item.key === tab);
@@ -132,6 +133,14 @@ export default function AdminEditor() {
 
   /* eslint-disable react-hooks/set-state-in-effect -- Restore browser-only credentials after hydration. */
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const requestedTab = params.get("tab");
+    const slug = params.get("slug");
+    if (slug && (requestedTab === "blog" || requestedTab === "case-study" || requestedTab === "projects")) {
+      setTab(requestedTab);
+      setLinkedArticle({ tab: requestedTab, slug });
+    }
+
     const savedPassword = localStorage.getItem(PASSWORD_KEY);
     if (savedPassword) {
       setUnlocked(true);
@@ -291,7 +300,7 @@ export default function AdminEditor() {
                     key={item.key}
                     type="button"
                     role="menuitem"
-                    onClick={() => { setTab(item.key); setAdminMenuOpen(false); }}
+                    onClick={() => { setTab(item.key); setLinkedArticle(null); setAdminMenuOpen(false); }}
                     className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors ${tab === item.key ? "bg-accent/10 text-accent" : "text-muted hover:bg-background hover:text-foreground"}`}
                   >
                     <Icon size={16} className="shrink-0" aria-hidden="true" />
@@ -326,9 +335,23 @@ export default function AdminEditor() {
       </div>
 
       {tab === "dashboard" && <Dashboard token={token} onAuthError={handleAuthError} />}
-      {tab === "blog" && <ArticleManager key="blog" kind="blog" token={token} onAuthError={handleAuthError} />}
+      {tab === "blog" && (
+        <ArticleManager
+          key="blog"
+          kind="blog"
+          token={token}
+          onAuthError={handleAuthError}
+          initialSlug={linkedArticle?.tab === "blog" ? linkedArticle.slug : undefined}
+        />
+      )}
       {tab === "case-study" && (
-        <ArticleManager key="case-study" kind="case-study" token={token} onAuthError={handleAuthError} />
+        <ArticleManager
+          key="case-study"
+          kind="case-study"
+          token={token}
+          onAuthError={handleAuthError}
+          initialSlug={linkedArticle?.tab === "case-study" ? linkedArticle.slug : undefined}
+        />
       )}
       {tab === "experience" && <ExperienceManager token={token} onAuthError={handleAuthError} />}
       {tab === "services" && (
@@ -342,7 +365,13 @@ export default function AdminEditor() {
       )}
       {tab === "testimonials" && <TestimonialsManager token={token} onAuthError={handleAuthError} />}
       {tab === "projects" && (
-        <ArticleManager key="project" kind="project" token={token} onAuthError={handleAuthError} />
+        <ArticleManager
+          key="project"
+          kind="project"
+          token={token}
+          onAuthError={handleAuthError}
+          initialSlug={linkedArticle?.tab === "projects" ? linkedArticle.slug : undefined}
+        />
       )}
       {tab === "clients" && (
         <GenericArrayEditor config={clientsConfig} token={token} onAuthError={handleAuthError} />

@@ -13,6 +13,7 @@ import ViewCounter from "@/components/ui/ViewCounter";
 import ReactionButton from "@/components/ui/ReactionButton";
 import RelatedContent from "@/components/ui/RelatedContent";
 import Comments from "@/components/ui/Comments";
+import EditArticleButton from "@/components/ui/EditArticleButton";
 
 const ARTICLE_TYPES = {
   blog: {
@@ -88,13 +89,16 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
       />}
       <article className={preview ? "py-8" : "py-20"}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          {!preview && <Link
-            href={labels.path}
-            className="inline-flex items-center gap-2 text-muted hover:text-foreground transition-colors mb-8"
-          >
-            <ArrowLeft size={16} />
-            {labels.backLabel}
-          </Link>}
+          {!preview && <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+            <Link
+              href={labels.path}
+              className="inline-flex items-center gap-2 text-muted hover:text-foreground transition-colors"
+            >
+              <ArrowLeft size={16} />
+              {labels.backLabel}
+            </Link>
+            <EditArticleButton kind={kind} slug={entry.slug} />
+          </div>}
 
           {entry.published === false && (
             <div className="mb-8 px-4 py-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-500 text-sm">
