@@ -1,11 +1,6 @@
 {
   "tasks": [
     {
-      "id": "not-a-single-hard-coded-line-should-be-there-section-title-in-section-json",
-      "text": "Not a single hard coded line should be there, section title in section json",
-      "done": true
-    },
-    {
       "id": "feature-flag-in-case-study-and-blog-as-well-to-show-only-featured-item-on-home-page",
       "text": "Feature Flag in Case study and Blog as well to show only featured item on Home page",
       "done": false
