@@ -47,7 +47,7 @@
       "client": "Foodi",
       "description": "Full-stack customer relationship management system for food delivery businesses",
       "longDescription": "Foodi CRM is a comprehensive customer relationship management system for food delivery businesses, enabling order tracking, restaurant management, delivery partner monitoring, and customer interaction. Built with a scalable microservices architecture focused on performance and usability.",
-      "body": "## What it does\n\nA food delivery platform and the CRM behind it — customers browse restaurants, place orders, pay, and track deliveries in real time, while the operations team manages restaurants, delivery partners, and customer communication from one place.\n\n## My role\n\nI designed and developed the **Engagement Automation** feature for Foodi-CRM, streamlining the communication workflows between customers and the operations team. I also implemented a **read/write Redis caching strategy** that improved API response times and made the platform more scalable under load.\n\n## Why this stack\n\nA genuine microservices split here, unlike the OTA platform's modular monolith — ordering, delivery tracking, and CRM have different scaling profiles and change at different rates. **Kafka and RabbitMQ** carry the event flow between them: order placed, driver assigned, status changed. Polyglot by design — .NET Core and EF Core for the transactional core, **Go** and **Node.js** where throughput or ecosystem fit mattered more, PostgreSQL underneath, React on the front.",
+      "body": "## What it does\n\nA food delivery platform and the CRM behind it — customers browse restaurants, place orders, pay, and track deliveries in real time, while the operations team manages restaurants, delivery partners, and customer communication from one place.\n\n## My role\n\nI designed and developed the **Engagement Automation** feature for Foodi-CRM, streamlining the communication workflows between customers and the operations team. I also implemented a **read/write Redis caching strategy** that improved API response times and made the platform more scalable under load.\n\n## Why this stack\n\nA genuine microservices split here, unlike the OTA platform's modular monolith — ordering, delivery tracking, and CRM have different scaling profiles and change at different rates. **Kafka and RabbitMQ** carry the event flow between them: order placed, driver assigned, status changed. Polyglot by design — .NET Core and EF Core for the transactional core, **Go** and **Node.js** where throughput or ecosystem fit mattered more, PostgreSQL underneath, React on the front.\n\n## Proof of work documents",
       "tags": [
         ".NET Core",
         "Microservices",
@@ -57,7 +57,17 @@
       "liveUrl": null,
       "githubUrl": null,
       "featured": true,
-      "sections": []
+      "sections": [],
+      "photos": [
+        "/images/projects/foodi-crm-photo-0.png",
+        "/images/projects/foodi-crm-photo-1.png",
+        "/images/projects/foodi-crm-photo-2.png",
+        "/images/projects/foodi-crm-photo-3.png",
+        "/images/projects/foodi-crm-photo-4.png",
+        "/images/projects/foodi-crm-photo-5.jpg"
+      ],
+      "updatedAt": "2026-10-06T05:51:52.375Z",
+      "caseStudies": []
     },
     {
       "id": "03",
