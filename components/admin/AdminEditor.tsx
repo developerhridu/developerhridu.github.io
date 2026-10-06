@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
+  Award,
   BriefcaseBusiness,
   BookOpenCheck,
   ChartNoAxesColumnIncreasing,
-  ChevronDown,
   CircleHelp,
   FileText,
   FolderCode,
@@ -88,6 +88,7 @@ const TABS: { key: Tab; label: string; icon: string }[] = adminMenuData.tabs
   .map((t) => ({ key: t.id as Tab, label: t.label, icon: t.icon }));
 
 const ICONS: Record<string, LucideIcon> = {
+  award: Award,
   "briefcase-business": BriefcaseBusiness,
   "book-open-check": BookOpenCheck,
   "chart-no-axes-column-increasing": ChartNoAxesColumnIncreasing,
@@ -111,9 +112,6 @@ const ICONS: Record<string, LucideIcon> = {
   quote: Quote,
 };
 
-const adminMenuIconKey = adminMenuData.tabs.find((item) => item.id === "admin-menu")?.icon;
-const AdminMenuIcon = ICONS[adminMenuIconKey ?? ""] ?? CircleHelp;
-
 export default function AdminEditor() {
   const [credentialsLoaded, setCredentialsLoaded] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
@@ -126,10 +124,8 @@ export default function AdminEditor() {
 
   const [tab, setTab] = useState<Tab>("dashboard");
   const [linkedEditor, setLinkedEditor] = useState<{ tab: Tab; slug?: string; create?: boolean } | null>(null);
-  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
-  const adminMenuRef = useRef<HTMLDivElement>(null);
-  const selectedTab = TABS.find((item) => item.key === tab);
-  const SelectedTabIcon = selectedTab ? ICONS[selectedTab.icon] ?? CircleHelp : CircleHelp;
+  const tabListRef = useRef<HTMLElement>(null);
+  const selectedTabRef = useRef<HTMLButtonElement>(null);
 
   /* eslint-disable react-hooks/set-state-in-effect -- Restore browser-only credentials after hydration. */
   useEffect(() => {
@@ -155,26 +151,21 @@ export default function AdminEditor() {
     setCredentialsLoaded(true);
   }, []);
 
-  useEffect(() => {
-    if (!adminMenuOpen) return;
-
-    function closeOnOutsideClick(event: MouseEvent) {
-      if (event.target instanceof Node && !adminMenuRef.current?.contains(event.target)) {
-        setAdminMenuOpen(false);
-      }
-    }
-    function closeOnEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") setAdminMenuOpen(false);
-    }
-
-    document.addEventListener("mousedown", closeOnOutsideClick);
-    document.addEventListener("keydown", closeOnEscape);
-    return () => {
-      document.removeEventListener("mousedown", closeOnOutsideClick);
-      document.removeEventListener("keydown", closeOnEscape);
-    };
-  }, [adminMenuOpen]);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    const tabList = tabListRef.current;
+    const selectedTab = selectedTabRef.current;
+    if (!tabList || !selectedTab) return;
+
+    const listBounds = tabList.getBoundingClientRect();
+    const selectedBounds = selectedTab.getBoundingClientRect();
+    if (selectedBounds.left < listBounds.left) {
+      tabList.scrollLeft -= listBounds.left - selectedBounds.left;
+    } else if (selectedBounds.right > listBounds.right) {
+      tabList.scrollLeft += selectedBounds.right - listBounds.right;
+    }
+  }, [tab, token]);
 
   function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -210,7 +201,6 @@ export default function AdminEditor() {
     localStorage.removeItem(PASSWORD_KEY);
     localStorage.removeItem(TOKEN_KEY);
     window.dispatchEvent(new Event(TOKEN_CHANGED_EVENT));
-    setAdminMenuOpen(false);
     setPasswordInput("");
     setTokenInput("");
     setToken(null);
@@ -254,7 +244,7 @@ export default function AdminEditor() {
   if (!token) {
     return (
       <div className="max-w-md mx-auto -mt-3">
-        <h1 className="text-2xl font-bold text-foreground mb-2">Content Editor</h1>
+        {/* <h1 className="text-2xl font-bold text-foreground mb-2">Content Editor</h1> */}
         <p className="text-muted text-sm mb-6">Paste Token</p>
         {tokenError && (
           <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
@@ -283,64 +273,48 @@ export default function AdminEditor() {
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 mb-6">
-        <h1 className="shrink-0 text-2xl font-bold text-foreground">Content Editor</h1>
-        <div className="flex min-w-0 flex-1 items-center justify-center gap-2 text-sm font-medium text-foreground" aria-live="polite">
-          <SelectedTabIcon size={17} className="shrink-0 text-accent" aria-hidden="true" />
-          <span className="truncate">{selectedTab?.label ?? "Dashboard"}</span>
-        </div>
-        <div className="relative" ref={adminMenuRef}>
+      <div className="mb-6 flex min-w-0 items-center gap-3">
+        {/* <h1 className="shrink-0 text-lg font-bold text-foreground sm:text-2xl">Content Editor</h1> */}
+        <nav ref={tabListRef} aria-label="Content editor sections" className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto rounded-lg border border-border bg-surface p-1">
+          {TABS.map((item) => {
+            const Icon = ICONS[item.icon] ?? CircleHelp;
+            const selected = tab === item.key;
+            return (
+              <button
+                key={item.key}
+                ref={selected ? selectedTabRef : undefined}
+                type="button"
+                aria-label={item.label}
+                aria-pressed={selected}
+                title={item.label}
+                onClick={() => { setTab(item.key); setLinkedEditor(null); }}
+                className={`flex shrink-0 items-center justify-center rounded-md p-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${selected ? "bg-accent/10 text-accent" : "text-muted hover:bg-background hover:text-foreground"}`}
+              >
+                <Icon size={18} aria-hidden="true" />
+              </button>
+            );
+          })}
+        </nav>
+        <div className="flex shrink-0 items-center gap-1">
+          <a
+            href="/resume"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View live resume"
+            title="View live resume"
+            className="rounded-lg p-2 text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <FileText size={18} aria-hidden="true" />
+          </a>
           <button
             type="button"
-            onClick={() => setAdminMenuOpen((open) => !open)}
-            aria-label="Admin menu"
-            aria-haspopup="menu"
-            aria-expanded={adminMenuOpen}
-            className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-muted hover:text-foreground hover:bg-surface transition-colors"
+            onClick={handleLogout}
+            aria-label="Sign out"
+            title="Sign out"
+            className="rounded-lg p-2 text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
-            <AdminMenuIcon size={16} aria-hidden="true" />
-            <ChevronDown size={16} className={`transition-transform ${adminMenuOpen ? "rotate-180" : ""}`} />
+            <LogOut size={18} aria-hidden="true" />
           </button>
-          {adminMenuOpen && (
-            <div role="menu" aria-label="Admin menu" className="absolute right-0 top-full z-50 mt-2 max-h-[min(70vh,32rem)] w-64 overflow-y-auto rounded-xl border border-border bg-surface p-2 shadow-xl">
-              {TABS.map((item) => {
-                const Icon = ICONS[item.icon] ?? CircleHelp;
-                return (
-                  <button
-                    key={item.key}
-                    type="button"
-                    role="menuitem"
-                    onClick={() => { setTab(item.key); setLinkedEditor(null); setAdminMenuOpen(false); }}
-                    className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors ${tab === item.key ? "bg-accent/10 text-accent" : "text-muted hover:bg-background hover:text-foreground"}`}
-                  >
-                    <Icon size={16} className="shrink-0" aria-hidden="true" />
-                    {item.label}
-                  </button>
-                );
-              })}
-              <div className="my-2 border-t border-border" />
-              <a
-                href="/resume"
-                target="_blank"
-                rel="noopener noreferrer"
-                role="menuitem"
-                onClick={() => setAdminMenuOpen(false)}
-                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted hover:bg-background hover:text-foreground transition-colors"
-              >
-                <FileText size={15} />
-                View Live Resume
-              </a>
-              <button
-                type="button"
-                role="menuitem"
-                onClick={handleLogout}
-                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-muted hover:bg-background hover:text-foreground transition-colors"
-              >
-                <LogOut size={15} />
-                Sign Out
-              </button>
-            </div>
-          )}
         </div>
       </div>
 
