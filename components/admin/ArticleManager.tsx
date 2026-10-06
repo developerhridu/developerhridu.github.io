@@ -27,6 +27,7 @@ import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
 import ClientMultiSelect from "@/components/admin/ClientMultiSelect";
 import CaseStudyMultiSelect from "@/components/admin/CaseStudyMultiSelect";
 import ArticlePreview from "@/components/admin/ArticlePreview";
+import ArticleMarkdownEditor from "@/components/admin/ArticleMarkdownEditor";
 import { ReorderControls } from "@/components/admin/ReorderControls";
 import type { ContentSection, Project } from "@/types";
 import { parseLinkedInPostText, buildLinkedInEmbedBody } from "@/lib/linkedin";
@@ -1100,11 +1101,10 @@ function EntryForm({
 
       <div>
         <label className="block text-xs uppercase tracking-wide text-muted mb-1">Body (Markdown)</label>
-        <textarea
+        <ArticleMarkdownEditor
           value={entry.body}
-          onChange={(e) => setEntry({ ...entry, body: e.target.value })}
-          rows={16}
-          className={`${inputClass} font-mono text-sm`}
+          onChange={(body) => setEntry({ ...entry, body })}
+          label="Article body"
         />
       </div>
 
@@ -1222,12 +1222,12 @@ function EntryForm({
                 <label className="block text-xs uppercase tracking-wide text-muted mb-1">
                   Section Body (Markdown, optional)
                 </label>
-                <textarea
+                <ArticleMarkdownEditor
                   value={section.body}
-                  onChange={(e) => onUpdateSection(i, { body: e.target.value })}
-                  rows={8}
+                  onChange={(body) => onUpdateSection(i, { body })}
+                  label={`Section ${i + 1} body`}
+                  height={280}
                   placeholder="Optional text to accompany the images. Leave blank for an image-only section."
-                  className={`${inputClass} font-mono text-sm`}
                 />
               </div>
             </div>

@@ -241,6 +241,117 @@ html {
   --tw-prose-td-borders: var(--border);
 }
 
+/* Article code fences keep the same dark, copyable surface in both themes. */
+.prose-content .article-code-block {
+  margin: 1.75rem 0;
+  overflow: hidden;
+  border: 1px solid #343638;
+  border-radius: 0.75rem;
+  background: #1f1f1f;
+  color: #d4d4d4;
+}
+
+.article-code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.65rem 0.35rem 1rem;
+  border-bottom: 1px solid #343638;
+}
+
+.article-code-language {
+  overflow: hidden;
+  color: #aeb0b3;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.article-code-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid #454749;
+  border-radius: 0.4rem;
+  background: #292929;
+  color: #c4c5c6;
+  font-size: 0.75rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.article-code-copy:hover {
+  background: #393939;
+  color: #fff;
+}
+
+.prose-content .article-code-block pre {
+  overflow-x: auto;
+  margin: 0;
+  padding: 1.25rem 1.5rem 1.5rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #d4d4d4;
+}
+
+.prose-content .article-code-block code {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  white-space: pre;
+}
+
+.prose-content .article-code-block code::before,
+.prose-content .article-code-block code::after {
+  content: none;
+}
+
+.article-code-block .hljs-keyword,
+.article-code-block .hljs-built_in,
+.article-code-block .hljs-selector-tag {
+  color: #79b8f8;
+}
+
+.article-code-block .hljs-title,
+.article-code-block .hljs-type,
+.article-code-block .hljs-attr,
+.article-code-block .hljs-variable {
+  color: #f0d879;
+}
+
+.article-code-block .hljs-string,
+.article-code-block .hljs-template-variable,
+.article-code-block .hljs-addition {
+  color: #b8d978;
+}
+
+.article-code-block .hljs-number,
+.article-code-block .hljs-literal,
+.article-code-block .hljs-symbol {
+  color: #c3a2ec;
+}
+
+.article-code-block .hljs-comment,
+.article-code-block .hljs-quote {
+  color: #a68a6b;
+}
+
+.article-code-block .hljs-meta,
+.article-code-block .hljs-params,
+.article-code-block .hljs-punctuation {
+  color: #aeb0b3;
+}
+
 /* Honour the OS "reduce motion" setting for every CSS animation and
    transition on the site, including the client marquee and smooth scroll. */
 @media (prefers-reduced-motion: reduce) {

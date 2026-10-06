@@ -1,5 +1,6 @@
 import type { Components } from "react-markdown";
 import LinkedInEmbed from "@/components/ui/LinkedInEmbed";
+import ArticleCodeBlock from "@/components/ui/ArticleCodeBlock";
 import { extractLinkedInActivityId } from "@/lib/linkedin";
 
 interface CodeElementProps {
@@ -12,16 +13,19 @@ function isCodeElement(node: unknown): node is { props: CodeElementProps } {
 }
 
 /**
- * Shared react-markdown overrides for blog posts and case studies. Currently handles
- * one special fenced block: ```linkedin\n<post url>\n``` renders as a live embed
- * instead of a code snippet, by pulling the activity id out of the plain post URL.
+ * Shared react-markdown overrides for article bodies. A linkedin fence renders
+ * as a live embed; other fenced blocks render as copyable, highlighted code.
  */
 export const markdownComponents: Components = {
   pre({ children }) {
     const child = Array.isArray(children) ? children[0] : children;
+    const language = isCodeElement(child)
+      ? child.props.className?.match(/(?:^|\s)language-([^\s]+)/)?.[1]
+      : undefined;
+    const code = isCodeElement(child) ? String(child.props.children ?? "").replace(/\n$/, "") : "";
 
-    if (isCodeElement(child) && child.props.className?.includes("language-linkedin")) {
-      const url = String(child.props.children ?? "").trim();
+    if (language === "linkedin") {
+      const url = code.trim();
       const activityId = extractLinkedInActivityId(url);
       if (activityId) {
         return <LinkedInEmbed activityId={activityId} />;
@@ -33,6 +37,6 @@ export const markdownComponents: Components = {
       );
     }
 
-    return <pre>{children}</pre>;
+    return <ArticleCodeBlock code={code} language={language} />;
   },
 };
