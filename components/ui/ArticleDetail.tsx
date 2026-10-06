@@ -1,6 +1,6 @@
 import type { ComponentProps, ReactNode } from "react";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
 import type { ContentSection } from "@/types";
@@ -57,16 +57,22 @@ export interface ArticleDetailProps {
   related?: ComponentProps<typeof RelatedContent>;
   /** Render the current CMS draft without public navigation or engagement widgets. */
   preview?: boolean;
+  /** Local image URLs for unsaved Markdown content in the admin preview. */
+  previewImageUrls?: Record<string, string>;
   /** Content-specific actions placed after the article body. */
   children?: ReactNode;
 }
 
-function ArticleBody({ body }: { body?: string }) {
+function ArticleBody({ body, previewImageUrls }: { body?: string; previewImageUrls?: Record<string, string> }) {
   if (!body?.trim()) return null;
 
   return (
     <div className="prose-content">
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={markdownComponents}
+        urlTransform={previewImageUrls ? (url) => previewImageUrls[url] ?? defaultUrlTransform(url) : undefined}
+      >
         {body}
       </ReactMarkdown>
     </div>
@@ -74,7 +80,7 @@ function ArticleBody({ body }: { body?: string }) {
 }
 
 /** Shared design for blog posts, case studies, and project detail pages. */
-export default function ArticleDetail({ kind, entry, url, jsonLd, related, preview = false, children }: ArticleDetailProps) {
+export default function ArticleDetail({ kind, entry, url, jsonLd, related, preview = false, previewImageUrls, children }: ArticleDetailProps) {
   const labels = ARTICLE_TYPES[kind];
   const engagementType = kind === "project" ? null : kind;
   const readingMinutes = engagementType
@@ -160,7 +166,7 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
           {entry.longDescription && (
             <p className="text-lg text-muted leading-relaxed mb-8">{entry.longDescription}</p>
           )}
-          <ArticleBody body={entry.body} />
+          <ArticleBody body={entry.body} previewImageUrls={previewImageUrls} />
 
           {entry.sections && entry.sections.length > 0 && (
             <div className="mt-8 space-y-8">
@@ -184,7 +190,7 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
                       ))}
                     </div>
                   )}
-                  <ArticleBody body={section.body} />
+                  <ArticleBody body={section.body} previewImageUrls={previewImageUrls} />
                 </div>
               ))}
             </div>

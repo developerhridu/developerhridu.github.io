@@ -11,9 +11,10 @@ interface ArticlePreviewProps {
   imageFile: File | null;
   sectionImageFiles: (File | null)[][];
   photoFiles: (File | null)[];
+  inlineImageUrls: Record<string, string>;
 }
 
-export default function ArticlePreview({ kind, entry, imageFile, sectionImageFiles, photoFiles }: ArticlePreviewProps) {
+export default function ArticlePreview({ kind, entry, imageFile, sectionImageFiles, photoFiles, inlineImageUrls }: ArticlePreviewProps) {
   const files = useMemo(
     () => [...new Set([imageFile, ...sectionImageFiles.flat(), ...photoFiles].filter((file): file is File => file !== null))],
     [imageFile, sectionImageFiles, photoFiles]
@@ -45,7 +46,7 @@ export default function ArticlePreview({ kind, entry, imageFile, sectionImageFil
   };
 
   return (
-    <ArticleDetail kind={kind} entry={previewEntry} preview>
+    <ArticleDetail kind={kind} entry={previewEntry} preview previewImageUrls={inlineImageUrls}>
       {kind === "project" && (
         <ProjectLinks liveUrl={entry.liveUrl} githubUrl={entry.githubUrl} className="mt-12" />
       )}

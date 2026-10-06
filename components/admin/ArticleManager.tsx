@@ -55,7 +55,28 @@ interface Entry {
   featured?: boolean;
 }
 
+interface InlineImage {
+  draftPath: string;
+  file: File;
+  objectUrl: string;
+  id: string;
+}
+
 type ContentKind = "blog" | "case-study" | "project";
+
+const INLINE_IMAGE_EXTENSIONS: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/avif": "avif",
+};
+const INLINE_IMAGE_PATH = /\/images\/(?:blog|case-studies|projects)\/[a-z0-9-]+-inline-[0-9a-f-]+\.(?:png|jpg|webp|gif|avif)\b/g;
+
+function inlineImagePaths(entry: Entry): string[] {
+  return [entry.body, ...(entry.sections ?? []).map((section) => section.body)]
+    .flatMap((body) => body.match(INLINE_IMAGE_PATH) ?? []);
+}
 
 const CONFIG: Record<
   ContentKind,
@@ -113,7 +134,7 @@ function toRepoPath(publicPath: string): string {
 function referencedImagePaths(list: Entry[]): Set<string> {
   return new Set(
     list.flatMap(
-      (e) => [e.image, ...(e.photos ?? []), ...(e.sections ?? []).flatMap((s) => s.images ?? [])].filter(Boolean) as string[]
+      (e) => [e.image, ...(e.photos ?? []), ...(e.sections ?? []).flatMap((s) => s.images ?? []), ...inlineImagePaths(e)].filter(Boolean) as string[]
     )
   );
 }
@@ -172,6 +193,8 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [sectionImageFiles, setSectionImageFiles] = useState<(File | null)[][]>([]);
   const [photoFiles, setPhotoFiles] = useState<(File | null)[]>([]);
+  const [inlineImages, setInlineImages] = useState<InlineImage[]>([]);
+  const inlineImagesRef = useRef<InlineImage[]>([]);
   const [loadedOrderIds, setLoadedOrderIds] = useState<string[]>([]);
 
   const [showLinkedInImport, setShowLinkedInImport] = useState(false);
@@ -179,6 +202,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
   const [linkedInText, setLinkedInText] = useState("");
 
   useEffect(() => {
+    clearInlineImages();
     setEntries(null);
     setEditing(null);
     setError(null);
@@ -187,6 +211,36 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kind]);
+
+  useEffect(() => () => {
+    inlineImagesRef.current.forEach((image) => URL.revokeObjectURL(image.objectUrl));
+    inlineImagesRef.current = [];
+  }, []);
+
+  function clearInlineImages() {
+    inlineImagesRef.current.forEach((image) => URL.revokeObjectURL(image.objectUrl));
+    inlineImagesRef.current = [];
+    setInlineImages([]);
+  }
+
+  function addInlineImage(file: File): string {
+    if (!INLINE_IMAGE_EXTENSIONS[file.type]) {
+      throw new Error("Choose a PNG, JPEG, WebP, GIF, or AVIF image.");
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      throw new Error("Choose an image smaller than 10 MB.");
+    }
+    const id = crypto.randomUUID();
+    const image = {
+      id,
+      file,
+      draftPath: `/__draft-inline-image/${id}`,
+      objectUrl: URL.createObjectURL(file),
+    };
+    inlineImagesRef.current = [...inlineImagesRef.current, image];
+    setInlineImages(inlineImagesRef.current);
+    return image.draftPath;
+  }
 
   async function load() {
     setLoading(true);
@@ -231,6 +285,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
   }
 
   function startNew() {
+    clearInlineImages();
     setMode("edit");
     setEditing(blankEntry(kind));
     setTagsText("");
@@ -243,6 +298,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
   }
 
   function startEdit(entry: Entry, nextMode: "edit" | "view" = "edit") {
+    clearInlineImages();
     setMode(nextMode);
     const sections = entry.sections ?? [];
     setEditing({ ...entry, sections });
@@ -256,6 +312,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
   }
 
   function cancelEdit() {
+    clearInlineImages();
     setEditing(null);
     setImageFile(null);
     setSectionImageFiles([]);
@@ -277,6 +334,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     const parsed = parseLinkedInPostText(linkedInText);
     const slug = makeUniqueSlug(parsed.title, (entries ?? []).map((e) => e.slug));
 
+    clearInlineImages();
     setMode("edit");
     setEditing({
       ...blankEntry(kind),
@@ -451,17 +509,19 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     }
 
     const previousEntry = !isNew ? current.find((e) => e.id === editing.id) : undefined;
-    const oldManagedPaths = [
+    const oldManagedPaths = [...new Set([
       previousEntry?.image,
       ...(previousEntry?.photos ?? []),
       ...(previousEntry?.sections ?? []).flatMap((s) => s.images ?? []),
-    ].filter((p): p is string => isManagedImage(p, kind));
+      ...(previousEntry ? inlineImagePaths(previousEntry) : []),
+    ].filter((p): p is string => isManagedImage(p, kind)))];
 
     setSaving(true);
     setError(null);
 
     const changes: FileChange[] = [];
     let image = editing.image;
+    let body = editing.body;
     let sections: Section[];
     const photos: string[] = [];
 
@@ -509,6 +569,18 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
         });
       }
       sections = uploadedSections.filter((s) => s.body.trim() || (s.images?.length ?? 0) > 0);
+
+      for (const inline of inlineImages) {
+        if (!body.includes(inline.draftPath) && !sections.some((section) => section.body.includes(inline.draftPath))) continue;
+        const ext = INLINE_IMAGE_EXTENSIONS[inline.file.type];
+        const url = `/images/${CONFIG[kind].imageFolder}/${slug}-inline-${inline.id}.${ext}`;
+        changes.push({ path: toRepoPath(url), content: await fileToBase64(inline.file) });
+        body = body.replaceAll(inline.draftPath, url);
+        sections = sections.map((section) => ({ ...section, body: section.body.replaceAll(inline.draftPath, url) }));
+      }
+      if ([body, ...sections.map((section) => section.body)].some((text) => /\/__draft-inline-image\/[0-9a-f-]+/.test(text))) {
+        throw new Error("An inline image is no longer available. Remove it from the Markdown and insert it again.");
+      }
     } catch (err) {
       handleApiError(err);
       setSaving(false);
@@ -520,6 +592,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
       slug,
       tags,
       image,
+      body,
       photos,
       sections,
       updatedAt: new Date().toISOString(),
@@ -555,6 +628,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
 
     const message = isNew ? `content: add ${editing.title}` : `content: update ${editing.title}`;
     if (await commit(changes, updated, message)) {
+      clearInlineImages();
       setImageFile(null);
       setSectionImageFiles(sections.map((s) => (s.images ?? []).map(() => null)));
       setPhotoFiles(photos.map(() => null));
@@ -566,9 +640,9 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     const current = entries ?? [];
     const updated = current.filter((e) => e.id !== entry.id);
 
-    const oldPaths = [entry.image, ...(entry.photos ?? []), ...(entry.sections ?? []).flatMap((s) => s.images ?? [])].filter(
+    const oldPaths = [...new Set([entry.image, ...(entry.photos ?? []), ...(entry.sections ?? []).flatMap((s) => s.images ?? []), ...inlineImagePaths(entry)].filter(
       (p): p is string => isManagedImage(p, kind)
-    );
+    ))];
     const stillReferenced = referencedImagePaths(updated);
     const changes: FileChange[] = oldPaths
       .filter((p) => !stillReferenced.has(p))
@@ -596,6 +670,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     : entries && [...entries].sort(
       (a, b) => new Date(b.date ?? "").getTime() - new Date(a.date ?? "").getTime()
     );
+  const inlineImageUrls = Object.fromEntries(inlineImages.map((image) => [image.draftPath, image.objectUrl]));
 
   return (
     <div>
@@ -693,6 +768,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
                 imageFile={imageFile}
                 sectionImageFiles={sectionImageFiles}
                 photoFiles={photoFiles}
+                inlineImageUrls={inlineImageUrls}
               />
             </div>
           ) : (
@@ -708,6 +784,8 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
               setImageFile={setImageFile}
               sectionImageFiles={sectionImageFiles}
               photoFiles={photoFiles}
+              inlineImageUrls={inlineImageUrls}
+              onAddInlineImage={addInlineImage}
               onAddPhoto={addPhoto}
               onUpdatePhoto={updatePhoto}
               onRemovePhoto={removePhoto}
@@ -909,6 +987,8 @@ function EntryForm({
   setImageFile,
   sectionImageFiles,
   photoFiles,
+  inlineImageUrls,
+  onAddInlineImage,
   onAddPhoto,
   onUpdatePhoto,
   onRemovePhoto,
@@ -936,6 +1016,8 @@ function EntryForm({
   setImageFile: (f: File | null) => void;
   sectionImageFiles: (File | null)[][];
   photoFiles: (File | null)[];
+  inlineImageUrls: Record<string, string>;
+  onAddInlineImage: (file: File) => string;
   onAddPhoto: () => void;
   onUpdatePhoto: (index: number, value: string) => void;
   onRemovePhoto: (index: number) => void;
@@ -1105,6 +1187,8 @@ function EntryForm({
           value={entry.body}
           onChange={(body) => setEntry({ ...entry, body })}
           label="Article body"
+          inlineImageUrls={inlineImageUrls}
+          onAddImage={onAddInlineImage}
         />
       </div>
 
@@ -1226,6 +1310,8 @@ function EntryForm({
                   value={section.body}
                   onChange={(body) => onUpdateSection(i, { body })}
                   label={`Section ${i + 1} body`}
+                  inlineImageUrls={inlineImageUrls}
+                  onAddImage={onAddInlineImage}
                   height={420}
                   desktopHeight={580}
                   placeholder="Optional text to accompany the images. Leave blank for an image-only section."
