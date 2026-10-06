@@ -45,10 +45,11 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
         {showAll && <AddArticleButton kind="project" />}
 
         {/* Featured Projects */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {displayProjects.map((project, idx) => (
             <motion.div
               key={project.id}
+              className="min-w-0"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -94,7 +95,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                 </div>
 
                 {/* Links */}
-                <div className="flex gap-4 pt-4 border-t border-border" onClick={(e) => e.stopPropagation()}>
+                <div className="flex flex-wrap gap-4 pt-4 border-t border-border" onClick={(e) => e.stopPropagation()}>
                   {project.liveUrl && (
                     <a
                       href={project.liveUrl}
@@ -155,10 +156,11 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
             <h3 className="text-xl font-semibold text-foreground mb-4">
               {uiStrings.projects.otherProjects}
             </h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {otherProjects.map((project, idx) => (
                 <motion.div
                   key={project.id}
+                  className="min-w-0"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}

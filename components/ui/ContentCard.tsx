@@ -23,7 +23,7 @@ interface ContentCardProps {
 
 export default function ContentCard({ item, viewPath, showReadMore = false }: ContentCardProps) {
   return (
-    <Link href={`${viewPath}/${item.slug}`}>
+    <Link href={`${viewPath}/${item.slug}`} className="block h-full min-w-0">
       <GlassCard className="h-full flex flex-col group cursor-pointer">
         <ContentImage
           src={item.image}

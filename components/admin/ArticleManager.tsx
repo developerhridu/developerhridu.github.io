@@ -982,7 +982,7 @@ function EntryForm({
         />
       </div>
 
-      <div className={`grid gap-4 ${kind !== "project" ? "sm:grid-cols-2" : ""}`}>
+      <div className="space-y-4">
         {kind !== "project" && (
           <div>
             <label className="block text-xs uppercase tracking-wide text-muted mb-1">Date</label>
@@ -1318,7 +1318,7 @@ function ProjectLinkFields({ entry, setEntry }: { entry: Entry; setEntry: (entry
     <div className="space-y-4 border-t border-border pt-4">
       <h3 className="text-xs font-semibold uppercase tracking-wide text-accent">Project Links</h3>
       <p className="text-xs text-muted">Use a single GitHub repository or separate frontend and backend repositories.</p>
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="space-y-4">
         {fields.map((field) => (
           <div key={field.key}>
             <label htmlFor={`project-${field.key}`} className="block text-xs uppercase tracking-wide text-muted mb-1">

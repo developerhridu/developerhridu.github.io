@@ -41,7 +41,7 @@ export default function ArticleMarkdownEditor({
   const theme = useSyncExternalStore(subscribeToTheme, getTheme, getServerTheme);
 
   return (
-    <div data-color-mode={theme} className="article-markdown-editor">
+    <div data-color-mode={theme} className="article-markdown-editor w-full min-w-0">
       <MDEditor
         value={value}
         onChange={(nextValue) => onChange(nextValue ?? "")}
