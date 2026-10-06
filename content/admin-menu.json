@@ -1,6 +1,12 @@
 {
   "tabs": [
     {
+      "id": "dashboard",
+      "label": "Dashboard",
+      "icon": "layout-dashboard",
+      "published": true
+    },
+    {
       "id": "case-study",
       "label": "Case Studies",
       "icon": "book-open-check",
@@ -16,12 +22,6 @@
       "id": "projects",
       "label": "Projects",
       "icon": "folder-code",
-      "published": true
-    },
-    {
-      "id": "dashboard",
-      "label": "Dashboard",
-      "icon": "layout-dashboard",
       "published": true
     },
     {
