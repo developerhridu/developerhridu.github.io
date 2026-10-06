@@ -9,6 +9,11 @@
       "id": "live-cv-or-build-cv-menu-that-present-in-admin-cms-optimize-it-with-live-data",
       "text": "Live CV or Build CV menu that Present in admin CMS. Optimize it with live data",
       "done": false
+    },
+    {
+      "id": "feature-flag-in-case-study-and-blog-as-well-to-show-only-featured-item-on-home-page",
+      "text": "Feature Flag in Case study and Blog as well to show only featured item on Home page",
+      "done": false
     }
   ]
 }
