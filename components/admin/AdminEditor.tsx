@@ -125,7 +125,7 @@ export default function AdminEditor() {
   const [tokenError, setTokenError] = useState<string | null>(null);
 
   const [tab, setTab] = useState<Tab>("dashboard");
-  const [linkedArticle, setLinkedArticle] = useState<{ tab: Tab; slug: string } | null>(null);
+  const [linkedArticle, setLinkedArticle] = useState<{ tab: Tab; slug?: string; create?: boolean } | null>(null);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const adminMenuRef = useRef<HTMLDivElement>(null);
   const selectedTab = TABS.find((item) => item.key === tab);
@@ -136,9 +136,10 @@ export default function AdminEditor() {
     const params = new URLSearchParams(window.location.search);
     const requestedTab = params.get("tab");
     const slug = params.get("slug");
-    if (slug && (requestedTab === "blog" || requestedTab === "case-study" || requestedTab === "projects")) {
+    const create = params.get("action") === "new";
+    if ((slug || create) && (requestedTab === "blog" || requestedTab === "case-study" || requestedTab === "projects")) {
       setTab(requestedTab);
-      setLinkedArticle({ tab: requestedTab, slug });
+      setLinkedArticle({ tab: requestedTab, ...(slug ? { slug } : { create }) });
     }
 
     const savedPassword = localStorage.getItem(PASSWORD_KEY);
@@ -203,7 +204,12 @@ export default function AdminEditor() {
 
   function handleLogout() {
     localStorage.removeItem(PASSWORD_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+    window.dispatchEvent(new Event(TOKEN_CHANGED_EVENT));
     setAdminMenuOpen(false);
+    setPasswordInput("");
+    setTokenInput("");
+    setToken(null);
     setUnlocked(false);
   }
 
@@ -342,6 +348,7 @@ export default function AdminEditor() {
           token={token}
           onAuthError={handleAuthError}
           initialSlug={linkedArticle?.tab === "blog" ? linkedArticle.slug : undefined}
+          initialNew={linkedArticle?.tab === "blog" && linkedArticle.create === true}
         />
       )}
       {tab === "case-study" && (
@@ -351,6 +358,7 @@ export default function AdminEditor() {
           token={token}
           onAuthError={handleAuthError}
           initialSlug={linkedArticle?.tab === "case-study" ? linkedArticle.slug : undefined}
+          initialNew={linkedArticle?.tab === "case-study" && linkedArticle.create === true}
         />
       )}
       {tab === "experience" && <ExperienceManager token={token} onAuthError={handleAuthError} />}
@@ -371,6 +379,7 @@ export default function AdminEditor() {
           token={token}
           onAuthError={handleAuthError}
           initialSlug={linkedArticle?.tab === "projects" ? linkedArticle.slug : undefined}
+          initialNew={linkedArticle?.tab === "projects" && linkedArticle.create === true}
         />
       )}
       {tab === "clients" && (

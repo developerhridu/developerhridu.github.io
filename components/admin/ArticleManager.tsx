@@ -151,10 +151,12 @@ interface ArticleManagerProps {
   token: string;
   onAuthError: () => void;
   initialSlug?: string;
+  initialNew?: boolean;
 }
 
-export default function ArticleManager({ kind, token, onAuthError, initialSlug }: ArticleManagerProps) {
+export default function ArticleManager({ kind, token, onAuthError, initialSlug, initialNew = false }: ArticleManagerProps) {
   const pendingSlug = useRef(initialSlug);
+  const pendingNew = useRef(initialNew);
   const [entries, setEntries] = useState<Entry[] | null>(null);
   const [fileSha, setFileSha] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -206,6 +208,9 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug }
         const entry = loaded.find((item) => item.slug === slug);
         if (entry) startEdit(entry);
         else setError(`Could not find ${CONFIG[kind].singularLabel.toLowerCase()} "${slug}" in the CMS.`);
+      } else if (pendingNew.current) {
+        pendingNew.current = false;
+        startNew();
       }
     } catch (err) {
       handleApiError(err);
