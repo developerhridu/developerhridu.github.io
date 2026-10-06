@@ -25,27 +25,44 @@ function getServerTheme(): "dark" {
   return "dark";
 }
 
+function subscribeToDesktop(callback: () => void) {
+  const media = window.matchMedia("(min-width: 1024px)");
+  media.addEventListener("change", callback);
+  return () => media.removeEventListener("change", callback);
+}
+
+function getIsDesktop() {
+  return window.matchMedia("(min-width: 1024px)").matches;
+}
+
+function getServerIsDesktop() {
+  return false;
+}
+
 export default function ArticleMarkdownEditor({
   value,
   onChange,
   label,
-  height = 420,
+  height = 600,
+  desktopHeight = 820,
   placeholder,
 }: {
   value: string;
   onChange: (value: string) => void;
   label: string;
   height?: number;
+  desktopHeight?: number;
   placeholder?: string;
 }) {
   const theme = useSyncExternalStore(subscribeToTheme, getTheme, getServerTheme);
+  const isDesktop = useSyncExternalStore(subscribeToDesktop, getIsDesktop, getServerIsDesktop);
 
   return (
     <div data-color-mode={theme} className="article-markdown-editor w-full min-w-0">
       <MDEditor
         value={value}
         onChange={(nextValue) => onChange(nextValue ?? "")}
-        height={height}
+        height={isDesktop ? desktopHeight : height}
         visibleDragbar
         previewOptions={{ rehypePlugins: [rehypeSanitize] }}
         textareaProps={{ "aria-label": label, placeholder }}

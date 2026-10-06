@@ -1226,7 +1226,8 @@ function EntryForm({
                   value={section.body}
                   onChange={(body) => onUpdateSection(i, { body })}
                   label={`Section ${i + 1} body`}
-                  height={280}
+                  height={420}
+                  desktopHeight={580}
                   placeholder="Optional text to accompany the images. Leave blank for an image-only section."
                 />
               </div>
