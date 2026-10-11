@@ -138,17 +138,17 @@
       "url": "https://scale.com/",
       "projects": [],
       "caseStudies": [],
-      "published": false,
+      "published": true,
       "description": "",
       "tags": [],
       "image": "/images/clients/scale-ai.png",
       "client": "",
-      "body": "",
+      "body": "## Project Name: \nSCA101 - Native Bengali Speakers needed to help train the Next Generation of Video and Audio AI",
       "sections": [],
       "photos": [
         "/images/clients/scale-ai-photo-0.png"
       ],
-      "updatedAt": "2026-10-11T04:48:18.649Z",
+      "updatedAt": "2026-10-11T04:52:56.425Z",
       "name": "Scale AI"
     }
   ]
