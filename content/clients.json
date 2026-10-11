@@ -35,7 +35,7 @@
       "tags": [],
       "body": "## Engagement\n\nThrough **TechnoNext Software Ltd.** (concern of US-Bangla Group) as **Software Engineer**, April 2024 – present.\n\n## What I Did\n\n- Designed and developed the end-to-end Fare Comparison platform as a scalable, responsive web application.\n- Integrated multiple GDS and NDC suppliers to aggregate competitor fares, flight schedules and seat availability, normalizing the data for comparison.\n- Engineered pricing-intelligence logic that turns market data into fare recommendations to optimize ticket pricing.\n\n## Proof of work documents",
       "sections": [],
-      "image": "/images/logos/us-bangla-airline.png",
+      "image": "/images/clients/us-bangla-airlines.jpg",
       "projects": [
         "fare-comparison"
       ],
@@ -51,7 +51,7 @@
         "/images/clients/us-bangla-airlines-photo-3.png",
         "/images/clients/us-bangla-airlines-photo-4.png"
       ],
-      "updatedAt": "2026-10-11T09:02:05.323Z",
+      "updatedAt": "2026-10-11T16:25:23.639Z",
       "name": "US-Bangla Airlines"
     },
     {
