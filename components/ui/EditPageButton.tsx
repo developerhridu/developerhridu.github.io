@@ -10,6 +10,7 @@ const PAGE_TABS: Record<string, string> = {
   "/blog": "blog",
   "/case-studies": "case-study",
   "/certifications": "certifications",
+  "/clients": "clients",
   "/contact": "profile",
   "/experience": "experience",
   "/projects": "projects",
@@ -19,7 +20,7 @@ const PAGE_TABS: Record<string, string> = {
   "/testimonials/submit": "ui-strings",
 };
 
-const ADD_ROUTES = new Set(["/blog", "/case-studies", "/certifications", "/experience", "/projects", "/services"]);
+const ADD_ROUTES = new Set(["/blog", "/case-studies", "/certifications", "/clients", "/experience", "/projects", "/services"]);
 
 function ValidatedEditButton({ tab, canAdd }: { tab: string; canAdd: boolean }) {
   const hasValidToken = useValidGitHubToken();
