@@ -3,90 +3,153 @@
     {
       "id": "banglalink-digital",
       "slug": "banglalink-digital",
-      "name": "Banglalink Digital",
       "logo": "/images/logos/banglalink-digital.jpeg",
       "url": "https://www.banglalink.net/",
-      "published": true
+      "published": true,
+      "description": "",
+      "tags": [],
+      "body": "",
+      "sections": [],
+      "name": "Banglalink Digital"
     },
     {
       "id": "us-bangla-airlines",
       "slug": "us-bangla-airlines",
       "published": true,
-      "name": "US-Bangla Airlines",
       "logo": "/images/logos/us-bangla-airline.png",
-      "url": "https://www.usbair.com"
+      "url": "https://www.usbair.com",
+      "description": "",
+      "tags": [],
+      "body": "",
+      "sections": [],
+      "name": "US-Bangla Airlines"
     },
     {
       "id": "foodi",
       "slug": "foodi",
-      "name": "Foodi",
       "logo": "/images/logos/foodi.jpg",
       "url": "https://foodibd.com",
-      "published": true
+      "published": true,
+      "description": "",
+      "tags": [],
+      "body": "",
+      "sections": [],
+      "name": "Foodi"
     },
     {
       "id": "bdjobs",
       "slug": "bdjobs",
       "published": true,
-      "name": "Bdjobs.com",
       "logo": "/images/logos/bdjobs.png",
-      "url": "https://www.bdjobs.com"
+      "url": "https://www.bdjobs.com",
+      "description": "",
+      "tags": [],
+      "body": "",
+      "sections": [],
+      "name": "Bdjobs.com"
     },
     {
       "id": "firsttrip",
       "slug": "firsttrip",
       "published": true,
-      "name": "FirstTrip",
       "logo": "/images/logos/firsttrip.png",
-      "url": "https://firsttrip.com"
+      "url": "https://firsttrip.com",
+      "description": "",
+      "tags": [],
+      "body": "",
+      "sections": [],
+      "name": "FirstTrip"
     },
     {
       "id": "triplover",
       "slug": "triplover",
       "published": true,
-      "name": "TripLover",
       "logo": "/images/logos/triplover.jpeg",
-      "url": "https://www.triplover.com"
+      "url": "https://www.triplover.com",
+      "description": "",
+      "tags": [],
+      "body": "",
+      "sections": [],
+      "name": "TripLover"
     },
     {
       "id": "taketrip",
       "slug": "taketrip",
       "published": true,
-      "name": "TakeTrip",
       "logo": "/images/logos/taketrip.png",
-      "url": "https://taketrip.com"
+      "url": "https://taketrip.com",
+      "description": "",
+      "tags": [],
+      "body": "",
+      "sections": [],
+      "name": "TakeTrip"
     },
     {
       "id": "travelchamp",
       "slug": "travelchamp",
       "published": true,
-      "name": "TravelChamp",
       "logo": "/images/logos/travelchamp.png",
-      "url": "https://www.travelchamp.com"
+      "url": "https://www.travelchamp.com",
+      "description": "",
+      "tags": [],
+      "body": "",
+      "sections": [],
+      "name": "TravelChamp"
     },
     {
       "id": "takeoff",
       "slug": "takeoff",
       "published": true,
-      "name": "TakeOff",
       "logo": "/images/logos/takeoff.png",
-      "url": "https://takeoffbd.com"
+      "url": "https://takeoffbd.com",
+      "description": "",
+      "tags": [],
+      "body": "",
+      "sections": [],
+      "name": "TakeOff"
     },
     {
       "id": "edesh",
       "slug": "edesh",
       "published": true,
-      "name": "E-Desh Ltd",
       "logo": "/images/logos/Edesh.png",
-      "url": "https://e-deshltd.com"
+      "url": "https://e-deshltd.com",
+      "description": "",
+      "tags": [],
+      "body": "",
+      "sections": [],
+      "name": "E-Desh Ltd"
     },
     {
       "id": "personal-project",
       "slug": "personal-project",
-      "name": "Personal Project",
       "logo": "",
       "url": null,
-      "published": false
+      "published": false,
+      "description": "",
+      "tags": [],
+      "body": "",
+      "sections": [],
+      "name": "Personal Project"
+    },
+    {
+      "id": "scale-ai",
+      "slug": "scale-ai",
+      "url": "https://scale.com/",
+      "projects": [],
+      "caseStudies": [],
+      "published": false,
+      "description": "",
+      "tags": [],
+      "image": "/images/clients/scale-ai.png",
+      "client": "",
+      "body": "",
+      "sections": [],
+      "photos": [
+        "/images/clients/scale-ai-photo-0.png"
+      ],
+      "updatedAt": "2026-10-11T04:48:18.649Z",
+      "name": "Scale AI"
     }
   ]
 }
