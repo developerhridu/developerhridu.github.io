@@ -1,10 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, CalendarDays, ExternalLink, Handshake } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import Button from "@/components/ui/Button";
-import GlassCard from "@/components/ui/GlassCard";
 import ClientMarquee from "@/components/ui/ClientMarquee";
+import ClientOrbit from "@/components/ui/ClientOrbit";
 import profile from "@/content/profile.json";
 import uiStrings from "@/content/ui-strings.json";
 import { getPublishedClients } from "@/lib/clients";
@@ -19,7 +19,17 @@ export default function Hero() {
       <div className="bg-grid absolute inset-0" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10 w-full">
+      {/* Client logos orbiting the hero content (large screens) */}
+      <motion.div
+        className="hidden lg:block absolute inset-0 z-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.6 }}
+      >
+        <ClientOrbit />
+      </motion.div>
+
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 relative z-10 w-full" data-orbit-avoid>
         <div className="text-center">
           {/* Main heading */}
           <motion.div
@@ -28,7 +38,7 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
           >
             {profile.openToWork && (
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-accent/30 bg-accent/10 mb-6">
+              <div data-orbit-avoid-item className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-accent/30 bg-accent/10 mb-6">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
@@ -38,42 +48,22 @@ export default function Hero() {
                 </span>
               </div>
             )}
-            <p className="font-mono text-s tracking-widest text-accent mb-4">
-              {uiStrings.hero.greeting}
-            </p>
-            <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] text-foreground">
               {profile.name}
             </h1>
-            <h2 className="text-2xl md:text-3xl text-muted mb-4">
+            <h2 className="mt-3 text-xl md:text-3xl font-semibold tracking-tight leading-tight text-accent mb-10">
               {profile.title}
             </h2>
-            <p className="text-xl text-muted max-w-2xl mx-auto mb-8">
-              {profile.tagline}
-            </p>
           </motion.div>
 
-          {/* CTA Buttons */}
-          <motion.div
-            className="flex flex-wrap items-center justify-center gap-4 mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <Button href="/projects" variant="primary">
-              {uiStrings.hero.ctaViewProjects}
-              <ArrowDown size={18} />
-            </Button>
-            <Button
-              href={profile.social.upwork}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="primary"
-              onClick={() => trackEvent("hire_me_click", { location: "hero" })}
+          {/* Book a call (only when a booking link is set) */}
+          {profile.bookingUrl && (
+            <motion.div
+              className="flex justify-center mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <Handshake size={18} />
-              {uiStrings.hero.ctaHireMe}
-            </Button>
-            {profile.bookingUrl && (
               <Button
                 href={profile.bookingUrl}
                 target="_blank"
@@ -84,59 +74,34 @@ export default function Hero() {
                 <CalendarDays size={18} />
                 {uiStrings.hero.ctaBookCall}
               </Button>
-            )}
-            {profile.resumeUrl && (
-              <Button
-                href={profile.resumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="secondary"
-                onClick={() => trackEvent("resume_view", { location: "hero" })}
-              >
-                <ExternalLink size={18} />
-                {uiStrings.hero.ctaViewResume}
-              </Button>
-            )}
-          </motion.div>
+            </motion.div>
+          )}
 
-          {/* Stats */}
-          <motion.div
-            className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto"
+          {/* Stats — one compact bar */}
+          <motion.dl
+            className="mx-auto grid grid-cols-2 sm:grid-cols-4 max-w-2xl rounded-2xl border border-border bg-surface/70 backdrop-blur-md divide-y sm:divide-y-0 sm:divide-x divide-border overflow-hidden"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <GlassCard className="!p-3 text-center" hover={false}>
-              <div className="text-xl font-bold text-foreground mb-0.5">
-                {profile.yearsOfExperience}+
+            {[
+              { value: profile.yearsOfExperience, label: uiStrings.hero.statYearsExperience },
+              { value: profile.projectsCompleted, label: uiStrings.hero.statProjectsCompleted },
+              { value: profile.servicesWorkWith, label: uiStrings.hero.statServices },
+              { value: publishedClientCount, label: uiStrings.hero.statClients },
+            ].map((stat) => (
+              <div key={stat.label} className="flex flex-col-reverse items-center px-4 py-4">
+                <dt className="text-xs text-muted mt-1">{stat.label}</dt>
+                <dd className="text-2xl font-bold text-foreground tabular-nums">{stat.value}+</dd>
               </div>
-              <div className="text-xs text-muted">{uiStrings.hero.statYearsExperience}</div>
-            </GlassCard>
-            <GlassCard className="!p-3 text-center" hover={false}>
-              <div className="text-xl font-bold text-foreground mb-0.5">
-                {profile.projectsCompleted}+
-              </div>
-              <div className="text-xs text-muted">{uiStrings.hero.statProjectsCompleted}</div>
-            </GlassCard>
-            <GlassCard className="!p-3 text-center" hover={false}>
-              <div className="text-xl font-bold text-foreground mb-0.5">
-                {profile.servicesWorkWith}+
-              </div>
-              <div className="text-xs text-muted">{uiStrings.hero.statServices}</div>
-            </GlassCard>
-            <GlassCard className="!p-3 text-center" hover={false}>
-              <div className="text-xl font-bold text-foreground mb-0.5">
-                {publishedClientCount}+
-              </div>
-              <div className="text-xs text-muted">{uiStrings.hero.statClients}</div>
-            </GlassCard>
-          </motion.div>
+            ))}
+          </motion.dl>
         </div>
       </div>
 
-      {/* Client Logos — full-width trusted-by band */}
+      {/* Client Logos — full-width trusted-by band (small screens; large screens use the orbit) */}
       <motion.div
-        className="relative z-10 w-full mt-14 pt-8 border-t border-border/60"
+        className="lg:hidden relative z-10 w-full mt-14 pt-8 border-t border-border/60"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.6 }}
