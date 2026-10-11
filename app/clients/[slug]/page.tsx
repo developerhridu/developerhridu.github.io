@@ -14,8 +14,7 @@ interface ClientPageProps {
 }
 
 function clientImageUrl(client: Client): string | undefined {
-  const image = client.image || client.logo;
-  return image ? `${BASE_URL}${image}` : undefined;
+  return client.image ? `${BASE_URL}${client.image}` : undefined;
 }
 
 export async function generateStaticParams() {
@@ -74,7 +73,7 @@ export default async function ClientPage({ params }: ClientPageProps) {
     name: client.name,
     url: client.url ?? url,
     ...(client.description ? { description: client.description } : {}),
-    ...(client.logo ? { logo: `${BASE_URL}${client.logo}` } : {}),
+    ...(client.image ? { logo: `${BASE_URL}${client.image}` } : {}),
   };
 
   return (
@@ -85,7 +84,6 @@ export default async function ClientPage({ params }: ClientPageProps) {
         title: client.name,
         description: client.description ?? "",
         tags: client.tags ?? [],
-        image: client.image || client.logo,
         website: client.url ?? undefined,
       }}
       url={url}

@@ -4,7 +4,7 @@ import { getPublishedClients } from "@/lib/clients";
 import type { Client } from "@/types";
 
 const CLIENTS_WITH_LOGOS = getPublishedClients().filter(
-  (client): client is Client & { logo: string } => !!client.logo
+  (client): client is Client & { image: string } => !!client.image
 );
 
 const CHIP_CLASS =
@@ -16,7 +16,7 @@ function LogoTrack({ ariaHidden }: { ariaHidden: boolean }) {
       {CLIENTS_WITH_LOGOS.map((client) => {
         const logo = (
           <div className="relative w-full h-full">
-            <Image src={client.logo} alt={client.name} fill sizes="144px" className="object-contain" />
+            <Image src={client.image} alt={client.name} fill sizes="144px" className="object-contain" />
           </div>
         );
 

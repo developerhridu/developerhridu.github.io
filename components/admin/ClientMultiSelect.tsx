@@ -14,10 +14,10 @@ export default function ClientMultiSelect({ value, onChange }: ClientMultiSelect
   const options: MultiSelectOption[] = getClients().map((client) => ({
     value: client.name,
     label: client.name,
-    icon: client.logo ? (
+    icon: client.image ? (
       <span className="relative w-4 h-4 shrink-0 mt-0.5 rounded bg-white/90 overflow-hidden">
         <Image
-          src={client.logo}
+          src={client.image}
           alt=""
           fill
           sizes="16px"

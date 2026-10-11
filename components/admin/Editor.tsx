@@ -55,7 +55,6 @@ interface Entry {
   githubUrl?: Project["githubUrl"];
   caseStudies?: string[];
   featured?: boolean;
-  logo?: string;
   url?: string | null;
   projects?: string[];
 }
@@ -217,7 +216,7 @@ const KIND_DEFAULTS: Record<ContentKind, () => Partial<Entry>> = {
   blog: () => ({ date: new Date().toISOString().slice(0, 10) }),
   "case-study": () => ({ date: new Date().toISOString().slice(0, 10) }),
   project: () => ({ longDescription: "", liveUrl: null, githubUrl: null, caseStudies: [], featured: false }),
-  client: () => ({ logo: "", url: null, projects: [], caseStudies: [] }),
+  client: () => ({ url: null, projects: [], caseStudies: [] }),
 };
 
 function blankEntry(kind: ContentKind): Entry {
@@ -703,7 +702,6 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
     }
     if (kind === "client") {
       finalEntry.url = editing.url?.trim() || null;
-      finalEntry.logo = editing.logo?.trim() || undefined;
       finalEntry.projects = editing.projects ?? [];
       finalEntry.caseStudies = editing.caseStudies ?? [];
     }
@@ -1541,16 +1539,6 @@ function ClientFields({ entry, setEntry }: { entry: Entry; setEntry: (entry: Ent
   return (
     <div className="space-y-4 border-t border-border pt-4">
       <h3 className="text-xs font-semibold uppercase tracking-wide text-accent">Client Details</h3>
-      <div>
-        <label htmlFor="client-logo" className="block text-xs uppercase tracking-wide text-muted mb-1">Logo URL</label>
-        <input
-          id="client-logo"
-          value={entry.logo ?? ""}
-          onChange={(e) => setEntry({ ...entry, logo: e.target.value })}
-          placeholder="/images/logos/example.png"
-          className={inputClass}
-        />
-      </div>
       <div>
         <label htmlFor="client-url" className="block text-xs uppercase tracking-wide text-muted mb-1">Website URL</label>
         <input

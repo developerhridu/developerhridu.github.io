@@ -70,7 +70,6 @@ export interface Client {
   /** Detail page path segment (`/clients/{slug}`). */
   slug: string;
   name: string;
-  logo?: string;
   /** `null` when cleared in the admin editor — `url` fields there write null, not "". */
   url?: string | null;
   published?: boolean;

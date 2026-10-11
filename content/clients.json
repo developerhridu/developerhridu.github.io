@@ -3,7 +3,6 @@
     {
       "id": "banglalink-digital",
       "slug": "banglalink-digital",
-      "logo": "/images/logos/banglalink-digital.jpeg",
       "url": "https://www.banglalink.net/",
       "published": true,
       "description": "",
@@ -16,103 +15,104 @@
       ],
       "photos": [],
       "updatedAt": "2026-10-11T05:13:18.154Z",
-      "name": "Banglalink Digital"
+      "name": "Banglalink Digital",
+      "image": "/images/logos/banglalink-digital.jpeg"
     },
     {
       "id": "us-bangla-airlines",
       "slug": "us-bangla-airlines",
       "published": true,
-      "logo": "/images/logos/us-bangla-airline.png",
       "url": "https://www.usbair.com",
       "description": "",
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "US-Bangla Airlines"
+      "name": "US-Bangla Airlines",
+      "image": "/images/logos/us-bangla-airline.png"
     },
     {
       "id": "foodi",
       "slug": "foodi",
-      "logo": "/images/logos/foodi.jpg",
       "url": "https://foodibd.com",
       "published": true,
       "description": "",
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "Foodi"
+      "name": "Foodi",
+      "image": "/images/logos/foodi.jpg"
     },
     {
       "id": "bdjobs",
       "slug": "bdjobs",
       "published": true,
-      "logo": "/images/logos/bdjobs.png",
       "url": "https://www.bdjobs.com",
       "description": "",
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "Bdjobs.com"
+      "name": "Bdjobs.com",
+      "image": "/images/logos/bdjobs.png"
     },
     {
       "id": "firsttrip",
       "slug": "firsttrip",
       "published": true,
-      "logo": "/images/logos/firsttrip.png",
       "url": "https://firsttrip.com",
       "description": "",
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "FirstTrip"
+      "name": "FirstTrip",
+      "image": "/images/logos/firsttrip.png"
     },
     {
       "id": "triplover",
       "slug": "triplover",
       "published": true,
-      "logo": "/images/logos/triplover.jpeg",
       "url": "https://www.triplover.com",
       "description": "",
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "TripLover"
+      "name": "TripLover",
+      "image": "/images/logos/triplover.jpeg"
     },
     {
       "id": "taketrip",
       "slug": "taketrip",
       "published": true,
-      "logo": "/images/logos/taketrip.png",
       "url": "https://taketrip.com",
       "description": "",
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "TakeTrip"
+      "name": "TakeTrip",
+      "image": "/images/logos/taketrip.png"
     },
     {
       "id": "travelchamp",
       "slug": "travelchamp",
       "published": true,
-      "logo": "/images/logos/travelchamp.png",
       "url": "https://www.travelchamp.com",
       "description": "",
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "TravelChamp"
+      "name": "TravelChamp",
+      "image": "/images/logos/travelchamp.png"
     },
     {
       "id": "takeoff",
       "slug": "takeoff",
       "published": true,
-      "logo": "/images/logos/takeoff.png",
       "url": "https://takeoffbd.com",
       "description": "",
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "TakeOff"
+      "name": "TakeOff",
+      "image": "/images/logos/takeoff.png"
     },
     {
       "id": "scale-ai",
@@ -123,8 +123,6 @@
       "published": true,
       "description": "",
       "tags": [],
-      "image": "/images/clients/scale-ai.png",
-      "logo": "/images/clients/scale-ai.png",
       "client": "",
       "body": "## Project Name: \nSCA101 - Native Bengali Speakers needed to help train the Next Generation of Video and Audio AI\n\n## Proof of work documents",
       "sections": [],
@@ -133,31 +131,32 @@
         "/images/clients/scale-ai-photo-1.png"
       ],
       "updatedAt": "2026-10-11T05:19:38.129Z",
-      "name": "Scale AI"
+      "name": "Scale AI",
+      "image": "/images/clients/scale-ai.png"
     },
     {
       "id": "edesh",
       "slug": "edesh",
       "published": true,
-      "logo": "/images/logos/Edesh.png",
       "url": "https://e-deshltd.com",
       "description": "",
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "E-Desh Ltd"
+      "name": "E-Desh Ltd",
+      "image": "/images/logos/Edesh.png"
     },
     {
       "id": "personal-project",
       "slug": "personal-project",
-      "logo": "",
       "url": null,
       "published": false,
       "description": "",
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "Personal Project"
+      "name": "Personal Project",
+      "image": ""
     }
   ]
 }
