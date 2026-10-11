@@ -109,6 +109,25 @@
       "name": "TakeOff"
     },
     {
+      "id": "scale-ai",
+      "slug": "scale-ai",
+      "url": "https://scale.com/",
+      "projects": [],
+      "caseStudies": [],
+      "published": true,
+      "description": "",
+      "tags": [],
+      "image": "/images/clients/scale-ai.png",
+      "client": "",
+      "body": "## Project Name: \nSCA101 - Native Bengali Speakers needed to help train the Next Generation of Video and Audio AI\n\n## Proof of work documents",
+      "sections": [],
+      "photos": [
+        "/images/clients/scale-ai-photo-0.png"
+      ],
+      "updatedAt": "2026-10-11T05:12:11.520Z",
+      "name": "Scale AI"
+    },
+    {
       "id": "edesh",
       "slug": "edesh",
       "published": true,
@@ -131,25 +150,6 @@
       "body": "",
       "sections": [],
       "name": "Personal Project"
-    },
-    {
-      "id": "scale-ai",
-      "slug": "scale-ai",
-      "url": "https://scale.com/",
-      "projects": [],
-      "caseStudies": [],
-      "published": true,
-      "description": "",
-      "tags": [],
-      "image": "/images/clients/scale-ai.png",
-      "client": "",
-      "body": "## Project Name: \nSCA101 - Native Bengali Speakers needed to help train the Next Generation of Video and Audio AI\n\n## Proof of work documents",
-      "sections": [],
-      "photos": [
-        "/images/clients/scale-ai-photo-0.png"
-      ],
-      "updatedAt": "2026-10-11T05:12:11.520Z",
-      "name": "Scale AI"
     }
   ]
 }
