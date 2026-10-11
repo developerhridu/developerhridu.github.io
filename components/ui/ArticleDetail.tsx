@@ -7,6 +7,7 @@ import type { ContentSection } from "@/types";
 import { estimateReadingTime } from "@/lib/readingTime";
 import { markdownComponents } from "@/components/ui/markdownComponents";
 import LightboxImage from "@/components/ui/LightboxImage";
+import TitleImageGallery from "@/components/ui/TitleImageGallery";
 import ClientLinks from "@/components/ui/ClientLinks";
 import ShareButtons from "@/components/ui/ShareButtons";
 import ViewCounter from "@/components/ui/ViewCounter";
@@ -47,6 +48,7 @@ export interface ArticleDetailProps {
     date?: string;
     client?: string;
     image?: string;
+    titleImages?: string[];
     photos?: string[];
     longDescription?: string;
     body?: string;
@@ -86,6 +88,7 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
   const readingMinutes = engagementType
     ? estimateReadingTime(entry.body ?? "", ...(entry.sections?.map((section) => section.body) ?? []))
     : null;
+  const titleImages = [entry.image, ...(entry.titleImages ?? [])].filter((image): image is string => !!image?.trim());
 
   return (
     <div className={preview ? "" : "pt-16 md:pt-0"}>
@@ -154,10 +157,11 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
             </div>}
           </header>
 
-          <LightboxImage
-            src={entry.image}
+          <TitleImageGallery
+            images={titleImages}
             alt={entry.title}
-            wrapperClassName={`mb-12 rounded-2xl${kind === "project" ? " aspect-video bg-background border border-border" : ""}`}
+            className="mb-12"
+            wrapperClassName={`rounded-2xl${kind === "project" ? " aspect-video bg-background border border-border" : ""}`}
             imgClassName={kind === "project" ? "w-full h-full object-contain" : "w-full h-auto"}
             initials={kind === "project" ? entry.title.split(" ").map((word) => word[0]).join("") : undefined}
             initialsClassName="text-6xl"

@@ -44,6 +44,7 @@ interface Entry {
   description: string;
   tags: string[];
   image?: string;
+  titleImages?: string[];
   photos?: string[];
   client?: string;
   body: string;
@@ -131,12 +132,39 @@ function toRepoPath(publicPath: string): string {
   return `public${publicPath}`;
 }
 
+function entryImagePaths(entry: Entry): string[] {
+  return [
+    entry.image,
+    ...(entry.titleImages ?? []),
+    ...(entry.photos ?? []),
+    ...(entry.sections ?? []).flatMap((s) => s.images ?? []),
+    ...inlineImagePaths(entry),
+  ].filter(Boolean) as string[];
+}
+
 function referencedImagePaths(list: Entry[]): Set<string> {
-  return new Set(
-    list.flatMap(
-      (e) => [e.image, ...(e.photos ?? []), ...(e.sections ?? []).flatMap((s) => s.images ?? []), ...inlineImagePaths(e)].filter(Boolean) as string[]
-    )
-  );
+  return new Set(list.flatMap(entryImagePaths));
+}
+
+/** Uploads any chosen files over their URL slots and returns the non-empty image URLs. */
+async function resolveImageList(
+  urls: string[],
+  files: (File | null)[],
+  publicPathFor: (index: number, ext: string) => string,
+  changes: FileChange[]
+): Promise<string[]> {
+  const resolved: string[] = [];
+  for (let i = 0; i < urls.length; i++) {
+    let url = urls[i];
+    const file = files[i];
+    if (file) {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "png";
+      url = publicPathFor(i, ext);
+      changes.push({ path: toRepoPath(url), content: await fileToBase64(file) });
+    }
+    if (url.trim()) resolved.push(url.trim());
+  }
+  return resolved;
 }
 
 function makeUniqueSlug(base: string, existingSlugs: string[]): string {
@@ -193,6 +221,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [sectionImageFiles, setSectionImageFiles] = useState<(File | null)[][]>([]);
   const [photoFiles, setPhotoFiles] = useState<(File | null)[]>([]);
+  const [titleImageFiles, setTitleImageFiles] = useState<(File | null)[]>([]);
   const [inlineImages, setInlineImages] = useState<InlineImage[]>([]);
   const inlineImagesRef = useRef<InlineImage[]>([]);
   const [loadedOrderIds, setLoadedOrderIds] = useState<string[]>([]);
@@ -293,6 +322,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     setImageFile(null);
     setSectionImageFiles([]);
     setPhotoFiles([]);
+    setTitleImageFiles([]);
     setSuccessMsg(null);
     setError(null);
   }
@@ -307,6 +337,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     setImageFile(null);
     setSectionImageFiles(sections.map((s) => (s.images ?? []).map(() => null)));
     setPhotoFiles((entry.photos ?? []).map(() => null));
+    setTitleImageFiles((entry.titleImages ?? []).map(() => null));
     setSuccessMsg(null);
     setError(null);
   }
@@ -317,6 +348,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     setImageFile(null);
     setSectionImageFiles([]);
     setPhotoFiles([]);
+    setTitleImageFiles([]);
   }
 
   function cancelLinkedInImport() {
@@ -348,6 +380,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     setImageFile(null);
     setSectionImageFiles([]);
     setPhotoFiles([]);
+    setTitleImageFiles([]);
     setError(null);
     setSuccessMsg(null);
     cancelLinkedInImport();
@@ -460,6 +493,23 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     });
   }
 
+  function addTitleImage() {
+    if (!editing) return;
+    setEditing({ ...editing, titleImages: [...(editing.titleImages ?? []), ""] });
+    setTitleImageFiles((previous) => [...previous, null]);
+  }
+
+  function updateTitleImage(index: number, value: string) {
+    if (!editing) return;
+    setEditing({ ...editing, titleImages: (editing.titleImages ?? []).map((image, i) => i === index ? value : image) });
+  }
+
+  function removeTitleImage(index: number) {
+    if (!editing) return;
+    setEditing({ ...editing, titleImages: (editing.titleImages ?? []).filter((_, i) => i !== index) });
+    setTitleImageFiles((previous) => previous.filter((_, i) => i !== index));
+  }
+
   async function commit(changes: FileChange[], newEntries: Entry[], message: string): Promise<boolean> {
     if (!fileSha) {
       setError("Missing file version — reload the list before saving.");
@@ -509,12 +559,8 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     }
 
     const previousEntry = !isNew ? current.find((e) => e.id === editing.id) : undefined;
-    const oldManagedPaths = [...new Set([
-      previousEntry?.image,
-      ...(previousEntry?.photos ?? []),
-      ...(previousEntry?.sections ?? []).flatMap((s) => s.images ?? []),
-      ...(previousEntry ? inlineImagePaths(previousEntry) : []),
-    ].filter((p): p is string => isManagedImage(p, kind)))];
+    const oldManagedPaths = [...new Set(previousEntry ? entryImagePaths(previousEntry) : [])]
+      .filter((p) => isManagedImage(p, kind));
 
     setSaving(true);
     setError(null);
@@ -523,7 +569,8 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     let image = editing.image;
     let body = editing.body;
     let sections: Section[];
-    const photos: string[] = [];
+    let photos: string[];
+    let titleImages: string[];
 
     try {
       if (imageFile) {
@@ -534,17 +581,13 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
         image = `/images/${CONFIG[kind].imageFolder}/${slug}.${ext}`;
       }
 
-      for (let i = 0; i < (editing.photos ?? []).length; i++) {
-        let photo = editing.photos![i];
-        const file = photoFiles[i];
-        if (file) {
-          const ext = file.name.split(".").pop()?.toLowerCase() || "png";
-          const repoPath = `public/images/${CONFIG[kind].imageFolder}/${slug}-photo-${i}.${ext}`;
-          changes.push({ path: repoPath, content: await fileToBase64(file) });
-          photo = `/images/${CONFIG[kind].imageFolder}/${slug}-photo-${i}.${ext}`;
-        }
-        if (photo.trim()) photos.push(photo.trim());
-      }
+      const imageFolder = `/images/${CONFIG[kind].imageFolder}`;
+      photos = await resolveImageList(
+        editing.photos ?? [], photoFiles, (i, ext) => `${imageFolder}/${slug}-photo-${i}.${ext}`, changes
+      );
+      titleImages = await resolveImageList(
+        editing.titleImages ?? [], titleImageFiles, (i, ext) => `${imageFolder}/${slug}-title-${i}.${ext}`, changes
+      );
 
       const uploadedSections: Section[] = [];
       for (let i = 0; i < editing.sections.length; i++) {
@@ -594,6 +637,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
       image,
       body,
       photos,
+      titleImages: titleImages.length > 0 ? titleImages : undefined,
       sections,
       updatedAt: new Date().toISOString(),
     };
@@ -632,6 +676,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
       setImageFile(null);
       setSectionImageFiles(sections.map((s) => (s.images ?? []).map(() => null)));
       setPhotoFiles(photos.map(() => null));
+      setTitleImageFiles(titleImages.map(() => null));
     }
   }
 
@@ -640,9 +685,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     const current = entries ?? [];
     const updated = current.filter((e) => e.id !== entry.id);
 
-    const oldPaths = [...new Set([entry.image, ...(entry.photos ?? []), ...(entry.sections ?? []).flatMap((s) => s.images ?? []), ...inlineImagePaths(entry)].filter(
-      (p): p is string => isManagedImage(p, kind)
-    ))];
+    const oldPaths = [...new Set(entryImagePaths(entry))].filter((p) => isManagedImage(p, kind));
     const stillReferenced = referencedImagePaths(updated);
     const changes: FileChange[] = oldPaths
       .filter((p) => !stillReferenced.has(p))
@@ -768,6 +811,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
                 imageFile={imageFile}
                 sectionImageFiles={sectionImageFiles}
                 photoFiles={photoFiles}
+                titleImageFiles={titleImageFiles}
                 inlineImageUrls={inlineImageUrls}
               />
             </div>
@@ -790,6 +834,11 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
               onUpdatePhoto={updatePhoto}
               onRemovePhoto={removePhoto}
               onPhotoFileChange={(index, file) => setPhotoFiles((prev) => prev.map((item, i) => i === index ? file : item))}
+              titleImageFiles={titleImageFiles}
+              onAddTitleImage={addTitleImage}
+              onUpdateTitleImage={updateTitleImage}
+              onRemoveTitleImage={removeTitleImage}
+              onTitleImageFileChange={(index, file) => setTitleImageFiles((prev) => prev.map((item, i) => i === index ? file : item))}
               onAddSection={addSection}
               onUpdateSection={updateSection}
               onRemoveSection={removeSection}
@@ -975,6 +1024,58 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
   );
 }
 
+/** Editable list of image URLs, each with an optional file upload. */
+function ImageListField({
+  label,
+  itemName,
+  images,
+  files,
+  placeholder,
+  emptyText,
+  onAdd,
+  onUpdate,
+  onRemove,
+  onFileChange,
+}: {
+  label: string;
+  itemName: string;
+  images: string[];
+  files: (File | null)[];
+  placeholder: string;
+  emptyText: string;
+  onAdd: () => void;
+  onUpdate: (index: number, value: string) => void;
+  onRemove: (index: number) => void;
+  onFileChange: (index: number, file: File | null) => void;
+}) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <label className="block text-xs uppercase tracking-wide text-muted">{label}</label>
+        <button onClick={onAdd} type="button" className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover capitalize">
+          <Plus size={14} /> Add {itemName}
+        </button>
+      </div>
+      <div className="space-y-2">
+        {images.map((image, index) => (
+          <div key={index} className="flex items-start gap-2">
+            <div className="flex-1">
+              <input value={image} onChange={(e) => onUpdate(index, e.target.value)} placeholder={placeholder} className={inputClass} />
+              <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
+                <Upload size={16} className="text-muted shrink-0" />
+                <span className="truncate">{files[index]?.name ?? `Or upload a ${itemName}…`}</span>
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => onFileChange(index, e.target.files?.[0] ?? null)} />
+              </label>
+            </div>
+            <button type="button" onClick={() => onRemove(index)} aria-label={`Remove ${itemName} ${index + 1}`} className="p-1.5 mt-1 text-muted hover:text-red-400 transition-colors"><Trash2 size={14} /></button>
+          </div>
+        ))}
+        {images.length === 0 && <p className="text-muted text-xs">{emptyText}</p>}
+      </div>
+    </div>
+  );
+}
+
 function EntryForm({
   kind,
   entry,
@@ -993,6 +1094,11 @@ function EntryForm({
   onUpdatePhoto,
   onRemovePhoto,
   onPhotoFileChange,
+  titleImageFiles,
+  onAddTitleImage,
+  onUpdateTitleImage,
+  onRemoveTitleImage,
+  onTitleImageFileChange,
   onAddSection,
   onUpdateSection,
   onRemoveSection,
@@ -1022,6 +1128,11 @@ function EntryForm({
   onUpdatePhoto: (index: number, value: string) => void;
   onRemovePhoto: (index: number) => void;
   onPhotoFileChange: (index: number, file: File | null) => void;
+  titleImageFiles: (File | null)[];
+  onAddTitleImage: () => void;
+  onUpdateTitleImage: (index: number, value: string) => void;
+  onRemoveTitleImage: (index: number) => void;
+  onTitleImageFileChange: (index: number, file: File | null) => void;
   onAddSection: () => void;
   onUpdateSection: (index: number, patch: Partial<Section>) => void;
   onRemoveSection: (index: number) => void;
@@ -1135,6 +1246,19 @@ function EntryForm({
           </p>
         )}
       </div>
+
+      <ImageListField
+        label="Additional Title Images (optional)"
+        itemName="title image"
+        images={entry.titleImages ?? []}
+        files={titleImageFiles}
+        placeholder={`/images/${CONFIG[kind].imageFolder}/example-title.png`}
+        emptyText="Shown after the cover image with previous/next buttons on the article page."
+        onAdd={onAddTitleImage}
+        onUpdate={onUpdateTitleImage}
+        onRemove={onRemoveTitleImage}
+        onFileChange={onTitleImageFileChange}
+      />
 
       {hasClient && (
         <div>
@@ -1325,30 +1449,18 @@ function EntryForm({
         </div>
       </div>
 
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="block text-xs uppercase tracking-wide text-muted">Photo Gallery (optional)</label>
-          <button onClick={onAddPhoto} type="button" className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover">
-            <Plus size={14} /> Add Photo
-          </button>
-        </div>
-        <div className="space-y-2">
-          {(entry.photos ?? []).map((photo, index) => (
-            <div key={index} className="flex items-start gap-2">
-              <div className="flex-1">
-                <input value={photo} onChange={(e) => onUpdatePhoto(index, e.target.value)} placeholder={`/images/${CONFIG[kind].imageFolder}/example-photo.png`} className={inputClass} />
-                <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
-                  <Upload size={16} className="text-muted shrink-0" />
-                  <span className="truncate">{photoFiles[index]?.name ?? "Or upload a photo…"}</span>
-                  <input type="file" accept="image/*" className="hidden" onChange={(e) => onPhotoFileChange(index, e.target.files?.[0] ?? null)} />
-                </label>
-              </div>
-              <button type="button" onClick={() => onRemovePhoto(index)} aria-label={`Remove photo ${index + 1}`} className="p-1.5 mt-1 text-muted hover:text-red-400 transition-colors"><Trash2 size={14} /></button>
-            </div>
-          ))}
-          {(entry.photos ?? []).length === 0 && <p className="text-muted text-xs">No gallery photos added.</p>}
-        </div>
-      </div>
+      <ImageListField
+        label="Photo Gallery (optional)"
+        itemName="photo"
+        images={entry.photos ?? []}
+        files={photoFiles}
+        placeholder={`/images/${CONFIG[kind].imageFolder}/example-photo.png`}
+        emptyText="No gallery photos added."
+        onAdd={onAddPhoto}
+        onUpdate={onUpdatePhoto}
+        onRemove={onRemovePhoto}
+        onFileChange={onPhotoFileChange}
+      />
 
       {kind === "project" && <ProjectLinkFields entry={entry} setEntry={setEntry} />}
 

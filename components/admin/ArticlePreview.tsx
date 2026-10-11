@@ -11,13 +11,14 @@ interface ArticlePreviewProps {
   imageFile: File | null;
   sectionImageFiles: (File | null)[][];
   photoFiles: (File | null)[];
+  titleImageFiles: (File | null)[];
   inlineImageUrls: Record<string, string>;
 }
 
-export default function ArticlePreview({ kind, entry, imageFile, sectionImageFiles, photoFiles, inlineImageUrls }: ArticlePreviewProps) {
+export default function ArticlePreview({ kind, entry, imageFile, sectionImageFiles, photoFiles, titleImageFiles, inlineImageUrls }: ArticlePreviewProps) {
   const files = useMemo(
-    () => [...new Set([imageFile, ...sectionImageFiles.flat(), ...photoFiles].filter((file): file is File => file !== null))],
-    [imageFile, sectionImageFiles, photoFiles]
+    () => [...new Set([imageFile, ...titleImageFiles, ...sectionImageFiles.flat(), ...photoFiles].filter((file): file is File => file !== null))],
+    [imageFile, titleImageFiles, sectionImageFiles, photoFiles]
   );
   const [imageUrls, setImageUrls] = useState<Map<File, string>>(new Map());
 
@@ -35,6 +36,7 @@ export default function ArticlePreview({ kind, entry, imageFile, sectionImageFil
   const previewEntry = {
     ...entry,
     image: imageFile ? imageUrls.get(imageFile) : entry.image,
+    titleImages: (entry.titleImages ?? []).map((image, index) => titleImageFiles[index] ? imageUrls.get(titleImageFiles[index]!) ?? "" : image).filter((image) => image.trim()),
     sections: (entry.sections ?? []).map((section, index) => ({
       ...section,
       images: (section.images ?? []).map((image, imageIndex) => {

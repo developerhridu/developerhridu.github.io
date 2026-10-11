@@ -85,6 +85,8 @@ export interface Project {
   sections?: ContentSection[];
   caseStudies?: string[];
   image: string;
+  /** Extra title images shown after `image` in the detail-page gallery. */
+  titleImages?: string[];
   client?: string;
   tags: string[];
   liveUrl: string | null;
@@ -192,6 +194,8 @@ export interface BlogPost {
   description: string;
   tags: string[];
   image?: string;
+  /** Extra title images shown after `image` in the detail-page gallery. */
+  titleImages?: string[];
   body: string;
   sections?: ContentSection[];
 }
@@ -208,6 +212,8 @@ export interface CaseStudy {
   description: string;
   tags: string[];
   image?: string;
+  /** Extra title images shown after `image` in the detail-page gallery. */
+  titleImages?: string[];
   body: string;
   sections?: ContentSection[];
 }
