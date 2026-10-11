@@ -4,12 +4,13 @@ import Link from "next/link";
 import { Pencil } from "lucide-react";
 import useValidGitHubToken from "@/components/ui/useValidGitHubToken";
 
-type ArticleKind = "blog" | "case-study" | "project";
+type ArticleKind = "blog" | "case-study" | "project" | "client";
 
 const ADMIN_TABS: Record<ArticleKind, string> = {
   blog: "blog",
   "case-study": "case-study",
   project: "projects",
+  client: "clients",
 };
 
 export default function EditArticleButton({ kind, slug }: { kind: ArticleKind; slug: string }) {

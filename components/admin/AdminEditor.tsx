@@ -31,7 +31,7 @@ import {
 import configData from "@/content/config.json";
 import adminMenuData from "@/content/admin-menu.json";
 import { inputClass, TOKEN_KEY, TOKEN_CHANGED_EVENT } from "@/components/admin/shared";
-import ArticleManager from "@/components/admin/ArticleManager";
+import Editor from "@/components/admin/Editor";
 import GenericArrayEditor from "@/components/admin/GenericArrayEditor";
 import ExperienceManager from "@/components/admin/ExperienceManager";
 import TestimonialsManager from "@/components/admin/TestimonialsManager";
@@ -46,7 +46,6 @@ import TasksManager from "@/components/admin/TasksManager";
 import {
   educationConfig,
   certificationsConfig,
-  clientsConfig,
   menuConfig,
   adminMenuConfig,
   proficiencyConfig,
@@ -135,9 +134,9 @@ export default function AdminEditor() {
     const create = params.get("action") === "new";
     if (requestedTab && TABS.some((item) => item.key === requestedTab)) {
       setTab(requestedTab as Tab);
-      const articleTab = requestedTab === "blog" || requestedTab === "case-study" || requestedTab === "projects";
+      const editorTab = requestedTab === "blog" || requestedTab === "case-study" || requestedTab === "projects" || requestedTab === "clients";
       const newEntryTab = requestedTab === "certifications" || requestedTab === "experience" || requestedTab === "services";
-      if ((articleTab && (slug || create)) || (newEntryTab && create)) {
+      if ((editorTab &&(slug || create)) || (newEntryTab && create)) {
         setLinkedEditor({ tab: requestedTab, ...(slug ? { slug } : { create }) });
       }
     }
@@ -320,7 +319,7 @@ export default function AdminEditor() {
 
       {tab === "dashboard" && <Dashboard token={token} onAuthError={handleAuthError} />}
       {tab === "blog" && (
-        <ArticleManager
+        <Editor
           key="blog"
           kind="blog"
           token={token}
@@ -330,7 +329,7 @@ export default function AdminEditor() {
         />
       )}
       {tab === "case-study" && (
-        <ArticleManager
+        <Editor
           key="case-study"
           kind="case-study"
           token={token}
@@ -367,7 +366,7 @@ export default function AdminEditor() {
       )}
       {tab === "testimonials" && <TestimonialsManager token={token} onAuthError={handleAuthError} />}
       {tab === "projects" && (
-        <ArticleManager
+        <Editor
           key="project"
           kind="project"
           token={token}
@@ -377,7 +376,14 @@ export default function AdminEditor() {
         />
       )}
       {tab === "clients" && (
-        <GenericArrayEditor config={clientsConfig} token={token} onAuthError={handleAuthError} />
+        <Editor
+          key="client"
+          kind="client"
+          token={token}
+          onAuthError={handleAuthError}
+          initialSlug={linkedEditor?.tab === "clients" ? linkedEditor.slug : undefined}
+          initialNew={linkedEditor?.tab === "clients" && linkedEditor.create === true}
+        />
       )}
       {tab === "menu" && <GenericArrayEditor config={menuConfig} token={token} onAuthError={handleAuthError} />}
       {tab === "admin-menu" && (

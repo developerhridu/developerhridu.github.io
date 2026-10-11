@@ -44,20 +44,6 @@ export const certificationsConfig: ArrayConfig = {
   },
 };
 
-export const clientsConfig: ArrayConfig = {
-  path: "content/clients.json",
-  arrayKey: "clients",
-  label: "Clients",
-  titleField: "name",
-  imageFolder: "logos",
-  fields: [
-    { key: "name", label: "Name", type: "text" },
-    { key: "logo", label: "Logo", type: "image" },
-    { key: "url", label: "Website URL", type: "url" },
-    { key: "published", label: "Published (visible on the site)", type: "boolean", defaultBoolean: true },
-  ],
-};
-
 export const menuConfig: ArrayConfig = {
   path: "content/menu.json",
   arrayKey: "navLinks",

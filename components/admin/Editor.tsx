@@ -26,7 +26,8 @@ import {
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
 import ClientMultiSelect from "@/components/admin/ClientMultiSelect";
 import CaseStudyMultiSelect from "@/components/admin/CaseStudyMultiSelect";
-import ArticlePreview from "@/components/admin/ArticlePreview";
+import WorkMultiSelect from "@/components/admin/WorkMultiSelect";
+import EditorPreview from "@/components/admin/EditorPreview";
 import ArticleMarkdownEditor from "@/components/admin/ArticleMarkdownEditor";
 import { ReorderControls } from "@/components/admin/ReorderControls";
 import type { ContentSection, Project } from "@/types";
@@ -54,6 +55,24 @@ interface Entry {
   githubUrl?: Project["githubUrl"];
   caseStudies?: string[];
   featured?: boolean;
+  logo?: string;
+  url?: string | null;
+  projects?: string[];
+}
+
+/** Entry as written in the JSON file; clients store their title as `name`. */
+type StoredEntry = Omit<Entry, "title"> & { title?: string; name?: string };
+
+function fromStored(kind: ContentKind, stored: StoredEntry): Entry {
+  if (kind !== "client") return stored as Entry;
+  const { name, ...rest } = stored;
+  return { ...rest, title: name ?? "" };
+}
+
+function toStored(kind: ContentKind, entry: Entry): StoredEntry {
+  if (kind !== "client") return entry;
+  const { title, ...rest } = entry;
+  return { ...rest, name: title };
 }
 
 interface InlineImage {
@@ -63,7 +82,7 @@ interface InlineImage {
   id: string;
 }
 
-type ContentKind = "blog" | "case-study" | "project";
+type ContentKind = "blog" | "case-study" | "project" | "client";
 
 const INLINE_IMAGE_EXTENSIONS: Record<string, string> = {
   "image/png": "png",
@@ -72,7 +91,7 @@ const INLINE_IMAGE_EXTENSIONS: Record<string, string> = {
   "image/gif": "gif",
   "image/avif": "avif",
 };
-const INLINE_IMAGE_PATH = /\/images\/(?:blog|case-studies|projects)\/[a-z0-9-]+-inline-[0-9a-f-]+\.(?:png|jpg|webp|gif|avif)\b/g;
+const INLINE_IMAGE_PATH = /\/images\/(?:blog|case-studies|projects|clients)\/[a-z0-9-]+-inline-[0-9a-f-]+\.(?:png|jpg|webp|gif|avif)\b/g;
 
 function inlineImagePaths(entry: Entry): string[] {
   return [entry.body, ...(entry.sections ?? []).map((section) => section.body)]
@@ -88,6 +107,8 @@ const CONFIG: Record<
     singularLabel: string;
     hasClient: boolean;
     hasLinkedInImport: boolean;
+    /** Dated entries are sorted newest first and appear in RSS; undated ones keep a manual order. */
+    dated: boolean;
     imageFolder: string;
     viewPath: string;
   }
@@ -99,6 +120,7 @@ const CONFIG: Record<
     singularLabel: "Post",
     hasClient: false,
     hasLinkedInImport: true,
+    dated: true,
     imageFolder: "blog",
     viewPath: "/blog",
   },
@@ -109,6 +131,7 @@ const CONFIG: Record<
     singularLabel: "Case Study",
     hasClient: true,
     hasLinkedInImport: true,
+    dated: true,
     imageFolder: "case-studies",
     viewPath: "/case-studies",
   },
@@ -119,8 +142,20 @@ const CONFIG: Record<
     singularLabel: "Project",
     hasClient: true,
     hasLinkedInImport: false,
+    dated: false,
     imageFolder: "projects",
     viewPath: "/projects",
+  },
+  client: {
+    path: "content/clients.json",
+    arrayKey: "clients",
+    label: "Clients",
+    singularLabel: "Client",
+    hasClient: false,
+    hasLinkedInImport: false,
+    dated: false,
+    imageFolder: "clients",
+    viewPath: "/clients",
   },
 };
 
@@ -178,14 +213,19 @@ function makeUniqueSlug(base: string, existingSlugs: string[]): string {
   return candidate;
 }
 
+const KIND_DEFAULTS: Record<ContentKind, () => Partial<Entry>> = {
+  blog: () => ({ date: new Date().toISOString().slice(0, 10) }),
+  "case-study": () => ({ date: new Date().toISOString().slice(0, 10) }),
+  project: () => ({ longDescription: "", liveUrl: null, githubUrl: null, caseStudies: [], featured: false }),
+  client: () => ({ logo: "", url: null, projects: [], caseStudies: [] }),
+};
+
 function blankEntry(kind: ContentKind): Entry {
   return {
     id: "",
     slug: "",
     title: "",
-    ...(kind === "project"
-      ? { longDescription: "", liveUrl: null, githubUrl: null, caseStudies: [], featured: false }
-      : { date: new Date().toISOString().slice(0, 10) }),
+    ...KIND_DEFAULTS[kind](),
     published: false,
     description: "",
     tags: [],
@@ -196,7 +236,7 @@ function blankEntry(kind: ContentKind): Entry {
   };
 }
 
-interface ArticleManagerProps {
+interface EditorProps {
   kind: ContentKind;
   token: string;
   onAuthError: () => void;
@@ -204,7 +244,7 @@ interface ArticleManagerProps {
   initialNew?: boolean;
 }
 
-export default function ArticleManager({ kind, token, onAuthError, initialSlug, initialNew = false }: ArticleManagerProps) {
+export default function Editor({ kind, token, onAuthError, initialSlug, initialNew = false }: EditorProps) {
   const pendingSlug = useRef(initialSlug);
   const pendingNew = useRef(initialNew);
   const [entries, setEntries] = useState<Entry[] | null>(null);
@@ -277,12 +317,17 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     try {
       const { content, sha } = await fetchContentFile(CONFIG[kind].path, token);
       const parsed = JSON.parse(content);
-      const loaded: Entry[] = (parsed[CONFIG[kind].arrayKey] ?? []).map((e: Entry) => ({
-        ...e,
-        body: e.body ?? "",
-        sections: e.sections ?? [],
-        published: e.published ?? true,
-      }));
+      const loaded: Entry[] = (parsed[CONFIG[kind].arrayKey] ?? []).map((stored: StoredEntry) => {
+        const e = fromStored(kind, stored);
+        return {
+          ...e,
+          description: e.description ?? "",
+          tags: e.tags ?? [],
+          body: e.body ?? "",
+          sections: e.sections ?? [],
+          published: e.published ?? true,
+        };
+      });
       setEntries(loaded);
       setLoadedOrderIds(loaded.map((entry) => entry.id));
       setFileSha(sha);
@@ -515,7 +560,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
       setError("Missing file version — reload the list before saving.");
       return false;
     }
-    const payload = { [CONFIG[kind].arrayKey]: newEntries };
+    const payload = { [CONFIG[kind].arrayKey]: newEntries.map((entry) => toStored(kind, entry)) };
     const content = JSON.stringify(payload, null, 2) + "\n";
     const allChanges = [...changes, { path: CONFIG[kind].path, content: encodeBase64Unicode(content) }];
 
@@ -656,10 +701,17 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
       finalEntry.featured = editing.featured ?? false;
       finalEntry.caseStudies = editing.caseStudies ?? [];
     }
+    if (kind === "client") {
+      finalEntry.url = editing.url?.trim() || null;
+      finalEntry.logo = editing.logo?.trim() || undefined;
+      finalEntry.projects = editing.projects ?? [];
+      finalEntry.caseStudies = editing.caseStudies ?? [];
+    }
     let updated: Entry[];
 
     if (isNew) {
-      const newEntry: Entry = { ...finalEntry, id: Date.now().toString(36) };
+      // Client ids appear in testimonial request links, so they stay readable.
+      const newEntry: Entry = { ...finalEntry, id: kind === "client" ? slug : Date.now().toString(36) };
       updated = [...current, newEntry];
     } else {
       updated = current.map((e) => (e.id === editing.id ? finalEntry : e));
@@ -694,7 +746,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     await commit(changes, updated, `content: delete ${entry.title}`);
   }
 
-  const orderDirty = kind === "project" && entries !== null &&
+  const orderDirty = !CONFIG[kind].dated && entries !== null &&
     entries.map((entry) => entry.id).join("|") !== loadedOrderIds.join("|");
 
   function moveEntry(index: number, direction: -1 | 1) {
@@ -708,7 +760,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
     });
   }
 
-  const sortedEntries = kind === "project"
+  const sortedEntries = !CONFIG[kind].dated
     ? entries
     : entries && [...entries].sort(
       (a, b) => new Date(b.date ?? "").getTime() - new Date(a.date ?? "").getTime()
@@ -805,7 +857,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
                   ))}
                 </div>
               )}
-              <ArticlePreview
+              <EditorPreview
                 kind={kind}
                 entry={{ ...editing, tags: tagsText.split(",").map((tag) => tag.trim()).filter(Boolean) }}
                 imageFile={imageFile}
@@ -879,7 +931,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
             {orderDirty && (
               <ReorderControls
                 saving={saving}
-                onSave={() => { if (entries) void commit([], entries, "content: reorder Projects"); }}
+                onSave={() => { if (entries) void commit([], entries, `content: reorder ${CONFIG[kind].label}`); }}
                 onDiscard={() => void load()}
               />
             )}
@@ -973,7 +1025,7 @@ export default function ArticleManager({ kind, token, onAuthError, initialSlug, 
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2">
-                          {kind === "project" && (
+                          {!CONFIG[kind].dated && (
                             <>
                               <IconButton
                                 onClick={() => moveEntry(index, -1)}
@@ -1176,7 +1228,7 @@ function EntryForm({
       </div>
 
       <div className="space-y-4">
-        {kind !== "project" && (
+        {CONFIG[kind].dated && (
           <div>
             <label className="block text-xs uppercase tracking-wide text-muted mb-1">Date</label>
             <input
@@ -1208,7 +1260,7 @@ function EntryForm({
           className="w-4 h-4 accent-accent"
         />
         <span className="text-sm text-foreground">
-          Published <span className="text-muted">(visible in listings and sitemap{kind !== "project" && " & RSS"} — unchecked stays a draft, still previewable via View)</span>
+          Published <span className="text-muted">(visible in listings and sitemap{CONFIG[kind].dated && " & RSS"} — unchecked stays a draft, still previewable via View)</span>
         </span>
       </label>
 
@@ -1463,6 +1515,7 @@ function EntryForm({
       />
 
       {kind === "project" && <ProjectLinkFields entry={entry} setEntry={setEntry} />}
+      {kind === "client" && <ClientFields entry={entry} setEntry={setEntry} />}
 
       <div className="flex items-center gap-3 pt-2">
         <button
@@ -1479,6 +1532,42 @@ function EntryForm({
         >
           Cancel
         </button>
+      </div>
+    </div>
+  );
+}
+
+function ClientFields({ entry, setEntry }: { entry: Entry; setEntry: (entry: Entry) => void }) {
+  return (
+    <div className="space-y-4 border-t border-border pt-4">
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-accent">Client Details</h3>
+      <div>
+        <label htmlFor="client-logo" className="block text-xs uppercase tracking-wide text-muted mb-1">Logo URL</label>
+        <input
+          id="client-logo"
+          value={entry.logo ?? ""}
+          onChange={(e) => setEntry({ ...entry, logo: e.target.value })}
+          placeholder="/images/logos/example.png"
+          className={inputClass}
+        />
+      </div>
+      <div>
+        <label htmlFor="client-url" className="block text-xs uppercase tracking-wide text-muted mb-1">Website URL</label>
+        <input
+          id="client-url"
+          value={entry.url ?? ""}
+          onChange={(e) => setEntry({ ...entry, url: e.target.value })}
+          placeholder="https://example.com"
+          className={inputClass}
+        />
+      </div>
+      <div>
+        <label className="block text-xs uppercase tracking-wide text-muted mb-1">Work Done (projects &amp; case studies)</label>
+        <WorkMultiSelect
+          projects={entry.projects ?? []}
+          caseStudies={entry.caseStudies ?? []}
+          onChange={(work) => setEntry({ ...entry, ...work })}
+        />
       </div>
     </div>
   );

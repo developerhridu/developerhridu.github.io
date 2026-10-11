@@ -4,7 +4,7 @@ import { Calendar } from "lucide-react";
 interface RelatedItem {
   slug: string;
   title: string;
-  date: string;
+  date?: string;
   description: string;
 }
 
@@ -27,14 +27,16 @@ export default function RelatedContent({ items, basePath, heading }: RelatedCont
             href={`${basePath}/${item.slug}`}
             className="group block p-4 border border-border rounded-lg hover:border-accent/40 transition-colors"
           >
-            <p className="flex items-center gap-1 text-xs text-muted mb-1">
-              <Calendar size={12} />
-              {new Date(item.date).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </p>
+            {item.date && (
+              <p className="flex items-center gap-1 text-xs text-muted mb-1">
+                <Calendar size={12} />
+                {new Date(item.date).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </p>
+            )}
             <h3 className="text-base font-semibold text-foreground mb-1 line-clamp-2 group-hover:text-accent transition-colors">
               {item.title}
             </h3>

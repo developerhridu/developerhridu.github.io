@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { getPublishedBlogPosts, getPublishedCaseStudies, getPublishedProjects } from "@/lib/content";
+import { getPublishedClients } from "@/lib/clients";
 
 export const dynamic = "force-static";
 
@@ -31,6 +32,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...getPublishedCaseStudies().map((study) => ({
       url: `${BASE_URL}/case-studies/${study.slug}`,
       lastModified: study.updatedAt ?? study.date,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
+    ...getPublishedClients().map((client) => ({
+      url: `${BASE_URL}/clients/${client.slug}`,
+      lastModified: client.updatedAt ?? LAST_MODIFIED,
       changeFrequency: "monthly" as const,
       priority: 0.5,
     })),

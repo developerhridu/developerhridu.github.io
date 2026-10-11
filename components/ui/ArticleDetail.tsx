@@ -35,7 +35,16 @@ const ARTICLE_TYPES = {
     footerLabel: "Back to all projects",
     draftMessage: "This project is a draft — it isn't listed on the projects page or sitemap. Only people with this link can see it.",
   },
+  client: {
+    path: "/",
+    backLabel: "Back to Home",
+    footerLabel: "Back to home",
+    draftMessage: "This client is a draft — it isn't linked from the site or listed in the sitemap. Only people with this link can see it.",
+  },
 };
+
+/** Kinds without reading time, views, reactions, or comments; their title image is framed and contained. */
+const SHOWCASE_KINDS = new Set<keyof typeof ARTICLE_TYPES>(["project", "client"]);
 
 export interface ArticleDetailProps {
   kind: keyof typeof ARTICLE_TYPES;
@@ -81,10 +90,11 @@ function ArticleBody({ body, previewImageUrls }: { body?: string; previewImageUr
   );
 }
 
-/** Shared design for blog posts, case studies, and project detail pages. */
+/** Shared design for blog post, case study, project, and client detail pages. */
 export default function ArticleDetail({ kind, entry, url, jsonLd, related, preview = false, previewImageUrls, children }: ArticleDetailProps) {
   const labels = ARTICLE_TYPES[kind];
-  const engagementType = kind === "project" ? null : kind;
+  const showcase = SHOWCASE_KINDS.has(kind);
+  const engagementType = kind === "blog" || kind === "case-study" ? kind : null;
   const readingMinutes = engagementType
     ? estimateReadingTime(entry.body ?? "", ...(entry.sections?.map((section) => section.body) ?? []))
     : null;
@@ -161,9 +171,9 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
             images={titleImages}
             alt={entry.title}
             className="mb-12"
-            wrapperClassName={`rounded-2xl${kind === "project" ? " aspect-video bg-background border border-border" : ""}`}
-            imgClassName={kind === "project" ? "w-full h-full object-contain" : "w-full h-auto"}
-            initials={kind === "project" ? entry.title.split(" ").map((word) => word[0]).join("") : undefined}
+            wrapperClassName={`rounded-2xl${showcase ? " aspect-video bg-background border border-border" : ""}`}
+            imgClassName={showcase ? "w-full h-full object-contain" : "w-full h-auto"}
+            initials={showcase ? entry.title.split(" ").map((word) => word[0]).join("") : undefined}
             initialsClassName="text-6xl"
           />
 

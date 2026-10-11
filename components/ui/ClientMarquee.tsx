@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { getPublishedClients } from "@/lib/clients";
 import type { Client } from "@/types";
 
@@ -19,21 +20,16 @@ function LogoTrack({ ariaHidden }: { ariaHidden: boolean }) {
           </div>
         );
 
-        return client.url ? (
-          <a
+        return (
+          <Link
             key={client.id}
-            href={client.url}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`/clients/${client.slug}`}
+            aria-label={client.name}
             tabIndex={ariaHidden ? -1 : undefined}
             className={CHIP_CLASS}
           >
             {logo}
-          </a>
-        ) : (
-          <div key={client.id} className={CHIP_CLASS}>
-            {logo}
-          </div>
+          </Link>
         );
       })}
     </div>

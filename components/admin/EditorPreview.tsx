@@ -5,7 +5,7 @@ import ArticleDetail, { type ArticleDetailProps } from "@/components/ui/ArticleD
 import ProjectLinks from "@/components/ui/ProjectLinks";
 import type { Project } from "@/types";
 
-interface ArticlePreviewProps {
+interface EditorPreviewProps {
   kind: ArticleDetailProps["kind"];
   entry: ArticleDetailProps["entry"] & Partial<Pick<Project, "liveUrl" | "githubUrl">>;
   imageFile: File | null;
@@ -15,7 +15,7 @@ interface ArticlePreviewProps {
   inlineImageUrls: Record<string, string>;
 }
 
-export default function ArticlePreview({ kind, entry, imageFile, sectionImageFiles, photoFiles, titleImageFiles, inlineImageUrls }: ArticlePreviewProps) {
+export default function EditorPreview({ kind, entry, imageFile, sectionImageFiles, photoFiles, titleImageFiles, inlineImageUrls }: EditorPreviewProps) {
   const files = useMemo(
     () => [...new Set([imageFile, ...titleImageFiles, ...sectionImageFiles.flat(), ...photoFiles].filter((file): file is File => file !== null))],
     [imageFile, titleImageFiles, sectionImageFiles, photoFiles]

@@ -67,11 +67,25 @@ export interface SeoRoute {
 // Client types
 export interface Client {
   id: string;
+  /** Detail page path segment (`/clients/{slug}`). */
+  slug: string;
   name: string;
   logo?: string;
   /** `null` when cleared in the admin editor — `url` fields there write null, not "". */
   url?: string | null;
   published?: boolean;
+  description?: string;
+  tags?: string[];
+  image?: string;
+  titleImages?: string[];
+  photos?: string[];
+  body?: string;
+  sections?: ContentSection[];
+  /** Slugs of projects done for this client. */
+  projects?: string[];
+  /** Slugs of case studies written about work for this client. */
+  caseStudies?: string[];
+  updatedAt?: string;
 }
 
 // Project types
