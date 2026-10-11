@@ -15,8 +15,8 @@
       ],
       "photos": [],
       "updatedAt": "2026-10-11T05:13:18.154Z",
-      "name": "Banglalink Digital",
-      "image": "/images/logos/banglalink-digital.jpeg"
+      "image": "/images/logos/banglalink-digital.jpeg",
+      "name": "Banglalink Digital"
     },
     {
       "id": "us-bangla-airlines",
@@ -27,8 +27,8 @@
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "US-Bangla Airlines",
-      "image": "/images/logos/us-bangla-airline.png"
+      "image": "/images/logos/us-bangla-airline.png",
+      "name": "US-Bangla Airlines"
     },
     {
       "id": "foodi",
@@ -39,8 +39,8 @@
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "Foodi",
-      "image": "/images/logos/foodi.jpg"
+      "image": "/images/logos/foodi.jpg",
+      "name": "Foodi"
     },
     {
       "id": "bdjobs",
@@ -51,8 +51,8 @@
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "Bdjobs.com",
-      "image": "/images/logos/bdjobs.png"
+      "image": "/images/logos/bdjobs.png",
+      "name": "Bdjobs.com"
     },
     {
       "id": "firsttrip",
@@ -63,8 +63,8 @@
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "FirstTrip",
-      "image": "/images/logos/firsttrip.png"
+      "image": "/images/logos/firsttrip.png",
+      "name": "FirstTrip"
     },
     {
       "id": "triplover",
@@ -75,8 +75,8 @@
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "TripLover",
-      "image": "/images/logos/triplover.jpeg"
+      "image": "/images/logos/triplover.jpeg",
+      "name": "TripLover"
     },
     {
       "id": "taketrip",
@@ -87,8 +87,8 @@
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "TakeTrip",
-      "image": "/images/logos/taketrip.png"
+      "image": "/images/logos/taketrip.png",
+      "name": "TakeTrip"
     },
     {
       "id": "travelchamp",
@@ -99,8 +99,8 @@
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "TravelChamp",
-      "image": "/images/logos/travelchamp.png"
+      "image": "/images/logos/travelchamp.png",
+      "name": "TravelChamp"
     },
     {
       "id": "takeoff",
@@ -111,8 +111,8 @@
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "TakeOff",
-      "image": "/images/logos/takeoff.png"
+      "image": "/images/logos/takeoff.png",
+      "name": "TakeOff"
     },
     {
       "id": "scale-ai",
@@ -126,13 +126,10 @@
       "client": "",
       "body": "## Project Name: \nSCA101 - Native Bengali Speakers needed to help train the Next Generation of Video and Audio AI\n\n## Proof of work documents",
       "sections": [],
-      "photos": [
-        "/images/clients/scale-ai-photo-0.png",
-        "/images/clients/scale-ai-photo-1.png"
-      ],
-      "updatedAt": "2026-10-11T05:19:38.129Z",
-      "name": "Scale AI",
-      "image": "/images/clients/scale-ai.png"
+      "photos": [],
+      "updatedAt": "2026-10-11T05:27:02.571Z",
+      "image": "/images/clients/scale-ai.png",
+      "name": "Scale AI"
     },
     {
       "id": "edesh",
@@ -143,8 +140,8 @@
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "E-Desh Ltd",
-      "image": "/images/logos/Edesh.png"
+      "image": "/images/logos/Edesh.png",
+      "name": "E-Desh Ltd"
     },
     {
       "id": "personal-project",
@@ -155,8 +152,8 @@
       "tags": [],
       "body": "",
       "sections": [],
-      "name": "Personal Project",
-      "image": ""
+      "image": "",
+      "name": "Personal Project"
     }
   ]
 }
