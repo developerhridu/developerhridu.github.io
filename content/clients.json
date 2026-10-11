@@ -5,16 +5,29 @@
       "slug": "banglalink-digital",
       "url": "https://www.banglalink.net/",
       "published": true,
-      "description": "",
-      "tags": [],
-      "body": "",
+      "description": "Oracle-to-PostgreSQL migration for Banglalink Digital: ~1 TB of data, 550+ tables and 1,700+ database objects.",
+      "tags": [
+        "Oracle",
+        "PostgreSQL",
+        "Database Migration",
+        "Backend Engineering"
+      ],
+      "body": "## What I Did\n\n- Migrated ~1 TB of production data, 550+ tables, 1,700+ stored procedures/database objects and 23 application projects from Oracle to PostgreSQL.\n- Redesigned cross-database integration and built an executable validation loop to verify the migration.\n- Built O2P, a data-migration tool for moving large, changing production datasets reliably.\n\n## Proof of Work\n\nMigration plan repository and tooling.",
       "sections": [],
-      "projects": [],
+      "projects": [
+        "dataflow-database-migration-tool"
+      ],
       "caseStudies": [
         "oracle-to-postgresql-migration-bangladesh"
       ],
-      "photos": [],
-      "updatedAt": "2026-10-11T05:13:18.154Z",
+      "photos": [
+        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-0.png",
+        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-1.png",
+        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-2.png",
+        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-3.png",
+        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-4.png"
+      ],
+      "updatedAt": "2026-10-11T09:02:05.323Z",
       "image": "/images/logos/banglalink-digital.jpeg",
       "name": "Banglalink Digital"
     },
@@ -23,9 +36,16 @@
       "slug": "us-bangla-airlines",
       "published": true,
       "url": "https://www.usbair.com",
-      "description": "",
-      "tags": [],
-      "body": "## Proof of work documents",
+      "description": "Fare Comparison: an airline fare intelligence platform for US-Bangla Airlines, built end to end.",
+      "tags": [
+        ".NET Core",
+        "Hangfire",
+        "EF Core",
+        "React",
+        "PostgreSQL",
+        "NDC"
+      ],
+      "body": "## Engagement\n\nThrough **TechnoNext Software Ltd.** (concern of US-Bangla Group) as **Software Engineer**, April 2024 – present.\n\n## What I Did\n\n- Designed and developed the end-to-end Fare Comparison platform as a scalable, responsive web application.\n- Integrated multiple GDS and NDC suppliers to aggregate competitor fares, flight schedules and seat availability, normalizing the data for comparison.\n- Engineered pricing-intelligence logic that turns market data into fare recommendations to optimize ticket pricing.\n\n## Proof of work documents",
       "sections": [],
       "image": "/images/logos/us-bangla-airline.png",
       "projects": [
@@ -43,7 +63,7 @@
         "/images/clients/us-bangla-airlines-photo-3.png",
         "/images/clients/us-bangla-airlines-photo-4.png"
       ],
-      "updatedAt": "2026-10-11T08:57:15.525Z",
+      "updatedAt": "2026-10-11T09:02:05.323Z",
       "name": "US-Bangla Airlines"
     },
     {
@@ -51,25 +71,51 @@
       "slug": "foodi",
       "url": "https://foodibd.com",
       "published": true,
-      "description": "",
-      "tags": [],
-      "body": "",
+      "description": "Foodi CRM for the Foodi food delivery platform: engagement automation and caching.",
+      "tags": [
+        ".NET Core",
+        "Microservices",
+        "PostgreSQL",
+        "Redis"
+      ],
+      "body": "## Engagement\n\nThrough **TechnoNext Software Ltd.** (concern of US-Bangla Group) as **Software Engineer**, April 2024 – present.\n\n## What I Did\n\n- Designed and developed the Engagement Automation feature in Foodi CRM to streamline customer and operations team communication.\n- Improved API response time with a read/write Redis caching strategy.\n\n## Proof of Work\n\nRepository access and commit history on foodi-crm, and the official transfer notice listing Foodi CRM as my project.",
       "sections": [],
       "image": "/images/logos/foodi.jpg",
-      "name": "Foodi"
+      "name": "Foodi",
+      "projects": [
+        "foodi-crm"
+      ],
+      "caseStudies": [],
+      "photos": [
+        "/images/projects/foodi-crm-photo-0.png",
+        "/images/projects/foodi-crm-photo-1.png",
+        "/images/projects/foodi-crm-photo-2.png",
+        "/images/projects/foodi-crm-photo-3.png",
+        "/images/projects/foodi-crm-photo-4.png",
+        "/images/projects/foodi-crm-photo-5.jpg"
+      ],
+      "updatedAt": "2026-10-11T09:02:05.324Z"
     },
     {
       "id": "bdjobs",
       "slug": "bdjobs",
       "published": true,
       "url": "https://www.bdjobs.com",
-      "description": "",
-      "tags": [],
-      "body": "## Proof of work documents:",
+      "description": "Employer hiring system, SkillMatch Score and a CQRS search pipeline for Bdjobs.com.",
+      "tags": [
+        "Angular",
+        "ASP.NET Core",
+        "MSSQL Server",
+        "MongoDB",
+        "CQRS",
+        "ETL"
+      ],
+      "body": "## Engagement\n\n**Jr. Software Engineer** at **Bdjobs.com Ltd.**, May 2023 – March 2024.\n\n## What I Did\n\n- Helped migrate the Bdjobs.com corporate panel from legacy ASP to Angular and ASP.NET Core.\n- Developed the Employers Job Posting and Hiring System and the Candidate SkillMatch Score.\n- Implemented a CQRS-style architecture with an ETL pipeline separating read/write databases for job listings.\n\n## Impact\n\n- Platform sales up 17% from the new hiring features.\n- Search efficiency improved by 30% after query optimization and the CQRS split.\n\n## Proof of work documents:",
       "sections": [],
       "image": "/images/logos/bdjobs.png",
       "projects": [
-        "recruiter-bdjobs"
+        "recruiter-bdjobs",
+        "my-bdjobs"
       ],
       "caseStudies": [
         "cqrs-etl-mssql-mongodb-job-search"
@@ -79,7 +125,7 @@
         "/images/clients/bdjobs-photo-1.png",
         "/images/clients/bdjobs-photo-2.png"
       ],
-      "updatedAt": "2026-10-11T05:55:26.107Z",
+      "updatedAt": "2026-10-11T09:02:05.324Z",
       "name": "Bdjobs.com"
     },
     {
@@ -87,60 +133,181 @@
       "slug": "firsttrip",
       "published": true,
       "url": "https://firsttrip.com",
-      "description": "",
-      "tags": [],
-      "body": "",
+      "description": "Software engineering for FirstTrip's OTA platform: flight search, supplier integrations and booking automation.",
+      "tags": [
+        ".NET Core",
+        "Microservices",
+        "MSSQL Server",
+        "Hangfire",
+        "NDC",
+        "Redis"
+      ],
+      "body": "## Engagement\n\nThrough **TechnoNext Software Ltd.** (concern of US-Bangla Group) as **Software Engineer**, April 2024 – present. FirstTrip runs on the shared multi-tenant OTA platform I work on; I am listed as a developer on the FirstTrip project.\n\n## What I Did\n\n- Built and maintained the shared multi-tenant OTA platform (B2B & B2C) this brand runs on — part of a 36+ service ecosystem serving 6 OTA clients.\n- Delivered 8 cloud-native supplier integrations (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, IndiGo), increasing flight search feed by 27%.\n- Implemented Progressive Search, Search Ranking, Universal Split PNR, Refund Reissue and PNR Details.\n- Built the Booking Cancellation Service (ASP.NET Core + Hangfire) that cancels un-ticketed bookings before the last ticketing time.\n- Built an xUnit API integration test suite for 30+ supplier integrations, and integrated APM with Elasticsearch structured logging.\n\n## Impact\n\n- ADM penalties reduced by $4,500–$6,400 per month per OTA (~$23K–$27K saved across 6 clients).\n- Production failure rate cut by 30% after APM + structured logging.\n- Flight search feed up 27% from new supplier integrations.\n\n## Proof of Work\n\nFirstTrip project membership in the company PMS, plus screens of the shared platform and the Booking Cancellation Service.",
       "sections": [],
       "image": "/images/logos/firsttrip.png",
-      "name": "FirstTrip"
+      "name": "FirstTrip",
+      "projects": [
+        "ota-platform",
+        "airline-supplier-integration",
+        "booking-manager-service"
+      ],
+      "caseStudies": [
+        "automated-booking-cancellation-service",
+        "redis-stampede-thundering-herd-ota-search-ranking",
+        "progressive-search-30-suppliers-ota"
+      ],
+      "photos": [
+        "/images/projects/ota-platform-photo-0.png",
+        "/images/projects/ota-platform-photo-5.png",
+        "/images/projects/booking-manager-service-photo-0.png",
+        "/images/projects/booking-manager-service-photo-1.png",
+        "/images/projects/ota-platform-photo-6.png"
+      ],
+      "updatedAt": "2026-10-11T09:02:05.324Z"
     },
     {
       "id": "triplover",
       "slug": "triplover",
       "published": true,
       "url": "https://www.triplover.com",
-      "description": "",
-      "tags": [],
-      "body": "",
+      "description": "Software engineering for TripLover's OTA platform: flight search, supplier integrations and booking automation.",
+      "tags": [
+        ".NET Core",
+        "Microservices",
+        "MSSQL Server",
+        "Hangfire",
+        "NDC",
+        "Redis"
+      ],
+      "body": "## Engagement\n\nThrough **TechnoNext Software Ltd.** (concern of US-Bangla Group) as **Software Engineer**, April 2024 – present. TripLover runs on the shared multi-tenant OTA platform I work on; I am listed as a developer on the TripLover project.\n\n## What I Did\n\n- Built and maintained the shared multi-tenant OTA platform (B2B & B2C) this brand runs on — part of a 36+ service ecosystem serving 6 OTA clients.\n- Delivered 8 cloud-native supplier integrations (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, IndiGo), increasing flight search feed by 27%.\n- Implemented Progressive Search, Search Ranking, Universal Split PNR, Refund Reissue and PNR Details.\n- Built the Booking Cancellation Service (ASP.NET Core + Hangfire) that cancels un-ticketed bookings before the last ticketing time.\n- Built an xUnit API integration test suite for 30+ supplier integrations, and integrated APM with Elasticsearch structured logging.\n\n## Impact\n\n- ADM penalties reduced by $4,500–$6,400 per month per OTA (~$23K–$27K saved across 6 clients).\n- Production failure rate cut by 30% after APM + structured logging.\n- Flight search feed up 27% from new supplier integrations.\n\n## Proof of Work\n\nTripLover project membership in the company PMS, plus screens of the shared platform and the Booking Cancellation Service.",
       "sections": [],
       "image": "/images/logos/triplover.jpeg",
-      "name": "TripLover"
+      "name": "TripLover",
+      "projects": [
+        "ota-platform",
+        "airline-supplier-integration",
+        "booking-manager-service"
+      ],
+      "caseStudies": [
+        "automated-booking-cancellation-service",
+        "redis-stampede-thundering-herd-ota-search-ranking",
+        "progressive-search-30-suppliers-ota"
+      ],
+      "photos": [
+        "/images/projects/ota-platform-photo-4.png",
+        "/images/projects/ota-platform-photo-5.png",
+        "/images/projects/booking-manager-service-photo-0.png",
+        "/images/projects/booking-manager-service-photo-1.png"
+      ],
+      "updatedAt": "2026-10-11T09:02:05.324Z"
     },
     {
       "id": "taketrip",
       "slug": "taketrip",
       "published": true,
       "url": "https://taketrip.com",
-      "description": "",
-      "tags": [],
-      "body": "",
+      "description": "Software engineering for TakeTrip's OTA platform: flight search, supplier integrations and booking automation.",
+      "tags": [
+        ".NET Core",
+        "Microservices",
+        "MSSQL Server",
+        "Hangfire",
+        "NDC",
+        "Redis"
+      ],
+      "body": "## Engagement\n\nThrough **TechnoNext Software Ltd.** (concern of US-Bangla Group) as **Software Engineer**, April 2024 – present. TakeTrip runs on the shared multi-tenant OTA platform I work on; I am listed as a developer on the TakeTrip project.\n\n## What I Did\n\n- Built and maintained the shared multi-tenant OTA platform (B2B & B2C) this brand runs on — part of a 36+ service ecosystem serving 6 OTA clients.\n- Delivered 8 cloud-native supplier integrations (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, IndiGo), increasing flight search feed by 27%.\n- Implemented Progressive Search, Search Ranking, Universal Split PNR, Refund Reissue and PNR Details.\n- Built the Booking Cancellation Service (ASP.NET Core + Hangfire) that cancels un-ticketed bookings before the last ticketing time.\n- Built an xUnit API integration test suite for 30+ supplier integrations, and integrated APM with Elasticsearch structured logging.\n\n## Impact\n\n- ADM penalties reduced by $4,500–$6,400 per month per OTA (~$23K–$27K saved across 6 clients).\n- Production failure rate cut by 30% after APM + structured logging.\n- Flight search feed up 27% from new supplier integrations.\n\n## Proof of Work\n\nTakeTrip project membership in the company PMS, plus screens of the shared platform and the Booking Cancellation Service.",
       "sections": [],
       "image": "/images/logos/taketrip.png",
-      "name": "TakeTrip"
+      "name": "TakeTrip",
+      "projects": [
+        "ota-platform",
+        "airline-supplier-integration",
+        "booking-manager-service"
+      ],
+      "caseStudies": [
+        "automated-booking-cancellation-service",
+        "redis-stampede-thundering-herd-ota-search-ranking",
+        "progressive-search-30-suppliers-ota"
+      ],
+      "photos": [
+        "/images/projects/ota-platform-photo-2.png",
+        "/images/projects/ota-platform-photo-5.png",
+        "/images/projects/booking-manager-service-photo-0.png",
+        "/images/projects/booking-manager-service-photo-1.png"
+      ],
+      "updatedAt": "2026-10-11T09:02:05.324Z"
     },
     {
       "id": "travelchamp",
       "slug": "travelchamp",
       "published": true,
       "url": "https://www.travelchamp.com",
-      "description": "",
-      "tags": [],
-      "body": "",
+      "description": "Software engineering for TravelChamp's OTA platform: flight search, supplier integrations and booking automation.",
+      "tags": [
+        ".NET Core",
+        "Microservices",
+        "MSSQL Server",
+        "Hangfire",
+        "NDC",
+        "Redis"
+      ],
+      "body": "## Engagement\n\nThrough **TechnoNext Software Ltd.** (concern of US-Bangla Group) as **Software Engineer**, April 2024 – present. TravelChamp runs on the shared multi-tenant OTA platform I work on; I am listed as a developer on the TravelChamp project.\n\n## What I Did\n\n- Built and maintained the shared multi-tenant OTA platform (B2B & B2C) this brand runs on — part of a 36+ service ecosystem serving 6 OTA clients.\n- Delivered 8 cloud-native supplier integrations (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, IndiGo), increasing flight search feed by 27%.\n- Implemented Progressive Search, Search Ranking, Universal Split PNR, Refund Reissue and PNR Details.\n- Built the Booking Cancellation Service (ASP.NET Core + Hangfire) that cancels un-ticketed bookings before the last ticketing time.\n- Built an xUnit API integration test suite for 30+ supplier integrations, and integrated APM with Elasticsearch structured logging.\n\n## Impact\n\n- ADM penalties reduced by $4,500–$6,400 per month per OTA (~$23K–$27K saved across 6 clients).\n- Production failure rate cut by 30% after APM + structured logging.\n- Flight search feed up 27% from new supplier integrations.\n\n## Proof of Work\n\nTravelChamp project membership in the company PMS, plus screens of the shared platform and the Booking Cancellation Service.",
       "sections": [],
       "image": "/images/logos/travelchamp.png",
-      "name": "TravelChamp"
+      "name": "TravelChamp",
+      "projects": [
+        "ota-platform",
+        "airline-supplier-integration",
+        "booking-manager-service"
+      ],
+      "caseStudies": [
+        "automated-booking-cancellation-service",
+        "redis-stampede-thundering-herd-ota-search-ranking",
+        "progressive-search-30-suppliers-ota"
+      ],
+      "photos": [
+        "/images/projects/ota-platform-photo-3.png",
+        "/images/projects/ota-platform-photo-5.png",
+        "/images/projects/booking-manager-service-photo-0.png",
+        "/images/projects/booking-manager-service-photo-1.png"
+      ],
+      "updatedAt": "2026-10-11T09:02:05.324Z"
     },
     {
       "id": "takeoff",
       "slug": "takeoff",
       "published": true,
       "url": "https://takeoffbd.com",
-      "description": "",
-      "tags": [],
-      "body": "",
+      "description": "Software engineering for TakeOff's OTA platform: flight search, supplier integrations and booking automation.",
+      "tags": [
+        ".NET Core",
+        "Microservices",
+        "MSSQL Server",
+        "Hangfire",
+        "NDC",
+        "Redis"
+      ],
+      "body": "## Engagement\n\nThrough **TechnoNext Software Ltd.** (concern of US-Bangla Group) as **Software Engineer**, April 2024 – present. TakeOff runs on the shared multi-tenant OTA platform I work on; I am listed as a developer on the TakeOff project.\n\n## What I Did\n\n- Built and maintained the shared multi-tenant OTA platform (B2B & B2C) this brand runs on — part of a 36+ service ecosystem serving 6 OTA clients.\n- Delivered 8 cloud-native supplier integrations (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, IndiGo), increasing flight search feed by 27%.\n- Implemented Progressive Search, Search Ranking, Universal Split PNR, Refund Reissue and PNR Details.\n- Built the Booking Cancellation Service (ASP.NET Core + Hangfire) that cancels un-ticketed bookings before the last ticketing time.\n- Built an xUnit API integration test suite for 30+ supplier integrations, and integrated APM with Elasticsearch structured logging.\n\n## Impact\n\n- ADM penalties reduced by $4,500–$6,400 per month per OTA (~$23K–$27K saved across 6 clients).\n- Production failure rate cut by 30% after APM + structured logging.\n- Flight search feed up 27% from new supplier integrations.\n\n## Proof of Work\n\nTakeOff project membership in the company PMS, plus screens of the shared platform and the Booking Cancellation Service.",
       "sections": [],
       "image": "/images/logos/takeoff.png",
-      "name": "TakeOff"
+      "name": "TakeOff",
+      "projects": [
+        "ota-platform",
+        "airline-supplier-integration",
+        "booking-manager-service"
+      ],
+      "caseStudies": [
+        "automated-booking-cancellation-service",
+        "redis-stampede-thundering-herd-ota-search-ranking",
+        "progressive-search-30-suppliers-ota"
+      ],
+      "photos": [
+        "/images/projects/ota-platform-photo-1.png",
+        "/images/projects/ota-platform-photo-5.png",
+        "/images/projects/booking-manager-service-photo-0.png",
+        "/images/projects/booking-manager-service-photo-1.png"
+      ],
+      "updatedAt": "2026-10-11T09:02:05.324Z"
     },
     {
       "id": "scale-ai",
@@ -149,16 +316,21 @@
       "projects": [],
       "caseStudies": [],
       "published": true,
-      "description": "",
-      "tags": [],
+      "description": "AI training data work for Scale AI as a native Bengali speaker (project SCA101).",
+      "tags": [
+        "AI Training Data",
+        "Bengali",
+        "Audio",
+        "Video"
+      ],
       "client": "",
-      "body": "## Project Name: \nSCA101 - Native Bengali Speakers needed to help train the Next Generation of Video and Audio AI\n\n## Proof of work documents",
+      "body": "## What I Did\n\n- Contributed native Bengali speech data to help train next-generation video and audio AI models (SCA101).\n\n## Project Name: \nSCA101 - Native Bengali Speakers needed to help train the Next Generation of Video and Audio AI\n\n## Proof of work documents",
       "sections": [],
       "photos": [
         "/images/clients/scale-ai-photo-0.png",
         "/images/clients/scale-ai-photo-1.png"
       ],
-      "updatedAt": "2026-10-11T05:34:14.720Z",
+      "updatedAt": "2026-10-11T09:02:05.325Z",
       "image": "/images/clients/scale-ai.png",
       "name": "Scale AI"
     },
@@ -167,24 +339,56 @@
       "slug": "edesh",
       "published": true,
       "url": "https://e-deshltd.com",
-      "description": "",
-      "tags": [],
-      "body": "",
+      "description": "Courier platform website and APIs for E-Desh Ltd, built with React and ASP.NET Core.",
+      "tags": [
+        "React",
+        "ASP.NET Core",
+        "C#",
+        "JavaScript"
+      ],
+      "body": "## Engagement\n\n**Jr. Software Engineer (Part-Time)** at **E-Desh Limited**, remote, May 2022 – February 2023.\n\n## What I Did\n\n- Worked with a remote team to design and develop the company's courier platform website using React and ASP.NET Core.\n- Built the front end, built APIs, and optimized the existing codebase and database, improving performance and responsiveness.\n\n## Proof of Work\n\n[Walkthrough video](https://youtu.be/ouIKiEqVOYY).",
       "sections": [],
       "image": "/images/logos/Edesh.png",
-      "name": "E-Desh Ltd"
+      "name": "E-Desh Ltd",
+      "projects": [
+        "e-desh-api"
+      ],
+      "caseStudies": [],
+      "photos": [],
+      "updatedAt": "2026-10-11T09:02:05.325Z"
     },
     {
       "id": "personal-project",
       "slug": "personal-project",
       "url": null,
       "published": false,
-      "description": "",
-      "tags": [],
-      "body": "",
+      "description": "Self-initiated tools and apps I built on my own time.",
+      "tags": [
+        "Oracle",
+        "PostgreSQL",
+        "Next.js",
+        "Angular",
+        "Flutter",
+        "ASP.NET Core"
+      ],
+      "body": "## What I Did\n\n- **O2P (DataFlow)**: a tool for moving large, changing production datasets from Oracle to PostgreSQL.\n- **This portfolio**: a static site with a browser-based admin panel and no backend.\n- **DevNote**: a full-stack blog platform (Angular + ASP.NET Core).\n- **Expense Tracker**: a cross-platform personal finance app (Flutter + Firebase).",
       "sections": [],
       "image": "",
-      "name": "Personal Project"
+      "name": "Personal Project",
+      "projects": [
+        "dataflow-database-migration-tool",
+        "devnote-blog",
+        "expense-tracker"
+      ],
+      "caseStudies": [
+        "editable-website-without-a-backend"
+      ],
+      "photos": [
+        "/images/projects/dataflow-database-migration-tool-photo-0.png",
+        "/images/projects/dataflow-database-migration-tool-photo-1.png",
+        "/images/projects/dataflow-database-migration-tool-photo-2.png"
+      ],
+      "updatedAt": "2026-10-11T09:02:05.325Z"
     }
   ]
 }
