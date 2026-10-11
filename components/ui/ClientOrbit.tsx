@@ -50,6 +50,8 @@ const REST_SPEED = 1 / LAP_SECONDS;
 /** Hover preview card: width (px), gap from its tile (px), and how long it lingers after
  *  the pointer leaves (ms) so you can move from the tile onto the card. */
 const PREVIEW_WIDTH = 240;
+/** Hovered tile grows by this factor. */
+const HOVER_LIFT = 1.12;
 const PREVIEW_GAP = 14;
 const PREVIEW_HIDE_DELAY = 140;
 
@@ -161,6 +163,8 @@ interface DragState {
 export default function ClientOrbit() {
   const containerRef = useRef<HTMLDivElement>(null);
   const chipRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  /** Faint guide line drawn along the ellipse the tiles travel on. */
+  const pathRef = useRef<SVGEllipseElement>(null);
   const orbitRef = useRef<Orbit | null>(null);
   /** How far the ring has travelled, in laps. Only ever increases outside a drag. */
   const progressRef = useRef(0);
@@ -215,6 +219,13 @@ export default function ClientOrbit() {
       const clearRy = rx > cornerX ? cornerY / Math.sqrt(1 - (cornerX / rx) ** 2) : cornerY * Math.SQRT2;
       const ry = Math.min(maxRy, Math.max(height * MIN_MINOR_AXIS, clearRy * 1.08));
       orbitRef.current = { centerX, centerY, rx, ry, vertexSize, coVertexSize, arcTable: buildArcTable(rx, ry) };
+      const path = pathRef.current;
+      if (path) {
+        path.setAttribute("cx", String(centerX));
+        path.setAttribute("cy", String(centerY));
+        path.setAttribute("rx", String(rx));
+        path.setAttribute("ry", String(ry));
+      }
     };
 
     const place = () => {
@@ -228,7 +239,9 @@ export default function ClientOrbit() {
         const ringX = Math.cos(angle);
         // 1 at either vertex (left/right end), 0 at the top/bottom.
         const nearVertex = Math.pow(Math.abs(ringX), SIZE_EASE);
-        const size = coVertexSize + (vertexSize - coVertexSize) * nearVertex;
+        // The hovered tile lifts slightly so it reads as the active one.
+        const lift = previewRef.current === index ? HOVER_LIFT : 1;
+        const size = (coVertexSize + (vertexSize - coVertexSize) * nearVertex) * lift;
         const x = centerX + rx * ringX - CHIP_SIZE / 2;
         const y = centerY + ry * Math.sin(angle) - CHIP_SIZE / 2;
         chip.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${size / CHIP_SIZE})`;
@@ -380,6 +393,16 @@ export default function ClientOrbit() {
 
   return (
     <div ref={containerRef} className="absolute inset-0 pointer-events-none" role="list" aria-label="Companies I've worked with">
+      <svg className="absolute inset-0 h-full w-full overflow-visible" aria-hidden="true">
+        <defs>
+          <linearGradient id="client-orbit-path" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.35" />
+            <stop offset="50%" stopColor="var(--accent)" stopOpacity="0.08" />
+            <stop offset="100%" stopColor="var(--accent)" stopOpacity="0.35" />
+          </linearGradient>
+        </defs>
+        <ellipse ref={pathRef} fill="none" stroke="url(#client-orbit-path)" strokeWidth="1" strokeDasharray="2 6" />
+      </svg>
       {CLIENTS.map((client, index) => (
         <Link
           key={client.id}
@@ -391,7 +414,7 @@ export default function ClientOrbit() {
           aria-label={client.name}
           title={`${client.name} — drag to spin`}
           draggable={false}
-          className="pointer-events-auto absolute left-0 top-0 rounded-xl bg-white border border-black/5 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.4)] p-3 transition-shadow origin-center will-change-transform cursor-grab active:cursor-grabbing touch-none select-none hover:ring-2 hover:ring-accent/60"
+          className="pointer-events-auto absolute left-0 top-0 rounded-2xl bg-white ring-1 ring-white/10 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.55),0_0_24px_-6px_color-mix(in_srgb,var(--accent)_35%,transparent)] p-3 transition-[box-shadow] origin-center will-change-transform cursor-grab active:cursor-grabbing touch-none select-none hover:ring-2 hover:ring-accent hover:shadow-[0_14px_40px_-12px_rgba(0,0,0,0.6),0_0_36px_-4px_color-mix(in_srgb,var(--accent)_60%,transparent)]"
           style={{ width: CHIP_SIZE, height: CHIP_SIZE, opacity: 0 }}
           aria-describedby={preview === index ? "client-orbit-preview" : undefined}
           onPointerEnter={() => openPreview(index)}

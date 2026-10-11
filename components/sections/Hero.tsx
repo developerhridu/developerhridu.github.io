@@ -51,9 +51,12 @@ export default function Hero() {
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] text-foreground">
               {profile.name}
             </h1>
-            <h2 className="mt-3 text-xl md:text-3xl font-semibold tracking-tight leading-tight text-accent mb-10">
+            <h2 className="mt-3 text-xl md:text-3xl font-semibold tracking-tight leading-tight text-accent">
               {profile.title}
             </h2>
+            {profile.tagline && (
+              <p className="mt-4 text-base md:text-lg text-muted max-w-xl mx-auto mb-10">{profile.tagline}</p>
+            )}
           </motion.div>
 
           {/* Book a call (only when a booking link is set) */}
