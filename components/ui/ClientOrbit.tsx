@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import type { MouseEvent, PointerEvent } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import type { MouseEvent, PointerEvent, RefObject } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getPublishedClients } from "@/lib/clients";
@@ -43,6 +46,12 @@ const HOVER_EASE = 5;
 const MAX_FLICK_SPEED = 1.5;
 /** Resting speed in laps per second. */
 const REST_SPEED = 1 / LAP_SECONDS;
+
+/** Hover preview card: width (px), gap from its tile (px), and how long it lingers after
+ *  the pointer leaves (ms) so you can move from the tile onto the card. */
+const PREVIEW_WIDTH = 240;
+const PREVIEW_GAP = 14;
+const PREVIEW_HIDE_DELAY = 140;
 
 /** Samples per lap for the arc-length table. */
 const ARC_SAMPLES = 360;
@@ -159,6 +168,14 @@ export default function ClientOrbit() {
   const speedRef = useRef(REST_SPEED);
   const hoveredRef = useRef(false);
   const dragRef = useRef<DragState | null>(null);
+  /** Client whose preview card is open (hovered or keyboard-focused tile), if any. */
+  const [preview, setPreview] = useState<number | null>(null);
+  const previewRef = useRef<number | null>(null);
+  const previewCardRef = useRef<HTMLDivElement>(null);
+  const hideTimerRef = useRef<number | undefined>(undefined);
+  /** Each tile's current centre and rendered size, relative to the orbit container. */
+  const tileBoxesRef = useRef<{ cx: number; cy: number; size: number }[]>([]);
+  const [portalReady, setPortalReady] = useState(false);
   const suppressClickRef = useRef(false);
 
   useEffect(() => {
@@ -217,7 +234,30 @@ export default function ClientOrbit() {
         chip.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${size / CHIP_SIZE})`;
         chip.style.opacity = "1";
         chip.style.zIndex = String(Math.round(nearVertex * 100));
+        tileBoxesRef.current[index] = { cx: x + CHIP_SIZE / 2, cy: y + CHIP_SIZE / 2, size };
       });
+      positionPreview();
+    };
+
+    // Keeps the preview card beside its tile (the ring is still easing to a stop when it
+    // opens). It sits on the tile's outer side when there's room, otherwise the inner side.
+    const positionPreview = () => {
+      const card = previewCardRef.current;
+      const index = previewRef.current;
+      const orbit = orbitRef.current;
+      if (!card || index === null || !orbit) return;
+      const tile = tileBoxesRef.current[index];
+      if (!tile) return;
+      const bounds = container.getBoundingClientRect();
+      const tileX = bounds.left + tile.cx;
+      const tileY = bounds.top + tile.cy;
+      const height = card.offsetHeight;
+      const outward = tile.cx < orbit.centerX ? -1 : 1;
+      const outsideX = tileX + outward * (tile.size / 2 + PREVIEW_GAP) - (outward < 0 ? PREVIEW_WIDTH : 0);
+      const fits = outsideX >= 8 && outsideX + PREVIEW_WIDTH <= window.innerWidth - 8;
+      const left = fits ? outsideX : tileX - outward * (tile.size / 2 + PREVIEW_GAP) - (outward > 0 ? PREVIEW_WIDTH : 0);
+      const top = Math.min(Math.max(tileY - height / 2, 8), window.innerHeight - height - 8);
+      card.style.transform = `translate3d(${left}px, ${top}px, 0)`;
     };
 
     measure();
@@ -248,6 +288,30 @@ export default function ClientOrbit() {
     };
   }, []);
 
+  useEffect(() => {
+    // The preview card is portalled to <body> so it can sit above the hero text.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Portal target exists only after mount.
+    setPortalReady(true);
+    return () => window.clearTimeout(hideTimerRef.current);
+  }, []);
+
+  const openPreview = (index: number) => {
+    window.clearTimeout(hideTimerRef.current);
+    hoveredRef.current = true;
+    if (dragRef.current?.moved) return;
+    previewRef.current = index;
+    setPreview(index);
+  };
+
+  const closePreview = () => {
+    window.clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = window.setTimeout(() => {
+      hoveredRef.current = false;
+      previewRef.current = null;
+      setPreview(null);
+    }, PREVIEW_HIDE_DELAY);
+  };
+
   /** Where the pointer sits around the ellipse, as a lap fraction (0…1). */
   const pointerFraction = (clientX: number, clientY: number) => {
     const orbit = orbitRef.current;
@@ -275,6 +339,10 @@ export default function ClientOrbit() {
     const drag = dragRef.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
     if (!drag.moved && Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) < DRAG_THRESHOLD) return;
+    if (!drag.moved && previewRef.current !== null) {
+      previewRef.current = null;
+      setPreview(null);
+    }
     drag.moved = true;
     const fraction = pointerFraction(event.clientX, event.clientY);
     const step = fractionStep(drag.lastFraction, fraction);
@@ -325,21 +393,88 @@ export default function ClientOrbit() {
           draggable={false}
           className="pointer-events-auto absolute left-0 top-0 rounded-xl bg-white border border-black/5 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.4)] p-3 transition-shadow origin-center will-change-transform cursor-grab active:cursor-grabbing touch-none select-none hover:ring-2 hover:ring-accent/60"
           style={{ width: CHIP_SIZE, height: CHIP_SIZE, opacity: 0 }}
-          onPointerEnter={() => (hoveredRef.current = true)}
-          onPointerLeave={() => (hoveredRef.current = false)}
+          aria-describedby={preview === index ? "client-orbit-preview" : undefined}
+          onPointerEnter={() => openPreview(index)}
+          onPointerLeave={closePreview}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
           onClick={onClick}
-          onFocus={() => (hoveredRef.current = true)}
-          onBlur={() => (hoveredRef.current = false)}
+          onFocus={() => openPreview(index)}
+          onBlur={closePreview}
         >
           <span className="relative block w-full h-full pointer-events-none">
             <Image src={client.image} alt="" fill sizes={`${CHIP_SIZE}px`} draggable={false} className="object-contain" />
           </span>
         </Link>
       ))}
+
+      {portalReady &&
+        createPortal(
+          <AnimatePresence>
+            {preview !== null && CLIENTS[preview] && (
+              <ClientPreview
+                key={CLIENTS[preview].id}
+                client={CLIENTS[preview]}
+                cardRef={previewCardRef}
+                onPointerEnter={() => openPreview(preview)}
+                onPointerLeave={closePreview}
+              />
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
+    </div>
+  );
+}
+
+/** Hover preview of a client: the same logo-and-name card as on /clients, plus a short blurb. */
+function ClientPreview({
+  client,
+  cardRef,
+  onPointerEnter,
+  onPointerLeave,
+}: {
+  client: Client & { image: string };
+  cardRef: RefObject<HTMLDivElement | null>;
+  onPointerEnter: () => void;
+  onPointerLeave: () => void;
+}) {
+  return (
+    <div
+      ref={cardRef}
+      id="client-orbit-preview"
+      role="tooltip"
+      className="fixed left-0 top-0 z-50 hidden lg:block"
+      style={{ width: PREVIEW_WIDTH }}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.94 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.94 }}
+        transition={{ duration: 0.16 }}
+      >
+        <Link
+          href={`/clients/${client.slug}`}
+          className="group block rounded-2xl border border-border bg-surface/95 backdrop-blur-md p-3 shadow-xl"
+        >
+          <div className="relative h-24 w-full rounded-lg bg-white/90 mb-3">
+            <Image src={client.image} alt="" fill sizes={`${PREVIEW_WIDTH}px`} className="object-contain p-4" />
+          </div>
+          <p className="text-base font-semibold text-foreground text-center group-hover:text-accent transition-colors">
+            {client.name}
+          </p>
+          {client.description && (
+            <p className="mt-1 text-xs text-muted text-center line-clamp-2">{client.description}</p>
+          )}
+          <p className="mt-2 flex items-center justify-center gap-1 text-xs text-accent">
+            View client <ArrowRight size={12} aria-hidden="true" />
+          </p>
+        </Link>
+      </motion.div>
     </div>
   );
 }
