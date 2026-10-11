@@ -22,8 +22,16 @@
       "client": "",
       "body": "```linkedin\nhttps://www.linkedin.com/posts/developerhridu_dotnet-csharp-asyncawait-activity-7499357125823844352-GgYx?utm_source=share&utm_medium=member_desktop&rcm=ACoAABzCH6EBjQ3vs7dYkbbY1gUSF7kfnkEJ8l8\n```",
       "sections": [],
-      "updatedAt": "2026-10-10T16:17:13.379Z",
-      "photos": []
+      "updatedAt": "2026-10-11T08:50:37.670Z",
+      "photos": [],
+      "projects": [
+        "fare-comparison"
+      ],
+      "caseStudies": [
+        "airline-fare-intelligence-platform"
+      ],
+      "blogs": [],
+      "clients": []
     },
     {
       "id": "muwcaajj",
