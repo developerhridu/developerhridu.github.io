@@ -105,6 +105,26 @@
       "name": "Bdjobs.com"
     },
     {
+      "id": "scale-ai",
+      "slug": "scale-ai",
+      "url": "https://scale.com/",
+      "projects": [],
+      "caseStudies": [],
+      "published": true,
+      "description": "AI training data work for Scale AI as a native Bengali speaker (project SCA101).",
+      "tags": [],
+      "client": "",
+      "body": "## What I Did\n\n- Contributed native Bengali speech data to help train next-generation video and audio AI models (SCA101).\n\n## Project Name: \nSCA101 - Native Bengali Speakers needed to help train the Next Generation of Video and Audio AI\n\n## Proof of work documents",
+      "sections": [],
+      "photos": [
+        "/images/clients/scale-ai-photo-0.png",
+        "/images/clients/scale-ai-photo-1.png"
+      ],
+      "updatedAt": "2026-10-11T09:02:05.325Z",
+      "image": "/images/clients/scale-ai.png",
+      "name": "Scale AI"
+    },
+    {
       "id": "firsttrip",
       "slug": "firsttrip",
       "published": true,
@@ -249,26 +269,6 @@
       ],
       "updatedAt": "2026-10-11T09:02:05.324Z",
       "name": "TakeOff"
-    },
-    {
-      "id": "scale-ai",
-      "slug": "scale-ai",
-      "url": "https://scale.com/",
-      "projects": [],
-      "caseStudies": [],
-      "published": true,
-      "description": "AI training data work for Scale AI as a native Bengali speaker (project SCA101).",
-      "tags": [],
-      "client": "",
-      "body": "## What I Did\n\n- Contributed native Bengali speech data to help train next-generation video and audio AI models (SCA101).\n\n## Project Name: \nSCA101 - Native Bengali Speakers needed to help train the Next Generation of Video and Audio AI\n\n## Proof of work documents",
-      "sections": [],
-      "photos": [
-        "/images/clients/scale-ai-photo-0.png",
-        "/images/clients/scale-ai-photo-1.png"
-      ],
-      "updatedAt": "2026-10-11T09:02:05.325Z",
-      "image": "/images/clients/scale-ai.png",
-      "name": "Scale AI"
     },
     {
       "id": "edesh",
