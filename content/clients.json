@@ -52,6 +52,14 @@
       "body": "",
       "sections": [],
       "image": "/images/logos/bdjobs.png",
+      "projects": [
+        "recruiter-bdjobs"
+      ],
+      "caseStudies": [
+        "cqrs-etl-mssql-mongodb-job-search"
+      ],
+      "photos": [],
+      "updatedAt": "2026-10-11T05:40:02.112Z",
       "name": "Bdjobs.com"
     },
     {
