@@ -146,7 +146,7 @@
       "client": "US-Bangla Airlines",
       "description": "Airline fare intelligence platform comparing competitors' real-time fares, flight schedules, and seat availability for data-driven pricing",
       "longDescription": "An airline fare intelligence platform that enables airlines to compare competitors' real time fares, flight schedules, and seat availability, providing data-driven pricing recommendations to maximize revenue and profitability. Integrated multiple GDS and NDC suppliers to aggregate and normalize competitor data, and engineered pricing-intelligence logic to help airlines optimize ticket pricing.",
-      "body": "## What it does\n\nAn airline fare intelligence platform. Airlines use it to see what competitors are charging in real time — fares, flight schedules, and seat availability — and get data-driven pricing recommendations from that picture.\n\n## My role\n\nI designed and built the platform end to end, from the supplier integrations through to the React dashboard airlines actually work in.\n\nThe integration layer pulls from **multiple GDS and NDC suppliers**, each returning data in its own shape and updating constantly. A large part of the work was normalizing those feeds into something comparable. On top of that I engineered the **pricing-intelligence logic** that analyzes the aggregated market data and generates fare recommendations.\n\n## Why this stack\n\n**Hangfire** drives the recurring collection jobs — competitor fares have to be pulled continuously, not on demand, so the dashboard reads from data that is already there. **EF Core** rather than Dapper here, because this is a write-heavy aggregation workload where schema modelling matters more than raw read latency. PostgreSQL stores the normalized fare history that the comparison logic runs against.",
+      "body": "## What it does\n\nAn airline fare intelligence platform. Airlines use it to see what competitors are charging in real time — fares, flight schedules, and seat availability — and get data-driven pricing recommendations from that picture.\n\n## My role\n\nI designed and built the platform end to end, from the supplier integrations through to the React dashboard airlines actually work in.\n\nThe integration layer pulls from **multiple GDS and NDC suppliers**, each returning data in its own shape and updating constantly. A large part of the work was normalizing those feeds into something comparable. On top of that I engineered the **pricing-intelligence logic** that analyzes the aggregated market data and generates fare recommendations.\n\n## Why this stack\n\n**Hangfire** drives the recurring collection jobs — competitor fares have to be pulled continuously, not on demand, so the dashboard reads from data that is already there. **EF Core** rather than Dapper here, because this is a write-heavy aggregation workload where schema modelling matters more than raw read latency. PostgreSQL stores the normalized fare history that the comparison logic runs against.\n\n## Proof of work documents",
       "caseStudies": [
         "airline-fare-intelligence-platform"
       ],
@@ -169,7 +169,7 @@
         "/images/projects/fare-comparison-photo-3.png",
         "/images/projects/fare-comparison-photo-4.png"
       ],
-      "updatedAt": "2026-10-06T05:28:54.346Z"
+      "updatedAt": "2026-10-11T04:02:16.188Z"
     },
     {
       "id": "dataflow-database-migration-tool",
