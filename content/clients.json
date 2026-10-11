@@ -25,9 +25,25 @@
       "url": "https://www.usbair.com",
       "description": "",
       "tags": [],
-      "body": "",
+      "body": "## Proof of work documents",
       "sections": [],
       "image": "/images/logos/us-bangla-airline.png",
+      "projects": [
+        "fare-comparison"
+      ],
+      "caseStudies": [
+        "airline-fare-intelligence-platform"
+      ],
+      "blogs": [],
+      "clients": [],
+      "photos": [
+        "/images/clients/us-bangla-airlines-photo-0.png",
+        "/images/clients/us-bangla-airlines-photo-1.png",
+        "/images/clients/us-bangla-airlines-photo-2.png",
+        "/images/clients/us-bangla-airlines-photo-3.png",
+        "/images/clients/us-bangla-airlines-photo-4.png"
+      ],
+      "updatedAt": "2026-10-11T08:57:15.525Z",
       "name": "US-Bangla Airlines"
     },
     {
