@@ -15,6 +15,13 @@
       "published": true
     },
     {
+      "id": "clients",
+      "name": "Clients",
+      "href": "/clients",
+      "icon": "building-2",
+      "published": true
+    },
+    {
       "id": "services",
       "name": "Services",
       "href": "/services",

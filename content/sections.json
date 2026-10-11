@@ -19,6 +19,12 @@
       "subtitle": "A selection of projects I've worked on"
     },
     {
+      "id": "clients",
+      "eyebrow": "Clients",
+      "title": "Clients",
+      "subtitle": "Companies and teams I've built software for"
+    },
+    {
       "id": "services",
       "eyebrow": "Services",
       "title": "Key Expertise",

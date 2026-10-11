@@ -23,6 +23,7 @@ import {
   Quote,
   Wrench,
   LayoutDashboard,
+  Building2,
 } from "lucide-react";
 import Image from "next/image";
 import menu from "@/content/menu.json";
@@ -63,6 +64,7 @@ const iconRegistry: Record<string, typeof House> = {
   quote: Quote,
   wrench: Wrench,
   "layout-dashboard": LayoutDashboard,
+  "building-2": Building2,
 };
 
 export default function Navbar() {

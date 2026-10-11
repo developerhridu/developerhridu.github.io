@@ -41,6 +41,12 @@
       "description": "Real-world backend projects: multi-tenant OTA platform, food delivery CRM, fare intelligence engine, and job portal modernization using .NET, microservices, and cloud-native patterns."
     },
     {
+      "id": "clients",
+      "route": "/clients",
+      "title": "Clients | Mizanur Rahman — Portfolio",
+      "description": "Companies I've built software for — airlines, online travel agencies, a telecom, a job portal, food delivery and logistics — with the work done and proof for each."
+    },
+    {
       "id": "services",
       "route": "/services",
       "title": "Services | Mizanur Rahman — Full-Stack Software Engineer",

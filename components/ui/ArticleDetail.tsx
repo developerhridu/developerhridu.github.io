@@ -37,9 +37,9 @@ const ARTICLE_TYPES = {
     draftMessage: "This project is a draft — it isn't listed on the projects page or sitemap. Only people with this link can see it.",
   },
   client: {
-    path: "/",
-    backLabel: "Back to Home",
-    footerLabel: "Back to home",
+    path: "/clients",
+    backLabel: "Back to Clients",
+    footerLabel: "Back to all clients",
     draftMessage: "This client is a draft — it isn't linked from the site or listed in the sitemap. Only people with this link can see it.",
   },
 };

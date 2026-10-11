@@ -35,6 +35,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: 0.5,
     })),
+    { url: `${BASE_URL}/clients`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.7 },
     ...getPublishedClients().map((client) => ({
       url: `${BASE_URL}/clients/${client.slug}`,
       lastModified: client.updatedAt ?? LAST_MODIFIED,
