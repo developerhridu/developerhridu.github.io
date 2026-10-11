@@ -126,8 +126,11 @@
       "client": "",
       "body": "## Project Name: \nSCA101 - Native Bengali Speakers needed to help train the Next Generation of Video and Audio AI\n\n## Proof of work documents",
       "sections": [],
-      "photos": [],
-      "updatedAt": "2026-10-11T05:27:02.571Z",
+      "photos": [
+        "/images/clients/scale-ai-photo-0.png",
+        "/images/clients/scale-ai-photo-1.png"
+      ],
+      "updatedAt": "2026-10-11T05:34:14.720Z",
       "image": "/images/clients/scale-ai.png",
       "name": "Scale AI"
     },
