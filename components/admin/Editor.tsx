@@ -25,8 +25,7 @@ import {
 } from "lucide-react";
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
 import ClientMultiSelect from "@/components/admin/ClientMultiSelect";
-import CaseStudyMultiSelect from "@/components/admin/CaseStudyMultiSelect";
-import WorkMultiSelect from "@/components/admin/WorkMultiSelect";
+import RelatedMultiSelect from "@/components/admin/RelatedMultiSelect";
 import EditorPreview from "@/components/admin/EditorPreview";
 import ArticleMarkdownEditor from "@/components/admin/ArticleMarkdownEditor";
 import { ReorderControls } from "@/components/admin/ReorderControls";
@@ -53,10 +52,12 @@ interface Entry {
   longDescription?: string;
   liveUrl?: Project["liveUrl"];
   githubUrl?: Project["githubUrl"];
-  caseStudies?: string[];
   featured?: boolean;
   url?: string | null;
   projects?: string[];
+  caseStudies?: string[];
+  blogs?: string[];
+  clients?: string[];
 }
 
 /** Entry as written in the JSON file; clients store their title as `name`. */
@@ -215,8 +216,8 @@ function makeUniqueSlug(base: string, existingSlugs: string[]): string {
 const KIND_DEFAULTS: Record<ContentKind, () => Partial<Entry>> = {
   blog: () => ({ date: new Date().toISOString().slice(0, 10) }),
   "case-study": () => ({ date: new Date().toISOString().slice(0, 10) }),
-  project: () => ({ longDescription: "", liveUrl: null, githubUrl: null, caseStudies: [], featured: false }),
-  client: () => ({ url: null, projects: [], caseStudies: [] }),
+  project: () => ({ longDescription: "", liveUrl: null, githubUrl: null, featured: false }),
+  client: () => ({ url: null }),
 };
 
 function blankEntry(kind: ContentKind): Entry {
@@ -698,13 +699,14 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
         finalEntry.githubUrl = github?.trim() || null;
       }
       finalEntry.featured = editing.featured ?? false;
-      finalEntry.caseStudies = editing.caseStudies ?? [];
     }
     if (kind === "client") {
       finalEntry.url = editing.url?.trim() || null;
-      finalEntry.projects = editing.projects ?? [];
-      finalEntry.caseStudies = editing.caseStudies ?? [];
     }
+    finalEntry.projects = editing.projects ?? [];
+    finalEntry.caseStudies = editing.caseStudies ?? [];
+    finalEntry.blogs = editing.blogs ?? [];
+    finalEntry.clients = editing.clients ?? [];
     let updated: Entry[];
 
     if (isNew) {
@@ -1512,6 +1514,15 @@ function EntryForm({
         onFileChange={onPhotoFileChange}
       />
 
+      <div className="border-t border-border pt-4">
+        <label className="block text-xs uppercase tracking-wide text-muted mb-1">Related Content</label>
+        <RelatedMultiSelect
+          value={entry}
+          exclude={entry.slug ? `${kind}:${entry.slug}` : undefined}
+          onChange={(refs) => setEntry({ ...entry, ...refs })}
+        />
+      </div>
+
       {kind === "project" && <ProjectLinkFields entry={entry} setEntry={setEntry} />}
       {kind === "client" && <ClientFields entry={entry} setEntry={setEntry} />}
 
@@ -1547,14 +1558,6 @@ function ClientFields({ entry, setEntry }: { entry: Entry; setEntry: (entry: Ent
           onChange={(e) => setEntry({ ...entry, url: e.target.value })}
           placeholder="https://example.com"
           className={inputClass}
-        />
-      </div>
-      <div>
-        <label className="block text-xs uppercase tracking-wide text-muted mb-1">Work Done (projects &amp; case studies)</label>
-        <WorkMultiSelect
-          projects={entry.projects ?? []}
-          caseStudies={entry.caseStudies ?? []}
-          onChange={(work) => setEntry({ ...entry, ...work })}
         />
       </div>
     </div>
@@ -1608,13 +1611,6 @@ function ProjectLinkFields({ entry, setEntry }: { entry: Entry; setEntry: (entry
             />
           </div>
         ))}
-      </div>
-      <div>
-        <label className="block text-xs uppercase tracking-wide text-muted mb-1">Related Case Studies</label>
-        <CaseStudyMultiSelect
-          value={(entry.caseStudies ?? []).join(", ")}
-          onChange={(value) => setEntry({ ...entry, caseStudies: value.split(",").map((slug) => slug.trim()).filter(Boolean) })}
-        />
       </div>
     </div>
   );

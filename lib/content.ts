@@ -2,6 +2,9 @@ import fs from "fs";
 import path from "path";
 import { Profile, Project, Experience, Education, SkillsCategory, Certification, BlogPost, CaseStudy, Skill, Testimonial } from "@/types";
 import { isPublished } from "@/lib/published";
+import { getPublishedClients } from "@/lib/clients";
+import { resolveRelated, type RelatedItem } from "@/lib/related";
+import type { RelatedRefs } from "@/types";
 
 const contentDirectory = path.join(process.cwd(), "content");
 
@@ -133,4 +136,14 @@ export function getRelatedCaseStudies(current: CaseStudy, limit = 3): CaseStudy[
     )
     .slice(0, limit)
     .map(({ study }) => study);
+}
+
+/** An entry's admin-picked related items as Related Content cards. */
+export function getRelatedItems(refs: RelatedRefs): RelatedItem[] {
+  return resolveRelated(refs, {
+    projects: getPublishedProjects(),
+    caseStudies: getPublishedCaseStudies(),
+    blogs: getPublishedBlogPosts(),
+    clients: getPublishedClients(),
+  });
 }

@@ -1,7 +1,8 @@
 import ArticleDetail from "@/components/ui/ArticleDetail";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getBlogPosts, getBlogPost, getRelatedBlogPosts } from "@/lib/content";
+import { getBlogPosts, getBlogPost, getRelatedBlogPosts, getRelatedItems } from "@/lib/content";
+import { toRelatedItem } from "@/lib/related";
 
 const BASE_URL = "https://developerhridu.github.io";
 
@@ -66,7 +67,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const imageUrl = post.image
     ? `${BASE_URL}${post.image}`
     : `${BASE_URL}/og-image/blog/${post.slug}`;
-  const relatedPosts = getRelatedBlogPosts(post);
+  const picked = getRelatedItems(post);
+  // Nothing picked in the admin: fall back to posts sharing tags.
+  const related = picked.length > 0 ? picked : getRelatedBlogPosts(post).map((item) => toRelatedItem("blog", item));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -88,7 +91,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       entry={post}
       url={url}
       jsonLd={jsonLd}
-      related={{ items: relatedPosts, basePath: "/blog", heading: "Related Posts" }}
+      related={related}
     />
   );
 }

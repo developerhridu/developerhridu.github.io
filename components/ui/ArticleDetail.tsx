@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactNode } from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -12,7 +12,8 @@ import ClientLinks from "@/components/ui/ClientLinks";
 import ShareButtons from "@/components/ui/ShareButtons";
 import ViewCounter from "@/components/ui/ViewCounter";
 import ReactionButton from "@/components/ui/ReactionButton";
-import RelatedContent from "@/components/ui/RelatedContent";
+import RelatedGrid from "@/components/ui/RelatedGrid";
+import type { RelatedItem } from "@/lib/related";
 import Comments from "@/components/ui/Comments";
 import EditArticleButton from "@/components/ui/EditArticleButton";
 
@@ -67,7 +68,8 @@ export interface ArticleDetailProps {
   };
   url?: string;
   jsonLd?: Record<string, unknown>;
-  related?: ComponentProps<typeof RelatedContent>;
+  /** Cards for the shared "Related Content" section. */
+  related?: RelatedItem[];
   /** Render the current CMS draft without public navigation or engagement widgets. */
   preview?: boolean;
   /** Local image URLs for unsaved Markdown content in the admin preview. */
@@ -245,7 +247,7 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
 
           {children}
           {!preview && engagementType && <ReactionButton type={engagementType} slug={entry.slug} />}
-          {related && <RelatedContent {...related} />}
+          {related && <RelatedGrid items={related} />}
           {!preview && engagementType && <Comments />}
 
           {!preview && <div className="mt-12 pt-8 border-t border-border">

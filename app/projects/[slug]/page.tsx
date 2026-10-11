@@ -2,7 +2,7 @@ import ArticleDetail from "@/components/ui/ArticleDetail";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProjectLinks from "@/components/ui/ProjectLinks";
-import { getProjects, getProject, getPublishedCaseStudies } from "@/lib/content";
+import { getProjects, getProject, getRelatedItems } from "@/lib/content";
 import config from "@/content/config.json";
 
 const BASE_URL = config.siteUrl;
@@ -64,9 +64,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     ? `${BASE_URL}${project.image}`
     : `${BASE_URL}/og-image/projects/${project.slug}`;
 
-  const linkedCaseStudies = getPublishedCaseStudies().filter((study) =>
-    (project.caseStudies ?? []).includes(study.slug)
-  );
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -87,7 +84,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       entry={project}
       url={url}
       jsonLd={jsonLd}
-      related={{ items: linkedCaseStudies, basePath: "/case-studies", heading: "Deep Dives" }}
+      related={getRelatedItems(project)}
     >
       <ProjectLinks
         liveUrl={project.liveUrl}

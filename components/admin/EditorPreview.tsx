@@ -3,18 +3,17 @@
 import { useEffect, useMemo, useState } from "react";
 import ArticleDetail, { type ArticleDetailProps } from "@/components/ui/ArticleDetail";
 import ProjectLinks from "@/components/ui/ProjectLinks";
-import WorkDone, { pickBySlugs } from "@/components/ui/WorkDone";
+import { resolveRelated } from "@/lib/related";
 import projectsData from "@/content/projects.json";
 import caseStudiesData from "@/content/case-studies.json";
+import blogsData from "@/content/blogs.json";
+import clientsData from "@/content/clients.json";
+import type { RelatedRefs } from "@/types";
 import type { Project } from "@/types";
 
 interface EditorPreviewProps {
   kind: ArticleDetailProps["kind"];
-  entry: ArticleDetailProps["entry"] & Partial<Pick<Project, "liveUrl" | "githubUrl">> & {
-    /** Client work-done slugs. */
-    projects?: string[];
-    caseStudies?: string[];
-  };
+  entry: ArticleDetailProps["entry"] & Partial<Pick<Project, "liveUrl" | "githubUrl">> & RelatedRefs;
   imageFile: File | null;
   sectionImageFiles: (File | null)[][];
   photoFiles: (File | null)[];
@@ -55,15 +54,20 @@ export default function EditorPreview({ kind, entry, imageFile, sectionImageFile
   };
 
   return (
-    <ArticleDetail kind={kind} entry={previewEntry} preview previewImageUrls={inlineImageUrls}>
+    <ArticleDetail
+      kind={kind}
+      entry={previewEntry}
+      preview
+      previewImageUrls={inlineImageUrls}
+      related={resolveRelated(entry, {
+        projects: projectsData.projects,
+        caseStudies: caseStudiesData.caseStudies,
+        blogs: blogsData.posts,
+        clients: clientsData.clients,
+      })}
+    >
       {kind === "project" && (
         <ProjectLinks liveUrl={entry.liveUrl} githubUrl={entry.githubUrl} className="mt-12" />
-      )}
-      {kind === "client" && (
-        <WorkDone
-          projects={pickBySlugs(projectsData.projects, entry.projects)}
-          caseStudies={pickBySlugs(caseStudiesData.caseStudies, entry.caseStudies)}
-        />
       )}
     </ArticleDetail>
   );

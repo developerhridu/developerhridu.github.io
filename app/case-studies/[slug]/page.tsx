@@ -1,7 +1,8 @@
 import ArticleDetail from "@/components/ui/ArticleDetail";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getCaseStudies, getCaseStudy, getRelatedCaseStudies } from "@/lib/content";
+import { getCaseStudies, getCaseStudy, getRelatedCaseStudies, getRelatedItems } from "@/lib/content";
+import { toRelatedItem } from "@/lib/related";
 
 const BASE_URL = "https://developerhridu.github.io";
 
@@ -66,7 +67,9 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
   const imageUrl = study.image
     ? `${BASE_URL}${study.image}`
     : `${BASE_URL}/og-image/case-studies/${study.slug}`;
-  const relatedCaseStudies = getRelatedCaseStudies(study);
+  const picked = getRelatedItems(study);
+  // Nothing picked in the admin: fall back to case studies sharing tags.
+  const related = picked.length > 0 ? picked : getRelatedCaseStudies(study).map((item) => toRelatedItem("case-study", item));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -89,7 +92,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
       entry={study}
       url={url}
       jsonLd={jsonLd}
-      related={{ items: relatedCaseStudies, basePath: "/case-studies", heading: "Related Case Studies" }}
+      related={related}
     />
   );
 }

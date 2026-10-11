@@ -64,8 +64,16 @@ export interface SeoRoute {
   noIndex?: boolean;
 }
 
+/** Slugs of related items picked in the admin, shown in the detail page's Related Content grid. */
+export interface RelatedRefs {
+  projects?: string[];
+  caseStudies?: string[];
+  blogs?: string[];
+  clients?: string[];
+}
+
 // Client types
-export interface Client {
+export interface Client extends RelatedRefs {
   id: string;
   /** Detail page path segment (`/clients/{slug}`). */
   slug: string;
@@ -80,15 +88,11 @@ export interface Client {
   photos?: string[];
   body?: string;
   sections?: ContentSection[];
-  /** Slugs of projects done for this client. */
-  projects?: string[];
-  /** Slugs of case studies written about work for this client. */
-  caseStudies?: string[];
   updatedAt?: string;
 }
 
 // Project types
-export interface Project {
+export interface Project extends RelatedRefs {
   id: string;
   slug: string;
   title: string;
@@ -96,7 +100,6 @@ export interface Project {
   longDescription?: string;
   body?: string;
   sections?: ContentSection[];
-  caseStudies?: string[];
   image: string;
   /** Extra title images shown after `image` in the detail-page gallery. */
   titleImages?: string[];
@@ -196,7 +199,7 @@ export interface ContentSection {
 }
 
 // Blog post types
-export interface BlogPost {
+export interface BlogPost extends RelatedRefs {
   id: string;
   slug: string;
   title: string;
@@ -214,7 +217,7 @@ export interface BlogPost {
 }
 
 // Case study types
-export interface CaseStudy {
+export interface CaseStudy extends RelatedRefs {
   id: string;
   slug: string;
   title: string;

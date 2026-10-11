@@ -1,9 +1,8 @@
 import ArticleDetail from "@/components/ui/ArticleDetail";
-import WorkDone, { pickBySlugs } from "@/components/ui/WorkDone";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getClient, getClients } from "@/lib/clients";
-import { getPublishedCaseStudies, getPublishedProjects } from "@/lib/content";
+import { getRelatedItems } from "@/lib/content";
 import config from "@/content/config.json";
 import type { Client } from "@/types";
 
@@ -64,8 +63,6 @@ export default async function ClientPage({ params }: ClientPageProps) {
   }
 
   const url = `${BASE_URL}/clients/${client.slug}`;
-  const projects = pickBySlugs(getPublishedProjects(), client.projects);
-  const caseStudies = pickBySlugs(getPublishedCaseStudies(), client.caseStudies);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -88,8 +85,7 @@ export default async function ClientPage({ params }: ClientPageProps) {
       }}
       url={url}
       jsonLd={jsonLd}
-    >
-      <WorkDone projects={projects} caseStudies={caseStudies} />
-    </ArticleDetail>
+      related={getRelatedItems(client)}
+    />
   );
 }
