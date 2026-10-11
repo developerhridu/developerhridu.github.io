@@ -86,6 +86,7 @@ export default async function ClientPage({ params }: ClientPageProps) {
         description: client.description ?? "",
         tags: client.tags ?? [],
         image: client.image || client.logo,
+        website: client.url ?? undefined,
       }}
       url={url}
       jsonLd={jsonLd}

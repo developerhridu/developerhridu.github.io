@@ -859,7 +859,7 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
               )}
               <EditorPreview
                 kind={kind}
-                entry={{ ...editing, tags: tagsText.split(",").map((tag) => tag.trim()).filter(Boolean) }}
+                entry={{ ...editing, website: editing.url ?? undefined, tags: tagsText.split(",").map((tag) => tag.trim()).filter(Boolean) }}
                 imageFile={imageFile}
                 sectionImageFiles={sectionImageFiles}
                 photoFiles={photoFiles}

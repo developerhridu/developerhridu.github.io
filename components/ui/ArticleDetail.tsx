@@ -2,7 +2,7 @@ import type { ComponentProps, ReactNode } from "react";
 import Link from "next/link";
 import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Globe, Tag } from "lucide-react";
 import type { ContentSection } from "@/types";
 import { estimateReadingTime } from "@/lib/readingTime";
 import { markdownComponents } from "@/components/ui/markdownComponents";
@@ -56,6 +56,8 @@ export interface ArticleDetailProps {
     published?: boolean;
     date?: string;
     client?: string;
+    /** External site link shown in the header meta row (clients). */
+    website?: string;
     image?: string;
     titleImages?: string[];
     photos?: string[];
@@ -151,6 +153,17 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
                     year: "numeric",
                   })}
                 </span>
+              )}
+              {entry.website && (
+                <a
+                  href={entry.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 hover:text-foreground transition-colors"
+                >
+                  <Globe size={16} />
+                  {entry.website.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
+                </a>
               )}
               <ClientLinks client={entry.client} />
               {readingMinutes !== null && (
