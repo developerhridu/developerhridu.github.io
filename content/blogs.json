@@ -22,15 +22,13 @@
       "client": "",
       "body": "```linkedin\nhttps://www.linkedin.com/posts/developerhridu_dotnet-csharp-asyncawait-activity-7499357125823844352-GgYx?utm_source=share&utm_medium=member_desktop&rcm=ACoAABzCH6EBjQ3vs7dYkbbY1gUSF7kfnkEJ8l8\n```",
       "sections": [],
-      "updatedAt": "2026-10-11T08:50:37.670Z",
+      "updatedAt": "2026-10-11T08:54:36.375Z",
       "photos": [],
-      "projects": [
-        "fare-comparison"
+      "projects": [],
+      "caseStudies": [],
+      "blogs": [
+        "from-tightly-coupled-to-loosely-coupled-classes"
       ],
-      "caseStudies": [
-        "airline-fare-intelligence-platform"
-      ],
-      "blogs": [],
       "clients": []
     },
     {
