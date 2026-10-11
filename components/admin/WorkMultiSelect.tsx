@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import projectsData from "@/content/projects.json";
 import caseStudiesData from "@/content/case-studies.json";
 import MultiSelectDropdown from "@/components/admin/MultiSelectDropdown";
@@ -8,6 +9,7 @@ import type { MultiSelectOption } from "@/components/admin/MultiSelectDropdown";
 interface WorkItem {
   slug: string;
   title: string;
+  image?: string;
   published?: boolean;
 }
 
@@ -24,6 +26,11 @@ function toOptions(items: WorkItem[], prefix: string, kindLabel: string): MultiS
   return items.map((item) => ({
     value: `${prefix}${item.slug}`,
     label: `${kindLabel}: ${item.title}`,
+    icon: item.image ? (
+      <span className="relative w-4 h-4 shrink-0 mt-0.5 rounded bg-white/90 overflow-hidden">
+        <Image src={item.image} alt="" fill sizes="16px" className="object-cover" />
+      </span>
+    ) : undefined,
     note:
       item.published === false ? (
         <span className="ml-1.5 text-xs text-yellow-500">(draft — won&apos;t show)</span>

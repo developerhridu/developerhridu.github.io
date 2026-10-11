@@ -3,11 +3,18 @@
 import { useEffect, useMemo, useState } from "react";
 import ArticleDetail, { type ArticleDetailProps } from "@/components/ui/ArticleDetail";
 import ProjectLinks from "@/components/ui/ProjectLinks";
+import WorkDone, { pickBySlugs } from "@/components/ui/WorkDone";
+import projectsData from "@/content/projects.json";
+import caseStudiesData from "@/content/case-studies.json";
 import type { Project } from "@/types";
 
 interface EditorPreviewProps {
   kind: ArticleDetailProps["kind"];
-  entry: ArticleDetailProps["entry"] & Partial<Pick<Project, "liveUrl" | "githubUrl">>;
+  entry: ArticleDetailProps["entry"] & Partial<Pick<Project, "liveUrl" | "githubUrl">> & {
+    /** Client work-done slugs. */
+    projects?: string[];
+    caseStudies?: string[];
+  };
   imageFile: File | null;
   sectionImageFiles: (File | null)[][];
   photoFiles: (File | null)[];
@@ -51,6 +58,12 @@ export default function EditorPreview({ kind, entry, imageFile, sectionImageFile
     <ArticleDetail kind={kind} entry={previewEntry} preview previewImageUrls={inlineImageUrls}>
       {kind === "project" && (
         <ProjectLinks liveUrl={entry.liveUrl} githubUrl={entry.githubUrl} className="mt-12" />
+      )}
+      {kind === "client" && (
+        <WorkDone
+          projects={pickBySlugs(projectsData.projects, entry.projects)}
+          caseStudies={pickBySlugs(caseStudiesData.caseStudies, entry.caseStudies)}
+        />
       )}
     </ArticleDetail>
   );
