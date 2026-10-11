@@ -4,6 +4,11 @@
       "id": "feature-flag-in-case-study-and-blog-as-well-to-show-only-featured-item-on-home-page",
       "text": "Feature Flag in Case study and Blog as well to show only featured item on Home page",
       "done": false
+    },
+    {
+      "id": "projects-can-have-multiple-title-image-with-gallery-navigation-buttons",
+      "text": "Projects can have multiple title image, with Gallery Navigation Buttons",
+      "done": false
     }
   ]
 }
