@@ -276,18 +276,8 @@
       "published": true,
       "url": "https://e-deshltd.com",
       "description": "Courier platform website and APIs for E-Desh Ltd, built with React and ASP.NET Core.",
-<<<<<<< Updated upstream
-      "tags": [
-        "React",
-        "ASP.NET Core",
-        "C#",
-        "JavaScript"
-      ],
-      "body": "## Engagement\n\n**Jr. Software Engineer (Part-Time)** at **E-Desh Limited**, remote, May 2022 – February 2023.\n\n## What I Did\n\n- Worked with a remote team to design and develop the company's courier platform website using React and ASP.NET Core.\n- Built the front end, built APIs, and optimized the existing codebase and database, improving performance and responsiveness.\n\n## Proof of Work\n\n[Walkthrough video](https://youtu.be/ouIKiEqVOYY).\n\n## Proof of work documents",
-=======
       "tags": [],
-      "body": "## Engagement\n\n**Jr. Software Engineer (Part-Time)** at **E-Desh Limited**, remote, May 2022 – February 2023.\n\n## What I Did\n\n- Worked with a remote team to design and develop the company's courier platform website using React and ASP.NET Core.\n- Built the front end, built APIs, and optimized the existing codebase and database, improving performance and responsiveness.\n\n## Proof of Work\n\n[Walkthrough video](https://youtu.be/ouIKiEqVOYY).",
->>>>>>> Stashed changes
+      "body": "## Engagement\n\n**Jr. Software Engineer (Part-Time)** at **E-Desh Limited**, remote, May 2022 – February 2023.\n\n## What I Did\n\n- Worked with a remote team to design and develop the company's courier platform website using React and ASP.NET Core.\n- Built the front end, built APIs, and optimized the existing codebase and database, improving performance and responsiveness.\n\n## Proof of Work\n\n[Walkthrough video](https://youtu.be/ouIKiEqVOYY).\n\n## Proof of work documents",
       "sections": [],
       "image": "/images/logos/Edesh.png",
       "projects": [
