@@ -156,7 +156,7 @@
       "featured": false,
       "published": false,
       "sections": [],
-      "updatedAt": "2026-10-12T08:49:49.066Z",
+      "updatedAt": "2026-10-12T08:55:14.502Z",
       "projects": [],
       "blogs": [],
       "clients": [],
@@ -165,7 +165,11 @@
         "/images/projects/my-bdjobs-cover-840de3cc-9e1b-4d08-92dd-a2f3d8fb6b9a.png",
         "/images/projects/my-bdjobs-cover-5bea7d8f-d9e3-414d-bac3-a8e3f2aa2fda.png"
       ],
-      "proofOfWorkImages": []
+      "proofOfWorkImages": [
+        "/images/projects/my-bdjobs-proof-1d416d15-be5e-4a33-85e0-95bbbd342473.png",
+        "/images/projects/my-bdjobs-proof-1956653d-1f09-4366-b8c6-9f223fdd909e.png",
+        "/images/projects/my-bdjobs-proof-302fc357-5a22-4f63-b89f-93c02d9cb33d.jpg"
+      ]
     },
     {
       "id": "04",
