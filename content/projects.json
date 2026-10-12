@@ -98,16 +98,16 @@
       "githubUrl": null,
       "featured": true,
       "sections": [],
+      "updatedAt": "2026-10-12T08:49:13.516Z",
+      "projects": [],
+      "blogs": [],
+      "clients": [],
       "title": "Recruiter.Bdjobs.com",
       "coverImages": [
         "/images/projects/recruiter-bdjobs-cover-2fbcbc63-3dfc-4fab-b41e-dc76d7ec0064.png",
         "/images/projects/recruiter-bdjobs-cover-f9d76558-6def-4df3-bef4-ea43b7e09169.png"
       ],
-      "proofOfWorkImages": [],
-      "updatedAt": "2026-10-12T08:49:13.516Z",
-      "projects": [],
-      "blogs": [],
-      "clients": []
+      "proofOfWorkImages": []
     },
     {
       "id": "07",
@@ -155,8 +155,15 @@
       "published": false,
       "sections": [],
       "title": "My Bdjobs",
-      "coverImages": [],
-      "proofOfWorkImages": []
+      "coverImages": [
+        "/images/projects/my-bdjobs-cover-840de3cc-9e1b-4d08-92dd-a2f3d8fb6b9a.png",
+        "/images/projects/my-bdjobs-cover-5bea7d8f-d9e3-414d-bac3-a8e3f2aa2fda.png"
+      ],
+      "proofOfWorkImages": [],
+      "updatedAt": "2026-10-12T08:49:49.066Z",
+      "projects": [],
+      "blogs": [],
+      "clients": []
     },
     {
       "id": "04",
