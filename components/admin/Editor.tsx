@@ -214,8 +214,8 @@ function makeUniqueSlug(base: string, existingSlugs: string[]): string {
 }
 
 const KIND_DEFAULTS: Record<ContentKind, () => Partial<Entry>> = {
-  blog: () => ({ date: new Date().toISOString().slice(0, 10) }),
-  "case-study": () => ({ date: new Date().toISOString().slice(0, 10) }),
+  blog: () => ({ date: new Date().toISOString().slice(0, 10), featured: false }),
+  "case-study": () => ({ date: new Date().toISOString().slice(0, 10), featured: false }),
   project: () => ({ longDescription: "", liveUrl: null, githubUrl: null, featured: false }),
   client: () => ({ url: null }),
 };
@@ -698,8 +698,8 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
       } else {
         finalEntry.githubUrl = github?.trim() || null;
       }
-      finalEntry.featured = editing.featured ?? false;
     }
+    if (kind !== "client") finalEntry.featured = editing.featured ?? false;
     if (kind === "client") {
       finalEntry.url = editing.url?.trim() || null;
     }
@@ -1264,7 +1264,7 @@ function EntryForm({
         </span>
       </label>
 
-      {kind === "project" && (
+      {kind !== "client" && (
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
@@ -1272,7 +1272,7 @@ function EntryForm({
             onChange={(e) => setEntry({ ...entry, featured: e.target.checked })}
             className="w-4 h-4 accent-accent"
           />
-          <span className="text-sm text-foreground">Featured</span>
+          <span className="text-sm text-foreground">Featured (shown on the home page when published)</span>
         </label>
       )}
 

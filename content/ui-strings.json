@@ -95,6 +95,9 @@
   "caseStudies": {
     "viewAll": "View All Case Studies"
   },
+  "blog": {
+    "viewAll": "View All Blog Posts"
+  },
   "blogCaseStudyListing": {
     "mostRead": "Most Read",
     "allTag": "All",

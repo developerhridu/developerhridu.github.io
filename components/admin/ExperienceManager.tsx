@@ -30,6 +30,7 @@ interface Project {
 
 interface Entry {
   id: string;
+  published?: boolean;
   company: string;
   companyUrl?: string;
   logo?: string;
@@ -55,6 +56,7 @@ function toRepoPath(publicPath: string): string {
 function blankEntry(): Entry {
   return {
     id: "",
+    published: false,
     company: "",
     companyUrl: "",
     logo: "",
@@ -428,6 +430,9 @@ export default function ExperienceManager({
                     <tr key={entry.id} className="border-b border-border last:border-b-0">
                       <td className="px-4 py-3 min-w-0">
                         <p className="text-foreground font-medium truncate">{entry.company}</p>
+                        {entry.published === false && (
+                          <span className="text-xs text-muted">Draft</span>
+                        )}
                         <p className="text-muted text-xs">
                           {entry.role} · {entry.projects.length}{" "}
                           {entry.projects.length === 1 ? "project" : "projects"}
@@ -583,6 +588,16 @@ function EntryForm({
           />
         </div>
       </div>
+
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={entry.published !== false}
+          onChange={(e) => setEntry({ ...entry, published: e.target.checked })}
+          className="w-4 h-4 accent-accent"
+        />
+        <span className="text-sm text-foreground">Published (visible on the site and resume)</span>
+      </label>
 
       <div>
         <label className="block text-xs uppercase tracking-wide text-muted mb-1">Logo URL</label>

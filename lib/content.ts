@@ -40,6 +40,10 @@ export function getExperiences(): Experience[] {
   return data.experiences;
 }
 
+export function getPublishedExperiences(): Experience[] {
+  return getExperiences().filter(isPublished);
+}
+
 export function getEducation(): Education[] {
   const filePath = path.join(contentDirectory, "education.json");
   const fileContents = fs.readFileSync(filePath, "utf8");
@@ -89,6 +93,10 @@ export function getPublishedBlogPosts(): BlogPost[] {
   return getBlogPosts().filter((post) => post.published !== false);
 }
 
+export function getFeaturedBlogPosts(): BlogPost[] {
+  return getPublishedBlogPosts().filter((post) => post.featured === true);
+}
+
 export function getBlogPost(slug: string): BlogPost | null {
   return getBlogPosts().find((post) => post.slug === slug) ?? null;
 }
@@ -117,6 +125,10 @@ export function getCaseStudies(): CaseStudy[] {
 
 export function getPublishedCaseStudies(): CaseStudy[] {
   return getCaseStudies().filter((study) => study.published !== false);
+}
+
+export function getFeaturedCaseStudies(): CaseStudy[] {
+  return getPublishedCaseStudies().filter((study) => study.featured === true);
 }
 
 export function getCaseStudy(slug: string): CaseStudy | null {

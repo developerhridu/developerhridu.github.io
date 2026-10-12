@@ -3,6 +3,7 @@
     {
       "id": "01",
       "slug": "automated-booking-cancellation-service",
+      "featured": false,
       "title": "Cutting ADM Penalties with an Automated Booking Cancellation Service",
       "date": "2025-03-04",
       "published": true,
@@ -22,6 +23,7 @@
     {
       "id": "02",
       "slug": "editable-website-without-a-backend",
+      "featured": true,
       "title": "How I Made My Static Website Editable — Without a Server or Database",
       "date": "2026-07-18",
       "published": true,
@@ -42,6 +44,7 @@
     {
       "id": "03",
       "slug": "airline-fare-intelligence-platform",
+      "featured": false,
       "title": "Building an Airline Fare Intelligence Platform Across Multiple GDS & NDC Suppliers",
       "date": "2026-01-13",
       "published": true,
@@ -62,6 +65,7 @@
     {
       "id": "04",
       "slug": "redis-stampede-thundering-herd-ota-search-ranking",
+      "featured": true,
       "title": "How a Redis Stampede (Thundering Herd) Hit Our OTA Search Ranking Engine — And How We Fixed It",
       "date": "2026-07-23",
       "published": true,
@@ -84,6 +88,7 @@
     {
       "id": "05",
       "slug": "cqrs-etl-mssql-mongodb-job-search",
+      "featured": false,
       "title": "Splitting Reads From Writes: A CQRS + ETL Pipeline That Cut Job Search Query Time by 30%",
       "date": "2024-09-24",
       "published": true,
@@ -106,6 +111,7 @@
     {
       "id": "06",
       "slug": "progressive-search-30-suppliers-ota",
+      "featured": false,
       "title": "Progressive Search: Showing Flight Results Before All 30 Suppliers Answer",
       "date": "2026-05-24",
       "published": true,
@@ -127,6 +133,7 @@
     {
       "id": "08",
       "slug": "oracle-to-postgresql-migration-bangladesh",
+      "featured": true,
       "title": "How I Single Handedly Migrated a Large Oracle Ecosystem to PostgreSQL in 13 Working Days — with Near-Zero Downtime",
       "date": "2026-10-04",
       "published": true,

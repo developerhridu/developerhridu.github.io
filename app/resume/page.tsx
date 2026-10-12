@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import {
   getProfile,
-  getExperiences,
+  getPublishedExperiences,
   getPublishedProjects,
   getEducation,
   getPublishedCertifications,
@@ -29,7 +29,7 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 
 export default function ResumePage() {
   const profile = getProfile();
-  const experiences = getExperiences();
+  const experiences = getPublishedExperiences();
   const education = getEducation();
   const certifications = getPublishedCertifications();
   const skills = getSkillsCategory();

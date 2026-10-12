@@ -2,17 +2,14 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ContentCard from "@/components/ui/ContentCard";
-import { getPublishedCaseStudies } from "@/lib/content";
+import { getFeaturedCaseStudies } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
 import uiStrings from "@/content/ui-strings.json";
 import { getSectionCopy } from "@/lib/sections";
 
-const FEATURED_COUNT = 3;
-
 export default function CaseStudies() {
-  const caseStudies = [...getPublishedCaseStudies()]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, FEATURED_COUNT);
+  const caseStudies = [...getFeaturedCaseStudies()]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   if (caseStudies.length === 0) return null;
 

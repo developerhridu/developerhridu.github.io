@@ -114,6 +114,7 @@ const FIELDS: FieldDef[] = [
   { section: "testimonials", key: "shareCta", label: "Testimonials: Share your experience CTA" },
 
   { section: "caseStudies", key: "viewAll", label: "Case Studies: View All link" },
+  { section: "blog", key: "viewAll", label: "Blog: View All link" },
 
   { section: "blogCaseStudyListing", key: "mostRead", label: "Listing: Most Read label" },
   { section: "blogCaseStudyListing", key: "allTag", label: "Listing: All tag filter" },

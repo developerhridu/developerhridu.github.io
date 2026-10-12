@@ -97,6 +97,7 @@ const intents: Intent[] = [
     ],
     answer: () => {
       const list = experienceData.experiences
+        .filter((e) => e.published !== false)
         .map((e) => `• ${e.role} at ${e.company} (${e.period})`)
         .join("\n");
       return `His work history:\n\n${list}\n\nSee the Experience page for the specific projects and impact at each company.`;

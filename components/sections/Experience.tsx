@@ -61,7 +61,7 @@ function ProjectHighlights({ highlights, defaultExpanded }: { highlights: string
 }
 
 export default function Experience({ showHeading = true, showAll = false }: ExperienceProps) {
-  const experiences = experienceData.experiences;
+  const experiences = experienceData.experiences.filter((exp) => exp.published !== false);
   const sectionCopy = getSectionCopy("experience");
 
   return (

@@ -2,6 +2,7 @@
   "experiences": [
     {
       "id": "technonext-software-ltd-concern-of-us-bangla-group",
+      "published": true,
       "company": "TechnoNext Software Ltd. (Concern of US-Bangla Airlines)",
       "companyUrl": "https://technonext.com",
       "logo": "/images/logos/technonext.jpg",
@@ -76,6 +77,7 @@
     },
     {
       "id": "bdjobs-com-ltd",
+      "published": true,
       "company": "Bdjobs.com Ltd.",
       "companyUrl": "https://www.bdjobs.com",
       "logo": "/images/logos/bdjobs-icon.png",
@@ -104,6 +106,7 @@
     },
     {
       "id": "e-desh-limited",
+      "published": true,
       "company": "E-Desh Limited",
       "companyUrl": "https://e-deshltd.com",
       "logo": "/images/logos/Edesh.png",

@@ -121,6 +121,7 @@ export interface ExperienceProject {
 
 export interface Experience {
   id: string;
+  published?: boolean;
   company: string;
   companyUrl?: string;
   logo?: string;
@@ -206,6 +207,7 @@ export interface BlogPost extends RelatedRefs {
   date: string;
   updatedAt?: string;
   published?: boolean;
+  featured?: boolean;
   client?: string;
   description: string;
   tags: string[];
@@ -224,6 +226,7 @@ export interface CaseStudy extends RelatedRefs {
   date: string;
   updatedAt?: string;
   published?: boolean;
+  featured?: boolean;
   client?: string;
   description: string;
   tags: string[];
@@ -326,6 +329,9 @@ export interface UiStrings {
     shareCta: string;
   };
   caseStudies: {
+    viewAll: string;
+  };
+  blog: {
     viewAll: string;
   };
   blogCaseStudyListing: {
