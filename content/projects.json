@@ -2,7 +2,6 @@
   "projects": [
     {
       "id": "01",
-      "title": "Online Travel Agency (OTA) Platform",
       "slug": "ota-platform",
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
       "tags": [
@@ -16,13 +15,6 @@
       "description": "Web-based travel booking platform enabling users to search, compare, and book flights from multiple airlines and GDS systems",
       "longDescription": "A comprehensive travel booking platform integrating multiple airlines (Novo Air, US-Bangla Airlines, Jazeera Airways, AirAstra, Air Arabia, IndiGo) and Global Distribution Systems (Amadeus, Sabre, Travelport). Built with scalable microservices architecture to handle high-volume flight searches and bookings.",
       "body": "## What it does\n\nA multi-tenant OTA platform that lets travel agencies search, compare, book, and manage flights, hotels, holiday packages, and other travel services. One codebase serves multiple client brands with isolated configuration, supporting both B2B and B2C business models.\n\n## Scale\n\n- **6 live client brands** — TripLover, TravelChamp, FirstTrip, TakeTrip, TakeOff, and TripLover Dubai\n- **36+ services** in the ecosystem, built for high availability and fault tolerance\n- **30 integrated GDS/NDC suppliers** — a single flight search fans out to all of them and returns 200-300 feeds spanning 40-50 unique airlines\n- Airline and GDS coverage including Amadeus, Sabre, Travelport, Novo Air, US-Bangla Airlines, Jazeera Airways, AirAstra, Air Arabia, and IndiGo\n\n## My role\n\nI architected and led development of the multi-tenant SaaS platform. Beyond the core architecture, I:\n\n- Built scalable software solutions for 6 OTA clients including TripLover, TravelChamp, FirstTrip, TakeTrip, TakeOff, and TripLover Dubai.\n- Contributed to the OTA dynamic ecosystem comprising 36+ services, ensuring scalability, high availability, and fault tolerance.\n- Architected and led development of a multi-tenant OTA SaaS project supporting both B2B & B2C business models, enabling a single codebase to serve multiple clients with isolated configurations.\n- Built an automated API integration test suite using xUnit for 30+ supplier integration projects, ensuring consistent API behavior and accelerating release validation.\n- Led the migration of the core database from SQL Server to PostgreSQL, reducing licensing costs and improving cross-platform compatibility on Linux infrastructure.\n- Integrated APM monitoring with Elasticsearch-based structured logging, cutting production failure rates by 30% and dramatically reducing mean-time-to-debug.\n- Developed a background service using ASP.NET Core & Hangfire that automatically cancels un-ticketed bookings before the last ticketing time, reducing ADM penalties by $4,500–$6,400/month per OTA and saving approximately $23,000–$27,000 overall across 6 clients.\n- Implemented key OTA features — Progressive Search, Search Ranking, Universal Split PNR, Refund Reissue, and PNR Details.\n- Delivered cloud-native 8 supplier integration projects: Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, and Indigo, increasing flight search feed by 27%.\n- Migrated 8 legacy .NET Framework applications to .NET Core, enabling cross-platform deployment on Linux servers and reducing infrastructure costs by eliminating Windows Server licensing.\n- Contributed to CI/CD pipelines and code reviews, and supported onboarding & mentoring of new team members.\n\n## Why this stack\n\nA **modular monolith** on .NET Core rather than full microservices — the modules share a deployment boundary while staying independently maintainable, which suits a platform where a single search has to coordinate 30 suppliers with low latency. **Dapper** over EF Core keeps the hot search path close to raw SQL. **RabbitMQ** decouples the long-running booking and ticketing workflows, with MSSQL and MongoDB each serving the workloads they fit.\n\n## Proof of work documents",
-      "coverImages": [
-        "/images/projects/OTA.png",
-        "/images/logos/triplover.jpeg",
-        "/images/logos/taketrip.png",
-        "/images/logos/travelchamp.png",
-        "/images/logos/takeoff.png"
-      ],
       "liveUrl": null,
       "githubUrl": null,
       "caseStudies": [
@@ -34,6 +26,15 @@
       "featured": true,
       "published": true,
       "sections": [],
+      "updatedAt": "2026-10-11T04:12:21.541Z",
+      "title": "Online Travel Agency (OTA) Platform",
+      "coverImages": [
+        "/images/projects/OTA.png",
+        "/images/logos/triplover.jpeg",
+        "/images/logos/taketrip.png",
+        "/images/logos/travelchamp.png",
+        "/images/logos/takeoff.png"
+      ],
       "proofOfWorkImages": [
         "/images/projects/ota-platform-photo-0.png",
         "/images/projects/ota-platform-photo-1.png",
@@ -42,14 +43,12 @@
         "/images/projects/ota-platform-photo-4.png",
         "/images/projects/ota-platform-photo-5.png",
         "/images/projects/ota-platform-photo-6.png"
-      ],
-      "updatedAt": "2026-10-11T04:12:21.541Z"
+      ]
     },
     {
       "id": "02",
       "slug": "foodi-crm",
       "published": true,
-      "title": "Foodi CRM - Food Delivery System",
       "client": "Foodi",
       "description": "Full-stack customer relationship management system for food delivery businesses",
       "longDescription": "Foodi CRM is a comprehensive customer relationship management system for food delivery businesses, enabling order tracking, restaurant management, delivery partner monitoring, and customer interaction. Built with a scalable microservices architecture focused on performance and usability.",
@@ -59,11 +58,16 @@
         "Microservices",
         "PostgreSQL"
       ],
-      "coverImages": ["/images/projects/foodi.jpg"],
       "liveUrl": null,
       "githubUrl": null,
       "featured": true,
       "sections": [],
+      "updatedAt": "2026-10-06T05:51:52.375Z",
+      "caseStudies": [],
+      "title": "Foodi CRM - Food Delivery System",
+      "coverImages": [
+        "/images/projects/foodi.jpg"
+      ],
       "proofOfWorkImages": [
         "/images/projects/foodi-crm-photo-0.png",
         "/images/projects/foodi-crm-photo-1.png",
@@ -71,15 +75,12 @@
         "/images/projects/foodi-crm-photo-3.png",
         "/images/projects/foodi-crm-photo-4.png",
         "/images/projects/foodi-crm-photo-5.jpg"
-      ],
-      "updatedAt": "2026-10-06T05:51:52.375Z",
-      "caseStudies": []
+      ]
     },
     {
       "id": "03",
       "slug": "recruiter-bdjobs",
       "published": true,
-      "title": "Recruiter.Bdjobs.com",
       "client": "Bdjobs.com",
       "description": "Hiring management platform allowing employers to manage job posting to online assessments and interviews",
       "longDescription": "A comprehensive recruitment platform that allows employers to manage the entire hiring process from job posting to online assessments and interviews. Built with Angular frontend and ASP.NET Core backend, integrated with Bangladesh's largest job portal ecosystem.",
@@ -93,18 +94,25 @@
         "MSSQL Server",
         "ETL"
       ],
-      "coverImages": ["/images/projects/bdjobs.png"],
       "liveUrl": "https://recruiter.bdjobs.com/jobposting/job-information",
       "githubUrl": null,
       "featured": true,
       "sections": [],
-      "proofOfWorkImages": []
+      "title": "Recruiter.Bdjobs.com",
+      "coverImages": [
+        "/images/projects/recruiter-bdjobs-cover-2fbcbc63-3dfc-4fab-b41e-dc76d7ec0064.png",
+        "/images/projects/recruiter-bdjobs-cover-f9d76558-6def-4df3-bef4-ea43b7e09169.png"
+      ],
+      "proofOfWorkImages": [],
+      "updatedAt": "2026-10-12T08:49:13.516Z",
+      "projects": [],
+      "blogs": [],
+      "clients": []
     },
     {
       "id": "07",
       "slug": "airline-supplier-integration",
       "published": true,
-      "title": "Airline Supplier Integration Projects",
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
       "description": "8 cloud-native supplier integration projects connecting OTA platforms with major airlines and GDS systems",
       "longDescription": "Developed 8 cloud-native supplier integration projects (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, Indigo) to integrate supplier APIs into client OTA platforms. These integrations increased flight search feed by 27% and enabled seamless booking across multiple airline systems.",
@@ -120,24 +128,25 @@
         "NDC",
         "Azure"
       ],
-      "coverImages": ["/images/projects/supplier.png"],
       "liveUrl": null,
       "githubUrl": null,
       "featured": false,
       "sections": [],
+      "title": "Airline Supplier Integration Projects",
+      "coverImages": [
+        "/images/projects/supplier.png"
+      ],
       "proofOfWorkImages": []
     },
     {
       "id": "my-bdjobs",
       "slug": "my-bdjobs",
-      "title": "My Bdjobs",
       "description": "App for Job Seakers",
       "longDescription": "",
       "body": "## What it does\n\nThe job seeker side of Bdjobs.com — searching and browsing job listings, submitting resumes, and managing applications.\n\n## My role\n\nWorked on the platform as part of the Bdjobs.com engineering team, where I implemented the CQRS-style architecture and ETL pipeline that separated read and write databases for job listings, and optimized the queries behind job search.",
       "caseStudies": [
         "cqrs-etl-mssql-mongodb-job-search"
       ],
-      "coverImages": [],
       "client": "Bdjobs.com",
       "tags": [],
       "liveUrl": null,
@@ -145,13 +154,14 @@
       "featured": false,
       "published": false,
       "sections": [],
+      "title": "My Bdjobs",
+      "coverImages": [],
       "proofOfWorkImages": []
     },
     {
       "id": "04",
       "slug": "fare-comparison",
       "published": true,
-      "title": "Fare Comparison",
       "client": "US-Bangla Airlines",
       "description": "Airline fare intelligence platform comparing competitors' real-time fares, flight schedules, and seat availability for data-driven pricing",
       "longDescription": "An airline fare intelligence platform that enables airlines to compare competitors' real time fares, flight schedules, and seat availability, providing data-driven pricing recommendations to maximize revenue and profitability. Integrated multiple GDS and NDC suppliers to aggregate and normalize competitor data, and engineered pricing-intelligence logic to help airlines optimize ticket pricing.",
@@ -159,7 +169,6 @@
       "caseStudies": [
         "airline-fare-intelligence-platform"
       ],
-      "coverImages": ["/images/projects/fare-comparison.png"],
       "tags": [
         ".NET Core",
         "Hangfire",
@@ -171,18 +180,21 @@
       "githubUrl": null,
       "featured": true,
       "sections": [],
+      "updatedAt": "2026-10-11T04:02:16.188Z",
+      "title": "Fare Comparison",
+      "coverImages": [
+        "/images/projects/fare-comparison.png"
+      ],
       "proofOfWorkImages": [
         "/images/projects/fare-comparison-photo-0.png",
         "/images/projects/fare-comparison-photo-1.png",
         "/images/projects/fare-comparison-photo-2.png",
         "/images/projects/fare-comparison-photo-3.png",
         "/images/projects/fare-comparison-photo-4.png"
-      ],
-      "updatedAt": "2026-10-11T04:02:16.188Z"
+      ]
     },
     {
       "id": "dataflow-database-migration-tool",
-      "title": "O2P — A Reliable Oracle-to-PostgreSQL Data Migration Tool",
       "slug": "dataflow-database-migration-tool",
       "client": "Personal Project",
       "tags": [
@@ -193,7 +205,6 @@
       "description": "I built O2P to solve one of the highest-risk parts of a large Oracle-to-PostgreSQL migration: moving large, changing production datasets reliably without turning every table into a manual migration exercise.",
       "longDescription": "",
       "body": "| Role | Designed and built the O2P migration tool |\n| --- | --- |\n| Problem | Reliable, observable and recoverable Oracle → PostgreSQL data migration |\n| Stack | .NET 8 · React · Oracle · PostgreSQL · Oracle LogMiner |\n| Migration Context | ~1 TB · 550+ tables · 1,700+ database objects · 23 applications |\n| Key Capabilities | Parallel batch copy · retry/recovery · validation · progress tracking · incremental catch-up |\n| Outcome | Turned data migration into a controlled, repeatable workflow instead of one-off transfers |\n\nAt production scale, that becomes a different engineering problem.\n\nSome tables are huge. Some contain LOBs. A transfer can fail after running for hours. Running too many copies in parallel can overload the Oracle source. Meanwhile, the source may continue changing while the baseline migration is running.\n\nA simple script could move rows, but it could not answer the operational questions that mattered:\n\nWhat has already completed?\nWhere exactly did a failed migration stop?\nCan I retry without loading committed data twice?\nHow much parallelism is safe for the source database?\nHow do I know the destination is complete?\nWhat happens to changes made after the initial copy starts?\nI built O2P (Oracle to PostgreSQL) to make those concerns part of the migration system itself.\n\nWhat O2P Does\nO2P discovers Oracle tables, prepares PostgreSQL targets, divides large tables into manageable batches, copies them with controlled parallelism, tracks execution state, validates results, and can catch up later source changes for eligible tables.\n\n![O2P workflow from Oracle discovery and batch copying through LogMiner catch-up and PostgreSQL validation](/images/projects/dataflow-database-migration-tool-section-0-0.png)\n\nThe goal was not simply **maximum transfer speed**. The goal was **controlled throughput with recoverability and visibility**.\n\n## How It Works\n\n![O2P architecture with React UI, .NET API and worker, Oracle source, metadata database, and PostgreSQL target](/images/projects/dataflow-database-migration-tool-section-1-0.png)\n\n### 1. Discover and prepare\n\nO2P reads Oracle metadata, discovers tables and columns, and maps supported Oracle types to PostgreSQL types. An operator can migrate a full schema or select individual tables.\n\n### 2. Break large tables into batches\n\nInstead of treating a large table as one long operation, O2P plans smaller units of work. Depending on the table, it can use ROWID ranges, partitions, numeric primary-key ranges, or fallback strategies.\n\nThis reduces the failure boundary: one failed batch does not automatically mean starting an entire large table again.\n\n### 3. Copy with bounded parallelism\n\nWorkers stream Oracle rows into PostgreSQL using binary COPY. Concurrency, Oracle sessions, batch sizes and optional throughput limits are bounded.\n\nThis was an important design decision: **migration speed should not come at the cost of destabilizing the production source**.\n\n### 4. Make retries safer\n\nExecution state is persisted instead of living only in process memory. Each committed PostgreSQL batch also receives a target-side marker.\n\nIf the process is interrupted, O2P can determine which work is still pending and avoid blindly loading an already committed batch again.\n\n### 5. Validate the result\n\nAfter bulk migration, O2P compares source and destination row counts and stores the validation result.\n\nRow counts are intentionally treated as a **migration gate, not absolute proof of data correctness**. Critical migrations still require business-level and application-level validation.\n\n### 6. Catch up later changes\n\nFor eligible tables, O2P can use Oracle LogMiner to identify changes after the baseline copy and apply the current row state to PostgreSQL.\n\nThis is an **on-demand catch-up mechanism**, not a continuous replication platform. Oracle LogMiner analyzes redo information and has logging/configuration prerequisites.\n\n## Engineering Decisions That Mattered\n\n**Batches instead of whole-table jobs.** Smaller batches create smaller failure domains, measurable progress and more practical retries.\n\n**Bounded concurrency instead of maximum concurrency.** More workers can improve throughput, but they also increase source sessions and database pressure. O2P treats concurrency as a controlled resource.\n\n**Streaming instead of loading tables into memory.** A bounded producer/consumer pipeline keeps memory usage predictable while Oracle reads and PostgreSQL writes proceed concurrently.\n\n**Target-side commit markers.** A Worker can fail immediately after PostgreSQL commits. Recording a batch marker in the target transaction provides stronger evidence of completion than relying only on Worker state.\n\n**Bulk copy plus explicit catch-up.** O2P separates the baseline copy from an explicit change-capture step instead of pretending a long-running migration is automatically one consistent snapshot.\n\n## Impact\n\nThe most important impact was operational: **data movement became a repeatable process that could be observed, controlled and recovered**, rather than a sequence of manually managed transfers.\n\nO2P introduced visible table- and batch-level progress, controlled Oracle source pressure, smaller failure boundaries, persistent retry state, protection against reloading committed batches, source/target row-count validation, and an incremental catch-up path for eligible tables.\n\nO2P was built as part of a broader production migration covering approximately **1 TB of data, 550+ tables, 1,700+ database objects and 23 applications** within **13 working days**.\n\nThe wider migration reported **no migration-related bugs in QA or after deployment**. That outcome reflects the entire migration effort—including database conversion, application changes, testing and validation—not O2P alone.\n\n## Run O2P Yourself\n\nClone the [O2P GitHub repository](https://github.com/developerhridu/O2P) and use this quick start for a local test migration. You need the .NET 8 SDK, Node.js/npm, Docker, access to an Oracle source, and a PostgreSQL 14+ target. Create the target schema before starting.\n\n```powershell\ngit clone https://github.com/developerhridu/O2P.git\ncd O2P\n$env:O2P_METADATA_PASSWORD = \"<strong-metadata-password>\"\ndocker compose up -d metadata-pg\n```\n\nOpen three terminals in the cloned project directory. Use **the same metadata password** in the first two.\n\n**Terminal 1 — API**\n\n```powershell\n$env:ASPNETCORE_ENVIRONMENT = \"Development\"\n$env:ConnectionStrings__MetadataDb = \"Host=127.0.0.1;Port=7936;Database=nonoraclemigrationdb;Username=nonoraclemigrationdb;Password=<strong-metadata-password>\"\n$env:JwtSettings__Secret = \"<at-least-32-random-characters>\"\n$env:BootstrapAdmin__Password = \"<strong-admin-password>\"\ndotnet run --project src/O2P.Api --launch-profile http\n```\n\n**Terminal 2 — Worker**\n\n```powershell\n$env:DOTNET_ENVIRONMENT = \"Development\"\n$env:ConnectionStrings__MetadataDb = \"Host=127.0.0.1;Port=7936;Database=nonoraclemigrationdb;Username=nonoraclemigrationdb;Password=<strong-metadata-password>\"\ndotnet run --project src/O2P.Worker\n```\n\n**Terminal 3 — web UI**\n\n```powershell\ncd web\nnpm ci\nnpm run dev\n```\n\nOpen **http://localhost:5151** after the API reports that metadata setup is complete. Sign in as `admin` with the admin password you set above, then change it when prompted.\n\nTo migrate data:\n\n1. In **Connections**, add and test an Oracle source and PostgreSQL target.\n2. In **Migrations**, create a migration and bind those connections to the source and target slots.\n3. Discover the Oracle schema, select the tables, and review the mapped columns and target schema.\n4. Start a run against a **test target**. Watch progress in **Runs**, then check every table's row-count result and independently inspect important data.\n\nO2P moves selected table schemas and rows. Oracle procedures, views, triggers, sequences, and application code require separate migration work.\n\n\n---\n\n**Technologies:** Oracle · PostgreSQL 14+ · .NET 8 · React · Oracle LogMiner · PostgreSQL Binary COPY · EF Core · ASP.NET Data Protection\n",
-      "coverImages": ["/images/projects/dataflow-database-migration-tool.png"],
       "liveUrl": null,
       "githubUrl": "https://github.com/developerhridu/O2P",
       "caseStudies": [
@@ -202,18 +213,21 @@
       "featured": false,
       "published": true,
       "sections": [],
+      "updatedAt": "2026-10-05T07:33:34.437Z",
+      "title": "O2P — A Reliable Oracle-to-PostgreSQL Data Migration Tool",
+      "coverImages": [
+        "/images/projects/dataflow-database-migration-tool.png"
+      ],
       "proofOfWorkImages": [
         "/images/projects/dataflow-database-migration-tool-photo-0.png",
         "/images/projects/dataflow-database-migration-tool-photo-1.png",
         "/images/projects/dataflow-database-migration-tool-photo-2.png"
-      ],
-      "updatedAt": "2026-10-05T07:33:34.437Z"
+      ]
     },
     {
       "id": "05",
       "slug": "booking-manager-service",
       "published": true,
-      "title": "Booking Manager Service",
       "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
       "description": "Background service that automatically cancels un-ticketed bookings, saving ~$23K-$27K total across 6 OTA clients",
       "longDescription": "Developed a critical background service using ASP.NET Core & Hangfire that automatically cancels un-ticketed bookings before the last ticketing time. This solution reduced ADM penalties by $4,500-$6,400 per month per OTA, achieving total savings of ~$23,000-$27,000 across 6 clients.",
@@ -227,11 +241,15 @@
         "SQLite",
         "Background Services"
       ],
-      "coverImages": ["/images/projects/bcs.png"],
       "liveUrl": null,
       "githubUrl": null,
       "featured": false,
       "sections": [],
+      "updatedAt": "2026-10-06T05:37:46.708Z",
+      "title": "Booking Manager Service",
+      "coverImages": [
+        "/images/projects/bcs.png"
+      ],
       "proofOfWorkImages": [
         "/images/projects/booking-manager-service-photo-0.png",
         "/images/projects/booking-manager-service-photo-1.png",
@@ -239,14 +257,12 @@
         "/images/projects/booking-manager-service-photo-3.png",
         "/images/projects/booking-manager-service-photo-4.png",
         "/images/projects/booking-manager-service-photo-5.png"
-      ],
-      "updatedAt": "2026-10-06T05:37:46.708Z"
+      ]
     },
     {
       "id": "06",
       "slug": "devnote-blog",
       "published": true,
-      "title": "DevNote Blog-site",
       "client": "Personal Project",
       "description": "A blog platform allowing users to read and write blog posts",
       "longDescription": "A full-stack blog platform that allows users to read and write blog posts. Features include user authentication, rich text editing, and responsive design. Built with Angular for the frontend and ASP.NET Core for the backend API.",
@@ -257,7 +273,6 @@
         "C#",
         "TypeScript"
       ],
-      "coverImages": ["/images/projects/DevNote.png"],
       "liveUrl": null,
       "githubUrl": {
         "frontend": "https://github.com/developerhridu/DevNote.UI",
@@ -265,13 +280,16 @@
       },
       "featured": false,
       "sections": [],
+      "title": "DevNote Blog-site",
+      "coverImages": [
+        "/images/projects/DevNote.png"
+      ],
       "proofOfWorkImages": []
     },
     {
       "id": "08",
       "slug": "expense-tracker",
       "published": true,
-      "title": "Expense Tracker",
       "client": "Personal Project",
       "description": "Cross-platform personal finance app to track expenses, income, and budgets with analytics",
       "longDescription": "A cross-platform personal finance application for Android and iOS that enables users to track cash and credit card expenses, record income, manage budgets, categorize transactions, and monitor spending through interactive reports and analytics.",
@@ -280,21 +298,22 @@
         "Flutter",
         "Firebase"
       ],
-      "coverImages": ["/images/projects/expense-tracker.png"],
       "liveUrl": null,
       "githubUrl": "https://github.com/developerhridu/ExpenseTracker",
       "featured": false,
       "sections": [],
+      "title": "Expense Tracker",
+      "coverImages": [
+        "/images/projects/expense-tracker.png"
+      ],
       "proofOfWorkImages": []
     },
     {
       "id": "e-desh-api",
       "slug": "e-desh-api",
-      "title": "E-desh Api",
       "description": "Api project thay manage courier",
       "longDescription": "",
       "body": "## What it does\n\nThe API behind a courier and logistics platform — parcel booking, real-time tracking, last-mile delivery, reverse logistics, fulfillment, and cross-border shipping, managed from one central system.\n\n## My role\n\nWorked with a team of remote developers to design and build the platform. I crafted the React frontend, built the APIs, and optimized the existing codebase and database, improving the site's performance and responsiveness.",
-      "coverImages": [],
       "client": "E-Desh Ltd",
       "tags": [],
       "liveUrl": null,
@@ -302,6 +321,8 @@
       "featured": false,
       "published": false,
       "sections": [],
+      "title": "E-desh Api",
+      "coverImages": [],
       "proofOfWorkImages": []
     }
   ]
