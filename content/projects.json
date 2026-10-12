@@ -58,15 +58,17 @@
         "Microservices",
         "PostgreSQL"
       ],
-      "liveUrl": null,
+      "liveUrl": "https://foodibd.com/",
       "githubUrl": null,
       "featured": true,
       "sections": [],
-      "updatedAt": "2026-10-06T05:51:52.375Z",
+      "updatedAt": "2026-10-12T08:59:57.966Z",
       "caseStudies": [],
       "title": "Foodi CRM - Food Delivery System",
       "coverImages": [
-        "/images/projects/foodi.jpg"
+        "/images/projects/foodi.jpg",
+        "/images/projects/foodi-crm-cover-1c73aef8-ad16-4ad3-8d82-322df3897dd8.png",
+        "/images/projects/foodi-crm-cover-0618e574-373a-464b-902e-3488d49d8a5c.jpg"
       ],
       "proofOfWorkImages": [
         "/images/projects/foodi-crm-photo-0.png",
@@ -75,7 +77,10 @@
         "/images/projects/foodi-crm-photo-3.png",
         "/images/projects/foodi-crm-photo-4.png",
         "/images/projects/foodi-crm-photo-5.jpg"
-      ]
+      ],
+      "projects": [],
+      "blogs": [],
+      "clients": []
     },
     {
       "id": "03",
