@@ -20,7 +20,7 @@ export default function BlogPage() {
     description: post.description,
     tags: post.tags,
     date: post.date,
-    image: post.image,
+    coverImages: post.coverImages,
     readingMinutes: estimateReadingTime(post.body, ...(post.sections?.map((s) => s.body) ?? [])),
   }));
 

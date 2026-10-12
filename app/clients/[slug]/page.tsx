@@ -5,6 +5,7 @@ import { getClient, getClients } from "@/lib/clients";
 import { getRelatedItems } from "@/lib/content";
 import config from "@/content/config.json";
 import type { Client } from "@/types";
+import { primaryCoverImage } from "@/lib/coverImages";
 
 const BASE_URL = config.siteUrl;
 
@@ -13,7 +14,8 @@ interface ClientPageProps {
 }
 
 function clientImageUrl(client: Client): string | undefined {
-  return client.image ? `${BASE_URL}${client.image}` : undefined;
+  const cover = primaryCoverImage(client);
+  return cover ? `${BASE_URL}${cover}` : undefined;
 }
 
 export async function generateStaticParams() {
@@ -63,6 +65,7 @@ export default async function ClientPage({ params }: ClientPageProps) {
   }
 
   const url = `${BASE_URL}/clients/${client.slug}`;
+  const imageUrl = clientImageUrl(client);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -70,7 +73,7 @@ export default async function ClientPage({ params }: ClientPageProps) {
     name: client.name,
     url: client.url ?? url,
     ...(client.description ? { description: client.description } : {}),
-    ...(client.image ? { logo: `${BASE_URL}${client.image}` } : {}),
+    ...(imageUrl ? { logo: imageUrl } : {}),
   };
 
   return (

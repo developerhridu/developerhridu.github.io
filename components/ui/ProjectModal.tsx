@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, ArrowRight } from "lucide-react";
-import LightboxImage from "@/components/ui/LightboxImage";
+import TitleImageGallery from "@/components/ui/TitleImageGallery";
+import { coverImages } from "@/lib/coverImages";
 import ProjectLinks from "@/components/ui/ProjectLinks";
 import ClientLinks from "@/components/ui/ClientLinks";
 import Button from "@/components/ui/Button";
@@ -19,7 +20,7 @@ interface ProjectModalProps {
     title: string;
     description: string;
     longDescription?: string;
-    image?: string;
+    coverImages?: string[];
     client?: string;
     tags: string[];
     liveUrl?: string | null;
@@ -39,7 +40,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
     panelRef.current?.focus();
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape" && !document.querySelector("[data-image-lightbox]")) onClose();
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -93,10 +94,11 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
             {/* Body */}
             <div className="flex-1 overflow-y-auto px-6 py-5">
-              <LightboxImage
-                src={project.image}
+              <TitleImageGallery
+                images={coverImages(project)}
                 alt={project.title}
-                wrapperClassName="aspect-video rounded-xl mb-5 bg-background border border-border"
+                className="mb-5"
+                wrapperClassName="aspect-video rounded-xl bg-background border border-border"
                 imgClassName="w-full h-full object-contain"
                 initials={project.title.split(" ").map((w) => w[0]).join("")}
                 initialsClassName="text-5xl"

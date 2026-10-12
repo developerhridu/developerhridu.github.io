@@ -4,6 +4,7 @@ import Image from "next/image";
 import { getClients, parseClientNames } from "@/lib/clients";
 import MultiSelectDropdown from "@/components/admin/MultiSelectDropdown";
 import type { MultiSelectOption } from "@/components/admin/MultiSelectDropdown";
+import { primaryCoverImage } from "@/lib/coverImages";
 
 interface ClientMultiSelectProps {
   value: string;
@@ -11,21 +12,24 @@ interface ClientMultiSelectProps {
 }
 
 export default function ClientMultiSelect({ value, onChange }: ClientMultiSelectProps) {
-  const options: MultiSelectOption[] = getClients().map((client) => ({
-    value: client.name,
-    label: client.name,
-    icon: client.image ? (
-      <span className="relative w-4 h-4 shrink-0 mt-0.5 rounded bg-white/90 overflow-hidden">
-        <Image
-          src={client.image}
-          alt=""
-          fill
-          sizes="16px"
-          className="object-contain p-0.5"
-        />
-      </span>
-    ) : undefined,
-  }));
+  const options: MultiSelectOption[] = getClients().map((client) => {
+    const image = primaryCoverImage(client);
+    return {
+      value: client.name,
+      label: client.name,
+      icon: image ? (
+        <span className="relative w-4 h-4 shrink-0 mt-0.5 rounded bg-white/90 overflow-hidden">
+          <Image
+            src={image}
+            alt=""
+            fill
+            sizes="16px"
+            className="object-contain p-0.5"
+          />
+        </span>
+      ) : undefined,
+    };
+  });
 
   return (
     <MultiSelectDropdown

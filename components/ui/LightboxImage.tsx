@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import ContentImage from "@/components/ui/ContentImage";
@@ -34,9 +34,9 @@ export default function LightboxImage({
   const activeSrc = images[activeIndex] ?? src;
   const activeAlt = galleryImages?.length ? `${alt.split(" — photo ")[0]} — photo ${activeIndex + 1}` : alt;
 
-  function moveImage(direction: -1 | 1) {
+  const moveImage = useCallback((direction: -1 | 1) => {
     setActiveIndex((index) => (index + direction + images.length) % images.length);
-  }
+  }, [images.length]);
 
   useEffect(() => {
     if (!open) return;
@@ -53,13 +53,14 @@ export default function LightboxImage({
       }
     }
     document.addEventListener("keydown", onKeyDown);
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     return () => {
       document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
     };
-  }, [open, images.length]);
+  }, [open, images.length, moveImage]);
 
   if (!src) {
     return (
@@ -101,6 +102,7 @@ export default function LightboxImage({
       <AnimatePresence>
         {open && (
           <motion.div
+            data-image-lightbox
             className="fixed inset-0 z-[70] flex items-center justify-center p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

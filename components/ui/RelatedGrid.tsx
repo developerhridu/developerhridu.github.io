@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Building2, Calendar, FileText, FolderKanban, PenLine } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
-import ContentImage from "@/components/ui/ContentImage";
+import ThumbnailGallery from "@/components/ui/ThumbnailGallery";
+import { coverImages } from "@/lib/coverImages";
 import type { RelatedItem } from "@/lib/related";
 
 const KINDS = {
@@ -24,12 +25,12 @@ export default function RelatedGrid({ items }: { items: RelatedItem[] }) {
         {items.map((item) => {
           const kind = KINDS[item.kind];
           return (
-            <Link key={`${item.kind}:${item.slug}`} href={`${kind.basePath}/${item.slug}`} className="block h-full min-w-0">
-              <GlassCard className="h-full flex flex-col group cursor-pointer">
-                <ContentImage
-                  src={item.image}
+              <GlassCard key={`${item.kind}:${item.slug}`} className="relative h-full min-w-0 flex flex-col group cursor-pointer">
+                <Link href={`${kind.basePath}/${item.slug}`} className="absolute inset-0 z-10 rounded-xl" aria-label={`View ${item.title}`} />
+                <ThumbnailGallery
+                  images={coverImages(item)}
                   alt={item.title}
-                  wrapperClassName="h-40 rounded-lg mb-4"
+                  wrapperClassName="h-40 overflow-hidden rounded-lg mb-4"
                   imgClassName={`w-full h-full ${item.kind === "client" ? "object-contain bg-white/90 p-4" : "object-cover"} group-hover:scale-105 transition-transform duration-300`}
                   initials={item.title.split(" ").slice(0, 2).map((word) => word[0]).join("")}
                 />
@@ -67,7 +68,6 @@ export default function RelatedGrid({ items }: { items: RelatedItem[] }) {
                   View {kind.label.toLowerCase()} <ArrowRight size={14} />
                 </span>
               </GlassCard>
-            </Link>
           );
         })}
       </div>

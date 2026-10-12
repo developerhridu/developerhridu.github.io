@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getBlogPosts, getBlogPost, getRelatedBlogPosts, getRelatedItems } from "@/lib/content";
 import { toRelatedItem } from "@/lib/related";
+import { primaryCoverImage } from "@/lib/coverImages";
 
 const BASE_URL = "https://developerhridu.github.io";
 
@@ -27,8 +28,9 @@ export async function generateMetadata({
   }
 
   const url = `${BASE_URL}/blog/${post.slug}`;
-  const imageUrl = post.image
-    ? `${BASE_URL}${post.image}`
+  const cover = primaryCoverImage(post);
+  const imageUrl = cover
+    ? `${BASE_URL}${cover}`
     : `${BASE_URL}/og-image/blog/${post.slug}`;
 
   return {
@@ -64,8 +66,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   const url = `${BASE_URL}/blog/${post.slug}`;
-  const imageUrl = post.image
-    ? `${BASE_URL}${post.image}`
+  const cover = primaryCoverImage(post);
+  const imageUrl = cover
+    ? `${BASE_URL}${cover}`
     : `${BASE_URL}/og-image/blog/${post.slug}`;
   const picked = getRelatedItems(post);
   // Nothing picked in the admin: fall back to posts sharing tags.

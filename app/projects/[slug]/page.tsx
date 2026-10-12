@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import ProjectLinks from "@/components/ui/ProjectLinks";
 import { getProjects, getProject, getRelatedItems } from "@/lib/content";
 import config from "@/content/config.json";
+import { primaryCoverImage } from "@/lib/coverImages";
 
 const BASE_URL = config.siteUrl;
 
@@ -24,8 +25,9 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   }
 
   const url = `${BASE_URL}/projects/${project.slug}`;
-  const imageUrl = project.image
-    ? `${BASE_URL}${project.image}`
+  const cover = primaryCoverImage(project);
+  const imageUrl = cover
+    ? `${BASE_URL}${cover}`
     : `${BASE_URL}/og-image/projects/${project.slug}`;
 
   return {
@@ -60,8 +62,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   }
 
   const url = `${BASE_URL}/projects/${project.slug}`;
-  const imageUrl = project.image
-    ? `${BASE_URL}${project.image}`
+  const cover = primaryCoverImage(project);
+  const imageUrl = cover
+    ? `${BASE_URL}${cover}`
     : `${BASE_URL}/og-image/projects/${project.slug}`;
 
 

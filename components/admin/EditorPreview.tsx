@@ -14,17 +14,16 @@ import type { Project } from "@/types";
 interface EditorPreviewProps {
   kind: ArticleDetailProps["kind"];
   entry: ArticleDetailProps["entry"] & Partial<Pick<Project, "liveUrl" | "githubUrl">> & RelatedRefs;
-  imageFile: File | null;
+  coverImageFiles: (File | null)[];
   sectionImageFiles: (File | null)[][];
   photoFiles: (File | null)[];
-  titleImageFiles: (File | null)[];
   inlineImageUrls: Record<string, string>;
 }
 
-export default function EditorPreview({ kind, entry, imageFile, sectionImageFiles, photoFiles, titleImageFiles, inlineImageUrls }: EditorPreviewProps) {
+export default function EditorPreview({ kind, entry, coverImageFiles, sectionImageFiles, photoFiles, inlineImageUrls }: EditorPreviewProps) {
   const files = useMemo(
-    () => [...new Set([imageFile, ...titleImageFiles, ...sectionImageFiles.flat(), ...photoFiles].filter((file): file is File => file !== null))],
-    [imageFile, titleImageFiles, sectionImageFiles, photoFiles]
+    () => [...new Set([...coverImageFiles, ...sectionImageFiles.flat(), ...photoFiles].filter((file): file is File => file !== null))],
+    [coverImageFiles, sectionImageFiles, photoFiles]
   );
   const [imageUrls, setImageUrls] = useState<Map<File, string>>(new Map());
 
@@ -41,8 +40,7 @@ export default function EditorPreview({ kind, entry, imageFile, sectionImageFile
 
   const previewEntry = {
     ...entry,
-    image: imageFile ? imageUrls.get(imageFile) : entry.image,
-    titleImages: (entry.titleImages ?? []).map((image, index) => titleImageFiles[index] ? imageUrls.get(titleImageFiles[index]!) ?? "" : image).filter((image) => image.trim()),
+    coverImages: (entry.coverImages ?? []).map((image, index) => coverImageFiles[index] ? imageUrls.get(coverImageFiles[index]!) ?? "" : image).filter((image) => image.trim()),
     sections: (entry.sections ?? []).map((section, index) => ({
       ...section,
       images: (section.images ?? []).map((image, imageIndex) => {
@@ -50,7 +48,7 @@ export default function EditorPreview({ kind, entry, imageFile, sectionImageFile
         return file ? imageUrls.get(file) ?? "" : image;
       }).filter((image) => image.trim()),
     })).filter((section) => section.body.trim() || section.images.length > 0),
-    photos: (entry.photos ?? []).map((photo, index) => photoFiles[index] ? imageUrls.get(photoFiles[index]!) ?? "" : photo).filter((photo) => photo.trim()),
+    proofOfWorkImages: (entry.proofOfWorkImages ?? []).map((photo, index) => photoFiles[index] ? imageUrls.get(photoFiles[index]!) ?? "" : photo).filter((photo) => photo.trim()),
   };
 
   return (

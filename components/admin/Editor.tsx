@@ -31,6 +31,7 @@ import ArticleMarkdownEditor from "@/components/admin/ArticleMarkdownEditor";
 import { ReorderControls } from "@/components/admin/ReorderControls";
 import type { ContentSection, Project } from "@/types";
 import { parseLinkedInPostText, buildLinkedInEmbedBody } from "@/lib/linkedin";
+import { coverImages } from "@/lib/coverImages";
 
 type Section = ContentSection;
 
@@ -43,9 +44,8 @@ interface Entry {
   published: boolean;
   description: string;
   tags: string[];
-  image?: string;
-  titleImages?: string[];
-  photos?: string[];
+  coverImages: string[];
+  proofOfWorkImages: string[];
   client?: string;
   body: string;
   sections: Section[];
@@ -61,12 +61,25 @@ interface Entry {
 }
 
 /** Entry as written in the JSON file; clients store their title as `name`. */
-type StoredEntry = Omit<Entry, "title"> & { title?: string; name?: string };
+type StoredEntry = Omit<Entry, "title" | "coverImages" | "proofOfWorkImages"> & {
+  title?: string;
+  name?: string;
+  coverImages?: string[];
+  image?: string;
+  titleImages?: string[];
+  photos?: string[];
+  proofOfWorkImage?: string[];
+  proofOfWorkImages?: string[];
+};
 
 function fromStored(kind: ContentKind, stored: StoredEntry): Entry {
-  if (kind !== "client") return stored as Entry;
-  const { name, ...rest } = stored;
-  return { ...rest, title: name ?? "" };
+  const { name, title, image, titleImages, coverImages: storedCoverImages, photos, proofOfWorkImage, proofOfWorkImages, ...rest } = stored;
+  return {
+    ...rest,
+    title: kind === "client" ? name ?? "" : title ?? "",
+    coverImages: coverImages({ coverImages: storedCoverImages, image, titleImages }),
+    proofOfWorkImages: proofOfWorkImages ?? proofOfWorkImage ?? photos ?? [],
+  };
 }
 
 function toStored(kind: ContentKind, entry: Entry): StoredEntry {
@@ -169,9 +182,8 @@ function toRepoPath(publicPath: string): string {
 
 function entryImagePaths(entry: Entry): string[] {
   return [
-    entry.image,
-    ...(entry.titleImages ?? []),
-    ...(entry.photos ?? []),
+    ...entry.coverImages,
+    ...entry.proofOfWorkImages,
     ...(entry.sections ?? []).flatMap((s) => s.images ?? []),
     ...inlineImagePaths(entry),
   ].filter(Boolean) as string[];
@@ -229,7 +241,8 @@ function blankEntry(kind: ContentKind): Entry {
     published: false,
     description: "",
     tags: [],
-    image: "",
+    coverImages: [],
+    proofOfWorkImages: [],
     client: "",
     body: "",
     sections: [],
@@ -258,10 +271,9 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
   const [mode, setMode] = useState<"edit" | "view">("edit");
   const [tagsText, setTagsText] = useState("");
   const [isNew, setIsNew] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [coverImageFiles, setCoverImageFiles] = useState<(File | null)[]>([]);
   const [sectionImageFiles, setSectionImageFiles] = useState<(File | null)[][]>([]);
   const [photoFiles, setPhotoFiles] = useState<(File | null)[]>([]);
-  const [titleImageFiles, setTitleImageFiles] = useState<(File | null)[]>([]);
   const [inlineImages, setInlineImages] = useState<InlineImage[]>([]);
   const inlineImagesRef = useRef<InlineImage[]>([]);
   const [loadedOrderIds, setLoadedOrderIds] = useState<string[]>([]);
@@ -364,10 +376,9 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
     setEditing(blankEntry(kind));
     setTagsText("");
     setIsNew(true);
-    setImageFile(null);
+    setCoverImageFiles([]);
     setSectionImageFiles([]);
     setPhotoFiles([]);
-    setTitleImageFiles([]);
     setSuccessMsg(null);
     setError(null);
   }
@@ -379,10 +390,9 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
     setEditing({ ...entry, sections });
     setTagsText(entry.tags.join(", "));
     setIsNew(false);
-    setImageFile(null);
+    setCoverImageFiles(entry.coverImages.map(() => null));
     setSectionImageFiles(sections.map((s) => (s.images ?? []).map(() => null)));
-    setPhotoFiles((entry.photos ?? []).map(() => null));
-    setTitleImageFiles((entry.titleImages ?? []).map(() => null));
+    setPhotoFiles(entry.proofOfWorkImages.map(() => null));
     setSuccessMsg(null);
     setError(null);
   }
@@ -390,10 +400,9 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
   function cancelEdit() {
     clearInlineImages();
     setEditing(null);
-    setImageFile(null);
+    setCoverImageFiles([]);
     setSectionImageFiles([]);
     setPhotoFiles([]);
-    setTitleImageFiles([]);
   }
 
   function cancelLinkedInImport() {
@@ -422,10 +431,9 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
     });
     setTagsText(parsed.tags.join(", "));
     setIsNew(true);
-    setImageFile(null);
+    setCoverImageFiles([]);
     setSectionImageFiles([]);
     setPhotoFiles([]);
-    setTitleImageFiles([]);
     setError(null);
     setSuccessMsg(null);
     cancelLinkedInImport();
@@ -509,28 +517,28 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
 
   function addPhoto() {
     if (!editing) return;
-    setEditing({ ...editing, photos: [...(editing.photos ?? []), ""] });
+    setEditing({ ...editing, proofOfWorkImages: [...editing.proofOfWorkImages, ""] });
     setPhotoFiles((previous) => [...previous, null]);
   }
 
   function updatePhoto(index: number, value: string) {
     if (!editing) return;
-    setEditing({ ...editing, photos: (editing.photos ?? []).map((photo, i) => i === index ? value : photo) });
+    setEditing({ ...editing, proofOfWorkImages: editing.proofOfWorkImages.map((photo, i) => i === index ? value : photo) });
   }
 
   function removePhoto(index: number) {
     if (!editing) return;
-    setEditing({ ...editing, photos: (editing.photos ?? []).filter((_, i) => i !== index) });
+    setEditing({ ...editing, proofOfWorkImages: editing.proofOfWorkImages.filter((_, i) => i !== index) });
     setPhotoFiles((previous) => previous.filter((_, i) => i !== index));
   }
 
   function movePhoto(index: number, direction: -1 | 1) {
     if (!editing) return;
     const target = index + direction;
-    const photos = [...(editing.photos ?? [])];
+    const photos = [...editing.proofOfWorkImages];
     if (target < 0 || target >= photos.length) return;
     [photos[index], photos[target]] = [photos[target], photos[index]];
-    setEditing({ ...editing, photos });
+    setEditing({ ...editing, proofOfWorkImages: photos });
     setPhotoFiles((previous) => {
       const next = [...previous];
       [next[index], next[target]] = [next[target], next[index]];
@@ -538,21 +546,44 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
     });
   }
 
-  function addTitleImage() {
+  function addCoverImage() {
     if (!editing) return;
-    setEditing({ ...editing, titleImages: [...(editing.titleImages ?? []), ""] });
-    setTitleImageFiles((previous) => [...previous, null]);
+    setEditing({ ...editing, coverImages: [...editing.coverImages, ""] });
+    setCoverImageFiles((previous) => [...previous, null]);
   }
 
-  function updateTitleImage(index: number, value: string) {
-    if (!editing) return;
-    setEditing({ ...editing, titleImages: (editing.titleImages ?? []).map((image, i) => i === index ? value : image) });
+  function addCoverFiles(files: File[]) {
+    if (files.length === 0) return;
+    setEditing((previous) => previous ? {
+      ...previous,
+      coverImages: [...previous.coverImages, ...files.map(() => "")],
+    } : previous);
+    setCoverImageFiles((previous) => [...previous, ...files]);
   }
 
-  function removeTitleImage(index: number) {
+  function updateCoverImage(index: number, value: string) {
     if (!editing) return;
-    setEditing({ ...editing, titleImages: (editing.titleImages ?? []).filter((_, i) => i !== index) });
-    setTitleImageFiles((previous) => previous.filter((_, i) => i !== index));
+    setEditing({ ...editing, coverImages: editing.coverImages.map((image, i) => i === index ? value : image) });
+  }
+
+  function removeCoverImage(index: number) {
+    if (!editing) return;
+    setEditing({ ...editing, coverImages: editing.coverImages.filter((_, i) => i !== index) });
+    setCoverImageFiles((previous) => previous.filter((_, i) => i !== index));
+  }
+
+  function moveCoverImage(index: number, direction: -1 | 1) {
+    if (!editing) return;
+    const target = index + direction;
+    if (target < 0 || target >= editing.coverImages.length) return;
+    const images = [...editing.coverImages];
+    [images[index], images[target]] = [images[target], images[index]];
+    setEditing({ ...editing, coverImages: images });
+    setCoverImageFiles((previous) => {
+      const files = [...previous];
+      [files[index], files[target]] = [files[target], files[index]];
+      return files;
+    });
   }
 
   async function commit(changes: FileChange[], newEntries: Entry[], message: string): Promise<boolean> {
@@ -611,27 +642,19 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
     setError(null);
 
     const changes: FileChange[] = [];
-    let image = editing.image;
     let body = editing.body;
     let sections: Section[];
     let photos: string[];
-    let titleImages: string[];
+    let savedCoverImages: string[];
 
     try {
-      if (imageFile) {
-        const ext = imageFile.name.split(".").pop()?.toLowerCase() || "png";
-        const repoPath = `public/images/${CONFIG[kind].imageFolder}/${slug}.${ext}`;
-        const base64 = await fileToBase64(imageFile);
-        changes.push({ path: repoPath, content: base64 });
-        image = `/images/${CONFIG[kind].imageFolder}/${slug}.${ext}`;
-      }
-
       const imageFolder = `/images/${CONFIG[kind].imageFolder}`;
-      photos = await resolveImageList(
-        editing.photos ?? [], photoFiles, (i, ext) => `${imageFolder}/${slug}-photo-${i}.${ext}`, changes
+      savedCoverImages = await resolveImageList(
+        editing.coverImages, coverImageFiles,
+        (_i, ext) => `${imageFolder}/${slug}-cover-${crypto.randomUUID()}.${ext}`, changes
       );
-      titleImages = await resolveImageList(
-        editing.titleImages ?? [], titleImageFiles, (i, ext) => `${imageFolder}/${slug}-title-${i}.${ext}`, changes
+      photos = await resolveImageList(
+        editing.proofOfWorkImages, photoFiles, (_i, ext) => `${imageFolder}/${slug}-proof-${crypto.randomUUID()}.${ext}`, changes
       );
 
       const uploadedSections: Section[] = [];
@@ -679,10 +702,9 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
       ...editing,
       slug,
       tags,
-      image,
+      coverImages: savedCoverImages,
       body,
-      photos,
-      titleImages: titleImages.length > 0 ? titleImages : undefined,
+      proofOfWorkImages: photos,
       sections,
       updatedAt: new Date().toISOString(),
     };
@@ -725,10 +747,9 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
     const message = isNew ? `content: add ${editing.title}` : `content: update ${editing.title}`;
     if (await commit(changes, updated, message)) {
       clearInlineImages();
-      setImageFile(null);
+      setCoverImageFiles(savedCoverImages.map(() => null));
       setSectionImageFiles(sections.map((s) => (s.images ?? []).map(() => null)));
       setPhotoFiles(photos.map(() => null));
-      setTitleImageFiles(titleImages.map(() => null));
     }
   }
 
@@ -841,16 +862,16 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
           {mode === "view" ? (
             <div className="border border-border rounded-xl overflow-hidden">
               <p className="border-b border-border px-6 py-3 text-sm text-muted">Preview of your current edits.</p>
-              {(editing.photos ?? []).length > 1 && (
+              {editing.proofOfWorkImages.length > 1 && (
                 <div className="flex flex-wrap items-center gap-2 border-b border-border px-6 py-3">
-                  <span className="mr-1 text-sm text-muted">Reorder photos:</span>
-                  {(editing.photos ?? []).map((_, index) => (
+                  <span className="mr-1 text-sm text-muted">Reorder proof of work images:</span>
+                  {editing.proofOfWorkImages.map((_, index) => (
                     <div key={index} className="inline-flex items-center gap-1">
                       <span className="text-xs text-muted">{index + 1}</span>
                       <IconButton onClick={() => movePhoto(index, -1)} disabled={index === 0} aria-label={`Move photo ${index + 1} left`} size="sm">
                         <ArrowLeft size={14} />
                       </IconButton>
-                      <IconButton onClick={() => movePhoto(index, 1)} disabled={index === (editing.photos?.length ?? 0) - 1} aria-label={`Move photo ${index + 1} right`} size="sm">
+                      <IconButton onClick={() => movePhoto(index, 1)} disabled={index === editing.proofOfWorkImages.length - 1} aria-label={`Move photo ${index + 1} right`} size="sm">
                         <ArrowRight size={14} />
                       </IconButton>
                     </div>
@@ -860,10 +881,9 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
               <EditorPreview
                 kind={kind}
                 entry={{ ...editing, website: editing.url ?? undefined, tags: tagsText.split(",").map((tag) => tag.trim()).filter(Boolean) }}
-                imageFile={imageFile}
+                coverImageFiles={coverImageFiles}
                 sectionImageFiles={sectionImageFiles}
                 photoFiles={photoFiles}
-                titleImageFiles={titleImageFiles}
                 inlineImageUrls={inlineImageUrls}
               />
             </div>
@@ -876,8 +896,8 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
               setTagsText={setTagsText}
               hasClient={CONFIG[kind].hasClient}
               saving={saving}
-              imageFile={imageFile}
-              setImageFile={setImageFile}
+              coverImageFiles={coverImageFiles}
+              onAddCoverFiles={addCoverFiles}
               sectionImageFiles={sectionImageFiles}
               photoFiles={photoFiles}
               inlineImageUrls={inlineImageUrls}
@@ -886,11 +906,11 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
               onUpdatePhoto={updatePhoto}
               onRemovePhoto={removePhoto}
               onPhotoFileChange={(index, file) => setPhotoFiles((prev) => prev.map((item, i) => i === index ? file : item))}
-              titleImageFiles={titleImageFiles}
-              onAddTitleImage={addTitleImage}
-              onUpdateTitleImage={updateTitleImage}
-              onRemoveTitleImage={removeTitleImage}
-              onTitleImageFileChange={(index, file) => setTitleImageFiles((prev) => prev.map((item, i) => i === index ? file : item))}
+              onAddCoverImage={addCoverImage}
+              onUpdateCoverImage={updateCoverImage}
+              onRemoveCoverImage={removeCoverImage}
+              onMoveCoverImage={moveCoverImage}
+              onCoverImageFileChange={(index, file) => setCoverImageFiles((prev) => prev.map((item, i) => i === index ? file : item))}
               onAddSection={addSection}
               onUpdateSection={updateSection}
               onRemoveSection={removeSection}
@@ -1087,6 +1107,7 @@ function ImageListField({
   onAdd,
   onUpdate,
   onRemove,
+  onMove,
   onFileChange,
 }: {
   label: string;
@@ -1098,6 +1119,7 @@ function ImageListField({
   onAdd: () => void;
   onUpdate: (index: number, value: string) => void;
   onRemove: (index: number) => void;
+  onMove?: (index: number, direction: -1 | 1) => void;
   onFileChange: (index: number, file: File | null) => void;
 }) {
   return (
@@ -1119,7 +1141,15 @@ function ImageListField({
                 <input type="file" accept="image/*" className="hidden" onChange={(e) => onFileChange(index, e.target.files?.[0] ?? null)} />
               </label>
             </div>
-            <button type="button" onClick={() => onRemove(index)} aria-label={`Remove ${itemName} ${index + 1}`} className="p-1.5 mt-1 text-muted hover:text-red-400 transition-colors"><Trash2 size={14} /></button>
+            <div className="flex flex-col items-center gap-1">
+              {onMove && (
+                <>
+                  <button type="button" onClick={() => onMove(index, -1)} disabled={index === 0} aria-label={`Move ${itemName} ${index + 1} up`} className="p-1.5 text-muted hover:text-foreground disabled:opacity-30"><ArrowUp size={14} /></button>
+                  <button type="button" onClick={() => onMove(index, 1)} disabled={index === images.length - 1} aria-label={`Move ${itemName} ${index + 1} down`} className="p-1.5 text-muted hover:text-foreground disabled:opacity-30"><ArrowDown size={14} /></button>
+                </>
+              )}
+              <button type="button" onClick={() => onRemove(index)} aria-label={`Remove ${itemName} ${index + 1}`} className="p-1.5 text-muted hover:text-red-400 transition-colors"><Trash2 size={14} /></button>
+            </div>
           </div>
         ))}
         {images.length === 0 && <p className="text-muted text-xs">{emptyText}</p>}
@@ -1136,8 +1166,8 @@ function EntryForm({
   setTagsText,
   hasClient,
   saving,
-  imageFile,
-  setImageFile,
+  coverImageFiles,
+  onAddCoverFiles,
   sectionImageFiles,
   photoFiles,
   inlineImageUrls,
@@ -1146,11 +1176,11 @@ function EntryForm({
   onUpdatePhoto,
   onRemovePhoto,
   onPhotoFileChange,
-  titleImageFiles,
-  onAddTitleImage,
-  onUpdateTitleImage,
-  onRemoveTitleImage,
-  onTitleImageFileChange,
+  onAddCoverImage,
+  onUpdateCoverImage,
+  onRemoveCoverImage,
+  onMoveCoverImage,
+  onCoverImageFileChange,
   onAddSection,
   onUpdateSection,
   onRemoveSection,
@@ -1170,8 +1200,8 @@ function EntryForm({
   setTagsText: (t: string) => void;
   hasClient: boolean;
   saving: boolean;
-  imageFile: File | null;
-  setImageFile: (f: File | null) => void;
+  coverImageFiles: (File | null)[];
+  onAddCoverFiles: (files: File[]) => void;
   sectionImageFiles: (File | null)[][];
   photoFiles: (File | null)[];
   inlineImageUrls: Record<string, string>;
@@ -1180,11 +1210,11 @@ function EntryForm({
   onUpdatePhoto: (index: number, value: string) => void;
   onRemovePhoto: (index: number) => void;
   onPhotoFileChange: (index: number, file: File | null) => void;
-  titleImageFiles: (File | null)[];
-  onAddTitleImage: () => void;
-  onUpdateTitleImage: (index: number, value: string) => void;
-  onRemoveTitleImage: (index: number) => void;
-  onTitleImageFileChange: (index: number, file: File | null) => void;
+  onAddCoverImage: () => void;
+  onUpdateCoverImage: (index: number, value: string) => void;
+  onRemoveCoverImage: (index: number) => void;
+  onMoveCoverImage: (index: number, direction: -1 | 1) => void;
+  onCoverImageFileChange: (index: number, file: File | null) => void;
   onAddSection: () => void;
   onUpdateSection: (index: number, patch: Partial<Section>) => void;
   onRemoveSection: (index: number) => void;
@@ -1239,17 +1269,6 @@ function EntryForm({
             />
           </div>
         )}
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-            Cover / Thumbnail Image URL
-          </label>
-          <input
-            value={entry.image ?? ""}
-            onChange={(e) => setEntry({ ...entry, image: e.target.value })}
-            placeholder={`/images/${CONFIG[kind].imageFolder}/example.png`}
-            className={inputClass}
-          />
-        </div>
       </div>
 
       <label className="flex items-center gap-2 cursor-pointer">
@@ -1278,38 +1297,36 @@ function EntryForm({
 
       <div>
         <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-          Or Upload Cover Image
+          Cover / Thumbnail Images
         </label>
         <label className={`${inputClass} flex items-center gap-2 cursor-pointer`}>
           <Upload size={16} className="text-muted shrink-0" />
           <span className="truncate">
-            {imageFile ? imageFile.name : "Choose an image file…"}
+            Choose one or more image files…
           </span>
           <input
             type="file"
             accept="image/*"
+            multiple
             className="hidden"
-            onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
+            onChange={(e) => onAddCoverFiles(Array.from(e.target.files ?? []))}
           />
         </label>
-        {imageFile && (
-          <p className="text-muted text-xs mt-1">
-            Uploaded to the repo and set as the Image URL when you save.
-          </p>
-        )}
+        <p className="text-muted text-xs mt-1">The first image is the default thumbnail. Use the arrows to change the order.</p>
       </div>
 
       <ImageListField
-        label="Additional Title Images (optional)"
-        itemName="title image"
-        images={entry.titleImages ?? []}
-        files={titleImageFiles}
-        placeholder={`/images/${CONFIG[kind].imageFolder}/example-title.png`}
-        emptyText="Shown after the cover image with previous/next buttons on the article page."
-        onAdd={onAddTitleImage}
-        onUpdate={onUpdateTitleImage}
-        onRemove={onRemoveTitleImage}
-        onFileChange={onTitleImageFileChange}
+        label="Image URLs and uploads"
+        itemName="cover image"
+        images={entry.coverImages}
+        files={coverImageFiles}
+        placeholder={`/images/${CONFIG[kind].imageFolder}/example.png`}
+        emptyText="Add an image URL or upload files. Multiple images show gallery navigation."
+        onAdd={onAddCoverImage}
+        onUpdate={onUpdateCoverImage}
+        onRemove={onRemoveCoverImage}
+        onMove={onMoveCoverImage}
+        onFileChange={onCoverImageFileChange}
       />
 
       {hasClient && (
@@ -1502,12 +1519,12 @@ function EntryForm({
       </div>
 
       <ImageListField
-        label="Photo Gallery (optional)"
-        itemName="photo"
-        images={entry.photos ?? []}
+        label="Proof of Work Images"
+        itemName="proof of work image"
+        images={entry.proofOfWorkImages}
         files={photoFiles}
         placeholder={`/images/${CONFIG[kind].imageFolder}/example-photo.png`}
-        emptyText="No gallery photos added."
+        emptyText="No proof of work images added."
         onAdd={onAddPhoto}
         onUpdate={onUpdatePhoto}
         onRemove={onRemovePhoto}

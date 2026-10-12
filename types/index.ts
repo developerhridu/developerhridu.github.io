@@ -83,9 +83,8 @@ export interface Client extends RelatedRefs {
   published?: boolean;
   description?: string;
   tags?: string[];
-  image?: string;
-  titleImages?: string[];
-  photos?: string[];
+  coverImages: string[];
+  proofOfWorkImages: string[];
   body?: string;
   sections?: ContentSection[];
   updatedAt?: string;
@@ -100,9 +99,8 @@ export interface Project extends RelatedRefs {
   longDescription?: string;
   body?: string;
   sections?: ContentSection[];
-  image: string;
-  /** Extra title images shown after `image` in the detail-page gallery. */
-  titleImages?: string[];
+  coverImages: string[];
+  proofOfWorkImages: string[];
   client?: string;
   tags: string[];
   liveUrl: string | null;
@@ -211,9 +209,8 @@ export interface BlogPost extends RelatedRefs {
   client?: string;
   description: string;
   tags: string[];
-  image?: string;
-  /** Extra title images shown after `image` in the detail-page gallery. */
-  titleImages?: string[];
+  coverImages: string[];
+  proofOfWorkImages: string[];
   body: string;
   sections?: ContentSection[];
 }
@@ -230,9 +227,8 @@ export interface CaseStudy extends RelatedRefs {
   client?: string;
   description: string;
   tags: string[];
-  image?: string;
-  /** Extra title images shown after `image` in the detail-page gallery. */
-  titleImages?: string[];
+  coverImages: string[];
+  proofOfWorkImages: string[];
   body: string;
   sections?: ContentSection[];
 }

@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getCaseStudies, getCaseStudy, getRelatedCaseStudies, getRelatedItems } from "@/lib/content";
 import { toRelatedItem } from "@/lib/related";
+import { primaryCoverImage } from "@/lib/coverImages";
 
 const BASE_URL = "https://developerhridu.github.io";
 
@@ -27,8 +28,9 @@ export async function generateMetadata({
   }
 
   const url = `${BASE_URL}/case-studies/${study.slug}`;
-  const imageUrl = study.image
-    ? `${BASE_URL}${study.image}`
+  const cover = primaryCoverImage(study);
+  const imageUrl = cover
+    ? `${BASE_URL}${cover}`
     : `${BASE_URL}/og-image/case-studies/${study.slug}`;
 
   return {
@@ -64,8 +66,9 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
   }
 
   const url = `${BASE_URL}/case-studies/${study.slug}`;
-  const imageUrl = study.image
-    ? `${BASE_URL}${study.image}`
+  const cover = primaryCoverImage(study);
+  const imageUrl = cover
+    ? `${BASE_URL}${cover}`
     : `${BASE_URL}/og-image/case-studies/${study.slug}`;
   const picked = getRelatedItems(study);
   // Nothing picked in the admin: fall back to case studies sharing tags.

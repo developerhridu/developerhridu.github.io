@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Calendar, Clock, ArrowRight, Building2 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
-import ContentImage from "@/components/ui/ContentImage";
+import ThumbnailGallery from "@/components/ui/ThumbnailGallery";
+import { coverImages } from "@/lib/coverImages";
 import uiStrings from "@/content/ui-strings.json";
 
 export interface ContentCardItem {
@@ -10,7 +11,7 @@ export interface ContentCardItem {
   description: string;
   tags: string[];
   date: string;
-  image?: string;
+  coverImages?: string[];
   client?: string;
   readingMinutes: number;
 }
@@ -23,12 +24,12 @@ interface ContentCardProps {
 
 export default function ContentCard({ item, viewPath, showReadMore = false }: ContentCardProps) {
   return (
-    <Link href={`${viewPath}/${item.slug}`} className="block h-full min-w-0">
-      <GlassCard className="h-full flex flex-col group cursor-pointer">
-        <ContentImage
-          src={item.image}
+    <GlassCard className="relative h-full min-w-0 flex flex-col group cursor-pointer">
+        <Link href={`${viewPath}/${item.slug}`} className="absolute inset-0 z-10 rounded-xl" aria-label={`View ${item.title}`} />
+        <ThumbnailGallery
+          images={coverImages(item)}
           alt={item.title}
-          wrapperClassName="h-48 rounded-lg mb-4"
+          wrapperClassName="h-48 overflow-hidden rounded-lg mb-4"
           imgClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           initials={item.title.split(" ").slice(0, 2).map((w) => w[0]).join("")}
         />
@@ -78,7 +79,6 @@ export default function ContentCard({ item, viewPath, showReadMore = false }: Co
             </span>
           )}
         </div>
-      </GlassCard>
-    </Link>
+    </GlassCard>
   );
 }

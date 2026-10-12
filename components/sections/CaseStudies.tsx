@@ -41,7 +41,7 @@ export default function CaseStudies() {
                   description: study.description,
                   tags: study.tags,
                   date: study.date,
-                  image: study.image,
+                  coverImages: study.coverImages,
                   client: study.client,
                   readingMinutes,
                 }}

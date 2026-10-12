@@ -8,6 +8,7 @@ import { estimateReadingTime } from "@/lib/readingTime";
 import { markdownComponents } from "@/components/ui/markdownComponents";
 import LightboxImage from "@/components/ui/LightboxImage";
 import TitleImageGallery from "@/components/ui/TitleImageGallery";
+import { coverImages } from "@/lib/coverImages";
 import ClientLinks from "@/components/ui/ClientLinks";
 import ShareButtons from "@/components/ui/ShareButtons";
 import ViewCounter from "@/components/ui/ViewCounter";
@@ -59,9 +60,8 @@ export interface ArticleDetailProps {
     client?: string;
     /** External site link shown in the header meta row (clients). */
     website?: string;
-    image?: string;
-    titleImages?: string[];
-    photos?: string[];
+    coverImages: string[];
+    proofOfWorkImages: string[];
     longDescription?: string;
     body?: string;
     sections?: ContentSection[];
@@ -102,7 +102,7 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
   const readingMinutes = engagementType
     ? estimateReadingTime(entry.body ?? "", ...(entry.sections?.map((section) => section.body) ?? []))
     : null;
-  const titleImages = [entry.image, ...(entry.titleImages ?? [])].filter((image): image is string => !!image?.trim());
+  const images = coverImages(entry);
 
   return (
     <div className={preview ? "" : "pt-16 md:pt-0"}>
@@ -183,7 +183,7 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
           </header>
 
           <TitleImageGallery
-            images={titleImages}
+            images={images}
             alt={entry.title}
             className="mb-12"
             wrapperClassName={`rounded-2xl${showcase ? " aspect-video bg-background border border-border" : ""}`}
@@ -225,10 +225,10 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
             </div>
           )}
 
-          {entry.photos && entry.photos.length > 0 && (
-            <section className="mt-12" aria-label="Photo gallery">
+          {entry.proofOfWorkImages.length > 0 && (
+            <section className="mt-12" aria-label="Proof of work images">
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {entry.photos.map((photo, index) => (
+                {entry.proofOfWorkImages.map((photo, index) => (
                   <LightboxImage
                     key={`${photo}-${index}`}
                     src={photo}
@@ -237,7 +237,7 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
                     imgClassName="w-full h-full object-contain"
                     initials={String(index + 1)}
                     fixedSize
-                    galleryImages={entry.photos}
+                    galleryImages={entry.proofOfWorkImages}
                     galleryIndex={index}
                   />
                 ))}

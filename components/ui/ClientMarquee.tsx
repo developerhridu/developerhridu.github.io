@@ -2,10 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { getPublishedClients } from "@/lib/clients";
 import type { Client } from "@/types";
+import { primaryCoverImage } from "@/lib/coverImages";
 
-const CLIENTS_WITH_LOGOS = getPublishedClients().filter(
-  (client): client is Client & { image: string } => !!client.image
-);
+const CLIENTS_WITH_LOGOS = getPublishedClients()
+  .map((client) => ({ ...client, image: primaryCoverImage(client) }))
+  .filter((client): client is Client & { image: string } => !!client.image);
 
 const CHIP_CLASS =
   "flex items-center justify-center w-36 h-24 shrink-0 rounded-xl bg-white/90 px-5 py-3 transition-transform hover:scale-105";

@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import GlassCard from "@/components/ui/GlassCard";
-import ContentImage from "@/components/ui/ContentImage";
+import ThumbnailGallery from "@/components/ui/ThumbnailGallery";
+import { coverImages } from "@/lib/coverImages";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { getPublishedClients } from "@/lib/clients";
 import { getSeo } from "@/lib/seo";
@@ -21,20 +22,19 @@ export default function ClientsPage() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
             {clients.map((client) => (
-              <Link key={client.id} href={`/clients/${client.slug}`} className="block h-full min-w-0">
-                <GlassCard className="h-full flex flex-col items-center group cursor-pointer">
-                  <ContentImage
-                    src={client.image || undefined}
+              <GlassCard key={client.id} className="relative h-full min-w-0 flex flex-col items-center group cursor-pointer">
+                  <Link href={`/clients/${client.slug}`} className="absolute inset-0 z-10 rounded-xl" aria-label={`View ${client.name}`} />
+                  <ThumbnailGallery
+                    images={coverImages(client)}
                     alt={client.name}
-                    wrapperClassName="w-full h-28 rounded-lg mb-4 bg-white/90"
+                    wrapperClassName="w-full h-28 overflow-hidden rounded-lg mb-4 bg-white/90"
                     imgClassName="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                     initials={client.name.split(" ").slice(0, 2).map((word) => word[0]).join("")}
                   />
                   <h2 className="text-base font-semibold text-foreground text-center group-hover:text-accent transition-colors">
                     {client.name}
                   </h2>
-                </GlassCard>
-              </Link>
+              </GlassCard>
             ))}
           </div>
         </div>

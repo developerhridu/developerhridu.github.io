@@ -6,7 +6,8 @@ import { ArrowUpRight, ExternalLink, Github, Building2 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ProjectModal from "@/components/ui/ProjectModal";
-import ContentImage from "@/components/ui/ContentImage";
+import ThumbnailGallery from "@/components/ui/ThumbnailGallery";
+import { coverImages } from "@/lib/coverImages";
 import projectsData from "@/content/projects.json";
 import uiStrings from "@/content/ui-strings.json";
 import { getSectionCopy } from "@/lib/sections";
@@ -54,17 +55,17 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
             >
               <GlassCard className="h-full flex flex-col cursor-pointer group" onClick={() => setSelectedProject(project)}>
                 {/* Project Image */}
-                <ContentImage
-                  src={project.image}
+                <ThumbnailGallery
+                  images={coverImages(project)}
                   alt={project.title}
-                  wrapperClassName="relative aspect-video rounded-lg mb-4 bg-background border border-border"
+                  wrapperClassName="aspect-video overflow-hidden rounded-lg mb-4 bg-background border border-border"
                   imgClassName="w-full h-full object-contain"
                   initials={project.title.split(" ").map((w) => w[0]).join("")}
                 >
                   <div className="absolute bottom-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-accent text-accent-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                     <ArrowUpRight size={18} />
                   </div>
-                </ContentImage>
+                </ThumbnailGallery>
 
                 <div className="flex-1">
                   <h3 className="text-xl font-bold text-foreground mb-2">

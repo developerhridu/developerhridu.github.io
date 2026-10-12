@@ -9,7 +9,7 @@ export interface RelatedItem {
   slug: string;
   title: string;
   description: string;
-  image?: string;
+  coverImages?: string[];
   tags?: string[];
   date?: string;
 }
@@ -19,7 +19,7 @@ interface SourceItem {
   title?: string;
   name?: string;
   description?: string;
-  image?: string;
+  coverImages?: string[];
   tags?: string[];
   date?: string;
   published?: boolean;
@@ -46,7 +46,7 @@ export function toRelatedItem(kind: RelatedKind, item: SourceItem): RelatedItem 
     slug: item.slug,
     title: item.title ?? item.name ?? item.slug,
     description: item.description ?? "",
-    image: item.image,
+    coverImages: item.coverImages,
     tags: item.tags,
     date: item.date,
   };

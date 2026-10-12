@@ -13,7 +13,7 @@ interface PickableItem {
   slug: string;
   title?: string;
   name?: string;
-  image?: string;
+  coverImages?: string[];
   published?: boolean;
 }
 
@@ -31,9 +31,9 @@ const OPTIONS: MultiSelectOption[] = GROUPS.flatMap(({ prefix, label, items }) =
   items.map((item) => ({
     value: `${prefix}${item.slug}`,
     label: `${label}: ${item.title ?? item.name ?? item.slug}`,
-    icon: item.image ? (
+    icon: item.coverImages?.[0] ? (
       <span className="relative w-4 h-4 shrink-0 mt-0.5 rounded bg-white/90 overflow-hidden">
-        <Image src={item.image} alt="" fill sizes="16px" className="object-cover" />
+        <Image src={item.coverImages[0]} alt="" fill sizes="16px" className="object-cover" />
       </span>
     ) : undefined,
     note:

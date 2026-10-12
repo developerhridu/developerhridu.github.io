@@ -9,8 +9,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { getPublishedClients } from "@/lib/clients";
 import type { Client } from "@/types";
+import { primaryCoverImage } from "@/lib/coverImages";
 
-const CLIENTS = getPublishedClients().filter((client): client is Client & { image: string } => !!client.image);
+const CLIENTS = getPublishedClients()
+  .map((client) => ({ ...client, image: primaryCoverImage(client) }))
+  .filter((client): client is Client & { image: string } => !!client.image);
 
 /** Seconds for one full lap at the resting speed (the ring turns counter-clockwise). */
 const LAP_SECONDS = 40;
