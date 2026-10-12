@@ -64,6 +64,9 @@
       "sections": [],
       "updatedAt": "2026-10-12T08:59:57.966Z",
       "caseStudies": [],
+      "projects": [],
+      "blogs": [],
+      "clients": [],
       "title": "Foodi CRM - Food Delivery System",
       "coverImages": [
         "/images/projects/foodi.jpg",
@@ -77,10 +80,7 @@
         "/images/projects/foodi-crm-photo-3.png",
         "/images/projects/foodi-crm-photo-4.png",
         "/images/projects/foodi-crm-photo-5.jpg"
-      ],
-      "projects": [],
-      "blogs": [],
-      "clients": []
+      ]
     },
     {
       "id": "03",
@@ -159,9 +159,9 @@
       "liveUrl": null,
       "githubUrl": null,
       "featured": false,
-      "published": false,
+      "published": true,
       "sections": [],
-      "updatedAt": "2026-10-12T08:55:14.502Z",
+      "updatedAt": "2026-10-12T09:07:14.017Z",
       "projects": [],
       "blogs": [],
       "clients": [],
