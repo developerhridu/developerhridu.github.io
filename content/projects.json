@@ -339,13 +339,16 @@
       "featured": false,
       "published": true,
       "sections": [],
-      "updatedAt": "2026-10-12T09:13:47.443Z",
+      "updatedAt": "2026-10-12T09:15:57.464Z",
       "projects": [],
       "caseStudies": [],
       "blogs": [],
       "clients": [],
       "title": "E-desh Limited E-Courier Management Project",
-      "coverImages": [],
+      "coverImages": [
+        "/images/projects/e-desh-api-cover-dfb8d70c-45d6-4afb-a82f-7195b25fd410.png",
+        "/images/projects/e-desh-api-cover-21973818-9282-4d4b-ad2e-fe9aaf93e75c.png"
+      ],
       "proofOfWorkImages": [
         "/images/projects/e-desh-api-proof-3c562b94-4d9b-4565-9661-185910e9d7a4.png",
         "/images/projects/e-desh-api-proof-73d980ab-954e-491f-b402-f42b1b2320fb.png",
