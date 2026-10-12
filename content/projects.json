@@ -92,13 +92,17 @@
         "cqrs-etl-mssql-mongodb-job-search"
       ],
       "client": "Bdjobs.com",
-      "tags": [],
+      "tags": [
+        "Angular",
+        "ASP.NET Core",
+        "MSSQL Server"
+      ],
       "liveUrl": null,
       "githubUrl": null,
       "featured": true,
       "published": true,
       "sections": [],
-      "updatedAt": "2026-10-12T09:16:58.757Z",
+      "updatedAt": "2026-10-12T09:19:04.978Z",
       "projects": [],
       "blogs": [],
       "clients": [],
