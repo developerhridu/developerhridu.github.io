@@ -334,14 +334,23 @@
       "body": "## What it does\n\nThe API behind a courier and logistics platform — parcel booking, real-time tracking, last-mile delivery, reverse logistics, fulfillment, and cross-border shipping, managed from one central system.\n\n## My role\n\nWorked with a team of remote developers to design and build the platform. I crafted the React frontend, built the APIs, and optimized the existing codebase and database, improving the site's performance and responsiveness.",
       "client": "E-Desh Ltd",
       "tags": [],
-      "liveUrl": null,
+      "liveUrl": "https://e-deshltd.com/",
       "githubUrl": null,
       "featured": false,
-      "published": false,
+      "published": true,
       "sections": [],
       "title": "E-desh Api",
       "coverImages": [],
-      "proofOfWorkImages": []
+      "proofOfWorkImages": [
+        "/images/projects/e-desh-api-proof-3c562b94-4d9b-4565-9661-185910e9d7a4.png",
+        "/images/projects/e-desh-api-proof-73d980ab-954e-491f-b402-f42b1b2320fb.png",
+        "/images/projects/e-desh-api-proof-04fd3eb7-a6cf-4d31-9e21-d314df35ce9d.png"
+      ],
+      "updatedAt": "2026-10-12T09:12:14.468Z",
+      "projects": [],
+      "caseStudies": [],
+      "blogs": [],
+      "clients": []
     }
   ]
 }
