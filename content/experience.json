@@ -106,7 +106,7 @@
     },
     {
       "id": "e-desh-limited",
-      "published": true,
+      "published": false,
       "company": "E-Desh Limited",
       "companyUrl": "https://e-deshltd.com",
       "logo": "/images/logos/Edesh.png",
