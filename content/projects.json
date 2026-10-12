@@ -83,6 +83,66 @@
       ]
     },
     {
+      "id": "my-bdjobs",
+      "slug": "my-bdjobs",
+      "description": "App for Job Seakers",
+      "longDescription": "",
+      "body": "## What it does\n\nThe job seeker side of Bdjobs.com — searching and browsing job listings, submitting resumes, and managing applications.\n\n## My role\n\nWorked on the platform as part of the Bdjobs.com engineering team, where I implemented the CQRS-style architecture and ETL pipeline that separated read and write databases for job listings, and optimized the queries behind job search.",
+      "caseStudies": [
+        "cqrs-etl-mssql-mongodb-job-search"
+      ],
+      "client": "Bdjobs.com",
+      "tags": [],
+      "liveUrl": null,
+      "githubUrl": null,
+      "featured": true,
+      "published": true,
+      "sections": [],
+      "updatedAt": "2026-10-12T09:10:22.863Z",
+      "projects": [],
+      "blogs": [],
+      "clients": [],
+      "title": "Bdjobs.com",
+      "coverImages": [
+        "/images/projects/my-bdjobs-cover-840de3cc-9e1b-4d08-92dd-a2f3d8fb6b9a.png",
+        "/images/projects/my-bdjobs-cover-5bea7d8f-d9e3-414d-bac3-a8e3f2aa2fda.png"
+      ],
+      "proofOfWorkImages": [
+        "/images/projects/my-bdjobs-proof-1d416d15-be5e-4a33-85e0-95bbbd342473.png",
+        "/images/projects/my-bdjobs-proof-1956653d-1f09-4366-b8c6-9f223fdd909e.png",
+        "/images/projects/my-bdjobs-proof-302fc357-5a22-4f63-b89f-93c02d9cb33d.jpg"
+      ]
+    },
+    {
+      "id": "07",
+      "slug": "airline-supplier-integration",
+      "published": true,
+      "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
+      "description": "8 cloud-native supplier integration projects connecting OTA platforms with major airlines and GDS systems",
+      "longDescription": "Developed 8 cloud-native supplier integration projects (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, Indigo) to integrate supplier APIs into client OTA platforms. These integrations increased flight search feed by 27% and enabled seamless booking across multiple airline systems.",
+      "body": "## What it does\n\nEight cloud-native integration projects that connect OTA platforms to airline and GDS supplier APIs: **Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, and IndiGo**.\n\n## Scale\n\nThese integrations **increased the flight search feed by 27%** — more suppliers answering a search means more inventory and better fares reaching the user.\n\n## My role\n\nDelivered all eight. Each supplier exposes its own protocol, authentication model, and data shape, so each integration is a separate normalization problem behind a common internal contract — which is what lets the search pipeline treat 30 suppliers as one feed.\n\nI also built the automated xUnit API integration test suite that covers these projects, so supplier behaviour changes surface at release validation rather than in production.\n\n## Why this stack\n\nDeliberately split into separate cloud-native services rather than folded into the platform: suppliers change their APIs on their own schedules, and a failure or redeploy for one must not touch the other 29. The mix of **REST, SOAP, and NDC** isn't a choice so much as the reality of what each supplier offers.",
+      "caseStudies": [
+        "progressive-search-30-suppliers-ota"
+      ],
+      "tags": [
+        ".NET Core",
+        "Microservices",
+        "REST APIs",
+        "SOAP",
+        "NDC",
+        "Azure"
+      ],
+      "liveUrl": null,
+      "githubUrl": null,
+      "featured": false,
+      "sections": [],
+      "title": "Airline Supplier Integration Projects",
+      "coverImages": [
+        "/images/projects/supplier.png"
+      ],
+      "proofOfWorkImages": []
+    },
+    {
       "id": "03",
       "slug": "recruiter-bdjobs",
       "published": true,
@@ -115,66 +175,6 @@
         "/images/projects/recruiter-bdjobs-cover-dd84666e-19e0-4ca0-a1c8-dc0258c7711d.png"
       ],
       "proofOfWorkImages": []
-    },
-    {
-      "id": "07",
-      "slug": "airline-supplier-integration",
-      "published": true,
-      "client": "FirstTrip, TripLover, TakeTrip, TravelChamp, TakeOff",
-      "description": "8 cloud-native supplier integration projects connecting OTA platforms with major airlines and GDS systems",
-      "longDescription": "Developed 8 cloud-native supplier integration projects (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, Indigo) to integrate supplier APIs into client OTA platforms. These integrations increased flight search feed by 27% and enabled seamless booking across multiple airline systems.",
-      "body": "## What it does\n\nEight cloud-native integration projects that connect OTA platforms to airline and GDS supplier APIs: **Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, and IndiGo**.\n\n## Scale\n\nThese integrations **increased the flight search feed by 27%** — more suppliers answering a search means more inventory and better fares reaching the user.\n\n## My role\n\nDelivered all eight. Each supplier exposes its own protocol, authentication model, and data shape, so each integration is a separate normalization problem behind a common internal contract — which is what lets the search pipeline treat 30 suppliers as one feed.\n\nI also built the automated xUnit API integration test suite that covers these projects, so supplier behaviour changes surface at release validation rather than in production.\n\n## Why this stack\n\nDeliberately split into separate cloud-native services rather than folded into the platform: suppliers change their APIs on their own schedules, and a failure or redeploy for one must not touch the other 29. The mix of **REST, SOAP, and NDC** isn't a choice so much as the reality of what each supplier offers.",
-      "caseStudies": [
-        "progressive-search-30-suppliers-ota"
-      ],
-      "tags": [
-        ".NET Core",
-        "Microservices",
-        "REST APIs",
-        "SOAP",
-        "NDC",
-        "Azure"
-      ],
-      "liveUrl": null,
-      "githubUrl": null,
-      "featured": false,
-      "sections": [],
-      "title": "Airline Supplier Integration Projects",
-      "coverImages": [
-        "/images/projects/supplier.png"
-      ],
-      "proofOfWorkImages": []
-    },
-    {
-      "id": "my-bdjobs",
-      "slug": "my-bdjobs",
-      "description": "App for Job Seakers",
-      "longDescription": "",
-      "body": "## What it does\n\nThe job seeker side of Bdjobs.com — searching and browsing job listings, submitting resumes, and managing applications.\n\n## My role\n\nWorked on the platform as part of the Bdjobs.com engineering team, where I implemented the CQRS-style architecture and ETL pipeline that separated read and write databases for job listings, and optimized the queries behind job search.",
-      "caseStudies": [
-        "cqrs-etl-mssql-mongodb-job-search"
-      ],
-      "client": "Bdjobs.com",
-      "tags": [],
-      "liveUrl": null,
-      "githubUrl": null,
-      "featured": true,
-      "published": true,
-      "sections": [],
-      "updatedAt": "2026-10-12T09:08:37.294Z",
-      "projects": [],
-      "blogs": [],
-      "clients": [],
-      "title": "bdjobs.com",
-      "coverImages": [
-        "/images/projects/my-bdjobs-cover-840de3cc-9e1b-4d08-92dd-a2f3d8fb6b9a.png",
-        "/images/projects/my-bdjobs-cover-5bea7d8f-d9e3-414d-bac3-a8e3f2aa2fda.png"
-      ],
-      "proofOfWorkImages": [
-        "/images/projects/my-bdjobs-proof-1d416d15-be5e-4a33-85e0-95bbbd342473.png",
-        "/images/projects/my-bdjobs-proof-1956653d-1f09-4366-b8c6-9f223fdd909e.png",
-        "/images/projects/my-bdjobs-proof-302fc357-5a22-4f63-b89f-93c02d9cb33d.jpg"
-      ]
     },
     {
       "id": "04",
