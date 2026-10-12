@@ -339,18 +339,18 @@
       "featured": false,
       "published": true,
       "sections": [],
-      "title": "E-desh Api",
+      "updatedAt": "2026-10-12T09:13:47.443Z",
+      "projects": [],
+      "caseStudies": [],
+      "blogs": [],
+      "clients": [],
+      "title": "E-desh Limited E-Courier Management Project",
       "coverImages": [],
       "proofOfWorkImages": [
         "/images/projects/e-desh-api-proof-3c562b94-4d9b-4565-9661-185910e9d7a4.png",
         "/images/projects/e-desh-api-proof-73d980ab-954e-491f-b402-f42b1b2320fb.png",
         "/images/projects/e-desh-api-proof-04fd3eb7-a6cf-4d31-9e21-d314df35ce9d.png"
-      ],
-      "updatedAt": "2026-10-12T09:12:14.468Z",
-      "projects": [],
-      "caseStudies": [],
-      "blogs": [],
-      "clients": []
+      ]
     }
   ]
 }
