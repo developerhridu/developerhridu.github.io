@@ -1,9 +1,3 @@
 {
-  "tasks": [
-    {
-      "id": "projects-can-have-multiple-title-image-with-gallery-navigation-buttons",
-      "text": "Projects can have multiple title image, with Gallery Navigation Buttons",
-      "done": false
-    }
-  ]
+  "tasks": []
 }
