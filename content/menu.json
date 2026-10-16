@@ -50,26 +50,18 @@
       "published": true
     },
     {
-      "id": "training-certifications",
-      "name": "Training & Certifications",
-      "href": "/certifications",
-      "icon": "graduation-cap",
-      "published": true
-    },
-    {
-      "id": "testimonials",
-      "name": "Testimonials",
-      "href": "/testimonials",
-      "icon": "quote",
-      "external": false,
-      "published": false
-    },
-    {
       "id": "blogs",
       "name": "Blogs",
       "href": "/blog",
       "icon": "newspaper",
       "external": false,
+      "published": true
+    },
+    {
+      "id": "training-certifications",
+      "name": "Training & Certifications",
+      "href": "/certifications",
+      "icon": "graduation-cap",
       "published": true
     },
     {
@@ -93,6 +85,14 @@
       "href": "/admin",
       "icon": "layout-dashboard",
       "published": true
+    },
+    {
+      "id": "testimonials",
+      "name": "Testimonials",
+      "href": "/testimonials",
+      "icon": "quote",
+      "external": false,
+      "published": false
     }
   ]
 }
