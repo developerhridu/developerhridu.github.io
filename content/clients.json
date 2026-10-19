@@ -18,9 +18,9 @@
       "proofOfWorkImages": [
         "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-0.png",
         "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-1.png",
-        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-2.png",
-        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-3.png",
-        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-4.png"
+        "/images/shared/dataflow-database-migration-tool-photo-0.png",
+        "/images/shared/dataflow-database-migration-tool-photo-1.png",
+        "/images/shared/dataflow-database-migration-tool-photo-2.png"
       ],
       "updatedAt": "2026-10-11T09:02:05.323Z",
       "coverImages": ["/images/logos/banglalink-digital.jpeg"],
@@ -45,11 +45,11 @@
       "blogs": [],
       "clients": [],
       "proofOfWorkImages": [
-        "/images/clients/us-bangla-airlines-photo-0.png",
-        "/images/clients/us-bangla-airlines-photo-1.png",
-        "/images/clients/us-bangla-airlines-photo-2.png",
-        "/images/clients/us-bangla-airlines-photo-3.png",
-        "/images/clients/us-bangla-airlines-photo-4.png"
+        "/images/shared/fare-comparison-photo-0.png",
+        "/images/shared/fare-comparison-photo-2.png",
+        "/images/shared/fare-comparison-photo-3.png",
+        "/images/shared/fare-comparison-photo-1.png",
+        "/images/shared/fare-comparison-photo-4.png"
       ],
       "updatedAt": "2026-10-11T16:25:23.639Z",
       "name": "US-Bangla Airlines"
@@ -63,7 +63,7 @@
       "tags": [],
       "body": "## Engagement\n\nThrough **TechnoNext Software Ltd.** (concern of US-Bangla Airlines) as **Software Engineer**, April 2024 – present.\n\n## What I Did\n\n- Designed and developed the Engagement Automation feature in Foodi CRM to streamline customer and operations team communication.\n- Improved API response time with a read/write Redis caching strategy.\n\n## Proof of Work\n\nRepository access and commit history on foodi-crm, and the official transfer notice listing Foodi CRM as my project.",
       "sections": [],
-      "coverImages": ["/images/logos/foodi.jpg"],
+      "coverImages": ["/images/shared/foodi.jpg"],
       "projects": [
         "foodi-crm"
       ],
@@ -97,9 +97,9 @@
         "cqrs-etl-mssql-mongodb-job-search"
       ],
       "proofOfWorkImages": [
-        "/images/clients/bdjobs-photo-0.jpg",
-        "/images/clients/bdjobs-photo-1.png",
-        "/images/clients/bdjobs-photo-2.png"
+        "/images/shared/bdjobs-photo-0.jpg",
+        "/images/shared/bdjobs-photo-1.png",
+        "/images/shared/bdjobs-photo-2.png"
       ],
       "updatedAt": "2026-10-11T09:02:05.324Z",
       "name": "Bdjobs.com"
@@ -133,7 +133,7 @@
       "tags": [],
       "body": "## Engagement\n\nThrough **TechnoNext Software Ltd.** (concern of US-Bangla Airlines) as **Software Engineer**, April 2024 – present. FirstTrip runs on the shared multi-tenant OTA platform I work on; I am listed as a developer on the FirstTrip project.\n\n## What I Did\n\n- Built and maintained the shared multi-tenant OTA platform (B2B & B2C) this brand runs on — part of a 36+ service ecosystem serving 6 OTA clients.\n- Delivered 8 cloud-native supplier integrations (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, IndiGo), increasing flight search feed by 27%.\n- Implemented Progressive Search, Search Ranking, Universal Split PNR, Refund Reissue and PNR Details.\n- Built the Booking Cancellation Service (ASP.NET Core + Hangfire) that cancels un-ticketed bookings before the last ticketing time.\n- Built an xUnit API integration test suite for 30+ supplier integrations, and integrated APM with Elasticsearch structured logging.\n\n## Impact\n\n- ADM penalties reduced by $4,500–$6,400 per month per OTA (~$23K–$27K saved across 6 clients).\n- Production failure rate cut by 30% after APM + structured logging.\n- Flight search feed up 27% from new supplier integrations.\n\n## Proof of Work\n\nFirstTrip project membership in the company PMS, plus screens of the shared platform and the Booking Cancellation Service.",
       "sections": [],
-      "coverImages": ["/images/logos/firsttrip.png"],
+      "coverImages": ["/images/shared/ota.png"],
       "projects": [
         "ota-platform",
         "airline-supplier-integration",
@@ -279,15 +279,15 @@
       "tags": [],
       "body": "## Engagement\n\n**Jr. Software Engineer (Part-Time)** at **E-Desh Limited**, remote, May 2022 – February 2023.\n\n## What I Did\n\n- Worked with a remote team to design and develop the company's courier platform website using React and ASP.NET Core.\n- Built the front end, built APIs, and optimized the existing codebase and database, improving performance and responsiveness.\n\n## Proof of Work\n\n[Walkthrough video](https://youtu.be/ouIKiEqVOYY).\n\n## Proof of work documents",
       "sections": [],
-      "coverImages": ["/images/logos/Edesh.png"],
+      "coverImages": ["/images/shared/edesh.png"],
       "projects": [
         "e-desh-api"
       ],
       "caseStudies": [],
       "proofOfWorkImages": [
-        "/images/clients/edesh-photo-0.png",
-        "/images/clients/edesh-photo-1.png",
-        "/images/clients/edesh-photo-2.png"
+        "/images/shared/edesh-photo-0.png",
+        "/images/shared/edesh-photo-1.png",
+        "/images/shared/edesh-photo-2.png"
       ],
       "updatedAt": "2026-10-11T09:35:10.085Z",
       "blogs": [],
@@ -313,9 +313,9 @@
         "editable-website-without-a-backend"
       ],
       "proofOfWorkImages": [
-        "/images/projects/dataflow-database-migration-tool-photo-0.png",
-        "/images/projects/dataflow-database-migration-tool-photo-1.png",
-        "/images/projects/dataflow-database-migration-tool-photo-2.png"
+        "/images/shared/dataflow-database-migration-tool-photo-0.png",
+        "/images/shared/dataflow-database-migration-tool-photo-1.png",
+        "/images/shared/dataflow-database-migration-tool-photo-2.png"
       ],
       "updatedAt": "2026-10-11T09:02:05.325Z",
       "name": "Personal Project"

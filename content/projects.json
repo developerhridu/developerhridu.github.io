@@ -29,7 +29,7 @@
       "updatedAt": "2026-10-11T04:12:21.541Z",
       "title": "Online Travel Agency (OTA) Platform",
       "coverImages": [
-        "/images/projects/OTA.png",
+        "/images/shared/ota.png",
         "/images/logos/triplover.jpeg",
         "/images/logos/taketrip.png",
         "/images/logos/travelchamp.png",
@@ -69,7 +69,7 @@
       "clients": [],
       "title": "Foodi CRM - Food Delivery System",
       "coverImages": [
-        "/images/projects/foodi.jpg",
+        "/images/shared/foodi.jpg",
         "/images/projects/foodi-crm-cover-1c73aef8-ad16-4ad3-8d82-322df3897dd8.png",
         "/images/projects/foodi-crm-cover-0618e574-373a-464b-902e-3488d49d8a5c.jpg"
       ],
@@ -112,9 +112,9 @@
         "/images/projects/my-bdjobs-cover-840de3cc-9e1b-4d08-92dd-a2f3d8fb6b9a.png"
       ],
       "proofOfWorkImages": [
-        "/images/projects/my-bdjobs-proof-1d416d15-be5e-4a33-85e0-95bbbd342473.png",
-        "/images/projects/my-bdjobs-proof-1956653d-1f09-4366-b8c6-9f223fdd909e.png",
-        "/images/projects/my-bdjobs-proof-302fc357-5a22-4f63-b89f-93c02d9cb33d.jpg"
+        "/images/shared/bdjobs-photo-1.png",
+        "/images/shared/bdjobs-photo-2.png",
+        "/images/shared/bdjobs-photo-0.jpg"
       ]
     },
     {
@@ -206,11 +206,11 @@
         "/images/projects/fare-comparison.png"
       ],
       "proofOfWorkImages": [
-        "/images/projects/fare-comparison-photo-0.png",
-        "/images/projects/fare-comparison-photo-1.png",
-        "/images/projects/fare-comparison-photo-2.png",
-        "/images/projects/fare-comparison-photo-3.png",
-        "/images/projects/fare-comparison-photo-4.png"
+        "/images/shared/fare-comparison-photo-0.png",
+        "/images/shared/fare-comparison-photo-1.png",
+        "/images/shared/fare-comparison-photo-2.png",
+        "/images/shared/fare-comparison-photo-3.png",
+        "/images/shared/fare-comparison-photo-4.png"
       ]
     },
     {
@@ -239,9 +239,9 @@
         "/images/projects/dataflow-database-migration-tool.png"
       ],
       "proofOfWorkImages": [
-        "/images/projects/dataflow-database-migration-tool-photo-0.png",
-        "/images/projects/dataflow-database-migration-tool-photo-1.png",
-        "/images/projects/dataflow-database-migration-tool-photo-2.png"
+        "/images/shared/dataflow-database-migration-tool-photo-0.png",
+        "/images/shared/dataflow-database-migration-tool-photo-1.png",
+        "/images/shared/dataflow-database-migration-tool-photo-2.png"
       ]
     },
     {
@@ -349,12 +349,12 @@
       "title": "E-desh Limited E-Courier Management Project",
       "coverImages": [
         "/images/projects/e-desh-api-cover-dfb8d70c-45d6-4afb-a82f-7195b25fd410.png",
-        "/images/projects/e-desh-api-cover-21973818-9282-4d4b-ad2e-fe9aaf93e75c.png"
+        "/images/shared/edesh.png"
       ],
       "proofOfWorkImages": [
-        "/images/projects/e-desh-api-proof-3c562b94-4d9b-4565-9661-185910e9d7a4.png",
-        "/images/projects/e-desh-api-proof-73d980ab-954e-491f-b402-f42b1b2320fb.png",
-        "/images/projects/e-desh-api-proof-04fd3eb7-a6cf-4d31-9e21-d314df35ce9d.png"
+        "/images/shared/edesh-photo-2.png",
+        "/images/shared/edesh-photo-1.png",
+        "/images/shared/edesh-photo-0.png"
       ]
     }
   ]
