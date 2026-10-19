@@ -531,9 +531,19 @@ interface ExperienceEntry {
 interface ProjectEntry {
   title: string;
   description: string;
-  longDescription?: string;
+  /** Markdown; its opening paragraph is the project's longer summary. */
+  body?: string;
   tags?: string[];
   published?: boolean;
+}
+
+/** First plain paragraph of a Markdown body (skips headings, tables, lists), capped for the chat context. */
+function introFromBody(body: string | undefined): string {
+  const block = (body ?? "")
+    .split(/\n\s*\n/)
+    .map((part) => part.trim())
+    .find((part) => part && !/^(#|\||[-*>]|\d+\.)/.test(part));
+  return block ? block.replace(/\s+/g, " ").slice(0, 600) : "";
 }
 
 interface EducationEntry {
@@ -598,7 +608,8 @@ async function buildContext(): Promise<string> {
     const text = projs
       .filter((p) => p.published !== false)
       .map((p) => {
-        const detail = p.longDescription ? `\n  ${p.longDescription}` : "";
+        const intro = introFromBody(p.body);
+        const detail = intro ? `\n  ${intro}` : "";
         return `- ${p.title}: ${p.description} (Tech: ${(p.tags ?? []).join(", ")})${detail}`;
       })
       .join("\n");

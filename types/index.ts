@@ -103,7 +103,6 @@ export interface Project extends RelatedRefs {
   slug: string;
   title: string;
   description: string;
-  longDescription?: string;
   body?: string;
   sections?: ContentSection[];
   coverImages: string[];

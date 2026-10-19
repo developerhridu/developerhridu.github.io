@@ -19,7 +19,6 @@ interface ProjectModalProps {
     slug: string;
     title: string;
     description: string;
-    longDescription?: string;
     coverImages?: string[];
     client?: string;
     tags: string[];
@@ -117,10 +116,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
               <ClientLinks client={project.client} className="text-sm mb-4" />
 
-              <p className="text-muted mb-2">{project.description}</p>
-              {project.longDescription && (
-                <p className="text-muted text-sm">{project.longDescription}</p>
-              )}
+              <p className="text-muted">{project.description}</p>
 
               <ProjectLinks
                 liveUrl={project.liveUrl}

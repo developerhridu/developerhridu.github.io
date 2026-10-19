@@ -72,7 +72,6 @@ export interface ArticleDetailProps {
     location?: string;
     coverImages: string[];
     proofOfWorkImages: string[];
-    longDescription?: string;
     body?: string;
     sections?: ContentSection[];
   };
@@ -220,9 +219,6 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
             initialsClassName="text-6xl"
           />
 
-          {entry.longDescription && (
-            <p className="text-lg text-muted leading-relaxed mb-8">{entry.longDescription}</p>
-          )}
           <ArticleBody body={entry.body} previewImageUrls={previewImageUrls} />
 
           {entry.sections && entry.sections.length > 0 && (

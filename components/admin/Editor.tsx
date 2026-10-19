@@ -58,7 +58,6 @@ interface Entry {
   client?: string;
   body: string;
   sections: Section[];
-  longDescription?: string;
   liveUrl?: Project["liveUrl"];
   githubUrl?: Project["githubUrl"];
   featured?: boolean;
@@ -237,7 +236,7 @@ function makeUniqueSlug(base: string, existingSlugs: string[]): string {
 const KIND_DEFAULTS: Record<ContentKind, () => Partial<Entry>> = {
   blog: () => ({ date: new Date().toISOString().slice(0, 10), featured: false }),
   "case-study": () => ({ date: new Date().toISOString().slice(0, 10), featured: false }),
-  project: () => ({ longDescription: "", liveUrl: null, githubUrl: null, featured: false }),
+  project: () => ({ liveUrl: null, githubUrl: null, featured: false }),
   client: () => ({ url: null }),
 };
 
@@ -1448,21 +1447,6 @@ function EntryForm({
           className={`${inputClass} resize-none`}
         />
       </div>
-
-      {kind === "project" && (
-        <div>
-          <label htmlFor="project-long-description" className="block text-xs uppercase tracking-wide text-muted mb-1">
-            Long Description
-          </label>
-          <textarea
-            id="project-long-description"
-            value={entry.longDescription ?? ""}
-            onChange={(e) => setEntry({ ...entry, longDescription: e.target.value })}
-            rows={4}
-            className={`${inputClass} resize-y`}
-          />
-        </div>
-      )}
 
       <div>
         <label className="block text-xs uppercase tracking-wide text-muted mb-1">Body (Markdown)</label>
