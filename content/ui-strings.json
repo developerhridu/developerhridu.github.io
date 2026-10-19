@@ -43,9 +43,9 @@
   },
   "educationCertifications": {
     "tabEducationLabel": "Education",
-    "tabEducationNumber": "01",
+    "tabEducationNumber": "02",
     "tabCertificationsLabel": "Training & Certifications",
-    "tabCertificationsNumber": "02"
+    "tabCertificationsNumber": "01"
   },
   "contact": {
     "letsConnectTitle": "Let's Connect",

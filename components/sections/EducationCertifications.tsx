@@ -12,19 +12,19 @@ type Tab = "education" | "certifications";
 
 const tabs: { id: Tab; label: string; number: string }[] = [
   {
-    id: "education",
-    label: uiStrings.educationCertifications.tabEducationLabel,
-    number: uiStrings.educationCertifications.tabEducationNumber,
-  },
-  {
     id: "certifications",
     label: uiStrings.educationCertifications.tabCertificationsLabel,
     number: uiStrings.educationCertifications.tabCertificationsNumber,
   },
+  {
+    id: "education",
+    label: uiStrings.educationCertifications.tabEducationLabel,
+    number: uiStrings.educationCertifications.tabEducationNumber,
+  },
 ];
 
 export default function EducationCertifications() {
-  const [activeTab, setActiveTab] = useState<Tab>("education");
+  const [activeTab, setActiveTab] = useState<Tab>("certifications");
   const sectionCopy = getSectionCopy("education-certifications");
 
   return (
