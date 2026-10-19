@@ -102,6 +102,11 @@
             "Implemented a CQRS-style architecture with an ETL pipeline separating read/write databases for job listings; database query optimization reduced query time and improved search efficiency by 30%"
           ]
         }
+      ],
+      "photos": [
+        "/images/shared/bdjobs-photo-0.jpg",
+        "/images/shared/bdjobs-photo-1.png",
+        "/images/shared/bdjobs-photo-2.png"
       ]
     },
     {

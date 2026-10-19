@@ -1,9 +1,3 @@
 {
-  "tasks": [
-    {
-      "id": "fix-submit-email-interface-properly-add-valid-email-validation",
-      "text": "fix submit email interface properly, add valid email validation",
-      "done": false
-    }
-  ]
+  "tasks": []
 }
