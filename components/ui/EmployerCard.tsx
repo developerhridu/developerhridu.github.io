@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { Briefcase, Calendar } from "lucide-react";
+import TrackedLink from "@/components/ui/TrackedLink";
 import GlassCard from "@/components/ui/GlassCard";
 import ThumbnailGallery from "@/components/ui/ThumbnailGallery";
 
@@ -16,7 +16,13 @@ export default function EmployerCard({ employer, linked = true }: { employer: Em
   return (
     <GlassCard className="relative h-full min-w-0 flex flex-col items-center group cursor-pointer">
       {linked && (
-        <Link href={`/employers/${employer.slug}`} className="absolute inset-0 z-10 rounded-xl" aria-label={`View ${employer.name}`} />
+        <TrackedLink
+          href={`/employers/${employer.slug}`}
+          area="employer"
+          label={employer.slug}
+          className="absolute inset-0 z-10 rounded-xl"
+          aria-label={`View ${employer.name}`}
+        />
       )}
       <ThumbnailGallery
         images={employer.images}

@@ -1,4 +1,5 @@
 import { ExternalLink, Github } from "lucide-react";
+import TrackedLink from "@/components/ui/TrackedLink";
 import uiStrings from "@/content/ui-strings.json";
 
 const t = uiStrings.projectModal;
@@ -23,20 +24,20 @@ export default function ProjectLinks({ liveUrl, githubUrl, className = "" }: Pro
       {liveUrl && (
         <div>
           <p className={labelClass}>{t.liveDemo}</p>
-          <a href={liveUrl} target="_blank" rel="noopener noreferrer" className={linkClass}>
+          <TrackedLink href={liveUrl} area="outbound" label="live-demo" target="_blank" className={linkClass}>
             <ExternalLink size={16} />
             {t.viewLive}
-          </a>
+          </TrackedLink>
         </div>
       )}
 
       {typeof githubUrl === "string" && githubUrl && (
         <div>
           <p className={labelClass}>{t.sourceCode}</p>
-          <a href={githubUrl} target="_blank" rel="noopener noreferrer" className={linkClass}>
+          <TrackedLink href={githubUrl} area="outbound" label="github" target="_blank" className={linkClass}>
             <Github size={16} />
             {t.viewCode}
-          </a>
+          </TrackedLink>
         </div>
       )}
 
@@ -45,26 +46,28 @@ export default function ProjectLinks({ liveUrl, githubUrl, className = "" }: Pro
           <p className={labelClass}>{t.sourceCode}</p>
           <div className="flex flex-col gap-1.5">
             {(githubUrl as { frontend?: string }).frontend && (
-              <a
-                href={(githubUrl as { frontend?: string }).frontend}
+              <TrackedLink
+                href={(githubUrl as { frontend: string }).frontend}
+                area="outbound"
+                label="github-frontend"
                 target="_blank"
-                rel="noopener noreferrer"
                 className={linkClass}
               >
                 <Github size={16} />
                 {t.frontEnd}
-              </a>
+              </TrackedLink>
             )}
             {(githubUrl as { backend?: string }).backend && (
-              <a
-                href={(githubUrl as { backend?: string }).backend}
+              <TrackedLink
+                href={(githubUrl as { backend: string }).backend}
+                area="outbound"
+                label="github-backend"
                 target="_blank"
-                rel="noopener noreferrer"
                 className={linkClass}
               >
                 <Github size={16} />
                 {t.backEnd}
-              </a>
+              </TrackedLink>
             )}
           </div>
         </div>

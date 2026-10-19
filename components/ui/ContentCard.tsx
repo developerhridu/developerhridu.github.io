@@ -1,8 +1,9 @@
-import Link from "next/link";
 import { Calendar, Clock, ArrowRight, Building2 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import ThumbnailGallery from "@/components/ui/ThumbnailGallery";
+import TrackedLink from "@/components/ui/TrackedLink";
 import { coverImages } from "@/lib/coverImages";
+import type { ClickArea } from "@/lib/analytics";
 import uiStrings from "@/content/ui-strings.json";
 
 export interface ContentCardItem {
@@ -20,12 +21,20 @@ interface ContentCardProps {
   item: ContentCardItem;
   viewPath: string;
   showReadMore?: boolean;
+  /** Click-tracking group; inferred from `viewPath` when not given. */
+  area?: ClickArea;
 }
 
-export default function ContentCard({ item, viewPath, showReadMore = false }: ContentCardProps) {
+export default function ContentCard({ item, viewPath, showReadMore = false, area }: ContentCardProps) {
   return (
     <GlassCard className="relative h-full min-w-0 flex flex-col group cursor-pointer">
-        <Link href={`${viewPath}/${item.slug}`} className="absolute inset-0 z-10 rounded-xl" aria-label={`View ${item.title}`} />
+        <TrackedLink
+          href={`${viewPath}/${item.slug}`}
+          area={area ?? (viewPath === "/blog" ? "blog" : "case-study")}
+          label={item.slug}
+          className="absolute inset-0 z-10 rounded-xl"
+          aria-label={`View ${item.title}`}
+        />
         <ThumbnailGallery
           images={coverImages(item)}
           alt={item.title}

@@ -12,6 +12,7 @@ import { getProfile } from "@/lib/content";
 import { getSeo } from "@/lib/seo";
 
 const GA_MEASUREMENT_ID = config.gaMeasurementId;
+const CLARITY_PROJECT_ID = config.clarityProjectId;
 const SITE_URL = config.siteUrl;
 
 const geistSans = Geist({
@@ -122,6 +123,18 @@ export default function RootLayout({
                 gtag('config', '${GA_MEASUREMENT_ID}');
               `}
             </Script>
+            {/* Microsoft Clarity — click heatmaps and session replays. Skipped until a project ID is set. */}
+            {CLARITY_PROJECT_ID && (
+              <Script id="clarity-init" strategy="afterInteractive">
+                {`
+                  (function(c,l,a,r,i,t,y){
+                    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                  })(window,document,"clarity","script","${CLARITY_PROJECT_ID}");
+                `}
+              </Script>
+            )}
           </>
         )}
       </body>

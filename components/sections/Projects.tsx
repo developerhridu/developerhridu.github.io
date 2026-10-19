@@ -12,6 +12,7 @@ import projectsData from "@/content/projects.json";
 import uiStrings from "@/content/ui-strings.json";
 import { getSectionCopy } from "@/lib/sections";
 import { isPublished } from "@/lib/published";
+import { trackClick } from "@/lib/analytics";
 import type { Project } from "@/types";
 
 type ProjectItem = Project;
@@ -29,6 +30,12 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
   const displayProjects = showAll ? projects : featuredProjects;
 
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
+
+  function openProject(project: ProjectItem) {
+    trackClick("project", project.slug);
+    setSelectedProject(project);
+  }
+
   const sectionCopy = getSectionCopy("projects");
 
   return (
@@ -53,7 +60,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
             >
-              <GlassCard className="h-full flex flex-col cursor-pointer group" onClick={() => setSelectedProject(project)}>
+              <GlassCard className="h-full flex flex-col cursor-pointer group" onClick={() => openProject(project)}>
                 {/* Project Image */}
                 <ThumbnailGallery
                   images={coverImages(project)}
@@ -164,7 +171,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
                 >
-                  <GlassCard className="h-full cursor-pointer group relative" onClick={() => setSelectedProject(project)}>
+                  <GlassCard className="h-full cursor-pointer group relative" onClick={() => openProject(project)}>
                     <div className="absolute top-4 right-4 flex items-center justify-center w-8 h-8 rounded-full bg-accent text-accent-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                       <ArrowUpRight size={16} />
                     </div>

@@ -273,6 +273,90 @@ async function handleViews(request: Request, env: Env): Promise<Response> {
   });
 }
 
+/** Click areas the site reports, so a stray caller can't invent key prefixes. */
+const CLICK_AREAS = [
+  "project",
+  "case-study",
+  "blog",
+  "client",
+  "employer",
+  "certification",
+  "verify",
+  "outbound",
+  "resume",
+  "booking",
+  "hire-me",
+  "social",
+] as const;
+
+function isClickArea(value: unknown): value is (typeof CLICK_AREAS)[number] {
+  return typeof value === "string" && (CLICK_AREAS as readonly string[]).includes(value);
+}
+
+/** Labels become KV key segments, so keep them short and free of separators. */
+function cleanLabel(value: unknown): string {
+  return typeof value === "string" ? value.trim().replace(/[^A-Za-z0-9_.\-/]/g, "").slice(0, 80) : "";
+}
+
+/**
+ * Counts clicks on tracked elements ("which project card", "which verify link"), in the
+ * same KV store as views under a `clicks:` prefix. POST only — unauthenticated like
+ * `/views`, so the area allowlist and label cleaning are what keep the keyspace sane.
+ */
+async function handleClicks(request: Request, env: Env): Promise<Response> {
+  const headers = { "Content-Type": "application/json", ...corsHeaders(request) };
+  if (!env.VIEWS) {
+    return new Response(JSON.stringify({ error: "Click counting is not configured for this Worker" }), { status: 501, headers });
+  }
+
+  let area: unknown;
+  let label = "";
+  try {
+    const body = await request.json<{ area?: unknown; label?: unknown }>();
+    area = body.area;
+    label = cleanLabel(body.label);
+  } catch {
+    // Malformed body falls through to the validation error below.
+  }
+
+  if (!isClickArea(area) || !label) {
+    return new Response(JSON.stringify({ error: "area must be a known click area, and label is required" }), { status: 400, headers });
+  }
+
+  const key = `clicks:${area}:${label}`;
+  const count = (Number((await env.VIEWS.get(key)) ?? "0") || 0) + 1;
+  await env.VIEWS.put(key, String(count));
+
+  return new Response(JSON.stringify({ ok: true }), { headers });
+}
+
+/** Ranked click counts for the admin dashboard's "Most clicked" panel. */
+async function handleClicksTop(request: Request, env: Env): Promise<Response> {
+  const headers = { "Content-Type": "application/json", ...corsHeaders(request) };
+  if (!env.VIEWS) {
+    return new Response(JSON.stringify({ error: "Click counting is not configured for this Worker" }), { status: 501, headers });
+  }
+
+  const url = new URL(request.url);
+  const areaParam = url.searchParams.get("area");
+  const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 10, 1), 50);
+  const prefix = isClickArea(areaParam) ? `clicks:${areaParam}:` : "clicks:";
+
+  const list = await env.VIEWS.list({ prefix });
+  const items = await Promise.all(
+    list.keys.map(async (k) => {
+      const value = await env.VIEWS!.get(k.name);
+      const [, area, ...labelParts] = k.name.split(":");
+      return { area, label: labelParts.join(":"), count: Number(value) || 0 };
+    })
+  );
+
+  const total = items.reduce((sum, i) => sum + i.count, 0);
+  const top = [...items].sort((a, b) => b.count - a.count).slice(0, limit);
+
+  return new Response(JSON.stringify({ items: top, total }), { headers });
+}
+
 /**
  * Bulk view counts for a content type — powers "Most Read" widgets and the admin
  * dashboard's total-views stat. Never increments, just reads and ranks.
@@ -674,6 +758,14 @@ export default {
 
     if (request.method === "GET" && url.pathname === "/views/top") {
       return handleViewsTop(request, env);
+    }
+
+    if (request.method === "GET" && url.pathname === "/clicks/top") {
+      return handleClicksTop(request, env);
+    }
+
+    if (request.method === "POST" && url.pathname === "/clicks") {
+      return handleClicks(request, env);
     }
 
     if ((request.method === "GET" || request.method === "POST") && url.pathname === "/views") {

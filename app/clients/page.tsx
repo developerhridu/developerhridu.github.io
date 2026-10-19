@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import Link from "next/link";
 import GlassCard from "@/components/ui/GlassCard";
+import TrackedLink from "@/components/ui/TrackedLink";
 import ThumbnailGallery from "@/components/ui/ThumbnailGallery";
 import { coverImages } from "@/lib/coverImages";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -23,7 +23,13 @@ export default function ClientsPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
             {clients.map((client) => (
               <GlassCard key={client.id} className="relative h-full min-w-0 flex flex-col items-center group cursor-pointer">
-                  <Link href={`/clients/${client.slug}`} className="absolute inset-0 z-10 rounded-xl" aria-label={`View ${client.name}`} />
+                  <TrackedLink
+                    href={`/clients/${client.slug}`}
+                    area="client"
+                    label={client.slug}
+                    className="absolute inset-0 z-10 rounded-xl"
+                    aria-label={`View ${client.name}`}
+                  />
                   <ThumbnailGallery
                     images={coverImages(client)}
                     alt={client.name}

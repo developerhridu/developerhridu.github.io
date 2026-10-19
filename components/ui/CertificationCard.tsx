@@ -4,6 +4,7 @@ import Image from "next/image";
 import { BadgeCheck, Calendar, ExternalLink } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import ThumbnailGallery from "@/components/ui/ThumbnailGallery";
+import TrackedLink from "@/components/ui/TrackedLink";
 import uiStrings from "@/content/ui-strings.json";
 import type { Certification } from "@/types";
 
@@ -27,10 +28,11 @@ export default function CertificationCard({
       }`}
     >
       {clickable && (
-        <a
+        <TrackedLink
           href={cert.verifyUrl!}
+          area="verify"
+          label={cert.name}
           target="_blank"
-          rel="noopener noreferrer"
           aria-label={`Verify ${cert.name} (opens in a new tab)`}
           className="absolute inset-0 z-10 rounded-xl focus-visible:outline-2 focus-visible:outline-accent"
         />

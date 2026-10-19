@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TrendingUp, MessageSquareText, Quote as QuoteIcon, RefreshCw } from "lucide-react";
+import { TrendingUp, MessageSquareText, MousePointerClick, Quote as QuoteIcon, RefreshCw, ExternalLink } from "lucide-react";
 import { fetchContentFile, GitHubApiError } from "@/lib/github";
 import { WORKER_URL } from "@/lib/workerUrl";
 import ContentHealth from "@/components/admin/ContentHealth";
@@ -28,11 +28,19 @@ interface TopItem {
   count: number;
 }
 
+interface ClickItem {
+  area: string;
+  label: string;
+  count: number;
+}
+
 export default function Dashboard({ token, onAuthError, onOpen }: DashboardProps) {
   const [totalViews, setTotalViews] = useState<number | null>(null);
   const [topItems, setTopItems] = useState<TopItem[]>([]);
   const [pendingTestimonials, setPendingTestimonials] = useState<number | null>(null);
   const [recentQuestions, setRecentQuestions] = useState<LogEntry[] | null>(null);
+  const [topClicks, setTopClicks] = useState<ClickItem[]>([]);
+  const [totalClicks, setTotalClicks] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -42,7 +50,7 @@ export default function Dashboard({ token, onAuthError, onOpen }: DashboardProps
 
   async function loadAll() {
     setLoading(true);
-    await Promise.all([loadViews(), loadTestimonials(), loadChatLogs()]);
+    await Promise.all([loadViews(), loadTestimonials(), loadChatLogs(), loadClicks()]);
     setLoading(false);
   }
 
@@ -56,6 +64,19 @@ export default function Dashboard({ token, onAuthError, onOpen }: DashboardProps
       setTotalViews(data.total ?? 0);
     } catch {
       // Views are a nice-to-have on the dashboard — don't block the rest.
+    }
+  }
+
+  async function loadClicks() {
+    if (!WORKER_URL) return;
+    try {
+      const res = await fetch(`${WORKER_URL}/clicks/top?limit=12`);
+      if (!res.ok) return;
+      const data = (await res.json()) as { items?: ClickItem[]; total?: number };
+      setTopClicks(data.items ?? []);
+      setTotalClicks(data.total ?? 0);
+    } catch {
+      // Click counts are a nice-to-have — don't block the rest of the dashboard.
     }
   }
 
@@ -97,7 +118,7 @@ export default function Dashboard({ token, onAuthError, onOpen }: DashboardProps
         </button>
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid gap-4 mb-8 sm:grid-cols-2 lg:grid-cols-4">
         <div className="p-5 rounded-xl border border-border bg-surface">
           <div className="flex items-center gap-2 text-muted text-xs uppercase tracking-wide mb-2">
             <TrendingUp size={14} /> Total Views
@@ -116,12 +137,51 @@ export default function Dashboard({ token, onAuthError, onOpen }: DashboardProps
         </div>
         <div className="p-5 rounded-xl border border-border bg-surface">
           <div className="flex items-center gap-2 text-muted text-xs uppercase tracking-wide mb-2">
+            <MousePointerClick size={14} /> Tracked Clicks
+          </div>
+          <p className="text-3xl font-bold text-foreground">
+            {totalClicks === null ? "—" : totalClicks.toLocaleString()}
+          </p>
+        </div>
+        <div className="p-5 rounded-xl border border-border bg-surface">
+          <div className="flex items-center gap-2 text-muted text-xs uppercase tracking-wide mb-2">
             <MessageSquareText size={14} /> Recent Chat Questions
           </div>
           <p className="text-3xl font-bold text-foreground">
             {recentQuestions === null ? "—" : recentQuestions.length}
           </p>
         </div>
+      </div>
+
+      <div className="mb-8">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <p className="text-sm font-semibold text-foreground">Most clicked</p>
+          <a
+            href="https://clarity.microsoft.com/projects"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-xs text-accent hover:underline"
+          >
+            Open heatmaps in Clarity <ExternalLink size={11} />
+          </a>
+        </div>
+        {topClicks.length === 0 ? (
+          <p className="rounded-lg border border-border px-4 py-3 text-sm text-muted">
+            No clicks recorded yet. Counts start once the site is deployed and visitors click a card or link.
+          </p>
+        ) : (
+          <div className="border border-border rounded-lg divide-y divide-border">
+            {topClicks.map((item) => (
+              <div key={`${item.area}:${item.label}`} className="flex items-center justify-between px-4 py-3 text-sm">
+                <span className="min-w-0 truncate text-foreground">
+                  <span className="mr-2 text-muted">[{item.area}]</span>
+                  {item.label}
+                </span>
+                <span className="ml-4 shrink-0 text-muted">{item.count.toLocaleString()} clicks</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <ContentHealth token={token} onOpen={onOpen} />
