@@ -27,6 +27,21 @@ function formatSize(bytes: number): string {
   return bytes > 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
+/** "Used 3×" (hover lists where) or "Unused", in the image tile's top-right corner. */
+function UsageBadge({ uses }: { uses: string[] }) {
+  const unique = [...new Set(uses)];
+  return (
+    <span
+      title={unique.length ? `Used by:\n${unique.join("\n")}` : "Not used by any content — safe to delete"}
+      className={`absolute right-1 top-1 rounded px-1.5 py-0.5 text-[10px] font-semibold ${
+        unique.length ? "bg-accent text-accent-foreground" : "bg-black/60 text-white"
+      }`}
+    >
+      {unique.length ? `Used ${unique.length}×` : "Unused"}
+    </span>
+  );
+}
+
 /** Folder-by-folder view of public/images: upload into a folder, delete images, copy paths. */
 export default function MediaManager({ token, onAuthError }: { token: string; onAuthError: () => void }) {
   const pending = useSyncExternalStore(subscribePending, getPending, () => EMPTY);
@@ -38,6 +53,35 @@ export default function MediaManager({ token, onAuthError }: { token: string; on
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  /** image path → entries that use it ("Certifications: SQL (Advanced)"…); null while loading. */
+  const [usage, setUsage] = useState<Map<string, string[]> | null>(null);
+
+  /** Scans all content (pending edits included) once and indexes which entries use each image. */
+  async function scanUsage(): Promise<Map<string, string[]>> {
+    const map = new Map<string, string[]>();
+    const add = (path: string, who: string) => map.set(path, [...(map.get(path) ?? []), who]);
+    const { items: content } = await loadAdminContent(token);
+    for (const item of content) for (const path of referencedImages(item.raw)) add(path, `${item.source.tabLabel}: ${item.label}`);
+    for (const file of EXTRA_FILES) {
+      try {
+        const { content: text } = await fetchContentFile(file, token);
+        for (const path of referencedImages(JSON.parse(text))) add(path, file.replace("content/", ""));
+      } catch {
+        // Missing file — nothing to count.
+      }
+    }
+    return map;
+  }
+
+  useEffect(() => {
+    let cancelled = false;
+    scanUsage().then((map) => !cancelled && setUsage(map), () => !cancelled && setUsage(new Map()));
+    return () => {
+      cancelled = true;
+    };
+    // Re-scan when pending changes move (a save may add or drop a reference).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, pending]);
 
   function handleError(err: unknown) {
     if (err instanceof GitHubApiError && (err.status === 401 || err.status === 403)) onAuthError();
@@ -135,19 +179,9 @@ export default function MediaManager({ token, onAuthError }: { token: string; on
     }
   }
 
-  /** Entries that still point at `path`, so deleting doesn't silently break pages. */
+  /** Entries that still point at `path` (fresh scan), so deleting doesn't silently break pages. */
   async function usagesOf(path: string): Promise<string[]> {
-    const { items: content } = await loadAdminContent(token);
-    const uses = content.filter((item) => referencedImages(item.raw).has(path)).map((item) => `${item.source.tabLabel}: ${item.label}`);
-    for (const file of EXTRA_FILES) {
-      try {
-        const { content: text } = await fetchContentFile(file, token);
-        if (referencedImages(JSON.parse(text)).has(path)) uses.push(file.replace("content/", ""));
-      } catch {
-        // Missing file — nothing to check.
-      }
-    }
-    return uses;
+    return (await scanUsage()).get(path) ?? [];
   }
 
   async function remove(item: MediaItem) {
@@ -257,6 +291,7 @@ export default function MediaManager({ token, onAuthError }: { token: string; on
               {item.pending && (
                 <span className="absolute left-1 top-1 rounded bg-yellow-500 px-1.5 py-0.5 text-[10px] font-semibold text-black">Pending</span>
               )}
+              {usage && <UsageBadge uses={usage.get(item.path) ?? usage.get(decodeURI(item.path)) ?? []} />}
               <div className="absolute inset-x-0 bottom-0 flex justify-end gap-1 bg-black/70 p-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
                 <button type="button" onClick={() => void copyPath(item.path)} aria-label={`Copy path of ${item.path}`} className="p-1 text-white">
                   {copied === item.path ? <Check size={14} /> : <Copy size={14} />}
