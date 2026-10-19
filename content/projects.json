@@ -70,8 +70,8 @@
       "title": "Foodi CRM - Food Delivery System",
       "coverImages": [
         "/images/logos/foodi.jpg",
-        "/images/projects/foodi-crm-cover-1.png",
-        "/images/projects/foodi-crm-cover-2.jpg"
+        "/images/logos/foodi-icon.png",
+        "/images/logos/foodi-wordmark.jpg"
       ],
       "proofOfWorkImages": [
         "/images/shared/foodi-crm-photo-0.png",
@@ -108,8 +108,8 @@
       "clients": [],
       "title": "Bdjobs.com",
       "coverImages": [
-        "/images/projects/my-bdjobs-cover-1.png",
-        "/images/projects/my-bdjobs-cover-2.png"
+        "/images/logos/my-bdjobs-logo.png",
+        "/images/logos/my-bdjobs-icon.png"
       ],
       "proofOfWorkImages": [
         "/images/shared/bdjobs-photo-1.png",
@@ -173,8 +173,8 @@
       "clients": [],
       "title": "Recruiter.Bdjobs.com",
       "coverImages": [
-        "/images/projects/recruiter-bdjobs-cover-1.png",
-        "/images/projects/recruiter-bdjobs-cover-2.png"
+        "/images/logos/recruiter-bdjobs-logo.png",
+        "/images/logos/recruiter-bdjobs-icon.png"
       ],
       "proofOfWorkImages": []
     },

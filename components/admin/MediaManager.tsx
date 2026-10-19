@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { Check, Copy, FolderPlus, Loader2, RefreshCw, Search, Trash2, Upload } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Copy, FolderPlus, Loader2, RefreshCw, Search, Trash2, Upload, X } from "lucide-react";
 import { commitFiles, fetchContentFile, GitHubApiError, listRepoImages, type FileChange, type RepoImage } from "@/lib/github";
 import { getPending, stagedImageSrc, subscribePending, type PendingState } from "@/lib/adminStore";
 import { fileToBase64, inputClass, savedMessage, slugify } from "@/components/admin/shared";
@@ -55,6 +55,8 @@ export default function MediaManager({ token, onAuthError }: { token: string; on
   const [copied, setCopied] = useState<string | null>(null);
   /** image path → entries that use it ("Certifications: SQL (Advanced)"…); null while loading. */
   const [usage, setUsage] = useState<Map<string, string[]> | null>(null);
+  /** Path of the image open in the full-size viewer. */
+  const [viewing, setViewing] = useState<string | null>(null);
 
   /** Scans all content (pending edits included) once and indexes which entries use each image. */
   async function scanUsage(): Promise<Map<string, string[]>> {
@@ -286,8 +288,15 @@ export default function MediaManager({ token, onAuthError }: { token: string; on
         {visible.map((item) => (
           <figure key={item.path} className="group overflow-hidden rounded-lg border border-border bg-surface">
             <div className="relative aspect-square bg-white">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={stagedImageSrc(item.path)} alt="" loading="lazy" className="h-full w-full object-contain p-1" />
+              <button
+                type="button"
+                onClick={() => setViewing(item.path)}
+                aria-label={`View ${item.path} full size`}
+                className="block h-full w-full cursor-zoom-in"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={stagedImageSrc(item.path)} alt="" loading="lazy" className="h-full w-full object-contain p-1" />
+              </button>
               {item.pending && (
                 <span className="absolute left-1 top-1 rounded bg-yellow-500 px-1.5 py-0.5 text-[10px] font-semibold text-black">Pending</span>
               )}
@@ -307,6 +316,76 @@ export default function MediaManager({ token, onAuthError }: { token: string; on
             </figcaption>
           </figure>
         ))}
+      </div>
+
+      {viewing && (
+        <ImageViewer
+          items={visible}
+          path={viewing}
+          uses={usage ? [...new Set(usage.get(viewing) ?? usage.get(decodeURI(viewing)) ?? [])] : null}
+          onChange={setViewing}
+          onClose={() => setViewing(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+/** Full-size image viewer: ←/→ move through the images in the current folder, Esc closes. */
+function ImageViewer({
+  items,
+  path,
+  uses,
+  onChange,
+  onClose,
+}: {
+  items: MediaItem[];
+  path: string;
+  uses: string[] | null;
+  onChange: (path: string) => void;
+  onClose: () => void;
+}) {
+  const index = items.findIndex((item) => item.path === path);
+  const item = items[index];
+
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+      else if (event.key === "ArrowRight" && index < items.length - 1) onChange(items[index + 1].path);
+      else if (event.key === "ArrowLeft" && index > 0) onChange(items[index - 1].path);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [index, items, onChange, onClose]);
+
+  if (!item) return null;
+  return (
+    <div className="fixed inset-0 z-[100] flex flex-col bg-black/85 p-4" onClick={onClose} role="dialog" aria-modal="true" aria-label={`Preview of ${item.path}`}>
+      <div className="mb-3 flex items-start justify-between gap-4 text-white" onClick={(e) => e.stopPropagation()}>
+        <div className="min-w-0 text-sm">
+          <p className="break-all font-medium">{item.path}</p>
+          <p className="text-white/70">
+            {formatSize(item.size)} · {index + 1} of {items.length}
+            {uses && (uses.length ? ` · Used ${uses.length}×: ${uses.slice(0, 3).join(", ")}${uses.length > 3 ? "…" : ""}` : " · Unused")}
+          </p>
+        </div>
+        <button type="button" onClick={onClose} aria-label="Close" className="shrink-0 rounded-full p-2 hover:bg-white/10">
+          <X size={20} />
+        </button>
+      </div>
+      <div className="relative flex min-h-0 flex-1 items-center justify-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={stagedImageSrc(item.path)} alt="" onClick={(e) => e.stopPropagation()} className="max-h-full max-w-full rounded bg-white object-contain" />
+        {index > 0 && (
+          <button type="button" onClick={(e) => { e.stopPropagation(); onChange(items[index - 1].path); }} aria-label="Previous image" className="absolute left-0 rounded-full bg-black/60 p-2 text-white hover:bg-black/80">
+            <ChevronLeft size={24} />
+          </button>
+        )}
+        {index < items.length - 1 && (
+          <button type="button" onClick={(e) => { e.stopPropagation(); onChange(items[index + 1].path); }} aria-label="Next image" className="absolute right-0 rounded-full bg-black/60 p-2 text-white hover:bg-black/80">
+            <ChevronRight size={24} />
+          </button>
+        )}
       </div>
     </div>
   );
