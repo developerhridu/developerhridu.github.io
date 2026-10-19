@@ -10,6 +10,7 @@ import {
   FileText,
   FolderCode,
   GraduationCap,
+  Images,
   Languages,
   LayoutDashboard,
   ListTree,
@@ -48,6 +49,7 @@ import ChatLogViewer from "@/components/admin/ChatLogViewer";
 import SearchLogViewer from "@/components/admin/SearchLogViewer";
 import Dashboard from "@/components/admin/Dashboard";
 import TasksManager from "@/components/admin/TasksManager";
+import MediaManager from "@/components/admin/MediaManager";
 import {
   educationConfig,
   certificationsConfig,
@@ -73,6 +75,7 @@ type Tab =
   | "testimonials"
   | "projects"
   | "clients"
+  | "media"
   | "menu"
   | "profile"
   | "skills"
@@ -93,6 +96,7 @@ const TABS: { key: Tab; label: string; icon: string }[] = adminMenuData.tabs
 
 const ICONS: Record<string, LucideIcon> = {
   award: Award,
+  images: Images,
   "briefcase-business": BriefcaseBusiness,
   "book-open-check": BookOpenCheck,
   "chart-no-axes-column-increasing": ChartNoAxesColumnIncreasing,
@@ -466,7 +470,8 @@ export default function AdminEditor() {
           initialNew={linkedEditor?.tab === "clients" && linkedEditor.create === true}
         />
       )}
-      {tab === "menu" && <GenericArrayEditor config={menuConfig} token={token} onAuthError={handleAuthError} initialEditId={editId("menu")} />}
+      {tab === "media" && <MediaManager token={token} onAuthError={handleAuthError} />}
+      {tab === "menu" &&<GenericArrayEditor config={menuConfig} token={token} onAuthError={handleAuthError} initialEditId={editId("menu")} />}
       {tab === "admin-menu" && (
         <GenericArrayEditor config={adminMenuConfig} token={token} onAuthError={handleAuthError} />
       )}

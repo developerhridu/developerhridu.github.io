@@ -67,6 +67,12 @@
       "published": true
     },
     {
+      "id": "media",
+      "label": "Media",
+      "icon": "images",
+      "published": true
+    },
+    {
       "id": "menu",
       "label": "Menu",
       "icon": "menu",
