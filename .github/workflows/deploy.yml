@@ -10,7 +10,6 @@ on:
       - ".claude/**"
       - ".vscode/**"
       - "worker/**"
-      - "scripts/**"
   workflow_dispatch:
 
 permissions:
@@ -56,6 +55,20 @@ jobs:
       - name: Install dependencies
         if: steps.node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit --no-fund
+
+      # CMS save/publish/undo logic, review diff, link checks, content-health rules.
+      # A failure stops the deploy, so a broken admin never goes live.
+      - name: Test
+        run: npm test
+
+      # Resized WebP copies made by the prebuild step; it only redoes images whose content changed.
+      - name: Cache responsive images
+        uses: actions/cache@v4
+        with:
+          path: public/_img
+          key: responsive-images-${{ hashFiles('public/images/**', 'scripts/generate-responsive-images.mjs', 'lib/imageWidths.mjs') }}
+          restore-keys: |
+            responsive-images-
 
       - name: Cache Next.js build
         uses: actions/cache@v4

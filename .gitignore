@@ -46,3 +46,6 @@ next-env.d.ts
 .vite/deps/@react-three_drei.js.map
 /.vite
 .DS_Store
+
+# pre-generated responsive images (scripts/generate-responsive-images.mjs)
+/public/_img

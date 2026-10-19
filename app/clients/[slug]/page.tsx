@@ -6,6 +6,7 @@ import { getRelatedItems } from "@/lib/content";
 import config from "@/content/config.json";
 import type { Client } from "@/types";
 import { primaryCoverImage } from "@/lib/coverImages";
+import { ogImageUrl } from "@/lib/ogImageUrl";
 
 const BASE_URL = config.siteUrl;
 
@@ -32,7 +33,8 @@ export async function generateMetadata({ params }: ClientPageProps): Promise<Met
 
   const url = `${BASE_URL}/clients/${client.slug}`;
   const description = client.description ?? `Work done for ${client.name}.`;
-  const imageUrl = clientImageUrl(client);
+  // Share previews use the generated 1200×630 card (logo included) rather than the bare logo.
+  const imageUrl = ogImageUrl("clients", client.slug);
 
   return {
     title: `${client.name} | Clients | Portfolio`,

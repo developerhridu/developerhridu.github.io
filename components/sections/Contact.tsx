@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, MapPin, Send, Github, Linkedin, Code2, CheckCircle, AlertCircle, CalendarDays } from "lucide-react";
 import UpworkIcon from "@/components/ui/icons/UpworkIcon";
@@ -15,21 +15,63 @@ import { trackEvent } from "@/lib/analytics";
 
 const t = uiStrings.contact;
 
+/** Anything faster than this from first render to submit is a bot. */
+const MIN_FILL_MS = 3000;
+/** One message per minute per browser. */
+const COOLDOWN_MS = 60_000;
+const LAST_SENT_KEY = "contact_last_sent";
+
+function lastSentAt(): number {
+  try {
+    return Number(localStorage.getItem(LAST_SENT_KEY)) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function rememberSent() {
+  try {
+    localStorage.setItem(LAST_SENT_KEY, String(Date.now()));
+  } catch {
+    // Storage blocked — the cooldown just doesn't apply.
+  }
+}
+
 interface ContactProps {
   showHeading?: boolean;
 }
 
 export default function Contact({ showHeading = true }: ContactProps) {
   const sectionCopy = getSectionCopy("contact");
-  const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error" | "cooldown">("idle");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
   });
+  /** Hidden honeypot — people never see it, form-filling bots usually do. */
+  const [botcheck, setBotcheck] = useState("");
+  const shownAt = useRef(0);
+
+  useEffect(() => {
+    shownAt.current = Date.now();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Bots fill the honeypot or submit instantly: pretend it worked and send nothing.
+    if (botcheck || Date.now() - shownAt.current < MIN_FILL_MS) {
+      setFormStatus("success");
+      setFormData({ name: "", email: "", message: "" });
+      trackEvent("contact_form_submit", { status: "blocked" });
+      return;
+    }
+    if (Date.now() - lastSentAt() < COOLDOWN_MS) {
+      setFormStatus("cooldown");
+      return;
+    }
+
     setFormStatus("loading");
 
     try {
@@ -44,12 +86,15 @@ export default function Contact({ showHeading = true }: ContactProps) {
           email: formData.email,
           message: formData.message,
           subject: `Portfolio Contact from ${formData.name}`,
+          // Web3Forms' own spam check also rejects submissions with this set.
+          botcheck: false,
         }),
       });
 
       const result = await response.json();
 
       if (result.success) {
+        rememberSent();
         setFormStatus("success");
         setFormData({ name: "", email: "", message: "" });
         trackEvent("contact_form_submit", { status: "success" });
@@ -264,6 +309,27 @@ export default function Contact({ showHeading = true }: ContactProps) {
                       placeholder={t.messagePlaceholder}
                     />
                   </div>
+
+                  {/* Honeypot: off-screen and skipped by keyboard and screen readers, so only bots fill it. */}
+                  <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+                    <label htmlFor="contact-website">Website</label>
+                    <input
+                      id="contact-website"
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={botcheck}
+                      onChange={(e) => setBotcheck(e.target.value)}
+                    />
+                  </div>
+
+                  {formStatus === "cooldown" && (
+                    <div className="flex items-center gap-2 text-yellow-500 text-sm">
+                      <AlertCircle size={16} />
+                      <span>{t.cooldownText}</span>
+                    </div>
+                  )}
 
                   {formStatus === "error" && (
                     <div className="flex items-center gap-2 text-red-400 text-sm">

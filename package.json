@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "images": "node scripts/generate-responsive-images.mjs",
+    "prebuild": "node scripts/generate-responsive-images.mjs",
+    "test": "node --no-warnings --import ./tests/register.mjs --test \"tests/**/*.test.mts\""
   },
   "dependencies": {
     "@uiw/react-md-editor": "^4.1.2",
@@ -29,6 +32,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "sharp": "^0.34.5",
     "simple-icons": "^16.30.0",
     "tailwindcss": "^4",
     "typescript": "^5"

@@ -6,51 +6,56 @@ import { getPublishedEmployers } from "@/lib/employers";
 export const dynamic = "force-static";
 
 const BASE_URL = "https://developerhridu.github.io";
-const LAST_MODIFIED = "2026-07-07";
+
+type Entry = MetadataRoute.Sitemap[number];
+
+/** A parseable ISO date, or undefined — no date is better than a wrong one. */
+function validDate(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const time = new Date(value).getTime();
+  return Number.isNaN(time) ? undefined : new Date(time).toISOString();
+}
+
+/** When an entry last changed: the CMS's updatedAt, else its publish date. */
+function changedAt(entry: { updatedAt?: string; date?: string }): string | undefined {
+  return validDate(entry.updatedAt) ?? validDate(entry.date);
+}
+
+/** A listing page changes whenever its newest entry does. */
+function newest(dates: (string | undefined)[]): string | undefined {
+  const known = dates.filter((date): date is string => !!date).sort();
+  return known[known.length - 1];
+}
+
+function page(path: string, priority: number, changeFrequency: Entry["changeFrequency"], lastModified?: string): Entry {
+  return { url: `${BASE_URL}${path}`, priority, changeFrequency, ...(lastModified ? { lastModified } : {}) };
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const posts = getPublishedBlogPosts().map((post) => ({ slug: post.slug, at: changedAt(post) }));
+  const studies = getPublishedCaseStudies().map((study) => ({ slug: study.slug, at: changedAt(study) }));
+  const projects = getPublishedProjects().map((project) => ({ slug: project.slug, at: changedAt(project as { updatedAt?: string }) }));
+  const clients = getPublishedClients().map((client) => ({ slug: client.slug, at: changedAt(client) }));
+  const employers = getPublishedEmployers().map((employer) => ({ slug: employer.slug }));
+  const latestContent = newest([...posts, ...studies, ...projects, ...clients].map((entry) => entry.at));
+
   return [
-    { url: BASE_URL, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 1 },
-    { url: `${BASE_URL}/about`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/projects`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.9 },
-    ...getPublishedProjects().map((project) => ({
-      url: `${BASE_URL}/projects/${project.slug}`,
-      lastModified: LAST_MODIFIED,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    })),
-    { url: `${BASE_URL}/experience`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/certifications`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${BASE_URL}/resume`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${BASE_URL}/blog`, lastModified: LAST_MODIFIED, changeFrequency: "weekly", priority: 0.6 },
-    ...getPublishedBlogPosts().map((post) => ({
-      url: `${BASE_URL}/blog/${post.slug}`,
-      lastModified: post.updatedAt ?? post.date,
-      changeFrequency: "monthly" as const,
-      priority: 0.5,
-    })),
-    { url: `${BASE_URL}/case-studies`, lastModified: LAST_MODIFIED, changeFrequency: "weekly", priority: 0.6 },
-    ...getPublishedCaseStudies().map((study) => ({
-      url: `${BASE_URL}/case-studies/${study.slug}`,
-      lastModified: study.updatedAt ?? study.date,
-      changeFrequency: "monthly" as const,
-      priority: 0.5,
-    })),
-    { url: `${BASE_URL}/clients`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.7 },
-    ...getPublishedClients().map((client) => ({
-      url: `${BASE_URL}/clients/${client.slug}`,
-      lastModified: client.updatedAt ?? LAST_MODIFIED,
-      changeFrequency: "monthly" as const,
-      priority: 0.5,
-    })),
-    { url: `${BASE_URL}/employers`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.7 },
-    ...getPublishedEmployers().map((employer) => ({
-      url: `${BASE_URL}/employers/${employer.slug}`,
-      lastModified: employer.updatedAt ?? LAST_MODIFIED,
-      changeFrequency: "monthly" as const,
-      priority: 0.5,
-    })),
-    { url: `${BASE_URL}/testimonials`, lastModified: LAST_MODIFIED, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE_URL}/contact`, lastModified: LAST_MODIFIED, changeFrequency: "yearly", priority: 0.5 },
+    page("", 1, "monthly", latestContent),
+    page("/about", 0.8, "monthly"),
+    page("/projects", 0.9, "monthly", newest(projects.map((p) => p.at))),
+    ...projects.map((p) => page(`/projects/${p.slug}`, 0.6, "monthly", p.at)),
+    page("/experience", 0.8, "monthly"),
+    page("/certifications", 0.7, "monthly"),
+    page("/resume", 0.7, "monthly"),
+    page("/blog", 0.6, "weekly", newest(posts.map((p) => p.at))),
+    ...posts.map((p) => page(`/blog/${p.slug}`, 0.5, "monthly", p.at)),
+    page("/case-studies", 0.6, "weekly", newest(studies.map((s) => s.at))),
+    ...studies.map((s) => page(`/case-studies/${s.slug}`, 0.5, "monthly", s.at)),
+    page("/clients", 0.7, "monthly", newest(clients.map((c) => c.at))),
+    ...clients.map((c) => page(`/clients/${c.slug}`, 0.5, "monthly", c.at)),
+    page("/employers", 0.7, "monthly"),
+    ...employers.map((e) => page(`/employers/${e.slug}`, 0.5, "monthly")),
+    page("/testimonials", 0.5, "monthly"),
+    page("/contact", 0.5, "yearly"),
   ];
 }

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import Image from "next/image";
+import { responsiveSrcSet } from "@/lib/imageLoader";
 
 interface ContentImageProps {
   src?: string;
@@ -64,6 +65,8 @@ export default function ContentImage({
         <img
           ref={imgRef}
           src={src}
+          srcSet={responsiveSrcSet(src)}
+          sizes="(max-width: 768px) 100vw, 1100px"
           alt={alt}
           loading="lazy"
           className={imgClassName}

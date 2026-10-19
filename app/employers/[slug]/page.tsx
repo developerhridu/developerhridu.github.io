@@ -6,6 +6,7 @@ import { getRelatedItems } from "@/lib/content";
 import config from "@/content/config.json";
 import type { Employer } from "@/types";
 import { primaryCoverImage } from "@/lib/coverImages";
+import { ogImageUrl } from "@/lib/ogImageUrl";
 
 const BASE_URL = config.siteUrl;
 
@@ -35,7 +36,8 @@ export async function generateMetadata({ params }: EmployerPageProps): Promise<M
 
   const url = `${BASE_URL}/employers/${employer.slug}`;
   const description = employer.description ?? `My work at ${employer.name}.`;
-  const imageUrl = employerImageUrl(employer);
+  // Share previews use the generated 1200×630 card (logo included) rather than the bare logo.
+  const imageUrl = ogImageUrl("employers", employer.slug);
 
   return {
     title: `${employer.name} | Employers | Portfolio`,

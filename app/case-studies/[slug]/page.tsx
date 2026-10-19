@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getCaseStudies, getCaseStudy, getRelatedCaseStudies, getRelatedItems } from "@/lib/content";
 import { toRelatedItem } from "@/lib/related";
 import { primaryCoverImage } from "@/lib/coverImages";
+import { ogImageUrl } from "@/lib/ogImageUrl";
 
 const BASE_URL = "https://developerhridu.github.io";
 
@@ -28,10 +29,8 @@ export async function generateMetadata({
   }
 
   const url = `${BASE_URL}/case-studies/${study.slug}`;
-  const cover = primaryCoverImage(study);
-  const imageUrl = cover
-    ? `${BASE_URL}${cover}`
-    : `${BASE_URL}/og-image/case-studies/${study.slug}`;
+  // Share previews always use the generated 1200×630 card (cover image included).
+  const imageUrl = ogImageUrl("case-studies", study.slug);
 
   return {
     title: `${study.title} | Case Studies | Portfolio`,
@@ -69,7 +68,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
   const cover = primaryCoverImage(study);
   const imageUrl = cover
     ? `${BASE_URL}${cover}`
-    : `${BASE_URL}/og-image/case-studies/${study.slug}`;
+    : ogImageUrl("case-studies", study.slug);
   const picked = getRelatedItems(study);
   // Nothing picked in the admin: fall back to case studies sharing tags.
   const related = picked.length > 0 ? picked : getRelatedCaseStudies(study).map((item) => toRelatedItem("case-study", item));

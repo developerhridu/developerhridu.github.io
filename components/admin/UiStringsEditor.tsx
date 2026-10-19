@@ -83,6 +83,7 @@ const FIELDS: FieldDef[] = [
   { section: "contact", key: "messageLabel", label: "Contact: Message field label" },
   { section: "contact", key: "messagePlaceholder", label: "Contact: Message field placeholder" },
   { section: "contact", key: "errorText", label: "Contact: Error text" },
+  { section: "contact", key: "cooldownText", label: "Contact: Wait-before-resending text" },
   { section: "contact", key: "sending", label: "Contact: Sending… state" },
   { section: "contact", key: "sendMessageButton", label: "Contact: Send Message button" },
 

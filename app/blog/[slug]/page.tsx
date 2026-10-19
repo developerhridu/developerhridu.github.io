@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getBlogPosts, getBlogPost, getRelatedBlogPosts, getRelatedItems } from "@/lib/content";
 import { toRelatedItem } from "@/lib/related";
 import { primaryCoverImage } from "@/lib/coverImages";
+import { ogImageUrl } from "@/lib/ogImageUrl";
 
 const BASE_URL = "https://developerhridu.github.io";
 
@@ -28,10 +29,8 @@ export async function generateMetadata({
   }
 
   const url = `${BASE_URL}/blog/${post.slug}`;
-  const cover = primaryCoverImage(post);
-  const imageUrl = cover
-    ? `${BASE_URL}${cover}`
-    : `${BASE_URL}/og-image/blog/${post.slug}`;
+  // Share previews always use the generated 1200×630 card (cover image included).
+  const imageUrl = ogImageUrl("blog", post.slug);
 
   return {
     title: `${post.title} | Blog | Portfolio`,
@@ -69,7 +68,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const cover = primaryCoverImage(post);
   const imageUrl = cover
     ? `${BASE_URL}${cover}`
-    : `${BASE_URL}/og-image/blog/${post.slug}`;
+    : ogImageUrl("blog", post.slug);
   const picked = getRelatedItems(post);
   // Nothing picked in the admin: fall back to posts sharing tags.
   const related = picked.length > 0 ? picked : getRelatedBlogPosts(post).map((item) => toRelatedItem("blog", item));

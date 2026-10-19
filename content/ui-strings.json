@@ -63,6 +63,7 @@
     "messageLabel": "Message",
     "messagePlaceholder": "Your message...",
     "errorText": "Something went wrong. Please try again.",
+    "cooldownText": "Thanks! Please wait a minute before sending another message.",
     "sending": "Sending...",
     "sendMessageButton": "Send Message",
     "bookCallLabel": "Book a Call"

@@ -5,6 +5,7 @@ import ProjectLinks from "@/components/ui/ProjectLinks";
 import { getProjects, getProject, getRelatedItems } from "@/lib/content";
 import config from "@/content/config.json";
 import { primaryCoverImage } from "@/lib/coverImages";
+import { ogImageUrl } from "@/lib/ogImageUrl";
 
 const BASE_URL = config.siteUrl;
 
@@ -25,10 +26,8 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   }
 
   const url = `${BASE_URL}/projects/${project.slug}`;
-  const cover = primaryCoverImage(project);
-  const imageUrl = cover
-    ? `${BASE_URL}${cover}`
-    : `${BASE_URL}/og-image/projects/${project.slug}`;
+  // Share previews always use the generated 1200×630 card (cover image included).
+  const imageUrl = ogImageUrl("projects", project.slug);
 
   return {
     title: `${project.title} | Projects | Portfolio`,
@@ -65,7 +64,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const cover = primaryCoverImage(project);
   const imageUrl = cover
     ? `${BASE_URL}${cover}`
-    : `${BASE_URL}/og-image/projects/${project.slug}`;
+    : ogImageUrl("projects", project.slug);
 
 
   const jsonLd = {
