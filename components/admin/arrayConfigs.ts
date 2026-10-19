@@ -7,9 +7,10 @@ export const educationConfig: ArrayConfig = {
   titleField: "degree",
   subtitleField: "institution",
   imageFolder: "education",
+  sitePath: "/certifications",
   fields: [
     { key: "degree", label: "Degree", type: "text" },
-    { key: "institution", label: "Institution", type: "text" },
+    { key: "institution", label: "Institution", type: "text", required: true },
     { key: "period", label: "Period", type: "text", placeholder: "January 2017 - January 2023" },
     { key: "location", label: "Location", type: "text" },
     { key: "cgpa", label: "CGPA / Grade (optional)", type: "text" },
@@ -25,11 +26,13 @@ export const certificationsConfig: ArrayConfig = {
   titleField: "name",
   subtitleField: "issuer",
   imageFolder: "certifications",
+  sitePath: "/certifications",
+  preview: "certification",
   fields: [
     { key: "name", label: "Certificate name", type: "text", placeholder: "Certified SQL (Advanced)", section: "Details", width: "full" },
-    { key: "issuer", label: "Issued by", type: "text", placeholder: "HackerRank", section: "Details" },
-    { key: "date", label: "Issue date", type: "text", placeholder: "June 2024", section: "Details" },
-    { key: "verifyUrl", label: "Verification link", type: "url", placeholder: "https://…", section: "Details", width: "full" },
+    { key: "issuer", label: "Issued by", type: "text", placeholder: "HackerRank", section: "Details", required: true },
+    { key: "date", label: "Issue date", type: "text", placeholder: "June 2024", section: "Details", hint: "Shown as written, e.g. \"June 2024\"." },
+    { key: "verifyUrl", label: "Verification link", type: "url", placeholder: "https://…", section: "Details", width: "full", hint: "Clicking the card opens this link in a new tab." },
     { key: "published", label: "Published (visible on the site)", type: "boolean", defaultBoolean: true, section: "Details" },
     { key: "photos", label: "Certificate photos", type: "images", placeholder: "/images/certifications/example.png", section: "Certificate photos" },
     { key: "icons", label: "Issuer logo(s)", type: "images", placeholder: "/images/logos/example.svg", section: "Issuer logo" },
@@ -52,9 +55,10 @@ export const menuConfig: ArrayConfig = {
   label: "Menu",
   titleField: "name",
   subtitleField: "href",
+  sitePath: (entry) => (typeof entry.href === "string" && entry.href.startsWith("/") ? entry.href : null),
   fields: [
     { key: "name", label: "Name", type: "text" },
-    { key: "href", label: "Href", type: "text" },
+    { key: "href", label: "Link", type: "text", placeholder: "/about", hint: "A site path like /about, or a full URL for external links." },
     { key: "icon", label: "Icon key", type: "text", placeholder: "home, user, folder-kanban…" },
     { key: "external", label: "External link", type: "boolean" },
     { key: "published", label: "Published (visible in menu & search)", type: "boolean", defaultBoolean: true },
@@ -67,9 +71,10 @@ export const servicesConfig: ArrayConfig = {
   label: "Services",
   titleField: "title",
   subtitleField: "icon",
+  sitePath: "/services",
   fields: [
     { key: "title", label: "Title", type: "text" },
-    { key: "description", label: "Description", type: "textarea" },
+    { key: "description", label: "Description", type: "textarea", required: true },
     {
       key: "icon",
       label: "Icon key",
@@ -88,8 +93,9 @@ export const adminMenuConfig: ArrayConfig = {
   titleField: "label",
   subtitleField: "id",
   fields: [
-    { key: "label", label: "Label", type: "text" },
+    { key: "label", label: "Label", type: "text", required: true },
     { key: "icon", label: "Icon key", type: "text", placeholder: "layout-dashboard, newspaper, folder-code, wrench…" },
+    { key: "group", label: "Group", type: "text", placeholder: "Overview, Content, Profile, Site, Logs" },
     { key: "published", label: "Published", type: "boolean", defaultBoolean: true },
   ],
 };
@@ -114,7 +120,7 @@ export const skillCategoriesConfig: ArrayConfig = {
   titleField: "label",
   subtitleField: "key",
   fields: [
-    { key: "key", label: "Tech-Stack Key (must match tech-stack.json)", type: "text" },
+    { key: "key", label: "Tech-Stack Key (must match tech-stack.json)", type: "text", required: true },
     { key: "label", label: "Display Label", type: "text" },
     { key: "color", label: "Tailwind Color Class", type: "text", placeholder: "bg-accent, bg-pink-500…" },
   ],
@@ -126,10 +132,11 @@ export const seoConfig: ArrayConfig = {
   label: "SEO / Metadata",
   titleField: "title",
   subtitleField: "route",
+  sitePath: (entry) => (typeof entry.route === "string" ? entry.route : null),
   fields: [
-    { key: "route", label: "Route", type: "text", placeholder: "/about" },
+    { key: "route", label: "Route", type: "text", placeholder: "/about", required: true },
     { key: "title", label: "Title", type: "text" },
-    { key: "description", label: "Description", type: "textarea" },
+    { key: "description", label: "Description", type: "textarea", required: true, hint: "Aim for 120–160 characters." },
     { key: "ogTitle", label: "OG Title (optional)", type: "text" },
     { key: "ogDescription", label: "OG Description (optional)", type: "textarea" },
     { key: "twitterTitle", label: "Twitter Title (optional)", type: "text" },
@@ -148,6 +155,6 @@ export const proficiencyConfig: ArrayConfig = {
   subtitleFormat: (value) => `${value}%`,
   fields: [
     { key: "name", label: "Skill Name", type: "text" },
-    { key: "level", label: "Level (0-100)", type: "number", min: 0, max: 100 },
+    { key: "level", label: "Level (0-100)", type: "number", min: 0, max: 100, required: true },
   ],
 };

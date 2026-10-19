@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import IconButton from "@/components/ui/IconButton";
+import { useEffect, useMemo, useState } from "react";
 import {
   fetchContentFile,
   commitFiles,
@@ -9,11 +8,16 @@ import {
   GitHubApiError,
   type FileChange,
 } from "@/lib/github";
-import { Pencil, Trash2, Plus, ExternalLink, Eye, X, Upload, ArrowUp, ArrowDown } from "lucide-react";
-import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
+import { slugify, fileToBase64, moveItem, savedMessage, confirmDeleteMessage } from "@/components/admin/shared";
 import ClientMultiSelect from "@/components/admin/ClientMultiSelect";
 import CaseStudyMultiSelect from "@/components/admin/CaseStudyMultiSelect";
-import ImageListInput from "@/components/admin/ImageListInput";
+import ImageListInput, { SingleImageInput } from "@/components/admin/ImageListInput";
+import EntryList from "@/components/admin/EntryList";
+import { ErrorBanner, SuccessBanner } from "@/components/admin/CrudBanners";
+import { CheckboxField, EditorPanel, Field, FormActions, FormSection, fieldClass } from "@/components/admin/FormKit";
+import { confirmDiscardEdits, snapshot, useSaveShortcut, useUnsavedGuard } from "@/components/admin/useUnsavedGuard";
+import { collectErrors, errorSummary, focusFirstError, requiredError, urlError, type FieldErrors } from "@/components/admin/validation";
+import { renderPreview, type PreviewKind } from "@/components/admin/previews";
 
 type FieldType =
   | "text"
@@ -34,6 +38,10 @@ interface FieldDef {
   label: string;
   type: FieldType;
   placeholder?: string;
+  /** Short help shown under the field. */
+  hint?: string;
+  /** Must be filled in before saving (the title field always is). */
+  required?: boolean;
   defaultBoolean?: boolean;
   min?: number;
   max?: number;
@@ -74,7 +82,12 @@ export interface ArrayConfig {
   subtitleField?: string;
   subtitleFormat?: (value: unknown) => string;
   imageFolder?: string;
+  /** Detail-page base path; rows with a `slug` link to `${viewPath}/${slug}`. */
   viewPath?: string;
+  /** Page on the site where these entries appear (used when there's no per-entry page). */
+  sitePath?: string | ((entry: RawEntry) => string | null);
+  /** Live preview rendered beside the form. */
+  preview?: PreviewKind;
   fields: FieldDef[];
   extraNormalizeIn?: (raw: RawEntry) => Record<string, string>;
   extraTransformOut?: (out: RawEntry, form: FormState) => RawEntry;
@@ -96,6 +109,13 @@ function normalizeIn(raw: RawEntry, config: ArrayConfig): FormState {
   return { ...form, ...(config.extraNormalizeIn?.(raw) ?? {}) };
 }
 
+function splitLines(val: unknown): string[] {
+  return String(val ?? "")
+    .split("\n")
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
+
 function transformOut(form: FormState, config: ArrayConfig): RawEntry {
   const out: RawEntry = {};
   for (const f of config.fields) {
@@ -108,10 +128,7 @@ function transformOut(form: FormState, config: ArrayConfig): RawEntry {
         .map((t) => t.trim())
         .filter(Boolean);
     } else if (f.type === "list") {
-      out[f.key] = String(val ?? "")
-        .split("\n")
-        .map((t) => t.trim())
-        .filter(Boolean);
+      out[f.key] = splitLines(val);
     } else if (f.type === "images") {
       const images = splitLines(val);
       if (images.length > 0) out[f.key] = images;
@@ -125,13 +142,6 @@ function transformOut(form: FormState, config: ArrayConfig): RawEntry {
     }
   }
   return config.extraTransformOut ? config.extraTransformOut(out, form) : out;
-}
-
-function splitLines(val: unknown): string[] {
-  return String(val ?? "")
-    .split("\n")
-    .map((t) => t.trim())
-    .filter(Boolean);
 }
 
 function blankForm(config: ArrayConfig): FormState {
@@ -166,8 +176,50 @@ function managedImagePaths(entry: RawEntry, config: ArrayConfig): string[] {
   return paths;
 }
 
+/** First image an entry shows (for list thumbnails), checking its image fields in order. */
+function entryThumbnail(entry: RawEntry, config: ArrayConfig): string | undefined {
+  for (const f of config.fields) {
+    if (f.type !== "image" && f.type !== "images") continue;
+    const val = entry[f.key];
+    if (typeof val === "string" && val) return val;
+    if (Array.isArray(val) && typeof val[0] === "string") return val[0];
+  }
+  if (typeof entry.icon === "string") return entry.icon;
+  return undefined;
+}
+
+function hasImageFields(config: ArrayConfig): boolean {
+  return config.fields.some((f) => f.type === "image" || f.type === "images");
+}
+
+function entryViewUrl(entry: RawEntry, config: ArrayConfig): string | null {
+  if (config.viewPath && typeof entry.slug === "string" && entry.slug.trim()) {
+    return `${config.viewPath}/${encodeURIComponent(entry.slug)}`;
+  }
+  if (typeof config.sitePath === "function") return config.sitePath(entry);
+  return config.sitePath ?? null;
+}
+
 function toRepoPath(publicPath: string): string {
   return `public${publicPath}`;
+}
+
+function validate(form: FormState, config: ArrayConfig): FieldErrors {
+  return collectErrors(
+    config.fields.flatMap((f): [string, string | null][] => {
+      const value = form[f.key];
+      const checks: [string, string | null][] = [];
+      if (f.required || f.key === config.titleField) checks.push([f.key, requiredError(value, f.label)]);
+      if (f.type === "url") checks.push([f.key, urlError(value)]);
+      if (f.type === "image") checks.push([f.key, urlError(value)]);
+      if (f.type === "number" && String(value ?? "").trim()) {
+        const n = Number(value);
+        const outOfRange = Number.isNaN(n) || (f.min !== undefined && n < f.min) || (f.max !== undefined && n > f.max);
+        checks.push([f.key, outOfRange ? `Enter a number${f.min !== undefined && f.max !== undefined ? ` from ${f.min} to ${f.max}` : ""}.` : null]);
+      }
+      return checks;
+    })
+  );
 }
 
 interface GenericArrayEditorProps {
@@ -189,19 +241,37 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [form, setForm] = useState<FormState>({});
+  const [openedForm, setOpenedForm] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [imageFiles, setImageFiles] = useState<Record<string, File | null>>({});
   const [imageListFiles, setImageListFiles] = useState<Record<string, File[]>>({});
   const [loadedOrderIds, setLoadedOrderIds] = useState<string[]>([]);
 
   const hasPublishedField = config.fields.some((f) => f.key === "published");
+  const editing = editingIndex !== null;
+  const pendingUploads =
+    Object.values(imageFiles).some(Boolean) || Object.values(imageListFiles).some((files) => files.length > 0);
+  const dirty = editing && (snapshot(form) !== openedForm || pendingUploads);
+
+  useUnsavedGuard(dirty);
+  useSaveShortcut(() => void handleSave(), editing && !saving);
+
+  const pendingFiles = useMemo(
+    () => [...Object.values(imageFiles).filter((f): f is File => !!f), ...Object.values(imageListFiles).flat()],
+    [imageFiles, imageListFiles]
+  );
+  const previewUrls = useMemo(
+    () => new Map(config.preview ? pendingFiles.map((file) => [file, URL.createObjectURL(file)]) : []),
+    [pendingFiles, config.preview]
+  );
+  useEffect(() => () => previewUrls.forEach((url) => URL.revokeObjectURL(url)), [previewUrls]);
 
   useEffect(() => {
     setEntries(null);
-    setEditingIndex(initialNew ? -1 : null);
-    setIsNew(initialNew);
-    if (initialNew) setForm(blankForm(config));
     setError(null);
     setSuccessMsg(null);
+    if (initialNew) openForm(blankForm(config), true, null);
+    else setEditingIndex(null);
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.path]);
@@ -226,17 +296,6 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
   const orderDirty =
     entries !== null && entries.map((e) => String(e.id)).join("|") !== loadedOrderIds.join("|");
 
-  function moveEntry(index: number, direction: -1 | 1) {
-    setEntries((prev) => {
-      if (!prev) return prev;
-      const target = index + direction;
-      if (target < 0 || target >= prev.length) return prev;
-      const next = [...prev];
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
-    });
-  }
-
   function handleApiError(err: unknown) {
     if (err instanceof GitHubApiError && (err.status === 401 || err.status === 403)) {
       onAuthError();
@@ -247,33 +306,56 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
     }
   }
 
-  function startNew() {
-    setForm(blankForm(config));
+  /** `startDirty` marks prefilled forms (duplicates) as unsaved from the start. */
+  function openForm(next: FormState, asNew: boolean, id: string | null, index = -1, startDirty = false) {
+    setForm(next);
+    setOpenedForm(startDirty ? "" : snapshot(next));
+    setFieldErrors({});
     setImageFiles({});
     setImageListFiles({});
-    setIsNew(true);
-    setEditingId(null);
-    setEditingIndex(-1);
-    setSuccessMsg(null);
-    setError(null);
-  }
-
-  function startEdit(index: number) {
-    setForm(normalizeIn(entries![index], config));
-    setImageFiles({});
-    setImageListFiles({});
-    setIsNew(false);
-    setEditingId(String(entries![index].id));
+    setIsNew(asNew);
+    setEditingId(id);
     setEditingIndex(index);
     setSuccessMsg(null);
     setError(null);
   }
 
+  function startNew() {
+    if (!confirmDiscardEdits(dirty)) return;
+    openForm(blankForm(config), true, null);
+  }
+
+  function startEdit(index: number) {
+    if (!confirmDiscardEdits(dirty)) return;
+    openForm(normalizeIn(entries![index], config), false, String(entries![index].id), index);
+  }
+
+  /** New entry pre-filled from an existing one (images are shared by path, not copied). */
+  function duplicate(source: FormState) {
+    if (!confirmDiscardEdits(dirty)) return;
+    const copy = { ...source, [config.titleField]: `${String(source[config.titleField] ?? "").trim()} (copy)` };
+    if (hasPublishedField) copy.published = false;
+    openForm(copy, true, null, -1, true);
+  }
+
   function cancelEdit() {
+    if (!confirmDiscardEdits(dirty)) return;
     setEditingIndex(null);
     setEditingId(null);
     setImageFiles({});
     setImageListFiles({});
+    setFieldErrors({});
+  }
+
+  function updateField(key: string, value: string | boolean) {
+    setForm((previous) => ({ ...previous, [key]: value }));
+    if (fieldErrors[key]) {
+      setFieldErrors((previous) => {
+        const next = { ...previous };
+        delete next[key];
+        return next;
+      });
+    }
   }
 
   async function commit(changes: FileChange[], newEntries: RawEntry[], message: string): Promise<boolean> {
@@ -292,9 +374,7 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
       setEntries(newEntries);
       setEditingIndex(null);
       setEditingId(null);
-      setSuccessMsg(
-        "Saved and committed. The site will redeploy automatically — check the Actions tab in a minute or two."
-      );
+      setSuccessMsg(savedMessage());
       await load();
       return true;
     } catch (err) {
@@ -310,17 +390,17 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
     await commit([], entries, `content: reorder ${config.label}`);
   }
 
-  function discardOrder() {
-    void load();
-  }
-
   async function handleSave() {
-    if (editingIndex === null) return;
-    const titleVal = String(form[config.titleField] ?? "").trim();
-    if (!titleVal) {
-      setError(`${config.fields.find((f) => f.key === config.titleField)?.label ?? "Title"} is required.`);
+    if (editingIndex === null || saving) return;
+    const errors = validate(form, config);
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError(errorSummary(errors));
+      focusFirstError();
       return;
     }
+    setFieldErrors({});
+    const titleVal = String(form[config.titleField] ?? "").trim();
 
     const previousEntry = !isNew ? entries?.find((e) => String(e.id) === editingId) : undefined;
     const oldManagedPaths = previousEntry ? managedImagePaths(previousEntry, config) : [];
@@ -350,15 +430,11 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
           const file = imageFiles[field.key];
           if (!file) continue;
           const ext = file.name.split(".").pop()?.toLowerCase() || "png";
-          const slug = slugify(titleVal);
-          const repoPath = `public/images/${config.imageFolder}/${slug}${
+          const publicPath = `/images/${config.imageFolder}/${slugify(titleVal)}${
             imageFields.length > 1 ? `-${field.key}` : ""
           }.${ext}`;
-          const base64 = await fileToBase64(file);
-          changes.push({ path: repoPath, content: base64 });
-          workingForm[field.key] = `/images/${config.imageFolder}/${slug}${
-            imageFields.length > 1 ? `-${field.key}` : ""
-          }.${ext}`;
+          changes.push({ path: toRepoPath(publicPath), content: await fileToBase64(file) });
+          workingForm[field.key] = publicPath;
         }
       } catch (err) {
         handleApiError(err);
@@ -372,8 +448,7 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
 
     if (isNew) {
       const newId = makeId(titleVal, current.map((e) => String(e.id)));
-      const outEntry = { id: newId, ...transformOut(workingForm, config) };
-      updated = [...current, outEntry];
+      updated = [...current, { id: newId, ...transformOut(workingForm, config) }];
     } else {
       const outEntry = { id: editingId, ...transformOut(workingForm, config) };
       updated = current.map((e) => (String(e.id) === editingId ? outEntry : e));
@@ -385,309 +460,169 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
     }
 
     const message = isNew ? `content: add ${titleVal}` : `content: update ${titleVal}`;
-    await commit(changes, updated, message);
-    setImageFiles({});
-    setImageListFiles({});
+    const ok = await commit(changes, updated, message);
+    if (ok) {
+      setImageFiles({});
+      setImageListFiles({});
+    }
   }
 
-  async function handleDelete(index: number) {
+  async function handleDelete(entry: RawEntry) {
     const current = entries ?? [];
-    const target = current[index];
-    const label = String(target?.[config.titleField] ?? "this entry");
-    if (!confirm(`Delete "${label}"? This cannot be undone.`)) return;
+    const label = String(entry[config.titleField] ?? "this entry");
+    if (!confirm(confirmDeleteMessage(label))) return;
 
-    const updated = current.filter((e) => String(e.id) !== String(target?.id));
-    const candidatePaths = target ? managedImagePaths(target, config) : [];
-    const changes: FileChange[] = candidatePaths
+    const updated = current.filter((e) => String(e.id) !== String(entry.id));
+    const changes: FileChange[] = managedImagePaths(entry, config)
       .filter((p) => !updated.some((e) => managedImagePaths(e, config).includes(p)))
       .map((p) => ({ path: toRepoPath(p), content: null }));
 
     await commit(changes, updated, `content: delete ${label}`);
   }
 
+  function previewEntry(): RawEntry {
+    // Picked-but-not-uploaded files show via temporary object URLs.
+    const withUploads: FormState = { ...form };
+    for (const field of config.fields) {
+      if (field.type === "images" && imageListFiles[field.key]?.length) {
+        const urls = imageListFiles[field.key].map((file) => previewUrls.get(file)).filter(Boolean);
+        withUploads[field.key] = [...splitLines(form[field.key]), ...urls].join("\n");
+      }
+      const single = field.type === "image" ? imageFiles[field.key] : null;
+      if (single) withUploads[field.key] = previewUrls.get(single) ?? "";
+    }
+    return transformOut(withUploads, config);
+  }
+
   return (
     <div>
-      {error && (
-        <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-          {error}
-        </div>
-      )}
-      {successMsg && (
-        <div className="mb-4 flex items-center justify-between gap-4 px-4 py-3 bg-accent/10 border border-accent/30 rounded-lg text-accent text-sm">
-          <span>{successMsg}</span>
-          <a
-            href="https://github.com/developerhridu/developerhridu.github.io/actions"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 whitespace-nowrap hover:underline"
-          >
-            View Actions <ExternalLink size={12} />
-          </a>
-        </div>
-      )}
+      <ErrorBanner message={error} onReload={() => void load()} />
+      <SuccessBanner message={successMsg} />
 
-      {editingIndex !== null ? (
-        <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-foreground">{isNew ? "New entry" : "Edit entry"}</h2>
-            <button onClick={cancelEdit} aria-label="Close" className="text-muted hover:text-foreground">
-              <X size={18} />
-            </button>
-          </div>
-
+      {editing ? (
+        <EditorPanel
+          title={isNew ? `New ${config.label} entry` : `Edit: ${String(form[config.titleField] || "entry")}`}
+          dirty={dirty}
+          onClose={cancelEdit}
+          preview={config.preview ? renderPreview(config.preview, previewEntry()) : undefined}
+        >
           {groupFields(config.fields).map((group, groupIndex) => (
-            <div key={group.section ?? `group-${groupIndex}`} className="space-y-4">
-              {group.section && (
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-accent pt-2 border-t border-border">
-                  {group.section}
-                </h3>
-              )}
-              <div className="grid sm:grid-cols-2 gap-4">
-                {group.fields.map((field) => (
-                  <div key={field.key} className={isFullWidth(field) ? "sm:col-span-2" : ""}>
-                    {field.type === "boolean" ? (
-                      <label className="flex items-center gap-2 cursor-pointer h-full">
-                        <input
-                          type="checkbox"
-                          checked={Boolean(form[field.key])}
-                          onChange={(e) => setForm({ ...form, [field.key]: e.target.checked })}
-                          className="w-4 h-4 accent-accent"
-                        />
-                        <span className="text-sm text-foreground">{field.label}</span>
-                      </label>
+            <FormSection key={group.section ?? `group-${groupIndex}`} title={group.section ?? undefined}>
+              {group.fields.map((field) => {
+                const fieldError = fieldErrors[field.key];
+                const required = field.required || field.key === config.titleField;
+                const value = String(form[field.key] ?? "");
+                const inputId = `field-${config.arrayKey}-${field.key}`;
+
+                if (field.type === "boolean") {
+                  return (
+                    <CheckboxField
+                      key={field.key}
+                      checked={Boolean(form[field.key])}
+                      onChange={(checked) => updateField(field.key, checked)}
+                      label={field.label}
+                      hint={field.hint}
+                    />
+                  );
+                }
+
+                return (
+                  <Field
+                    key={field.key}
+                    label={field.label}
+                    htmlFor={inputId}
+                    error={fieldError}
+                    hint={field.hint}
+                    required={required}
+                    full={isFullWidth(field)}
+                  >
+                    {field.type === "textarea" || field.type === "list" ? (
+                      <textarea
+                        id={inputId}
+                        value={value}
+                        onChange={(e) => updateField(field.key, e.target.value)}
+                        rows={field.rows ?? (field.type === "list" ? 5 : 3)}
+                        placeholder={field.placeholder}
+                        className={fieldClass(fieldError, "resize-y")}
+                      />
+                    ) : field.type === "images" ? (
+                      <ImageListInput
+                        images={splitLines(form[field.key])}
+                        pending={imageListFiles[field.key] ?? []}
+                        placeholder={field.placeholder}
+                        onChange={(images) => updateField(field.key, images.join("\n"))}
+                        onPendingChange={(files) => setImageListFiles((previous) => ({ ...previous, [field.key]: files }))}
+                      />
+                    ) : field.type === "image" ? (
+                      <SingleImageInput
+                        id={inputId}
+                        value={value}
+                        file={imageFiles[field.key] ?? null}
+                        placeholder={field.placeholder ?? `/images/${config.imageFolder ?? "logos"}/example.png`}
+                        invalid={!!fieldError}
+                        onChange={(next) => updateField(field.key, next)}
+                        onFileChange={(file) => setImageFiles((previous) => ({ ...previous, [field.key]: file }))}
+                      />
+                    ) : field.type === "clients" ? (
+                      <ClientMultiSelect value={value} onChange={(next) => updateField(field.key, next)} />
+                    ) : field.type === "caseStudies" ? (
+                      <CaseStudyMultiSelect value={value} onChange={(next) => updateField(field.key, next)} />
                     ) : (
-                      <>
-                        <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-                          {field.label}
-                        </label>
-                        {field.type === "textarea" ? (
-                          <textarea
-                            value={String(form[field.key] ?? "")}
-                            onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                            rows={field.rows ?? 3}
-                            className={`${inputClass} resize-y`}
-                          />
-                        ) : field.type === "images" ? (
-                          <ImageListInput
-                            images={splitLines(form[field.key])}
-                            pending={imageListFiles[field.key] ?? []}
-                            placeholder={field.placeholder}
-                            onChange={(images) => setForm({ ...form, [field.key]: images.join("\n") })}
-                            onPendingChange={(files) => setImageListFiles({ ...imageListFiles, [field.key]: files })}
-                          />
-                        ) : field.type === "list" ? (
-                          <textarea
-                            value={String(form[field.key] ?? "")}
-                            onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                            rows={field.rows ?? 5}
-                            className={`${inputClass} resize-y`}
-                            placeholder={field.placeholder}
-                          />
-                        ) : field.type === "date" ? (
-                          <input
-                            type="date"
-                            value={String(form[field.key] ?? "")}
-                            onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                            className={inputClass}
-                          />
-                        ) : field.type === "number" ? (
-                          <input
-                            type="number"
-                            min={field.min}
-                            max={field.max}
-                            value={String(form[field.key] ?? "")}
-                            onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                            className={inputClass}
-                          />
-                        ) : field.type === "clients" ? (
-                          <ClientMultiSelect
-                            value={String(form[field.key] ?? "")}
-                            onChange={(value) => setForm({ ...form, [field.key]: value })}
-                          />
-                        ) : field.type === "caseStudies" ? (
-                          <CaseStudyMultiSelect
-                            value={String(form[field.key] ?? "")}
-                            onChange={(value) => setForm({ ...form, [field.key]: value })}
-                          />
-                        ) : (
-                          <input
-                            value={String(form[field.key] ?? "")}
-                            onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                            placeholder={field.placeholder}
-                            className={inputClass}
-                          />
-                        )}
-                        {field.type === "image" && (
-                          <>
-                            <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
-                              <Upload size={16} className="text-muted shrink-0" />
-                              <span className="truncate">
-                                {imageFiles[field.key] ? imageFiles[field.key]!.name : "Or upload an image file…"}
-                              </span>
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={(e) =>
-                                  setImageFiles({ ...imageFiles, [field.key]: e.target.files?.[0] ?? null })
-                                }
-                              />
-                            </label>
-                            {imageFiles[field.key] && (
-                              <p className="text-muted text-xs mt-1">
-                                Uploaded to the repo and set as the URL above when you save.
-                              </p>
-                            )}
-                          </>
-                        )}
-                      </>
+                      <input
+                        id={inputId}
+                        type={field.type === "date" ? "date" : field.type === "number" ? "number" : field.type === "url" ? "url" : "text"}
+                        min={field.min}
+                        max={field.max}
+                        value={value}
+                        onChange={(e) => updateField(field.key, e.target.value)}
+                        placeholder={field.placeholder}
+                        className={fieldClass(fieldError)}
+                      />
                     )}
-                  </div>
-                ))}
-              </div>
-            </div>
+                  </Field>
+                );
+              })}
+            </FormSection>
           ))}
 
-          <div className="flex items-center gap-3 pt-2">
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="px-4 py-2.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
-            >
-              {saving ? "Saving…" : "Save"}
-            </button>
-            <button
-              onClick={cancelEdit}
-              disabled={saving}
-              className="px-4 py-2.5 border border-border text-muted hover:text-foreground rounded-lg text-sm transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
+          <FormActions
+            saving={saving}
+            dirty={dirty}
+            onSave={() => void handleSave()}
+            onCancel={cancelEdit}
+            onDuplicate={!isNew ? () => duplicate(form) : undefined}
+          />
+        </EditorPanel>
       ) : (
-        <>
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <button
-              onClick={startNew}
-              className="flex items-center gap-1.5 px-4 py-2 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors"
-            >
-              <Plus size={16} />
-              New Entry
-            </button>
-            {orderDirty && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted">Order changed</span>
-                <button
-                  onClick={() => void handleSaveOrder()}
-                  disabled={saving}
-                  className="px-3 py-1.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
-                >
-                  {saving ? "Saving…" : "Save order"}
-                </button>
-                <button
-                  onClick={discardOrder}
-                  disabled={saving}
-                  className="px-3 py-1.5 border border-border text-muted hover:text-foreground rounded-lg text-xs transition-colors"
-                >
-                  Discard
-                </button>
-              </div>
-            )}
-          </div>
-
-          {loading && <p className="text-muted text-sm">Loading…</p>}
-
-          {!loading && entries && entries.length === 0 && (
-            <p className="text-muted text-sm">No entries yet.</p>
-          )}
-
-          {!loading && entries && entries.length > 0 && (
-            <div className="overflow-x-auto border border-border rounded-lg">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-surface">
-                    <th className="text-left font-medium text-muted px-4 py-3">
-                      {config.fields.find((f) => f.key === config.titleField)?.label ?? "Title"}
-                    </th>
-                    <th className="text-right font-medium text-muted px-4 py-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {entries.map((entry, index) => {
-                    const title = String(entry[config.titleField] ?? "Untitled");
-                    const viewUrl = config.viewPath && typeof entry.slug === "string" && entry.slug.trim()
-                      ? `${config.viewPath}/${encodeURIComponent(entry.slug)}`
-                      : null;
-                    return (
-                      <tr key={String(entry.id)} className="border-b border-border last:border-b-0">
-                        <td className="px-4 py-3 min-w-0">
-                          <p className="text-foreground font-medium truncate flex items-center gap-2">
-                            {title}
-                            {hasPublishedField && entry.published === false && (
-                              <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-yellow-500/10 text-yellow-500 border border-yellow-500/30">
-                                Draft
-                              </span>
-                            )}
-                          </p>
-                          {config.subtitleField && entry[config.subtitleField] != null && (
-                            <p className="text-muted text-xs">
-                              {config.subtitleFormat
-                                ? config.subtitleFormat(entry[config.subtitleField])
-                                : String(entry[config.subtitleField])}
-                            </p>
-                          )}
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center justify-end gap-1">
-                            <IconButton
-                              onClick={() => moveEntry(index, -1)}
-                              disabled={index === 0}
-                              aria-label={`Move ${title} up`}
-                            >
-                              <ArrowUp size={16} />
-                            </IconButton>
-                            <IconButton
-                              onClick={() => moveEntry(index, 1)}
-                              disabled={index === entries.length - 1}
-                              aria-label={`Move ${title} down`}
-                            >
-                              <ArrowDown size={16} />
-                            </IconButton>
-                            {viewUrl && (
-                              <a
-                                href={viewUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label={`View ${title}`}
-                                className="p-2 text-muted hover:text-foreground transition-colors"
-                              >
-                                <Eye size={16} />
-                              </a>
-                            )}
-                            <IconButton
-                              onClick={() => startEdit(index)}
-                              aria-label={`Edit ${title}`}
-                            >
-                              <Pencil size={16} />
-                            </IconButton>
-                            <IconButton
-                              onClick={() => void handleDelete(index)}
-                              aria-label={`Delete ${title}`}
-                              tone={"danger"}
-                            >
-                              <Trash2 size={16} />
-                            </IconButton>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </>
+        <EntryList<RawEntry>
+          items={entries}
+          loading={loading}
+          getKey={(entry) => String(entry.id)}
+          getTitle={(entry) => String(entry[config.titleField] ?? "Untitled")}
+          getSubtitle={
+            config.subtitleField
+              ? (entry) => {
+                  const value = entry[config.subtitleField!];
+                  if (value == null || value === "") return "";
+                  return config.subtitleFormat ? config.subtitleFormat(value) : String(value);
+                }
+              : undefined
+          }
+          getThumbnail={hasImageFields(config) ? (entry) => entryThumbnail(entry, config) : undefined}
+          isDraft={hasPublishedField ? (entry) => entry.published === false : undefined}
+          getSearchText={(entry) => config.fields.map((f) => (typeof entry[f.key] === "string" ? entry[f.key] : "")).join(" ")}
+          getViewUrl={(entry) => entryViewUrl(entry, config)}
+          onMove={(from, to) => setEntries((previous) => (previous ? moveItem(previous, from, to) : previous))}
+          onEdit={(entry) => startEdit(entries!.indexOf(entry))}
+          onDelete={(entry) => void handleDelete(entry)}
+          onDuplicate={(entry) => duplicate(normalizeIn(entry, config))}
+          onNew={startNew}
+          orderDirty={orderDirty}
+          saving={saving}
+          onSaveOrder={() => void handleSaveOrder()}
+          onDiscardOrder={() => void load()}
+          titleHeading={config.fields.find((f) => f.key === config.titleField)?.label ?? "Title"}
+        />
       )}
     </div>
   );

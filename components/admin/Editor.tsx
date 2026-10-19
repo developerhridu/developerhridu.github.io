@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import IconButton from "@/components/ui/IconButton";
 import {
   fetchContentFile,
@@ -22,13 +22,20 @@ import {
   ArrowUp,
   ArrowDown,
   Linkedin,
+  Copy,
 } from "lucide-react";
-import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
+import { inputClass, slugify, fileToBase64, moveItem, savedMessage, confirmDeleteMessage } from "@/components/admin/shared";
 import ClientMultiSelect from "@/components/admin/ClientMultiSelect";
 import RelatedMultiSelect from "@/components/admin/RelatedMultiSelect";
 import EditorPreview from "@/components/admin/EditorPreview";
 import ArticleMarkdownEditor from "@/components/admin/ArticleMarkdownEditor";
-import { ReorderControls } from "@/components/admin/ReorderControls";
+import EntryList from "@/components/admin/EntryList";
+import { ErrorBanner, SuccessBanner } from "@/components/admin/CrudBanners";
+import { FormActions, fieldClass } from "@/components/admin/FormKit";
+import { MediaPickerButton, prepareImages, reusedNotice, useAdminToken } from "@/components/admin/MediaLibrary";
+import { confirmDiscardEdits, snapshot, useSaveShortcut, useUnsavedGuard } from "@/components/admin/useUnsavedGuard";
+import { collectErrors, errorSummary, focusFirstError, requiredError, slugError, urlError, type FieldErrors } from "@/components/admin/validation";
+import { stagedImageSrc } from "@/lib/adminStore";
 import type { ContentSection, Project } from "@/types";
 import { parseLinkedInPostText, buildLinkedInEmbedBody } from "@/lib/linkedin";
 import { coverImages } from "@/lib/coverImages";
@@ -281,6 +288,20 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
   const [showLinkedInImport, setShowLinkedInImport] = useState(false);
   const [linkedInUrl, setLinkedInUrl] = useState("");
   const [linkedInText, setLinkedInText] = useState("");
+  /** Snapshot of the form when it was opened — "" marks a prefilled draft as unsaved from the start. */
+  const [opened, setOpened] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+
+  const pendingFiles =
+    coverImageFiles.some(Boolean) || photoFiles.some(Boolean) || sectionImageFiles.some((files) => files.some(Boolean)) || inlineImages.length > 0;
+  const dirty = !!editing && (snapshot({ editing, tagsText }) !== opened || pendingFiles);
+  useUnsavedGuard(dirty);
+  useSaveShortcut(() => void handleSave(), !!editing && !saving);
+
+  function markOpened(entry: Entry, tags: string, startDirty = false) {
+    setOpened(startDirty ? "" : snapshot({ editing: entry, tagsText: tags }));
+    setFieldErrors({});
+  }
 
   useEffect(() => {
     clearInlineImages();
@@ -371,10 +392,13 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
   }
 
   function startNew() {
+    if (!confirmDiscardEdits(dirty)) return;
     clearInlineImages();
     setMode("edit");
-    setEditing(blankEntry(kind));
+    const blank = blankEntry(kind);
+    setEditing(blank);
     setTagsText("");
+    markOpened(blank, "");
     setIsNew(true);
     setCoverImageFiles([]);
     setSectionImageFiles([]);
@@ -384,11 +408,13 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
   }
 
   function startEdit(entry: Entry, nextMode: "edit" | "view" = "edit") {
+    if (!confirmDiscardEdits(dirty)) return;
     clearInlineImages();
     setMode(nextMode);
     const sections = entry.sections ?? [];
     setEditing({ ...entry, sections });
     setTagsText(entry.tags.join(", "));
+    markOpened({ ...entry, sections }, entry.tags.join(", "));
     setIsNew(false);
     setCoverImageFiles(entry.coverImages.map(() => null));
     setSectionImageFiles(sections.map((s) => (s.images ?? []).map(() => null)));
@@ -398,11 +424,31 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
   }
 
   function cancelEdit() {
+    if (!confirmDiscardEdits(dirty)) return;
     clearInlineImages();
     setEditing(null);
     setCoverImageFiles([]);
     setSectionImageFiles([]);
     setPhotoFiles([]);
+    setFieldErrors({});
+  }
+
+  /** Opens a new draft pre-filled from `entry` (images shared by path; never published). */
+  function duplicate(entry: Entry) {
+    if (!confirmDiscardEdits(dirty)) return;
+    clearInlineImages();
+    setMode("edit");
+    const slug = makeUniqueSlug(`${entry.slug}-copy`, (entries ?? []).map((e) => e.slug));
+    const copy: Entry = { ...entry, sections: entry.sections ?? [], id: "", slug, title: `${entry.title} (copy)`, published: false, featured: false };
+    setEditing(copy);
+    setTagsText(entry.tags.join(", "));
+    setIsNew(true);
+    setCoverImageFiles(copy.coverImages.map(() => null));
+    setSectionImageFiles(copy.sections.map((s) => (s.images ?? []).map(() => null)));
+    setPhotoFiles(copy.proofOfWorkImages.map(() => null));
+    markOpened(copy, entry.tags.join(", "), true);
+    setSuccessMsg(null);
+    setError(null);
   }
 
   function cancelLinkedInImport() {
@@ -420,16 +466,19 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
     const parsed = parseLinkedInPostText(linkedInText);
     const slug = makeUniqueSlug(parsed.title, (entries ?? []).map((e) => e.slug));
 
+    if (!confirmDiscardEdits(dirty)) return;
     clearInlineImages();
     setMode("edit");
-    setEditing({
+    const draft = {
       ...blankEntry(kind),
       title: parsed.title,
       slug,
       description: parsed.description,
       body: buildLinkedInEmbedBody(linkedInUrl.trim(), parsed.body),
-    });
+    };
+    setEditing(draft);
     setTagsText(parsed.tags.join(", "));
+    markOpened(draft, parsed.tags.join(", "), true);
     setIsNew(true);
     setCoverImageFiles([]);
     setSectionImageFiles([]);
@@ -552,13 +601,27 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
     setCoverImageFiles((previous) => [...previous, null]);
   }
 
-  function addCoverFiles(files: File[]) {
+  /** Adds picked cover files (optimized; ones already on the site reuse the existing path). */
+  async function addCoverFiles(files: File[]) {
     if (files.length === 0) return;
+    const prepared = await prepareImages(files, token);
+    const reused = prepared.filter((item) => item.existing).length;
     setEditing((previous) => previous ? {
       ...previous,
-      coverImages: [...previous.coverImages, ...files.map(() => "")],
+      coverImages: [...previous.coverImages, ...prepared.map((item) => item.existing ?? "")],
     } : previous);
-    setCoverImageFiles((previous) => [...previous, ...files]);
+    setCoverImageFiles((previous) => [...previous, ...prepared.map((item) => item.file ?? null)]);
+    if (reused > 0) setSuccessMsg(reusedNotice(reused));
+  }
+
+  function addCoverPaths(paths: string[]) {
+    setEditing((previous) => previous ? { ...previous, coverImages: [...previous.coverImages, ...paths] } : previous);
+    setCoverImageFiles((previous) => [...previous, ...paths.map(() => null)]);
+  }
+
+  function addPhotoPaths(paths: string[]) {
+    setEditing((previous) => previous ? { ...previous, proofOfWorkImages: [...previous.proofOfWorkImages, ...paths] } : previous);
+    setPhotoFiles((previous) => [...previous, ...paths.map(() => null)]);
   }
 
   function updateCoverImage(index: number, value: string) {
@@ -601,9 +664,8 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
       await commitFiles(allChanges, message, token, { path: CONFIG[kind].path, expectedSha: fileSha });
       setEntries(newEntries);
       setEditing(null);
-      setSuccessMsg(
-        "Saved and committed. The site will redeploy automatically — check the Actions tab in a minute or two."
-      );
+      setFieldErrors({});
+      setSuccessMsg(savedMessage());
       await load();
       return true;
     } catch (err) {
@@ -615,11 +677,7 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
   }
 
   async function handleSave() {
-    if (!editing) return;
-    if (!editing.title.trim() || !editing.slug.trim()) {
-      setError("Title and slug are required.");
-      return;
-    }
+    if (!editing || saving) return;
 
     const tags = tagsText
       .split(",")
@@ -629,10 +687,24 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
     const slug = editing.slug.trim();
     const current = entries ?? [];
     const slugTaken = current.some((e) => e.slug === slug && e.id !== editing.id);
-    if (slugTaken) {
-      setError("That slug is already used by another entry.");
+    const github = editing.githubUrl;
+    const errors = collectErrors([
+      ["title", requiredError(editing.title, "Title")],
+      ["slug", slugError(slug) ?? (slugTaken ? "That slug is already used by another entry." : null)],
+      ["liveUrl", kind === "project" ? urlError(editing.liveUrl, { allowRelative: false }) : null],
+      ["githubUrl", kind === "project" && typeof github === "string" ? urlError(github, { allowRelative: false }) : null],
+      ["githubFrontend", kind === "project" && github && typeof github === "object" ? urlError(github.frontend, { allowRelative: false }) : null],
+      ["githubBackend", kind === "project" && github && typeof github === "object" ? urlError(github.backend, { allowRelative: false }) : null],
+      ["url", kind === "client" ? urlError(editing.url, { allowRelative: false }) : null],
+    ]);
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError(errorSummary(errors));
+      if (mode === "view") setMode("edit");
+      focusFirstError();
       return;
     }
+    setFieldErrors({});
 
     const previousEntry = !isNew ? current.find((e) => e.id === editing.id) : undefined;
     const oldManagedPaths = [...new Set(previousEntry ? entryImagePaths(previousEntry) : [])]
@@ -754,7 +826,7 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
   }
 
   async function handleDelete(entry: Entry) {
-    if (!confirm(`Delete "${entry.title}"? This cannot be undone.`)) return;
+    if (!confirm(confirmDeleteMessage(entry.title))) return;
     const current = entries ?? [];
     const updated = current.filter((e) => e.id !== entry.id);
 
@@ -770,15 +842,8 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
   const orderDirty = !CONFIG[kind].dated && entries !== null &&
     entries.map((entry) => entry.id).join("|") !== loadedOrderIds.join("|");
 
-  function moveEntry(index: number, direction: -1 | 1) {
-    setEntries((previous) => {
-      if (!previous) return previous;
-      const target = index + direction;
-      if (target < 0 || target >= previous.length) return previous;
-      const next = [...previous];
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
-    });
+  function moveEntry(from: number, to: number) {
+    setEntries((previous) => (previous ? moveItem(previous, from, to) : previous));
   }
 
   const sortedEntries = !CONFIG[kind].dated
@@ -790,24 +855,8 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
 
   return (
     <div>
-      {error && (
-        <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-          {error}
-        </div>
-      )}
-      {successMsg && (
-        <div className="mb-4 flex items-center justify-between gap-4 px-4 py-3 bg-accent/10 border border-accent/30 rounded-lg text-accent text-sm">
-          <span>{successMsg}</span>
-          <a
-            href="https://github.com/developerhridu/developerhridu.github.io/actions"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 whitespace-nowrap hover:underline"
-          >
-            View Actions <ExternalLink size={12} />
-          </a>
-        </div>
-      )}
+      <ErrorBanner message={error} onReload={() => void load()} />
+      <SuccessBanner message={successMsg} />
 
       {editing ? (
         <div>
@@ -838,6 +887,21 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
                 >
                   Open live page <ExternalLink size={14} />
                 </a>
+              )}
+              {!isNew && (
+                <button
+                  type="button"
+                  onClick={() => duplicate(editing)}
+                  disabled={saving}
+                  className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground disabled:opacity-50"
+                >
+                  <Copy size={14} /> Duplicate
+                </button>
+              )}
+              {dirty && (
+                <span className="rounded-full bg-yellow-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-yellow-500">
+                  Unsaved
+                </span>
               )}
               {mode === "view" && (
                 <button
@@ -896,8 +960,13 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
               setTagsText={setTagsText}
               hasClient={CONFIG[kind].hasClient}
               saving={saving}
+              dirty={dirty}
+              fieldErrors={fieldErrors}
+              onDuplicate={!isNew ? () => duplicate(editing) : undefined}
               coverImageFiles={coverImageFiles}
-              onAddCoverFiles={addCoverFiles}
+              onAddCoverFiles={(files) => void addCoverFiles(files)}
+              onAddCoverPaths={addCoverPaths}
+              onAddPhotoPaths={addPhotoPaths}
               sectionImageFiles={sectionImageFiles}
               photoFiles={photoFiles}
               inlineImageUrls={inlineImageUrls}
@@ -931,32 +1000,6 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
         </div>
       ) : (
         <>
-          <div className="mb-4 flex flex-wrap items-center gap-3">
-            <button
-              onClick={startNew}
-              className="flex items-center gap-1.5 px-4 py-2 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors"
-            >
-              <Plus size={16} />
-              New {CONFIG[kind].singularLabel}
-            </button>
-            {CONFIG[kind].hasLinkedInImport && !showLinkedInImport && (
-              <button
-                onClick={() => setShowLinkedInImport(true)}
-                className="flex items-center gap-1.5 px-4 py-2 border border-border text-muted hover:text-foreground rounded-lg text-sm font-medium transition-colors"
-              >
-                <Linkedin size={16} />
-                Import from LinkedIn
-              </button>
-            )}
-            {orderDirty && (
-              <ReorderControls
-                saving={saving}
-                onSave={() => { if (entries) void commit([], entries, `content: reorder ${CONFIG[kind].label}`); }}
-                onDiscard={() => void load()}
-              />
-            )}
-          </div>
-
           {showLinkedInImport && (
             <div className="mb-4 bg-surface border border-border rounded-xl p-6 space-y-4">
               <div className="flex items-center justify-between">
@@ -1012,88 +1055,51 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
             </div>
           )}
 
-          {loading && <p className="text-muted text-sm">Loading…</p>}
-
-          {!loading && sortedEntries && sortedEntries.length === 0 && (
-            <p className="text-muted text-sm">No entries yet.</p>
-          )}
-
-          {!loading && sortedEntries && sortedEntries.length > 0 && (
-            <div className="overflow-x-auto border border-border rounded-lg">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-surface">
-                    <th className="text-left font-medium text-muted px-4 py-3">Title</th>
-                    <th className="text-right font-medium text-muted px-4 py-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedEntries.map((entry, index) => (
-                    <tr key={entry.id} className="border-b border-border last:border-b-0">
-                      <td className="px-4 py-3 min-w-0">
-                        <p className="text-foreground font-medium truncate flex items-center gap-2">
-                          {entry.title}
-                          {!entry.published && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-yellow-500/10 text-yellow-500 border border-yellow-500/30">
-                              Draft
-                            </span>
-                          )}
-                        </p>
-                        <p className="text-muted text-xs">
-                          {entry.date ? `${entry.date} · ` : ""}/{entry.slug}
-                        </p>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-2">
-                          {!CONFIG[kind].dated && (
-                            <>
-                              <IconButton
-                                onClick={() => moveEntry(index, -1)}
-                                disabled={saving || index === 0}
-                                aria-label={`Move ${entry.title} up`}
-                              >
-                                <ArrowUp size={16} />
-                              </IconButton>
-                              <IconButton
-                                onClick={() => moveEntry(index, 1)}
-                                disabled={saving || index === sortedEntries.length - 1}
-                                aria-label={`Move ${entry.title} down`}
-                              >
-                                <ArrowDown size={16} />
-                              </IconButton>
-                            </>
-                          )}
-                          <IconButton
-                            onClick={() => startEdit(entry, "view")}
-                            aria-label={`View ${entry.title}`}
-                          >
-                            <Eye size={16} />
-                          </IconButton>
-                          <IconButton
-                            onClick={() => startEdit(entry)}
-                            aria-label={`Edit ${entry.title}`}
-                          >
-                            <Pencil size={16} />
-                          </IconButton>
-                          <IconButton
-                            onClick={() => void handleDelete(entry)}
-                            aria-label={`Delete ${entry.title}`}
-                            tone={"danger"}
-                          >
-                            <Trash2 size={16} />
-                          </IconButton>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <EntryList<Entry>
+            items={sortedEntries}
+            loading={loading}
+            getKey={(entry) => entry.id}
+            getTitle={(entry) => entry.title}
+            getSubtitle={(entry) => `${entry.date ? `${entry.date} · ` : ""}/${entry.slug}`}
+            getThumbnail={(entry) => entry.coverImages[0]}
+            isDraft={(entry) => !entry.published}
+            getSearchText={(entry) => [entry.description, entry.tags.join(" "), entry.client ?? ""].join(" ")}
+            getViewUrl={(entry) => `${CONFIG[kind].viewPath}/${encodeURIComponent(entry.slug)}`}
+            onMove={!CONFIG[kind].dated ? moveEntry : undefined}
+            onEdit={(entry) => startEdit(entry)}
+            onPreview={(entry) => startEdit(entry, "view")}
+            onDuplicate={duplicate}
+            onDelete={(entry) => void handleDelete(entry)}
+            onNew={startNew}
+            newLabel={`New ${CONFIG[kind].singularLabel}`}
+            toolbar={
+              CONFIG[kind].hasLinkedInImport && !showLinkedInImport ? (
+                <button
+                  type="button"
+                  onClick={() => setShowLinkedInImport(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 border border-border text-muted hover:text-foreground rounded-lg text-sm font-medium transition-colors"
+                >
+                  <Linkedin size={16} />
+                  Import from LinkedIn
+                </button>
+              ) : undefined
+            }
+            orderDirty={orderDirty}
+            saving={saving}
+            onSaveOrder={() => { if (entries) void commit([], entries, `content: reorder ${CONFIG[kind].label}`); }}
+            onDiscardOrder={() => void load()}
+          />
         </>
       )}
     </div>
   );
+}
+
+function FileThumb({ file }: { file: File }) {
+  const src = useMemo(() => URL.createObjectURL(file), [file]);
+  useEffect(() => () => URL.revokeObjectURL(src), [src]);
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={src} alt="" className="h-full w-full object-contain" />;
 }
 
 /** Editable list of image URLs, each with an optional file upload. */
@@ -1109,6 +1115,7 @@ function ImageListField({
   onRemove,
   onMove,
   onFileChange,
+  onAddPaths,
 }: {
   label: string;
   itemName: string;
@@ -1121,24 +1128,66 @@ function ImageListField({
   onRemove: (index: number) => void;
   onMove?: (index: number, direction: -1 | 1) => void;
   onFileChange: (index: number, file: File | null) => void;
+  /** Appends paths picked from the media library. */
+  onAddPaths?: (paths: string[]) => void;
 }) {
+  const token = useAdminToken();
+  const [notice, setNotice] = useState<string | null>(null);
+
+  /** Optimizes the picked file; an image already on the site fills in its path instead of uploading again. */
+  async function pickFile(index: number, list: FileList | null) {
+    const picked = list?.[0];
+    if (!picked) return;
+    const [prepared] = await prepareImages([picked], token);
+    if (prepared.existing) {
+      onUpdate(index, prepared.existing);
+      onFileChange(index, null);
+      setNotice(reusedNotice(1));
+    } else {
+      onFileChange(index, prepared.file ?? null);
+      setNotice(null);
+    }
+  }
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
         <label className="block text-xs uppercase tracking-wide text-muted">{label}</label>
-        <button onClick={onAdd} type="button" className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover capitalize">
-          <Plus size={14} /> Add {itemName}
-        </button>
+        <div className="flex items-center gap-3">
+          {onAddPaths && <MediaPickerButton multiple onPick={onAddPaths} className="border-0 px-0 text-xs text-accent hover:text-accent-hover" />}
+          <button onClick={onAdd} type="button" className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover capitalize">
+            <Plus size={14} /> Add {itemName}
+          </button>
+        </div>
       </div>
+      {notice && <p className="mb-2 text-xs text-accent">{notice}</p>}
       <div className="space-y-2">
         {images.map((image, index) => (
           <div key={index} className="flex items-start gap-2">
+            {(files[index] || image) && (
+              <span className="mt-1 h-12 w-12 shrink-0 overflow-hidden rounded border border-border bg-white">
+                {files[index] ? (
+                  <FileThumb file={files[index]!} />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={stagedImageSrc(image)} alt="" className="h-full w-full object-contain" />
+                )}
+              </span>
+            )}
             <div className="flex-1">
               <input value={image} onChange={(e) => onUpdate(index, e.target.value)} placeholder={placeholder} className={inputClass} />
               <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
                 <Upload size={16} className="text-muted shrink-0" />
                 <span className="truncate">{files[index]?.name ?? `Or upload a ${itemName}…`}</span>
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => onFileChange(index, e.target.files?.[0] ?? null)} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    void pickFile(index, e.target.files);
+                    e.target.value = "";
+                  }}
+                />
               </label>
             </div>
             <div className="flex flex-col items-center gap-1">
@@ -1166,8 +1215,13 @@ function EntryForm({
   setTagsText,
   hasClient,
   saving,
+  dirty,
+  fieldErrors,
+  onDuplicate,
   coverImageFiles,
   onAddCoverFiles,
+  onAddCoverPaths,
+  onAddPhotoPaths,
   sectionImageFiles,
   photoFiles,
   inlineImageUrls,
@@ -1200,8 +1254,13 @@ function EntryForm({
   setTagsText: (t: string) => void;
   hasClient: boolean;
   saving: boolean;
+  dirty: boolean;
+  fieldErrors: FieldErrors;
+  onDuplicate?: () => void;
   coverImageFiles: (File | null)[];
   onAddCoverFiles: (files: File[]) => void;
+  onAddCoverPaths: (paths: string[]) => void;
+  onAddPhotoPaths: (paths: string[]) => void;
   sectionImageFiles: (File | null)[][];
   photoFiles: (File | null)[];
   inlineImageUrls: Record<string, string>;
@@ -1227,6 +1286,7 @@ function EntryForm({
   onSave: () => void;
   onTitleBlur: () => void;
 }) {
+  const token = useAdminToken();
   return (
     <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
       <div className="flex items-center justify-between">
@@ -1238,23 +1298,35 @@ function EntryForm({
         </button>
       </div>
 
-      <div>
-        <label className="block text-xs uppercase tracking-wide text-muted mb-1">Title</label>
+      <div data-field-error={fieldErrors.title ? "true" : undefined}>
+        <label htmlFor="entry-title" className="block text-xs uppercase tracking-wide text-muted mb-1">
+          Title <span className="text-red-400" aria-hidden="true">*</span>
+        </label>
         <input
+          id="entry-title"
           value={entry.title}
           onChange={(e) => setEntry({ ...entry, title: e.target.value })}
           onBlur={onTitleBlur}
-          className={inputClass}
+          className={fieldClass(fieldErrors.title)}
         />
+        {fieldErrors.title && <p role="alert" className="mt-1 text-xs text-red-400">{fieldErrors.title}</p>}
       </div>
 
-      <div>
-        <label className="block text-xs uppercase tracking-wide text-muted mb-1">Slug</label>
+      <div data-field-error={fieldErrors.slug ? "true" : undefined}>
+        <label htmlFor="entry-slug" className="block text-xs uppercase tracking-wide text-muted mb-1">
+          Slug <span className="text-red-400" aria-hidden="true">*</span>
+        </label>
         <input
+          id="entry-slug"
           value={entry.slug}
           onChange={(e) => setEntry({ ...entry, slug: slugify(e.target.value) })}
-          className={inputClass}
+          className={fieldClass(fieldErrors.slug)}
         />
+        {fieldErrors.slug ? (
+          <p role="alert" className="mt-1 text-xs text-red-400">{fieldErrors.slug}</p>
+        ) : (
+          <p className="mt-1 text-xs text-muted">Page address: {CONFIG[kind].viewPath}/{entry.slug || "…"}</p>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -1309,10 +1381,15 @@ function EntryForm({
             accept="image/*"
             multiple
             className="hidden"
-            onChange={(e) => onAddCoverFiles(Array.from(e.target.files ?? []))}
+            onChange={(e) => {
+              onAddCoverFiles(Array.from(e.target.files ?? []));
+              e.target.value = "";
+            }}
           />
         </label>
-        <p className="text-muted text-xs mt-1">The first image is the default thumbnail. Use the arrows to change the order.</p>
+        <p className="text-muted text-xs mt-1">
+          The first image is the default thumbnail. Use the arrows to change the order. Uploads are resized and converted to WebP.
+        </p>
       </div>
 
       <ImageListField
@@ -1327,6 +1404,7 @@ function EntryForm({
         onRemove={onRemoveCoverImage}
         onMove={onMoveCoverImage}
         onFileChange={onCoverImageFileChange}
+        onAddPaths={onAddCoverPaths}
       />
 
       {hasClient && (
@@ -1463,7 +1541,14 @@ function EntryForm({
                             type="file"
                             accept="image/*"
                             className="hidden"
-                            onChange={(e) => onSectionImageFileChange(i, j, e.target.files?.[0] ?? null)}
+                            onChange={async (e) => {
+                              const picked = e.target.files?.[0];
+                              e.target.value = "";
+                              if (!picked) return;
+                              const [prepared] = await prepareImages([picked], token);
+                              if (prepared.existing) onUpdateSectionImageUrl(i, j, prepared.existing);
+                              onSectionImageFileChange(i, j, prepared.file ?? null);
+                            }}
                           />
                         </label>
                       </div>
@@ -1529,6 +1614,7 @@ function EntryForm({
         onUpdate={onUpdatePhoto}
         onRemove={onRemovePhoto}
         onFileChange={onPhotoFileChange}
+        onAddPaths={onAddPhotoPaths}
       />
 
       <div className="border-t border-border pt-4">
@@ -1540,72 +1626,65 @@ function EntryForm({
         />
       </div>
 
-      {kind === "project" && <ProjectLinkFields entry={entry} setEntry={setEntry} />}
-      {kind === "client" && <ClientFields entry={entry} setEntry={setEntry} />}
+      {kind === "project" && <ProjectLinkFields entry={entry} setEntry={setEntry} fieldErrors={fieldErrors} />}
+      {kind === "client" && <ClientFields entry={entry} setEntry={setEntry} fieldErrors={fieldErrors} />}
 
-      <div className="flex items-center gap-3 pt-2">
-        <button
-          onClick={onSave}
-          disabled={saving}
-          className="px-4 py-2.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
-        >
-          {saving ? "Saving…" : "Save"}
-        </button>
-        <button
-          onClick={onCancel}
-          disabled={saving}
-          className="px-4 py-2.5 border border-border text-muted hover:text-foreground rounded-lg text-sm transition-colors"
-        >
-          Cancel
-        </button>
-      </div>
+      <FormActions saving={saving} dirty={dirty} onSave={onSave} onCancel={onCancel} onDuplicate={onDuplicate} />
     </div>
   );
 }
 
-function ClientFields({ entry, setEntry }: { entry: Entry; setEntry: (entry: Entry) => void }) {
+type LinkFieldsProps = { entry: Entry; setEntry: (entry: Entry) => void; fieldErrors: FieldErrors };
+
+function ClientFields({ entry, setEntry, fieldErrors }: LinkFieldsProps) {
   return (
     <div className="space-y-4 border-t border-border pt-4">
       <h3 className="text-xs font-semibold uppercase tracking-wide text-accent">Client Details</h3>
-      <div>
+      <div data-field-error={fieldErrors.url ? "true" : undefined}>
         <label htmlFor="client-url" className="block text-xs uppercase tracking-wide text-muted mb-1">Website URL</label>
         <input
           id="client-url"
+          type="url"
           value={entry.url ?? ""}
           onChange={(e) => setEntry({ ...entry, url: e.target.value })}
           placeholder="https://example.com"
-          className={inputClass}
+          className={fieldClass(fieldErrors.url)}
         />
+        {fieldErrors.url && <p role="alert" className="mt-1 text-xs text-red-400">{fieldErrors.url}</p>}
       </div>
     </div>
   );
 }
 
-function ProjectLinkFields({ entry, setEntry }: { entry: Entry; setEntry: (entry: Entry) => void }) {
+function ProjectLinkFields({ entry, setEntry, fieldErrors }: LinkFieldsProps) {
   const repositories = typeof entry.githubUrl === "object" ? entry.githubUrl : null;
   const fields = [
     {
       key: "live",
       label: "Live URL",
       value: entry.liveUrl ?? "",
+      error: fieldErrors.liveUrl,
       onChange: (value: string) => setEntry({ ...entry, liveUrl: value }),
     },
     {
       key: "repository",
       label: "GitHub URL (single repo)",
       value: typeof entry.githubUrl === "string" ? entry.githubUrl : "",
+      error: fieldErrors.githubUrl,
       onChange: (value: string) => setEntry({ ...entry, githubUrl: value }),
     },
     {
       key: "frontend",
       label: "GitHub Frontend URL",
       value: repositories?.frontend ?? "",
+      error: fieldErrors.githubFrontend,
       onChange: (value: string) => setEntry({ ...entry, githubUrl: { ...repositories, frontend: value } }),
     },
     {
       key: "backend",
       label: "GitHub Backend URL",
       value: repositories?.backend ?? "",
+      error: fieldErrors.githubBackend,
       onChange: (value: string) => setEntry({ ...entry, githubUrl: { ...repositories, backend: value } }),
     },
   ];
@@ -1616,16 +1695,19 @@ function ProjectLinkFields({ entry, setEntry }: { entry: Entry; setEntry: (entry
       <p className="text-xs text-muted">Use a single GitHub repository or separate frontend and backend repositories.</p>
       <div className="space-y-4">
         {fields.map((field) => (
-          <div key={field.key}>
+          <div key={field.key} data-field-error={field.error ? "true" : undefined}>
             <label htmlFor={`project-${field.key}`} className="block text-xs uppercase tracking-wide text-muted mb-1">
               {field.label}
             </label>
             <input
               id={`project-${field.key}`}
+              type="url"
               value={field.value}
               onChange={(e) => field.onChange(e.target.value)}
-              className={inputClass}
+              placeholder="https://…"
+              className={fieldClass(field.error)}
             />
+            {field.error && <p role="alert" className="mt-1 text-xs text-red-400">{field.error}</p>}
           </div>
         ))}
       </div>

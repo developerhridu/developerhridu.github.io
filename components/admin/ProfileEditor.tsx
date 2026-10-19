@@ -8,8 +8,13 @@ import {
   GitHubApiError,
   type FileChange,
 } from "@/lib/github";
-import { ExternalLink, Upload } from "lucide-react";
-import { inputClass, fileToBase64 } from "@/components/admin/shared";
+import { Upload } from "lucide-react";
+import { inputClass, fileToBase64, savedMessage } from "@/components/admin/shared";
+import { ErrorBanner, SuccessBanner } from "@/components/admin/CrudBanners";
+import { FormActions, fieldClass } from "@/components/admin/FormKit";
+import { SingleImageInput } from "@/components/admin/ImageListInput";
+import { snapshot, useSaveShortcut, useUnsavedGuard } from "@/components/admin/useUnsavedGuard";
+import { collectErrors, emailError, errorSummary, focusFirstError, requiredError, urlError, type FieldErrors } from "@/components/admin/validation";
 
 interface ProfileForm {
   name: string;
@@ -86,6 +91,12 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [loadedForm, setLoadedForm] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+
+  const dirty = !loading && (snapshot(form) !== loadedForm || !!avatarFile || !!resumeFile);
+  useUnsavedGuard(dirty);
+  useSaveShortcut(() => void handleSave(), !loading && !saving);
 
   useEffect(() => {
     void load();
@@ -98,7 +109,7 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
     try {
       const { content, sha } = await fetchContentFile(PATH, token);
       const parsed = JSON.parse(content);
-      setForm({
+      const next: ProfileForm = {
         name: parsed.name ?? "",
         title: parsed.title ?? "",
         tagline: parsed.tagline ?? "",
@@ -120,7 +131,9 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
           leetcode: parsed.social?.leetcode ?? "",
           upwork: parsed.social?.upwork ?? "",
         },
-      });
+      };
+      setForm(next);
+      setLoadedForm(snapshot(next));
       const extra: Record<string, unknown> = {};
       for (const k of Object.keys(parsed)) if (!KNOWN_KEYS.has(k)) extra[k] = parsed[k];
       setRawExtra(extra);
@@ -147,8 +160,27 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
       setError("Missing file version — reload before saving.");
       return;
     }
-    if (!form.name.trim()) {
-      setError("Name is required.");
+    if (saving) return;
+    const nonNegative = (value: string, label: string) =>
+      value.trim() && !(Number(value) >= 0) ? `${label} must be a number.` : null;
+    const errors = collectErrors([
+      ["name", requiredError(form.name, "Name")],
+      ["email", emailError(form.email)],
+      ["avatar", urlError(form.avatar)],
+      ["yearsOfExperience", nonNegative(form.yearsOfExperience, "Years of experience")],
+      ["projectsCompleted", nonNegative(form.projectsCompleted, "Projects completed")],
+      ["servicesWorkWith", nonNegative(form.servicesWorkWith, "Services")],
+      ["github", urlError(form.social.github, { allowRelative: false })],
+      ["linkedin", urlError(form.social.linkedin, { allowRelative: false })],
+      ["leetcode", urlError(form.social.leetcode, { allowRelative: false })],
+      ["upwork", urlError(form.social.upwork, { allowRelative: false })],
+      ["bookingUrl", urlError(form.bookingUrl, { allowRelative: false })],
+      ["resumeUrl", urlError(form.resumeUrl)],
+    ]);
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      setError(errorSummary(errors));
+      focusFirstError();
       return;
     }
 
@@ -215,9 +247,7 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
       await commitFiles(changes, "content: update profile", token, { path: PATH, expectedSha: fileSha });
       setAvatarFile(null);
       setResumeFile(null);
-      setSuccessMsg(
-        "Saved and committed. The site will redeploy automatically — check the Actions tab in a minute or two."
-      );
+      setSuccessMsg(savedMessage());
 
       await load();
     } catch (err) {
@@ -231,28 +261,12 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
 
   return (
     <div className="space-y-4">
-      {error && (
-        <div className="px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-          {error}
-        </div>
-      )}
-      {successMsg && (
-        <div className="flex items-center justify-between gap-4 px-4 py-3 bg-accent/10 border border-accent/30 rounded-lg text-accent text-sm">
-          <span>{successMsg}</span>
-          <a
-            href="https://github.com/developerhridu/developerhridu.github.io/actions"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 whitespace-nowrap hover:underline"
-          >
-            View Actions <ExternalLink size={12} />
-          </a>
-        </div>
-      )}
+      <ErrorBanner message={error} onReload={() => void load()} />
+      <SuccessBanner message={successMsg} />
 
       <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field label="Name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
+          <Field label="Name" value={form.name} error={fieldErrors.name} onChange={(v) => setForm({ ...form, name: v })} />
           <Field label="Title" value={form.title} onChange={(v) => setForm({ ...form, title: v })} />
         </div>
         <Field label="Tagline" value={form.tagline} onChange={(v) => setForm({ ...form, tagline: v })} />
@@ -287,7 +301,7 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field label="Email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
+          <Field label="Email" value={form.email} error={fieldErrors.email} onChange={(v) => setForm({ ...form, email: v })} />
           <Field label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
         </div>
         <div className="grid sm:grid-cols-3 gap-4">
@@ -295,63 +309,64 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
           <Field
             label="Years of Experience"
             value={form.yearsOfExperience}
+            error={fieldErrors.yearsOfExperience}
             onChange={(v) => setForm({ ...form, yearsOfExperience: v })}
           />
           <Field
             label="Projects Completed"
             value={form.projectsCompleted}
+            error={fieldErrors.projectsCompleted}
             onChange={(v) => setForm({ ...form, projectsCompleted: v })}
           />
           <Field
             label="Services Built & Maintained"
             value={form.servicesWorkWith}
+            error={fieldErrors.servicesWorkWith}
             onChange={(v) => setForm({ ...form, servicesWorkWith: v })}
           />
         </div>
 
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Avatar URL</label>
-          <input
+        <div data-field-error={fieldErrors.avatar ? "true" : undefined}>
+          <label htmlFor="profile-avatar" className="block text-xs uppercase tracking-wide text-muted mb-1">Avatar</label>
+          <SingleImageInput
+            id="profile-avatar"
             value={form.avatar}
-            onChange={(e) => setForm({ ...form, avatar: e.target.value })}
-            className={inputClass}
+            file={avatarFile}
+            invalid={!!fieldErrors.avatar}
+            onChange={(avatar) => setForm({ ...form, avatar })}
+            onFileChange={setAvatarFile}
           />
-          <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
-            <Upload size={16} className="text-muted shrink-0" />
-            <span className="truncate">{avatarFile ? avatarFile.name : "Or upload an image file…"}</span>
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => setAvatarFile(e.target.files?.[0] ?? null)}
-            />
-          </label>
+          {fieldErrors.avatar && <p role="alert" className="mt-1 text-xs text-red-400">{fieldErrors.avatar}</p>}
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
           <Field
             label="GitHub URL"
             value={form.social.github}
+            error={fieldErrors.github}
             onChange={(v) => setForm({ ...form, social: { ...form.social, github: v } })}
           />
           <Field
             label="LinkedIn URL"
             value={form.social.linkedin}
+            error={fieldErrors.linkedin}
             onChange={(v) => setForm({ ...form, social: { ...form.social, linkedin: v } })}
           />
           <Field
             label="LeetCode URL"
             value={form.social.leetcode}
+            error={fieldErrors.leetcode}
             onChange={(v) => setForm({ ...form, social: { ...form.social, leetcode: v } })}
           />
           <Field
             label="Upwork URL"
             value={form.social.upwork}
+            error={fieldErrors.upwork}
             onChange={(v) => setForm({ ...form, social: { ...form.social, upwork: v } })}
           />
         </div>
 
-        <div>
+        <div data-field-error={fieldErrors.bookingUrl ? "true" : undefined}>
           <label className="block text-xs uppercase tracking-wide text-muted mb-1">
             Booking URL (Cal.com / Calendly)
           </label>
@@ -359,21 +374,22 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
             value={form.bookingUrl}
             onChange={(e) => setForm({ ...form, bookingUrl: e.target.value })}
             placeholder="https://cal.com/your-handle/30min"
-            className={inputClass}
+            className={fieldClass(fieldErrors.bookingUrl)}
           />
-          <p className="text-muted text-xs mt-1">
-            Leave empty to hide the Book a Call buttons across the site.
+          <p className={`text-xs mt-1 ${fieldErrors.bookingUrl ? "text-red-400" : "text-muted"}`}>
+            {fieldErrors.bookingUrl ?? "Leave empty to hide the Book a Call buttons across the site."}
           </p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <div>
+          <div data-field-error={fieldErrors.resumeUrl ? "true" : undefined}>
             <label className="block text-xs uppercase tracking-wide text-muted mb-1">Resume URL</label>
             <input
               value={form.resumeUrl}
               onChange={(e) => setForm({ ...form, resumeUrl: e.target.value })}
-              className={inputClass}
+              className={fieldClass(fieldErrors.resumeUrl)}
             />
+            {fieldErrors.resumeUrl && <p role="alert" className="mt-1 text-xs text-red-400">{fieldErrors.resumeUrl}</p>}
             <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
               <Upload size={16} className="text-muted shrink-0" />
               <span className="truncate">{resumeFile ? resumeFile.name : "Or upload a PDF…"}</span>
@@ -387,15 +403,18 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
           </div>
         </div>
 
-        <div className="pt-2">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="px-4 py-2.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
-          >
-            {saving ? "Saving…" : "Save"}
-          </button>
-        </div>
+        <FormActions
+          saving={saving}
+          dirty={dirty}
+          onSave={() => void handleSave()}
+          onCancel={() => {
+            if (dirty && !window.confirm("Discard your unsaved profile changes?")) return;
+            setAvatarFile(null);
+            setResumeFile(null);
+            setFieldErrors({});
+            void load();
+          }}
+        />
       </div>
     </div>
   );
@@ -404,16 +423,19 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
 function Field({
   label,
   value,
+  error,
   onChange,
 }: {
   label: string;
   value: string;
+  error?: string;
   onChange: (v: string) => void;
 }) {
   return (
-    <div>
+    <div data-field-error={error ? "true" : undefined}>
       <label className="block text-xs uppercase tracking-wide text-muted mb-1">{label}</label>
-      <input value={value} onChange={(e) => onChange(e.target.value)} className={inputClass} />
+      <input value={value} onChange={(e) => onChange(e.target.value)} className={fieldClass(error)} />
+      {error && <p role="alert" className="mt-1 text-xs text-red-400">{error}</p>}
     </div>
   );
 }

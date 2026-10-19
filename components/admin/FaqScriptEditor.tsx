@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { fetchContentFile, updateContentFile, GitHubApiError } from "@/lib/github";
-import { ExternalLink } from "lucide-react";
-import { inputClass } from "@/components/admin/shared";
+import { ErrorBanner, SuccessBanner } from "@/components/admin/CrudBanners";
+import { useLoadedFormGuard } from "@/components/admin/useUnsavedGuard";
+import { inputClass, savedMessage } from "@/components/admin/shared";
 
 const PATH = "content/faq-script.json";
 
@@ -33,6 +34,7 @@ export default function FaqScriptEditor({ token, onAuthError }: FaqScriptEditorP
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const dirty = useLoadedFormGuard(form, loading, saving, () => void handleSave());
 
   useEffect(() => {
     void load();
@@ -99,9 +101,7 @@ export default function FaqScriptEditor({ token, onAuthError }: FaqScriptEditorP
       };
       const content = JSON.stringify(payload, null, 2) + "\n";
       await updateContentFile(PATH, content, fileSha, "content: update FAQ bot script", token);
-      setSuccessMsg(
-        "Saved and committed. The site will redeploy automatically — check the Actions tab in a minute or two."
-      );
+      setSuccessMsg(savedMessage());
       await load();
     } catch (err) {
       handleApiError(err);
@@ -114,24 +114,8 @@ export default function FaqScriptEditor({ token, onAuthError }: FaqScriptEditorP
 
   return (
     <div className="space-y-4">
-      {error && (
-        <div className="px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-          {error}
-        </div>
-      )}
-      {successMsg && (
-        <div className="flex items-center justify-between gap-4 px-4 py-3 bg-accent/10 border border-accent/30 rounded-lg text-accent text-sm">
-          <span>{successMsg}</span>
-          <a
-            href="https://github.com/developerhridu/developerhridu.github.io/actions"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 whitespace-nowrap hover:underline"
-          >
-            View Actions <ExternalLink size={12} />
-          </a>
-        </div>
-      )}
+      <ErrorBanner message={error} onReload={() => void load()} />
+      <SuccessBanner message={successMsg} />
 
       <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
         <div>
@@ -193,11 +177,11 @@ export default function FaqScriptEditor({ token, onAuthError }: FaqScriptEditorP
 
         <div className="pt-2">
           <button
-            onClick={handleSave}
+            onClick={() => void handleSave()}
             disabled={saving}
             className="px-4 py-2.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
           >
-            {saving ? "Saving…" : "Save"}
+            {saving ? "Saving…" : dirty ? "Save changes" : "Save"}
           </button>
         </div>
       </div>

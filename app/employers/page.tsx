@@ -1,8 +1,5 @@
 import { Metadata } from "next";
-import Link from "next/link";
-import { Briefcase, Calendar } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
-import ThumbnailGallery from "@/components/ui/ThumbnailGallery";
+import EmployerCard from "@/components/ui/EmployerCard";
 import { coverImages } from "@/lib/coverImages";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { getPublishedEmployers } from "@/lib/employers";
@@ -23,31 +20,16 @@ export default function EmployersPage() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
             {employers.map((employer) => (
-              <GlassCard key={employer.id} className="relative h-full min-w-0 flex flex-col items-center group cursor-pointer">
-                  <Link href={`/employers/${employer.slug}`} className="absolute inset-0 z-10 rounded-xl" aria-label={`View ${employer.name}`} />
-                  <ThumbnailGallery
-                    images={[...coverImages(employer), ...employer.proofOfWorkImages]}
-                    alt={employer.name}
-                    wrapperClassName="w-full h-28 overflow-hidden rounded-lg mb-4 bg-white/90"
-                    imgClassName="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-                    initials={employer.name.split(" ").slice(0, 2).map((word) => word[0]).join("")}
-                  />
-                  <h2 className="text-base font-semibold text-foreground text-center group-hover:text-accent transition-colors">
-                    {employer.name}
-                  </h2>
-                  {employer.role && (
-                    <p className="mt-2 flex items-center gap-1.5 text-xs text-accent text-center">
-                      <Briefcase size={12} className="shrink-0" />
-                      {employer.role}
-                    </p>
-                  )}
-                  {employer.period && (
-                    <p className="mt-1 flex items-center gap-1.5 text-xs text-muted text-center">
-                      <Calendar size={12} className="shrink-0" />
-                      {employer.period}
-                    </p>
-                  )}
-              </GlassCard>
+              <EmployerCard
+                key={employer.id}
+                employer={{
+                  slug: employer.slug,
+                  name: employer.name,
+                  role: employer.role,
+                  period: employer.period,
+                  images: [...coverImages(employer), ...employer.proofOfWorkImages],
+                }}
+              />
             ))}
           </div>
         </div>

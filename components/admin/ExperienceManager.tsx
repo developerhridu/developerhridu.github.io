@@ -1,27 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import IconButton from "@/components/ui/IconButton";
-import {
-  fetchContentFile,
-  commitFiles,
-  encodeBase64Unicode,
-  GitHubApiError,
-  type FileChange,
-} from "@/lib/github";
-import {
-  Pencil,
-  Trash2,
-  Plus,
-  ExternalLink,
-  X,
-  Upload,
-  ArrowUp,
-  ArrowDown,
-} from "lucide-react";
-import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
-import ImageListInput from "@/components/admin/ImageListInput";
+import { type FileChange } from "@/lib/github";
+import { Trash2, Plus, ArrowUp, ArrowDown } from "lucide-react";
+import { slugify, fileToBase64, confirmDeleteMessage } from "@/components/admin/shared";
+import ImageListInput, { SingleImageInput } from "@/components/admin/ImageListInput";
 import RelatedMultiSelect from "@/components/admin/RelatedMultiSelect";
+import EntryList from "@/components/admin/EntryList";
+import { useContentCrud } from "@/components/admin/useContentCrud";
+import { ErrorBanner, SuccessBanner } from "@/components/admin/CrudBanners";
+import { CheckboxField, EditorPanel, Field, FormActions, FormSection, fieldClass } from "@/components/admin/FormKit";
+import { confirmDiscardEdits, snapshot, useSaveShortcut, useUnsavedGuard } from "@/components/admin/useUnsavedGuard";
+import { collectErrors, errorSummary, focusFirstError, requiredError, urlError, type FieldErrors } from "@/components/admin/validation";
+import { renderPreview } from "@/components/admin/previews";
+import { employerSlug } from "@/lib/employers";
 import type { RelatedRefs } from "@/types";
 
 interface Project {
@@ -96,6 +89,37 @@ function makeId(base: string, existingIds: string[]): string {
   return candidate;
 }
 
+function normalizeLoaded(list: Entry[]): Entry[] {
+  return list.map((e) => ({ ...e, projects: e.projects ?? [] }));
+}
+
+interface FormState {
+  entry: Entry;
+  techText: string[];
+  highlightsText: string[];
+}
+
+function toFormState(entry: Entry): FormState {
+  const projects = entry.projects ?? [];
+  return {
+    entry: { ...entry, projects },
+    techText: projects.map((p) => p.technologies.join(", ")),
+    highlightsText: projects.map((p) => p.highlights.join("\n")),
+  };
+}
+
+function validate({ entry }: FormState): FieldErrors {
+  return collectErrors([
+    ["company", requiredError(entry.company, "Company")],
+    ["role", requiredError(entry.role, "Role")],
+    ["period", requiredError(entry.period, "Period")],
+    ["companyUrl", urlError(entry.companyUrl, { allowRelative: false })],
+    ["verifyUrl", urlError(entry.verifyUrl)],
+    ["logo", urlError(entry.logo)],
+    ...entry.projects.map((p, i): [string, string | null] => [`project-${i}`, requiredError(p.name, "Project name")]),
+  ]);
+}
+
 export default function ExperienceManager({
   token,
   onAuthError,
@@ -105,185 +129,125 @@ export default function ExperienceManager({
   onAuthError: () => void;
   initialNew?: boolean;
 }) {
-  const [entries, setEntries] = useState<Entry[] | null>(null);
-  const [fileSha, setFileSha] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const [loadedOrderIds, setLoadedOrderIds] = useState<string[]>([]);
+  const crud = useContentCrud<Entry>({ path: PATH, arrayKey: ARRAY_KEY, label: "experience", token, onAuthError, normalizeLoaded });
+  const { entries, saving, setSaving, setError, commit, reportError, clearMessages } = crud;
 
-  const [editing, setEditing] = useState<Entry | null>(() => initialNew ? blankEntry() : null);
+  const [form, setForm] = useState<FormState | null>(() => (initialNew ? toFormState(blankEntry()) : null));
+  const [opened, setOpened] = useState(() => (initialNew ? snapshot(toFormState(blankEntry())) : ""));
   const [isNew, setIsNew] = useState(initialNew);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
-  const [projectTechText, setProjectTechText] = useState<string[]>([]);
-  const [projectHighlightsText, setProjectHighlightsText] = useState<string[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
-  useEffect(() => {
-    void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const dirty = !!form && (snapshot(form) !== opened || !!logoFile || photoFiles.length > 0);
+  useUnsavedGuard(dirty);
 
-  async function load() {
-    setLoading(true);
-    setError(null);
-    try {
-      const { content, sha } = await fetchContentFile(PATH, token);
-      const parsed = JSON.parse(content);
-      const loaded: Entry[] = (parsed[ARRAY_KEY] ?? []).map((e: Entry) => ({
-        ...e,
-        projects: e.projects ?? [],
-      }));
-      setEntries(loaded);
-      setLoadedOrderIds(loaded.map((e) => e.id));
-      setFileSha(sha);
-    } catch (err) {
-      handleApiError(err);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const previewFiles = useMemo(() => [...(logoFile ? [logoFile] : []), ...photoFiles], [logoFile, photoFiles]);
+  const previewUrls = useMemo(() => new Map(previewFiles.map((file) => [file, URL.createObjectURL(file)])), [previewFiles]);
+  useEffect(() => () => previewUrls.forEach((url) => URL.revokeObjectURL(url)), [previewUrls]);
 
-  const orderDirty =
-    entries !== null && entries.map((e) => e.id).join("|") !== loadedOrderIds.join("|");
-
-  function moveEntry(index: number, direction: -1 | 1) {
-    setEntries((prev) => {
-      if (!prev) return prev;
-      const target = index + direction;
-      if (target < 0 || target >= prev.length) return prev;
-      const next = [...prev];
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
-    });
-  }
-
-  function handleApiError(err: unknown) {
-    if (err instanceof GitHubApiError && (err.status === 401 || err.status === 403)) {
-      onAuthError();
-    } else if (err instanceof Error) {
-      setError(err.message);
-    } else {
-      setError("Something went wrong.");
-    }
+  function open(next: FormState, asNew: boolean, startDirty = false) {
+    setForm(next);
+    setOpened(startDirty ? "" : snapshot(next));
+    setIsNew(asNew);
+    setLogoFile(null);
+    setPhotoFiles([]);
+    setFieldErrors({});
+    clearMessages();
   }
 
   function startNew() {
-    setEditing(blankEntry());
-    setIsNew(true);
-    setLogoFile(null);
-    setPhotoFiles([]);
-    setProjectTechText([]);
-    setProjectHighlightsText([]);
-    setSuccessMsg(null);
-    setError(null);
+    if (!confirmDiscardEdits(dirty)) return;
+    open(toFormState(blankEntry()), true);
   }
 
   function startEdit(entry: Entry) {
-    const projects = entry.projects ?? [];
-    setEditing({ ...entry, projects });
-    setIsNew(false);
-    setLogoFile(null);
-    setPhotoFiles([]);
-    setProjectTechText(projects.map((p) => p.technologies.join(", ")));
-    setProjectHighlightsText(projects.map((p) => p.highlights.join("\n")));
-    setSuccessMsg(null);
-    setError(null);
+    if (!confirmDiscardEdits(dirty)) return;
+    open(toFormState(entry), false);
+  }
+
+  function duplicate(entry: Entry) {
+    if (!confirmDiscardEdits(dirty)) return;
+    open(toFormState({ ...entry, id: "", company: `${entry.company} (copy)`, published: false }), true, true);
   }
 
   function cancelEdit() {
-    setEditing(null);
+    if (!confirmDiscardEdits(dirty)) return;
+    setForm(null);
     setLogoFile(null);
     setPhotoFiles([]);
-    setProjectTechText([]);
-    setProjectHighlightsText([]);
+    setFieldErrors({});
   }
 
-  function addProject() {
-    if (!editing) return;
-    setEditing({ ...editing, projects: [...editing.projects, blankProject()] });
-    setProjectTechText((prev) => [...prev, ""]);
-    setProjectHighlightsText((prev) => [...prev, ""]);
+  function setEntry(patch: Partial<Entry>) {
+    setForm((previous) => (previous ? { ...previous, entry: { ...previous.entry, ...patch } } : previous));
+    const keys = Object.keys(patch);
+    if (keys.some((key) => fieldErrors[key])) {
+      setFieldErrors((previous) => Object.fromEntries(Object.entries(previous).filter(([key]) => !keys.includes(key))));
+    }
   }
 
   function updateProject(index: number, patch: Partial<Project>) {
-    if (!editing) return;
-    setEditing({
-      ...editing,
-      projects: editing.projects.map((p, i) => (i === index ? { ...p, ...patch } : p)),
-    });
+    setForm((previous) =>
+      previous
+        ? { ...previous, entry: { ...previous.entry, projects: previous.entry.projects.map((p, i) => (i === index ? { ...p, ...patch } : p)) } }
+        : previous
+    );
+  }
+
+  function addProject() {
+    setForm((previous) =>
+      previous
+        ? {
+            entry: { ...previous.entry, projects: [...previous.entry.projects, blankProject()] },
+            techText: [...previous.techText, ""],
+            highlightsText: [...previous.highlightsText, ""],
+          }
+        : previous
+    );
   }
 
   function removeProject(index: number) {
-    if (!editing) return;
-    setEditing({ ...editing, projects: editing.projects.filter((_, i) => i !== index) });
-    setProjectTechText((prev) => prev.filter((_, i) => i !== index));
-    setProjectHighlightsText((prev) => prev.filter((_, i) => i !== index));
+    setForm((previous) =>
+      previous
+        ? {
+            entry: { ...previous.entry, projects: previous.entry.projects.filter((_, i) => i !== index) },
+            techText: previous.techText.filter((_, i) => i !== index),
+            highlightsText: previous.highlightsText.filter((_, i) => i !== index),
+          }
+        : previous
+    );
   }
 
   function moveProject(index: number, direction: -1 | 1) {
-    if (!editing) return;
-    const target = index + direction;
-    if (target < 0 || target >= editing.projects.length) return;
-    const nextProjects = [...editing.projects];
-    [nextProjects[index], nextProjects[target]] = [nextProjects[target], nextProjects[index]];
-    setEditing({ ...editing, projects: nextProjects });
-    setProjectTechText((prev) => {
-      const next = [...prev];
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
+    setForm((previous) => {
+      if (!previous) return previous;
+      const target = index + direction;
+      if (target < 0 || target >= previous.entry.projects.length) return previous;
+      const swap = <T,>(list: T[]) => {
+        const next = [...list];
+        [next[index], next[target]] = [next[target], next[index]];
+        return next;
+      };
+      return {
+        entry: { ...previous.entry, projects: swap(previous.entry.projects) },
+        techText: swap(previous.techText),
+        highlightsText: swap(previous.highlightsText),
+      };
     });
-    setProjectHighlightsText((prev) => {
-      const next = [...prev];
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
-    });
-  }
-
-  async function commit(changes: FileChange[], newEntries: Entry[], message: string): Promise<boolean> {
-    if (!fileSha) {
-      setError("Missing file version — reload the list before saving.");
-      return false;
-    }
-    const payload = { [ARRAY_KEY]: newEntries };
-    const content = JSON.stringify(payload, null, 2) + "\n";
-    const allChanges = [...changes, { path: PATH, content: encodeBase64Unicode(content) }];
-
-    setSaving(true);
-    setError(null);
-    try {
-      await commitFiles(allChanges, message, token, { path: PATH, expectedSha: fileSha });
-      setEntries(newEntries);
-      setEditing(null);
-      setSuccessMsg(
-        "Saved and committed. The site will redeploy automatically — check the Actions tab in a minute or two."
-      );
-      await load();
-      return true;
-    } catch (err) {
-      handleApiError(err);
-      return false;
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleSaveOrder() {
-    if (!entries) return;
-    await commit([], entries, "content: reorder experience");
-  }
-
-  function discardOrder() {
-    void load();
   }
 
   async function handleSave() {
-    if (!editing) return;
-    if (!editing.company.trim() || !editing.role.trim()) {
-      setError("Company and role are required.");
+    if (!form || saving) return;
+    const errors = validate(form);
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError(errorSummary(errors));
+      focusFirstError();
       return;
     }
+    setFieldErrors({});
+    const { entry: editing, techText, highlightsText } = form;
 
     const current = entries ?? [];
     const previous = !isNew ? current.find((e) => e.id === editing.id) : undefined;
@@ -299,10 +263,8 @@ export default function ExperienceManager({
       const slug = slugify(editing.company);
       if (logoFile) {
         const ext = logoFile.name.split(".").pop()?.toLowerCase() || "png";
-        const repoPath = `public/images/${IMAGE_FOLDER}/${slug}.${ext}`;
-        const base64 = await fileToBase64(logoFile);
-        changes.push({ path: repoPath, content: base64 });
         logo = `/images/${IMAGE_FOLDER}/${slug}.${ext}`;
+        changes.push({ path: toRepoPath(logo), content: await fileToBase64(logoFile) });
       }
       for (const file of photoFiles) {
         const ext = file.name.split(".").pop()?.toLowerCase() || "png";
@@ -311,7 +273,7 @@ export default function ExperienceManager({
         photos.push(publicPath);
       }
     } catch (err) {
-      handleApiError(err);
+      reportError(err);
       setSaving(false);
       return;
     }
@@ -319,14 +281,8 @@ export default function ExperienceManager({
     const projects: Project[] = editing.projects.map((p, i) => ({
       name: p.name.trim(),
       description: p.description?.trim() || undefined,
-      technologies: (projectTechText[i] ?? "")
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-      highlights: (projectHighlightsText[i] ?? "")
-        .split("\n")
-        .map((h) => h.trim())
-        .filter(Boolean),
+      technologies: (techText[i] ?? "").split(",").map((t) => t.trim()).filter(Boolean),
+      highlights: (highlightsText[i] ?? "").split("\n").map((h) => h.trim()).filter(Boolean),
     }));
 
     const related = editing.related ?? {};
@@ -339,14 +295,10 @@ export default function ExperienceManager({
       related: hasRelated ? related : undefined,
       projects,
     };
-    let updated: Entry[];
 
-    if (isNew) {
-      const newId = makeId(editing.company, current.map((e) => e.id));
-      updated = [...current, { ...finalEntry, id: newId }];
-    } else {
-      updated = current.map((e) => (e.id === editing.id ? finalEntry : e));
-    }
+    const updated = isNew
+      ? [...current, { ...finalEntry, id: makeId(editing.company, current.map((e) => e.id)) }]
+      : current.map((e) => (e.id === editing.id ? finalEntry : e));
 
     const stillUsed = new Set(updated.flatMap(entryImages));
     for (const oldImage of oldImages) {
@@ -356,460 +308,179 @@ export default function ExperienceManager({
     }
 
     const message = isNew ? `content: add ${editing.company}` : `content: update ${editing.company}`;
-    await commit(changes, updated, message);
-    setLogoFile(null);
-    setPhotoFiles([]);
+    if (await commit(changes, updated, message)) {
+      setForm(null);
+      setLogoFile(null);
+      setPhotoFiles([]);
+    }
   }
 
-  async function handleDelete(entry: Entry) {
-    if (!confirm(`Delete "${entry.company}"? This cannot be undone.`)) return;
-    const current = entries ?? [];
-    const updated = current.filter((e) => e.id !== entry.id);
+  useSaveShortcut(() => void handleSave(), !!form && !saving);
 
+  async function handleDelete(entry: Entry) {
+    if (!confirm(confirmDeleteMessage(entry.company))) return;
+    const updated = (entries ?? []).filter((e) => e.id !== entry.id);
     const stillUsed = new Set(updated.flatMap(entryImages));
     const changes: FileChange[] = entryImages(entry)
       .filter((image) => isManagedImage(image) && !stillUsed.has(image))
       .map((image) => ({ path: toRepoPath(image), content: null }));
-
     await commit(changes, updated, `content: delete ${entry.company}`);
   }
 
+  const previewEntry = form
+    ? {
+        ...form.entry,
+        logo: logoFile ? previewUrls.get(logoFile) : form.entry.logo,
+        photos: [...(form.entry.photos ?? []), ...photoFiles.map((file) => previewUrls.get(file) ?? "")],
+      }
+    : null;
+
   return (
     <div>
-      {error && (
-        <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-          {error}
-        </div>
-      )}
-      {successMsg && (
-        <div className="mb-4 flex items-center justify-between gap-4 px-4 py-3 bg-accent/10 border border-accent/30 rounded-lg text-accent text-sm">
-          <span>{successMsg}</span>
-          <a
-            href="https://github.com/developerhridu/developerhridu.github.io/actions"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 whitespace-nowrap hover:underline"
-          >
-            View Actions <ExternalLink size={12} />
-          </a>
-        </div>
-      )}
+      <ErrorBanner message={crud.error} onReload={() => void crud.reload()} />
+      <SuccessBanner message={crud.successMsg} />
 
-      {editing ? (
-        <EntryForm
-          entry={editing}
-          setEntry={setEditing}
-          saving={saving}
-          logoFile={logoFile}
-          setLogoFile={setLogoFile}
-          photoFiles={photoFiles}
-          setPhotoFiles={setPhotoFiles}
-          projectTechText={projectTechText}
-          projectHighlightsText={projectHighlightsText}
-          onProjectTechTextChange={(i, v) =>
-            setProjectTechText((prev) => prev.map((t, idx) => (idx === i ? v : t)))
-          }
-          onProjectHighlightsTextChange={(i, v) =>
-            setProjectHighlightsText((prev) => prev.map((t, idx) => (idx === i ? v : t)))
-          }
-          onAddProject={addProject}
-          onUpdateProject={updateProject}
-          onRemoveProject={removeProject}
-          onMoveProject={moveProject}
-          onCancel={cancelEdit}
-          onSave={() => void handleSave()}
-        />
-      ) : (
-        <>
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <button
-              onClick={startNew}
-              className="flex items-center gap-1.5 px-4 py-2 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors"
-            >
-              <Plus size={16} />
-              New Entry
-            </button>
-            {orderDirty && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted">Order changed</span>
-                <button
-                  onClick={() => void handleSaveOrder()}
-                  disabled={saving}
-                  className="px-3 py-1.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
-                >
-                  {saving ? "Saving…" : "Save order"}
-                </button>
-                <button
-                  onClick={discardOrder}
-                  disabled={saving}
-                  className="px-3 py-1.5 border border-border text-muted hover:text-foreground rounded-lg text-xs transition-colors"
-                >
-                  Discard
-                </button>
-              </div>
-            )}
-          </div>
+      {form ? (
+        <EditorPanel
+          title={isNew ? "New experience" : `Edit: ${form.entry.company || "experience"}`}
+          dirty={dirty}
+          onClose={cancelEdit}
+          preview={previewEntry ? renderPreview("employer", previewEntry) : undefined}
+        >
+          <FormSection title="Job">
+            <Field label="Company" htmlFor="exp-company" required error={fieldErrors.company}>
+              <input id="exp-company" value={form.entry.company} onChange={(e) => setEntry({ company: e.target.value })} className={fieldClass(fieldErrors.company)} />
+            </Field>
+            <Field label="Role" htmlFor="exp-role" required error={fieldErrors.role}>
+              <input id="exp-role" value={form.entry.role} onChange={(e) => setEntry({ role: e.target.value })} className={fieldClass(fieldErrors.role)} />
+            </Field>
+            <Field label="Period" htmlFor="exp-period" required error={fieldErrors.period}>
+              <input id="exp-period" value={form.entry.period} onChange={(e) => setEntry({ period: e.target.value })} placeholder="April 2024 - Present" className={fieldClass(fieldErrors.period)} />
+            </Field>
+            <Field label="Location" htmlFor="exp-location">
+              <input id="exp-location" value={form.entry.location ?? ""} onChange={(e) => setEntry({ location: e.target.value })} placeholder="Dhaka, Bangladesh" className={fieldClass()} />
+            </Field>
+            <Field label="Company website" htmlFor="exp-url" error={fieldErrors.companyUrl}>
+              <input id="exp-url" type="url" value={form.entry.companyUrl ?? ""} onChange={(e) => setEntry({ companyUrl: e.target.value })} placeholder="https://example.com" className={fieldClass(fieldErrors.companyUrl)} />
+            </Field>
+            <Field label="Verify URL (proof of employment)" htmlFor="exp-verify" error={fieldErrors.verifyUrl}>
+              <input id="exp-verify" value={form.entry.verifyUrl ?? ""} onChange={(e) => setEntry({ verifyUrl: e.target.value })} placeholder="https://… or /pdf/letter.pdf" className={fieldClass(fieldErrors.verifyUrl)} />
+            </Field>
+            <CheckboxField
+              checked={form.entry.published !== false}
+              onChange={(published) => setEntry({ published })}
+              label="Published"
+              hint="visible on the site, resume and /employers"
+            />
+            <Field label="Logo" htmlFor="exp-logo" full error={fieldErrors.logo}>
+              <SingleImageInput
+                id="exp-logo"
+                value={form.entry.logo ?? ""}
+                file={logoFile}
+                placeholder="/images/logos/example.png"
+                invalid={!!fieldErrors.logo}
+                onChange={(logo) => setEntry({ logo })}
+                onFileChange={setLogoFile}
+              />
+            </Field>
+          </FormSection>
 
-          {loading && <p className="text-muted text-sm">Loading…</p>}
+          <FormSection title="Employers page">
+            <Field label="Summary" htmlFor="exp-summary" full hint="Card blurb and search-engine description. Leave empty to use “Role at Company · period”.">
+              <textarea id="exp-summary" value={form.entry.summary ?? ""} onChange={(e) => setEntry({ summary: e.target.value })} rows={2} className={fieldClass(null, "resize-y")} />
+            </Field>
+            <Field label="Photo gallery" full>
+              <ImageListInput
+                images={form.entry.photos ?? []}
+                pending={photoFiles}
+                placeholder="/images/experience/example.png"
+                onChange={(photos) => setEntry({ photos })}
+                onPendingChange={setPhotoFiles}
+              />
+            </Field>
+            <Field label="Related content" full>
+              <RelatedMultiSelect value={form.entry.related ?? {}} onChange={(related) => setEntry({ related })} />
+            </Field>
+          </FormSection>
 
-          {!loading && entries && entries.length === 0 && (
-            <p className="text-muted text-sm">No entries yet.</p>
-          )}
-
-          {!loading && entries && entries.length > 0 && (
-            <div className="overflow-x-auto border border-border rounded-lg">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-surface">
-                    <th className="text-left font-medium text-muted px-4 py-3">Company</th>
-                    <th className="text-right font-medium text-muted px-4 py-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {entries.map((entry, index) => (
-                    <tr key={entry.id} className="border-b border-border last:border-b-0">
-                      <td className="px-4 py-3 min-w-0">
-                        <p className="text-foreground font-medium truncate">{entry.company}</p>
-                        {entry.published === false && (
-                          <span className="text-xs text-muted">Draft</span>
-                        )}
-                        <p className="text-muted text-xs">
-                          {entry.role} · {entry.projects.length}{" "}
-                          {entry.projects.length === 1 ? "project" : "projects"}
-                        </p>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-1">
-                          <IconButton
-                            onClick={() => moveEntry(index, -1)}
-                            disabled={index === 0}
-                            aria-label={`Move ${entry.company} up`}
-                          >
-                            <ArrowUp size={16} />
-                          </IconButton>
-                          <IconButton
-                            onClick={() => moveEntry(index, 1)}
-                            disabled={index === entries.length - 1}
-                            aria-label={`Move ${entry.company} down`}
-                          >
-                            <ArrowDown size={16} />
-                          </IconButton>
-                          <IconButton
-                            onClick={() => startEdit(entry)}
-                            aria-label={`Edit ${entry.company}`}
-                          >
-                            <Pencil size={16} />
-                          </IconButton>
-                          <IconButton
-                            onClick={() => void handleDelete(entry)}
-                            aria-label={`Delete ${entry.company}`}
-                            tone={"danger"}
-                          >
-                            <Trash2 size={16} />
-                          </IconButton>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  );
-}
-
-function EntryForm({
-  entry,
-  setEntry,
-  saving,
-  logoFile,
-  setLogoFile,
-  photoFiles,
-  setPhotoFiles,
-  projectTechText,
-  projectHighlightsText,
-  onProjectTechTextChange,
-  onProjectHighlightsTextChange,
-  onAddProject,
-  onUpdateProject,
-  onRemoveProject,
-  onMoveProject,
-  onCancel,
-  onSave,
-}: {
-  entry: Entry;
-  setEntry: (e: Entry) => void;
-  saving: boolean;
-  logoFile: File | null;
-  setLogoFile: (f: File | null) => void;
-  photoFiles: File[];
-  setPhotoFiles: (files: File[]) => void;
-  projectTechText: string[];
-  projectHighlightsText: string[];
-  onProjectTechTextChange: (index: number, value: string) => void;
-  onProjectHighlightsTextChange: (index: number, value: string) => void;
-  onAddProject: () => void;
-  onUpdateProject: (index: number, patch: Partial<Project>) => void;
-  onRemoveProject: (index: number) => void;
-  onMoveProject: (index: number, direction: -1 | 1) => void;
-  onCancel: () => void;
-  onSave: () => void;
-}) {
-  return (
-    <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">
-          {entry.id ? "Edit entry" : "New entry"}
-        </h2>
-        <button onClick={onCancel} aria-label="Close" className="text-muted hover:text-foreground">
-          <X size={18} />
-        </button>
-      </div>
-
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Company</label>
-          <input
-            value={entry.company}
-            onChange={(e) => setEntry({ ...entry, company: e.target.value })}
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Role</label>
-          <input
-            value={entry.role}
-            onChange={(e) => setEntry({ ...entry, role: e.target.value })}
-            className={inputClass}
-          />
-        </div>
-      </div>
-
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Period</label>
-          <input
-            value={entry.period}
-            onChange={(e) => setEntry({ ...entry, period: e.target.value })}
-            placeholder="April 2024 - Present"
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Location</label>
-          <input
-            value={entry.location ?? ""}
-            onChange={(e) => setEntry({ ...entry, location: e.target.value })}
-            className={inputClass}
-          />
-        </div>
-      </div>
-
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-            Company URL (optional)
-          </label>
-          <input
-            value={entry.companyUrl ?? ""}
-            onChange={(e) => setEntry({ ...entry, companyUrl: e.target.value })}
-            placeholder="https://example.com"
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-            Verify URL (optional proof of employment)
-          </label>
-          <input
-            value={entry.verifyUrl ?? ""}
-            onChange={(e) => setEntry({ ...entry, verifyUrl: e.target.value })}
-            placeholder="https://..."
-            className={inputClass}
-          />
-        </div>
-      </div>
-
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={entry.published !== false}
-          onChange={(e) => setEntry({ ...entry, published: e.target.checked })}
-          className="w-4 h-4 accent-accent"
-        />
-        <span className="text-sm text-foreground">Published (visible on the site and resume)</span>
-      </label>
-
-      <div>
-        <label className="block text-xs uppercase tracking-wide text-muted mb-1">Logo URL</label>
-        <input
-          value={entry.logo ?? ""}
-          onChange={(e) => setEntry({ ...entry, logo: e.target.value })}
-          placeholder="/images/logos/example.png"
-          className={inputClass}
-        />
-        <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
-          <Upload size={16} className="text-muted shrink-0" />
-          <span className="truncate">{logoFile ? logoFile.name : "Or upload an image file…"}</span>
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)}
-          />
-        </label>
-      </div>
-
-      <div className="space-y-4 border-t border-border pt-4">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-accent">Employers Page</h3>
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-            Summary (optional — card blurb &amp; SEO description)
-          </label>
-          <textarea
-            value={entry.summary ?? ""}
-            onChange={(e) => setEntry({ ...entry, summary: e.target.value })}
-            rows={2}
-            placeholder="Built the airline's booking engine and fare comparison platform."
-            className={`${inputClass} resize-y`}
-          />
-        </div>
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Photo gallery</label>
-          <ImageListInput
-            images={entry.photos ?? []}
-            pending={photoFiles}
-            placeholder="/images/experience/example.png"
-            onChange={(photos) => setEntry({ ...entry, photos })}
-            onPendingChange={setPhotoFiles}
-          />
-        </div>
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Related Content</label>
-          <RelatedMultiSelect
-            value={entry.related ?? {}}
-            onChange={(related) => setEntry({ ...entry, related })}
-          />
-        </div>
-      </div>
-
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="block text-xs uppercase tracking-wide text-muted">Projects</label>
-          <button
-            onClick={onAddProject}
-            type="button"
-            className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover"
-          >
-            <Plus size={14} /> Add Project
-          </button>
-        </div>
-        <div className="space-y-3">
-          {entry.projects.map((project, i) => (
-            <div key={i} className="border border-border rounded-lg p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted">Project {i + 1}</span>
-                <div className="flex items-center gap-1">
-                  <IconButton
-                    onClick={() => onMoveProject(i, -1)}
-                    disabled={i === 0}
-                    aria-label={`Move project ${i + 1} up`}
-                    size={"sm"}
-                  >
-                    <ArrowUp size={14} />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => onMoveProject(i, 1)}
-                    disabled={i === entry.projects.length - 1}
-                    aria-label={`Move project ${i + 1} down`}
-                    size={"sm"}
-                  >
-                    <ArrowDown size={14} />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => onRemoveProject(i)}
-                    aria-label={`Remove project ${i + 1}`}
-                    size={"sm"}
-                    tone={"danger"}
-                  >
-                    <Trash2 size={14} />
-                  </IconButton>
+          <FormSection title="Projects" columns={1}>
+            {form.entry.projects.map((project, i) => (
+              <div key={i} className="border border-border rounded-lg p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted">Project {i + 1}</span>
+                  <div className="flex items-center gap-1">
+                    <IconButton onClick={() => moveProject(i, -1)} disabled={i === 0} aria-label={`Move project ${i + 1} up`} size="sm">
+                      <ArrowUp size={14} />
+                    </IconButton>
+                    <IconButton onClick={() => moveProject(i, 1)} disabled={i === form.entry.projects.length - 1} aria-label={`Move project ${i + 1} down`} size="sm">
+                      <ArrowDown size={14} />
+                    </IconButton>
+                    <IconButton onClick={() => removeProject(i)} aria-label={`Remove project ${i + 1}`} size="sm" tone="danger">
+                      <Trash2 size={14} />
+                    </IconButton>
+                  </div>
                 </div>
+                <Field label="Project name" htmlFor={`exp-project-${i}`} required error={fieldErrors[`project-${i}`]}>
+                  <input id={`exp-project-${i}`} value={project.name} onChange={(e) => updateProject(i, { name: e.target.value })} className={fieldClass(fieldErrors[`project-${i}`])} />
+                </Field>
+                <Field label="Description (optional)">
+                  <textarea value={project.description ?? ""} onChange={(e) => updateProject(i, { description: e.target.value })} rows={2} className={fieldClass(null, "resize-y")} />
+                </Field>
+                <Field label="Technologies (comma separated)">
+                  <input
+                    value={form.techText[i] ?? ""}
+                    onChange={(e) => setForm((prev) => (prev ? { ...prev, techText: prev.techText.map((t, idx) => (idx === i ? e.target.value : t)) } : prev))}
+                    placeholder=".NET Core, React, PostgreSQL"
+                    className={fieldClass()}
+                  />
+                </Field>
+                <Field label="Highlights (one per line)">
+                  <textarea
+                    value={form.highlightsText[i] ?? ""}
+                    onChange={(e) => setForm((prev) => (prev ? { ...prev, highlightsText: prev.highlightsText.map((t, idx) => (idx === i ? e.target.value : t)) } : prev))}
+                    rows={5}
+                    className={fieldClass(null, "resize-y")}
+                  />
+                </Field>
               </div>
+            ))}
+            {form.entry.projects.length === 0 && <p className="text-muted text-xs">No projects yet.</p>}
+            <button type="button" onClick={addProject} className="flex items-center gap-1 text-sm text-accent hover:text-accent-hover">
+              <Plus size={14} /> Add project
+            </button>
+          </FormSection>
 
-              <div>
-                <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-                  Project Name
-                </label>
-                <input
-                  value={project.name}
-                  onChange={(e) => onUpdateProject(i, { name: e.target.value })}
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-                  Description (optional)
-                </label>
-                <textarea
-                  value={project.description ?? ""}
-                  onChange={(e) => onUpdateProject(i, { description: e.target.value })}
-                  rows={2}
-                  className={`${inputClass} resize-none`}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-                  Technologies (comma separated)
-                </label>
-                <input
-                  value={projectTechText[i] ?? ""}
-                  onChange={(e) => onProjectTechTextChange(i, e.target.value)}
-                  placeholder=".NET Core, React, PostgreSQL"
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs uppercase tracking-wide text-muted mb-1">
-                  Highlights (one per line)
-                </label>
-                <textarea
-                  value={projectHighlightsText[i] ?? ""}
-                  onChange={(e) => onProjectHighlightsTextChange(i, e.target.value)}
-                  rows={5}
-                  className={`${inputClass} resize-none`}
-                />
-              </div>
-            </div>
-          ))}
-          {entry.projects.length === 0 && (
-            <p className="text-muted text-xs">No projects yet.</p>
-          )}
-        </div>
-      </div>
-
-      <div className="flex items-center gap-3 pt-2">
-        <button
-          onClick={onSave}
-          disabled={saving}
-          className="px-4 py-2.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
-        >
-          {saving ? "Saving…" : "Save"}
-        </button>
-        <button
-          onClick={onCancel}
-          disabled={saving}
-          className="px-4 py-2.5 border border-border text-muted hover:text-foreground rounded-lg text-sm transition-colors"
-        >
-          Cancel
-        </button>
-      </div>
+          <FormActions
+            saving={saving}
+            dirty={dirty}
+            onSave={() => void handleSave()}
+            onCancel={cancelEdit}
+            onDuplicate={!isNew ? () => duplicate(form.entry) : undefined}
+          />
+        </EditorPanel>
+      ) : (
+        <EntryList<Entry>
+          items={entries}
+          loading={crud.loading}
+          getKey={(entry) => entry.id}
+          getTitle={(entry) => entry.company}
+          getSubtitle={(entry) => `${entry.role} · ${entry.period} · ${entry.projects.length} ${entry.projects.length === 1 ? "project" : "projects"}`}
+          getThumbnail={(entry) => entry.logo}
+          isDraft={(entry) => entry.published === false}
+          getSearchText={(entry) => [entry.location, ...entry.projects.map((p) => p.name)].join(" ")}
+          getViewUrl={(entry) => `/employers/${employerSlug(entry)}`}
+          onMove={crud.moveEntry}
+          onEdit={startEdit}
+          onDelete={(entry) => void handleDelete(entry)}
+          onDuplicate={duplicate}
+          onNew={startNew}
+          orderDirty={crud.orderDirty}
+          saving={saving}
+          onSaveOrder={() => void crud.saveOrder()}
+          onDiscardOrder={crud.discardOrder}
+          titleHeading="Company"
+        />
+      )}
     </div>
   );
 }

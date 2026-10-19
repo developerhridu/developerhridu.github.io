@@ -8,7 +8,7 @@ import {
   GitHubApiError,
   type FileChange,
 } from "@/lib/github";
-import { SAVED_AND_COMMITTED_MESSAGE } from "@/components/admin/shared";
+import { moveItem, savedMessage } from "@/components/admin/shared";
 
 interface ContentCrudOptions<T extends { id: string }> {
   path: string;
@@ -79,15 +79,9 @@ export function useContentCrud<T extends { id: string }>({
   const orderDirty =
     entries !== null && entries.map((e) => e.id).join("|") !== loadedOrderIds.join("|");
 
-  function moveEntry(index: number, direction: -1 | 1) {
-    setEntries((prev) => {
-      if (!prev) return prev;
-      const target = index + direction;
-      if (target < 0 || target >= prev.length) return prev;
-      const next = [...prev];
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
-    });
+  /** Moves the entry at `from` to `to` (drag-and-drop or the up/down arrows). */
+  function moveEntry(from: number, to: number) {
+    setEntries((prev) => (prev ? moveItem(prev, from, to) : prev));
   }
 
   async function commit(changes: FileChange[], newEntries: T[], message: string): Promise<boolean> {
@@ -104,7 +98,7 @@ export function useContentCrud<T extends { id: string }>({
     try {
       await commitFiles(allChanges, message, token, { path, expectedSha: fileSha });
       setEntries(newEntries);
-      setSuccessMsg(SAVED_AND_COMMITTED_MESSAGE);
+      setSuccessMsg(savedMessage());
       await load();
       return true;
     } catch (err) {
@@ -145,5 +139,6 @@ export function useContentCrud<T extends { id: string }>({
     discardOrder,
     clearMessages,
     reportError,
+    reload: load,
   };
 }

@@ -7,6 +7,7 @@ import rehypeSanitize from "rehype-sanitize";
 import { defaultUrlTransform } from "react-markdown";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
+import { optimizeImage } from "@/components/admin/shared";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), {
   ssr: false,
@@ -75,14 +76,15 @@ export default function ArticleMarkdownEditor({
     fileInputRef.current?.click();
   }
 
-  function insertImage(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
+  async function insertImage(event: ChangeEvent<HTMLInputElement>) {
+    const picked = event.target.files?.[0];
     event.target.value = "";
-    if (!file) return;
+    if (!picked) return;
 
     try {
+      const file = await optimizeImage(picked);
       const path = onAddImage(file);
-      const alt = file.name.replace(/\.[^.]+$/, "").replace(/[\[\]\\]/g, "").trim() || "Image";
+      const alt = picked.name.replace(/\.[^.]+$/, "").replace(/[\[\]\\]/g, "").trim() || "Image";
       const markdown = `![${alt}](${path})`;
       const { start, end } = selectionRef.current;
       onChange(value.slice(0, start) + markdown + value.slice(end));
@@ -103,7 +105,7 @@ export default function ArticleMarkdownEditor({
         <button type="button" onClick={chooseImage} className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-accent hover:bg-surface-hover">
           <Upload size={14} aria-hidden="true" /> Insert local image
         </button>
-        <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" className="hidden" aria-label="Choose an image for the article" onChange={insertImage} />
+        <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" className="hidden" aria-label="Choose an image for the article" onChange={(event) => void insertImage(event)} />
       </div>
       {imageError && <p role="alert" className="mb-2 text-xs text-red-400">{imageError}</p>}
       <MDEditor

@@ -3,7 +3,7 @@ import type { Employer, Experience } from "@/types";
 import { isPublished } from "@/lib/published";
 
 /** URL slug from the company name, minus any "(Concern of …)"-style aside. */
-function employerSlug(experience: Experience): string {
+export function employerSlug(experience: Pick<Experience, "company" | "id">): string {
   const slug = experience.company
     .replace(/\(.*?\)/g, "")
     .toLowerCase()
