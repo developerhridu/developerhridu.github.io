@@ -152,6 +152,7 @@ export interface Certification {
   date: string;
   /** `null` when cleared in the admin editor — `url` fields there write null, not "". */
   verifyUrl?: string | null;
+  photos?: string[];
   published?: boolean;
 }
 

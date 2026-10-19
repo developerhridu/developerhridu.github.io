@@ -10,7 +10,10 @@
         "/images/logos/du-iit.svg"
       ],
       "date": "June 2024",
-      "verifyUrl": "https://drive.google.com/file/d/1P5oYHusU3wNScHhm2HtBkBSPLM9Fy54g/view?usp=sharing"
+      "verifyUrl": "https://drive.google.com/file/d/1P5oYHusU3wNScHhm2HtBkBSPLM9Fy54g/view?usp=sharing",
+      "photos": [
+        "/images/certifications/cloud-architecture-training.jpg"
+      ]
     },
     {
       "id": "web-design-and-development",
@@ -19,7 +22,10 @@
       "issuer": "ICT Division, Bangladesh (LEDP)",
       "icon": "/images/logos/ict-division.jpg",
       "date": "February 2020",
-      "verifyUrl": "https://ledp.ictd.gov.bd/certificate/?regid=260637"
+      "verifyUrl": "https://ledp.ictd.gov.bd/certificate/?regid=260637",
+      "photos": [
+        "/images/certifications/web-design-and-development.jpeg"
+      ]
     },
     {
       "id": "certified-software-engineer",
@@ -28,7 +34,10 @@
       "date": "January 2024",
       "verifyUrl": "https://www.hackerrank.com/certificates/iframe/bc1a30e19b7c",
       "published": true,
-      "icon": "/images/logos/hackerrank.svg"
+      "icon": "/images/logos/hackerrank.svg",
+      "photos": [
+        "/images/certifications/certified-software-engineer.png"
+      ]
     },
     {
       "id": "certified-sql-advanced",
@@ -37,7 +46,10 @@
       "issuer": "HackerRank",
       "icon": "/images/logos/hackerrank.svg",
       "date": "July 2026",
-      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/25415760cf15"
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/25415760cf15",
+      "photos": [
+        "/images/certifications/certified-sql-advanced.png"
+      ]
     },
     {
       "id": "certified-c-developer",
@@ -46,7 +58,10 @@
       "issuer": "HackerRank",
       "icon": "/images/logos/hackerrank.svg",
       "date": "February 2024",
-      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/e55bde03c575"
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/e55bde03c575",
+      "photos": [
+        "/images/certifications/certified-c-developer.png"
+      ]
     },
     {
       "id": "certified-javascript-developer",
@@ -55,7 +70,10 @@
       "issuer": "HackerRank",
       "icon": "/images/logos/hackerrank.svg",
       "date": "July 2026",
-      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/0a57fe9d6efc"
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/0a57fe9d6efc",
+      "photos": [
+        "/images/certifications/certified-javascript-developer.png"
+      ]
     },
     {
       "id": "rest-api-intermediate",
@@ -64,7 +82,10 @@
       "issuer": "HackerRank",
       "icon": "/images/logos/hackerrank.svg",
       "date": "July 2026",
-      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/bae955cb87cd"
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/bae955cb87cd",
+      "photos": [
+        "/images/certifications/rest-api-intermediate.png"
+      ]
     },
     {
       "id": "react-basics",
@@ -73,7 +94,10 @@
       "issuer": "Coursera (Meta)",
       "icon": "/images/logos/coursera.svg",
       "date": "April 2023",
-      "verifyUrl": "https://www.coursera.org/account/accomplishments/certificate/BNFDSFW4LQMH"
+      "verifyUrl": "https://www.coursera.org/account/accomplishments/certificate/BNFDSFW4LQMH",
+      "photos": [
+        "/images/certifications/react-basics.png"
+      ]
     },
     {
       "id": "introduction-to-back-end-development",
@@ -82,7 +106,10 @@
       "issuer": "Coursera (Meta)",
       "icon": "/images/logos/coursera.svg",
       "date": "June 2023",
-      "verifyUrl": "https://www.coursera.org/account/accomplishments/verify/R9ZP2R4QGCSV"
+      "verifyUrl": "https://www.coursera.org/account/accomplishments/verify/R9ZP2R4QGCSV",
+      "photos": [
+        "/images/certifications/Back End - Coursera.png"
+      ]
     },
     {
       "id": "introduction-to-front-end-development",
@@ -91,7 +118,10 @@
       "issuer": "Coursera (Meta)",
       "icon": "/images/logos/coursera.svg",
       "date": "February 2023",
-      "verifyUrl": "https://www.coursera.org/account/accomplishments/verify/HRT82VR23LTM"
+      "verifyUrl": "https://www.coursera.org/account/accomplishments/verify/HRT82VR23LTM",
+      "photos": [
+        "/images/certifications/front-end-coursera.png"
+      ]
     }
   ]
 }

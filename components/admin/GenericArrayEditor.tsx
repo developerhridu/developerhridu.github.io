@@ -23,6 +23,7 @@ type FieldType =
   | "boolean"
   | "url"
   | "image"
+  | "images"
   | "number"
   | "clients"
   | "caseStudies";
@@ -44,7 +45,7 @@ interface FieldDef {
 }
 
 /** Long-form and picker inputs need the full row; short scalars pair up two-across. */
-const FULL_WIDTH_TYPES: FieldType[] = ["textarea", "list", "image", "clients", "caseStudies"];
+const FULL_WIDTH_TYPES: FieldType[] = ["textarea", "list", "image", "images", "clients", "caseStudies"];
 
 function isFullWidth(field: FieldDef): boolean {
   return field.width ? field.width === "full" : FULL_WIDTH_TYPES.includes(field.type);
@@ -85,7 +86,7 @@ function normalizeIn(raw: RawEntry, config: ArrayConfig): FormState {
       form[f.key] = (raw[f.key] as boolean | undefined) ?? f.defaultBoolean ?? false;
     } else if (f.type === "tags" || f.type === "caseStudies") {
       form[f.key] = Array.isArray(raw[f.key]) ? (raw[f.key] as string[]).join(", ") : "";
-    } else if (f.type === "list") {
+    } else if (f.type === "list" || f.type === "images") {
       form[f.key] = Array.isArray(raw[f.key]) ? (raw[f.key] as string[]).join("\n") : "";
     } else {
       form[f.key] = raw[f.key] != null ? String(raw[f.key]) : "";
@@ -110,6 +111,9 @@ function transformOut(form: FormState, config: ArrayConfig): RawEntry {
         .split("\n")
         .map((t) => t.trim())
         .filter(Boolean);
+    } else if (f.type === "images") {
+      const images = splitLines(val);
+      if (images.length > 0) out[f.key] = images;
     } else if (f.type === "url") {
       const trimmed = String(val ?? "").trim();
       out[f.key] = trimmed || null;
@@ -120,6 +124,13 @@ function transformOut(form: FormState, config: ArrayConfig): RawEntry {
     }
   }
   return config.extraTransformOut ? config.extraTransformOut(out, form) : out;
+}
+
+function splitLines(val: unknown): string[] {
+  return String(val ?? "")
+    .split("\n")
+    .map((t) => t.trim())
+    .filter(Boolean);
 }
 
 function blankForm(config: ArrayConfig): FormState {
@@ -144,9 +155,12 @@ function managedImagePaths(entry: RawEntry, config: ArrayConfig): string[] {
   const prefix = `/images/${config.imageFolder}/`;
   const paths: string[] = [];
   for (const f of config.fields) {
-    if (f.type !== "image") continue;
     const val = entry[f.key];
-    if (typeof val === "string" && val.startsWith(prefix)) paths.push(val);
+    if (f.type === "image") {
+      if (typeof val === "string" && val.startsWith(prefix)) paths.push(val);
+    } else if (f.type === "images" && Array.isArray(val)) {
+      for (const p of val) if (typeof p === "string" && p.startsWith(prefix)) paths.push(p);
+    }
   }
   return paths;
 }
@@ -175,6 +189,7 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
   const [isNew, setIsNew] = useState(false);
   const [form, setForm] = useState<FormState>({});
   const [imageFiles, setImageFiles] = useState<Record<string, File | null>>({});
+  const [imageListFiles, setImageListFiles] = useState<Record<string, File[]>>({});
   const [loadedOrderIds, setLoadedOrderIds] = useState<string[]>([]);
 
   const hasPublishedField = config.fields.some((f) => f.key === "published");
@@ -234,6 +249,7 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
   function startNew() {
     setForm(blankForm(config));
     setImageFiles({});
+    setImageListFiles({});
     setIsNew(true);
     setEditingId(null);
     setEditingIndex(-1);
@@ -244,6 +260,7 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
   function startEdit(index: number) {
     setForm(normalizeIn(entries![index], config));
     setImageFiles({});
+    setImageListFiles({});
     setIsNew(false);
     setEditingId(String(entries![index].id));
     setEditingIndex(index);
@@ -255,6 +272,7 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
     setEditingIndex(null);
     setEditingId(null);
     setImageFiles({});
+    setImageListFiles({});
   }
 
   async function commit(changes: FileChange[], newEntries: RawEntry[], message: string): Promise<boolean> {
@@ -310,10 +328,23 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
     const changes: FileChange[] = [];
 
     const imageFields = config.fields.filter((f) => f.type === "image");
-    if (imageFields.length > 0) {
+    const imageListFields = config.fields.filter((f) => f.type === "images");
+    if (imageFields.length > 0 || imageListFields.length > 0) {
       setSaving(true);
       setError(null);
       try {
+        for (const field of imageListFields) {
+          const files = imageListFiles[field.key] ?? [];
+          if (files.length === 0) continue;
+          const uploaded: string[] = [];
+          for (const file of files) {
+            const ext = file.name.split(".").pop()?.toLowerCase() || "png";
+            const publicPath = `/images/${config.imageFolder}/${slugify(titleVal)}-${field.key}-${crypto.randomUUID()}.${ext}`;
+            changes.push({ path: toRepoPath(publicPath), content: await fileToBase64(file) });
+            uploaded.push(publicPath);
+          }
+          workingForm[field.key] = [...splitLines(workingForm[field.key]), ...uploaded].join("\n");
+        }
         for (const field of imageFields) {
           const file = imageFiles[field.key];
           if (!file) continue;
@@ -355,6 +386,7 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
     const message = isNew ? `content: add ${titleVal}` : `content: update ${titleVal}`;
     await commit(changes, updated, message);
     setImageFiles({});
+    setImageListFiles({});
   }
 
   async function handleDelete(index: number) {
@@ -434,7 +466,7 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
                             rows={field.rows ?? 3}
                             className={`${inputClass} resize-y`}
                           />
-                        ) : field.type === "list" ? (
+                        ) : field.type === "list" || field.type === "images" ? (
                           <textarea
                             value={String(form[field.key] ?? "")}
                             onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
@@ -475,6 +507,58 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
                             placeholder={field.placeholder}
                             className={inputClass}
                           />
+                        )}
+                        {field.type === "images" && (
+                          <>
+                            {splitLines(form[field.key]).length > 0 && (
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                {splitLines(form[field.key]).map((src) => (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img
+                                    key={src}
+                                    src={src}
+                                    alt=""
+                                    className="h-16 w-16 rounded border border-border object-cover bg-white/90"
+                                  />
+                                ))}
+                              </div>
+                            )}
+                            <label className={`${inputClass} mt-2 flex items-center gap-2 cursor-pointer`}>
+                              <Upload size={16} className="text-muted shrink-0" />
+                              <span className="truncate">
+                                {(imageListFiles[field.key]?.length ?? 0) > 0
+                                  ? imageListFiles[field.key].map((f) => f.name).join(", ")
+                                  : "Or upload image files…"}
+                              </span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                className="hidden"
+                                onChange={(e) =>
+                                  setImageListFiles({
+                                    ...imageListFiles,
+                                    [field.key]: [
+                                      ...(imageListFiles[field.key] ?? []),
+                                      ...Array.from(e.target.files ?? []),
+                                    ],
+                                  })
+                                }
+                              />
+                            </label>
+                            {(imageListFiles[field.key]?.length ?? 0) > 0 && (
+                              <p className="text-muted text-xs mt-1 flex items-center gap-2">
+                                Uploaded to the repo and appended to the list above when you save.
+                                <button
+                                  type="button"
+                                  onClick={() => setImageListFiles({ ...imageListFiles, [field.key]: [] })}
+                                  className="text-accent hover:underline"
+                                >
+                                  Clear
+                                </button>
+                              </p>
+                            )}
+                          </>
                         )}
                         {field.type === "image" && (
                           <>

@@ -24,12 +24,14 @@ export const certificationsConfig: ArrayConfig = {
   label: "Certifications",
   titleField: "name",
   subtitleField: "issuer",
+  imageFolder: "certifications",
   fields: [
     { key: "name", label: "Name", type: "text" },
     { key: "issuer", label: "Issuer", type: "text" },
     { key: "date", label: "Date", type: "text", placeholder: "June 2024" },
     { key: "verifyUrl", label: "Verify URL", type: "url" },
     { key: "icons", label: "Icon(s) (comma separated paths)", type: "tags" },
+    { key: "photos", label: "Photos (one path per line, or upload)", type: "images" },
     { key: "published", label: "Published (visible on the site)", type: "boolean", defaultBoolean: true },
   ],
   extraNormalizeIn: (raw) => ({
