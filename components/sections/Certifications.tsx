@@ -44,8 +44,19 @@ export default function Certifications({ showHeading = true, noSection = false }
           >
             <GlassCard
               animate={false}
-              className="group h-full !p-0 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-accent/10"
+              className={`group relative h-full !p-0 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-accent/10 ${
+                cert.verifyUrl ? "cursor-pointer" : ""
+              }`}
             >
+              {cert.verifyUrl && (
+                <a
+                  href={cert.verifyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Verify ${cert.name} (opens in a new tab)`}
+                  className="absolute inset-0 z-10 rounded-xl focus-visible:outline-2 focus-visible:outline-accent"
+                />
+              )}
               <div className="relative">
                 {cert.photos && cert.photos.length > 0 ? (
                   <ThumbnailGallery
@@ -60,7 +71,7 @@ export default function Certifications({ showHeading = true, noSection = false }
                   </div>
                 )}
 
-                <div className="absolute -bottom-6 left-4 z-30 flex -space-x-2">
+                <div className="absolute -bottom-6 left-4 z-30 flex -space-x-2 pointer-events-none">
                   {(cert.icons ?? (cert.icon ? [cert.icon] : [])).map((icon) => (
                     <div
                       key={icon}
@@ -88,15 +99,13 @@ export default function Certifications({ showHeading = true, noSection = false }
                     {cert.date}
                   </span>
                   {cert.verifyUrl && (
-                    <a
-                      href={cert.verifyUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 rounded-full border border-accent/40 bg-accent/10 px-2.5 py-1 font-medium text-accent hover:bg-accent hover:text-accent-foreground transition-colors"
+                    <span
+                      aria-hidden="true"
+                      className="flex items-center gap-1 rounded-full border border-accent/40 bg-accent/10 px-2.5 py-1 font-medium text-accent group-hover:bg-accent group-hover:text-accent-foreground transition-colors"
                     >
                       {uiStrings.certifications.verify}
                       <ExternalLink className="w-3 h-3" />
-                    </a>
+                    </span>
                   )}
                 </div>
               </div>
