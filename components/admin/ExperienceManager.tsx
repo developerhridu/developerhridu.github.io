@@ -20,6 +20,9 @@ import {
   ArrowDown,
 } from "lucide-react";
 import { inputClass, slugify, fileToBase64 } from "@/components/admin/shared";
+import ImageListInput from "@/components/admin/ImageListInput";
+import RelatedMultiSelect from "@/components/admin/RelatedMultiSelect";
+import type { RelatedRefs } from "@/types";
 
 interface Project {
   name: string;
@@ -38,7 +41,15 @@ interface Entry {
   period: string;
   location?: string;
   verifyUrl?: string;
+  summary?: string;
+  photos?: string[];
+  related?: RelatedRefs;
   projects: Project[];
+}
+
+/** Every uploaded image an entry points at (logo + gallery). */
+function entryImages(entry: Entry): string[] {
+  return [entry.logo, ...(entry.photos ?? [])].filter((p): p is string => !!p);
 }
 
 const PATH = "content/experience.json";
@@ -64,6 +75,8 @@ function blankEntry(): Entry {
     period: "",
     location: "",
     verifyUrl: "",
+    summary: "",
+    photos: [],
     projects: [],
   };
 }
@@ -103,6 +116,7 @@ export default function ExperienceManager({
   const [editing, setEditing] = useState<Entry | null>(() => initialNew ? blankEntry() : null);
   const [isNew, setIsNew] = useState(initialNew);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [projectTechText, setProjectTechText] = useState<string[]>([]);
   const [projectHighlightsText, setProjectHighlightsText] = useState<string[]>([]);
 
@@ -159,6 +173,7 @@ export default function ExperienceManager({
     setEditing(blankEntry());
     setIsNew(true);
     setLogoFile(null);
+    setPhotoFiles([]);
     setProjectTechText([]);
     setProjectHighlightsText([]);
     setSuccessMsg(null);
@@ -170,6 +185,7 @@ export default function ExperienceManager({
     setEditing({ ...entry, projects });
     setIsNew(false);
     setLogoFile(null);
+    setPhotoFiles([]);
     setProjectTechText(projects.map((p) => p.technologies.join(", ")));
     setProjectHighlightsText(projects.map((p) => p.highlights.join("\n")));
     setSuccessMsg(null);
@@ -179,6 +195,7 @@ export default function ExperienceManager({
   function cancelEdit() {
     setEditing(null);
     setLogoFile(null);
+    setPhotoFiles([]);
     setProjectTechText([]);
     setProjectHighlightsText([]);
   }
@@ -269,21 +286,29 @@ export default function ExperienceManager({
     }
 
     const current = entries ?? [];
-    const oldLogo = !isNew ? current.find((e) => e.id === editing.id)?.logo : undefined;
+    const previous = !isNew ? current.find((e) => e.id === editing.id) : undefined;
+    const oldImages = previous ? entryImages(previous) : [];
 
     setSaving(true);
     setError(null);
 
     const changes: FileChange[] = [];
     let logo = editing.logo;
+    const photos = [...(editing.photos ?? [])];
     try {
+      const slug = slugify(editing.company);
       if (logoFile) {
         const ext = logoFile.name.split(".").pop()?.toLowerCase() || "png";
-        const slug = slugify(editing.company);
         const repoPath = `public/images/${IMAGE_FOLDER}/${slug}.${ext}`;
         const base64 = await fileToBase64(logoFile);
         changes.push({ path: repoPath, content: base64 });
         logo = `/images/${IMAGE_FOLDER}/${slug}.${ext}`;
+      }
+      for (const file of photoFiles) {
+        const ext = file.name.split(".").pop()?.toLowerCase() || "png";
+        const publicPath = `/images/${IMAGE_FOLDER}/${slug}-photo-${crypto.randomUUID()}.${ext}`;
+        changes.push({ path: toRepoPath(publicPath), content: await fileToBase64(file) });
+        photos.push(publicPath);
       }
     } catch (err) {
       handleApiError(err);
@@ -304,7 +329,16 @@ export default function ExperienceManager({
         .filter(Boolean),
     }));
 
-    const finalEntry: Entry = { ...editing, logo, projects };
+    const related = editing.related ?? {};
+    const hasRelated = Object.values(related).some((refs) => (refs ?? []).length > 0);
+    const finalEntry: Entry = {
+      ...editing,
+      logo,
+      summary: editing.summary?.trim() || undefined,
+      photos: photos.length > 0 ? photos : undefined,
+      related: hasRelated ? related : undefined,
+      projects,
+    };
     let updated: Entry[];
 
     if (isNew) {
@@ -314,13 +348,17 @@ export default function ExperienceManager({
       updated = current.map((e) => (e.id === editing.id ? finalEntry : e));
     }
 
-    if (isManagedImage(oldLogo) && oldLogo !== logo && !updated.some((e) => e.logo === oldLogo)) {
-      changes.push({ path: toRepoPath(oldLogo), content: null });
+    const stillUsed = new Set(updated.flatMap(entryImages));
+    for (const oldImage of oldImages) {
+      if (isManagedImage(oldImage) && !stillUsed.has(oldImage)) {
+        changes.push({ path: toRepoPath(oldImage), content: null });
+      }
     }
 
     const message = isNew ? `content: add ${editing.company}` : `content: update ${editing.company}`;
     await commit(changes, updated, message);
     setLogoFile(null);
+    setPhotoFiles([]);
   }
 
   async function handleDelete(entry: Entry) {
@@ -328,10 +366,10 @@ export default function ExperienceManager({
     const current = entries ?? [];
     const updated = current.filter((e) => e.id !== entry.id);
 
-    const changes: FileChange[] = [];
-    if (isManagedImage(entry.logo) && !updated.some((e) => e.logo === entry.logo)) {
-      changes.push({ path: toRepoPath(entry.logo), content: null });
-    }
+    const stillUsed = new Set(updated.flatMap(entryImages));
+    const changes: FileChange[] = entryImages(entry)
+      .filter((image) => isManagedImage(image) && !stillUsed.has(image))
+      .map((image) => ({ path: toRepoPath(image), content: null }));
 
     await commit(changes, updated, `content: delete ${entry.company}`);
   }
@@ -364,6 +402,8 @@ export default function ExperienceManager({
           saving={saving}
           logoFile={logoFile}
           setLogoFile={setLogoFile}
+          photoFiles={photoFiles}
+          setPhotoFiles={setPhotoFiles}
           projectTechText={projectTechText}
           projectHighlightsText={projectHighlightsText}
           onProjectTechTextChange={(i, v) =>
@@ -487,6 +527,8 @@ function EntryForm({
   saving,
   logoFile,
   setLogoFile,
+  photoFiles,
+  setPhotoFiles,
   projectTechText,
   projectHighlightsText,
   onProjectTechTextChange,
@@ -503,6 +545,8 @@ function EntryForm({
   saving: boolean;
   logoFile: File | null;
   setLogoFile: (f: File | null) => void;
+  photoFiles: File[];
+  setPhotoFiles: (files: File[]) => void;
   projectTechText: string[];
   projectHighlightsText: string[];
   onProjectTechTextChange: (index: number, value: string) => void;
@@ -617,6 +661,39 @@ function EntryForm({
             onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)}
           />
         </label>
+      </div>
+
+      <div className="space-y-4 border-t border-border pt-4">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-accent">Employers Page</h3>
+        <div>
+          <label className="block text-xs uppercase tracking-wide text-muted mb-1">
+            Summary (optional — card blurb &amp; SEO description)
+          </label>
+          <textarea
+            value={entry.summary ?? ""}
+            onChange={(e) => setEntry({ ...entry, summary: e.target.value })}
+            rows={2}
+            placeholder="Built the airline's booking engine and fare comparison platform."
+            className={`${inputClass} resize-y`}
+          />
+        </div>
+        <div>
+          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Photo gallery</label>
+          <ImageListInput
+            images={entry.photos ?? []}
+            pending={photoFiles}
+            placeholder="/images/experience/example.png"
+            onChange={(photos) => setEntry({ ...entry, photos })}
+            onPendingChange={setPhotoFiles}
+          />
+        </div>
+        <div>
+          <label className="block text-xs uppercase tracking-wide text-muted mb-1">Related Content</label>
+          <RelatedMultiSelect
+            value={entry.related ?? {}}
+            onChange={(related) => setEntry({ ...entry, related })}
+          />
+        </div>
       </div>
 
       <div>

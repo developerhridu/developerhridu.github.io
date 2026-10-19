@@ -47,6 +47,18 @@
       "description": "Companies I've built software for — airlines, online travel agencies, a telecom, a job portal, food delivery and logistics — with the work done and proof for each."
     },
     {
+      "id": "employers",
+      "route": "/employers",
+      "title": "Employers | Mizanur Rahman — Full-Stack Software Engineer",
+      "description": "Companies I've worked for as a software engineer, with my role, period and the work I delivered at each.",
+      "keywords": [
+        "employers",
+        "work history",
+        "software engineer",
+        "companies"
+      ]
+    },
+    {
       "id": "services",
       "route": "/services",
       "title": "Services | Mizanur Rahman — Full-Stack Software Engineer",

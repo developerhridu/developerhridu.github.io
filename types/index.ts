@@ -90,6 +90,13 @@ export interface Client extends RelatedRefs {
   updatedAt?: string;
 }
 
+// Employer types — a company from experience.json, shaped like a client plus the role held there.
+export interface Employer extends Client {
+  role?: string;
+  period?: string;
+  location?: string;
+}
+
 // Project types
 export interface Project extends RelatedRefs {
   id: string;
@@ -127,6 +134,12 @@ export interface Experience {
   period: string;
   location?: string;
   verifyUrl?: string;
+  /** Short intro shown on the /employers card page and used as its SEO description. */
+  summary?: string;
+  /** Office, team, or work photos shown as a gallery on the /employers pages. */
+  photos?: string[];
+  /** Related content for the employer page — nested because `projects` already holds this job's projects. */
+  related?: RelatedRefs;
   projects: ExperienceProject[];
 }
 

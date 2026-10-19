@@ -4,13 +4,15 @@ import Link from "next/link";
 import { Pencil } from "lucide-react";
 import useValidGitHubToken from "@/components/ui/useValidGitHubToken";
 
-type ArticleKind = "blog" | "case-study" | "project" | "client";
+type ArticleKind = "blog" | "case-study" | "project" | "client" | "employer";
 
 const ADMIN_TABS: Record<ArticleKind, string> = {
   blog: "blog",
   "case-study": "case-study",
   project: "projects",
   client: "clients",
+  // Employers are derived from experience.json, so they're edited in the Experience tab.
+  employer: "experience",
 };
 
 export default function EditArticleButton({ kind, slug }: { kind: ArticleKind; slug: string }) {

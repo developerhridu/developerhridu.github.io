@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ArrowLeft, Calendar, Clock, Globe, Tag } from "lucide-react";
+import { ArrowLeft, Briefcase, Calendar, Clock, Globe, MapPin, Tag } from "lucide-react";
 import type { ContentSection } from "@/types";
 import { estimateReadingTime } from "@/lib/readingTime";
 import { markdownComponents } from "@/components/ui/markdownComponents";
@@ -43,10 +43,16 @@ const ARTICLE_TYPES = {
     footerLabel: "Back to all clients",
     draftMessage: "This client is a draft — it isn't linked from the site or listed in the sitemap. Only people with this link can see it.",
   },
+  employer: {
+    path: "/employers",
+    backLabel: "Back to Employers",
+    footerLabel: "Back to all employers",
+    draftMessage: "This employer is a draft — it isn't linked from the site or listed in the sitemap. Only people with this link can see it.",
+  },
 };
 
 /** Kinds without reading time, views, reactions, or comments; their title image is framed and contained. */
-const SHOWCASE_KINDS = new Set<keyof typeof ARTICLE_TYPES>(["project", "client"]);
+const SHOWCASE_KINDS = new Set<keyof typeof ARTICLE_TYPES>(["project", "client", "employer"]);
 
 export interface ArticleDetailProps {
   kind: keyof typeof ARTICLE_TYPES;
@@ -60,6 +66,10 @@ export interface ArticleDetailProps {
     client?: string;
     /** External site link shown in the header meta row (clients). */
     website?: string;
+    /** Employer role, period and location shown in the header meta row. */
+    role?: string;
+    period?: string;
+    location?: string;
     coverImages: string[];
     proofOfWorkImages: string[];
     longDescription?: string;
@@ -154,6 +164,24 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
                     day: "numeric",
                     year: "numeric",
                   })}
+                </span>
+              )}
+              {entry.role && (
+                <span className="flex items-center gap-2">
+                  <Briefcase size={16} />
+                  {entry.role}
+                </span>
+              )}
+              {entry.period && (
+                <span className="flex items-center gap-2">
+                  <Calendar size={16} />
+                  {entry.period}
+                </span>
+              )}
+              {entry.location && (
+                <span className="flex items-center gap-2">
+                  <MapPin size={16} />
+                  {entry.location}
                 </span>
               )}
               {entry.website && (

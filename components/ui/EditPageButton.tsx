@@ -12,6 +12,7 @@ const PAGE_TABS: Record<string, string> = {
   "/certifications": "certifications",
   "/clients": "clients",
   "/contact": "profile",
+  "/employers": "experience",
   "/experience": "experience",
   "/projects": "projects",
   "/resume": "profile",

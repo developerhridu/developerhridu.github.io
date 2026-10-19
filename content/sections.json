@@ -25,6 +25,12 @@
       "subtitle": "Companies and teams I've built software for"
     },
     {
+      "id": "employers",
+      "eyebrow": "Employers",
+      "title": "Employers",
+      "subtitle": "Companies I've worked for"
+    },
+    {
       "id": "services",
       "eyebrow": "Services",
       "title": "Key Expertise",
