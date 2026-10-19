@@ -80,7 +80,7 @@
       "published": true,
       "company": "Bdjobs.com Ltd.",
       "companyUrl": "https://www.bdjobs.com",
-      "logo": "/images/logos/bdjobs-icon.png",
+      "logo": "/images/logos/my-bdjobs-icon.png",
       "role": "Jr. Software Engineer",
       "period": "May 2023 - March 2024",
       "location": "Kawran Bazar, Dhaka",
@@ -134,6 +134,11 @@
             "Crafted front-end (React), built APIs, and optimized existing codebase & database, resulting in improved website performance and responsiveness"
           ]
         }
+      ],
+      "photos": [
+        "/images/shared/edesh-photo-0.png",
+        "/images/shared/edesh-photo-1.png",
+        "/images/shared/edesh-photo-2.png"
       ]
     }
   ]
