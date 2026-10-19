@@ -15,6 +15,8 @@ import { confirmDiscardEdits, snapshot, useSaveShortcut, useUnsavedGuard } from 
 import { collectErrors, errorSummary, focusFirstError, requiredError, urlError, type FieldErrors } from "@/components/admin/validation";
 import { renderPreview } from "@/components/admin/previews";
 import { employerSlug } from "@/lib/employers";
+import { clearDraft, DraftBanner, useDraftRecovery } from "@/components/admin/useDraftRecovery";
+import { bulkMessage, standardBulkActions } from "@/components/admin/bulkActions";
 import type { RelatedRefs } from "@/types";
 
 interface Project {
@@ -124,10 +126,13 @@ export default function ExperienceManager({
   token,
   onAuthError,
   initialNew = false,
+  initialEditId,
 }: {
   token: string;
   onAuthError: () => void;
   initialNew?: boolean;
+  /** Entry to open once the list loads (from search or the Dashboard). */
+  initialEditId?: string;
 }) {
   const crud = useContentCrud<Entry>({ path: PATH, arrayKey: ARRAY_KEY, label: "experience", token, onAuthError, normalizeLoaded });
   const { entries, saving, setSaving, setError, commit, reportError, clearMessages } = crud;
@@ -138,9 +143,19 @@ export default function ExperienceManager({
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [pendingEditId, setPendingEditId] = useState(initialEditId);
 
   const dirty = !!form && (snapshot(form) !== opened || !!logoFile || photoFiles.length > 0);
   useUnsavedGuard(dirty);
+  const draftKey = form ? `${PATH}:${isNew ? "new" : form.entry.id}` : null;
+  const recovery = useDraftRecovery(draftKey, form, dirty);
+
+  // Opened from search or the Dashboard: jump into that entry once the list has loaded.
+  if (pendingEditId && entries) {
+    setPendingEditId(undefined);
+    const target = entries.find((e) => e.id === pendingEditId);
+    if (target) open(toFormState(target), false);
+  }
 
   const previewFiles = useMemo(() => [...(logoFile ? [logoFile] : []), ...photoFiles], [logoFile, photoFiles]);
   const previewUrls = useMemo(() => new Map(previewFiles.map((file) => [file, URL.createObjectURL(file)])), [previewFiles]);
@@ -168,6 +183,7 @@ export default function ExperienceManager({
 
   function cancelEdit() {
     if (!confirmDiscardEdits(dirty)) return;
+    if (dirty) clearDraft(draftKey);
     setForm(null);
     setLogoFile(null);
     setPhotoFiles([]);
@@ -304,10 +320,27 @@ export default function ExperienceManager({
 
     const message = isNew ? `content: add ${editing.company}` : `content: update ${editing.company}`;
     if (await commit(changes, updated, message)) {
+      clearDraft(draftKey);
       setForm(null);
       setLogoFile(null);
       setPhotoFiles([]);
     }
+  }
+
+  async function bulkSetPublished(items: Entry[], published: boolean) {
+    const ids = new Set(items.map((e) => e.id));
+    const updated = (entries ?? []).map((e) => (ids.has(e.id) ? { ...e, published } : e));
+    await commit([], updated, bulkMessage(published ? "publish" : "unpublish", items.length, "experiences"));
+  }
+
+  async function bulkDelete(items: Entry[]) {
+    const ids = new Set(items.map((e) => e.id));
+    const updated = (entries ?? []).filter((e) => !ids.has(e.id));
+    const stillUsed = new Set(updated.flatMap(entryImages));
+    const changes: FileChange[] = [...new Set(items.flatMap(entryImages))]
+      .filter((image) => isManagedImage(image) && !stillUsed.has(image))
+      .map((image) => ({ path: toRepoPath(image), content: null }));
+    await commit(changes, updated, bulkMessage("delete", items.length, "experiences"));
   }
 
   useSaveShortcut(() => void handleSave(), !!form && !saving);
@@ -342,6 +375,16 @@ export default function ExperienceManager({
           onClose={cancelEdit}
           preview={previewEntry ? renderPreview("employer", previewEntry) : undefined}
         >
+          {recovery.draft && (
+            <DraftBanner
+              at={recovery.draft.at}
+              onRestore={() => {
+                setForm(recovery.draft!.value);
+                recovery.accepted();
+              }}
+              onDismiss={recovery.dismiss}
+            />
+          )}
           <FormSection title="Job">
             <Field label="Company" htmlFor="exp-company" required error={fieldErrors.company}>
               <input id="exp-company" value={form.entry.company} onChange={(e) => setEntry({ company: e.target.value })} className={fieldClass(fieldErrors.company)} />
@@ -472,6 +515,7 @@ export default function ExperienceManager({
           onSaveOrder={() => void crud.saveOrder()}
           onDiscardOrder={crud.discardOrder}
           titleHeading="Company"
+          bulkActions={standardBulkActions<Entry>({ noun: "experiences", onSetPublished: bulkSetPublished, onDelete: bulkDelete })}
         />
       )}
     </div>

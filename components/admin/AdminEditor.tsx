@@ -33,6 +33,8 @@ import adminMenuData from "@/content/admin-menu.json";
 import { inputClass, TOKEN_KEY, TOKEN_CHANGED_EVENT } from "@/components/admin/shared";
 import Editor from "@/components/admin/Editor";
 import AdminStatusBar from "@/components/admin/AdminStatusBar";
+import AdminSearch, { type SearchTarget } from "@/components/admin/AdminSearch";
+import { restorePending } from "@/lib/adminStore";
 import { AdminTokenProvider } from "@/components/admin/MediaLibrary";
 import { confirmDiscardEdits } from "@/components/admin/useUnsavedGuard";
 import GenericArrayEditor from "@/components/admin/GenericArrayEditor";
@@ -125,9 +127,52 @@ export default function AdminEditor() {
   const [tokenError, setTokenError] = useState<string | null>(null);
 
   const [tab, setTab] = useState<Tab>("dashboard");
-  const [linkedEditor, setLinkedEditor] = useState<{ tab: Tab; slug?: string; create?: boolean } | null>(null);
+  const [linkedEditor, setLinkedEditor] = useState<{ tab: Tab; slug?: string; id?: string; create?: boolean } | null>(null);
   /** Bumped after publish/discard/undo so the open editor reloads what's now on GitHub. */
   const [reloadKey, setReloadKey] = useState(0);
+  /** Editors wait until pending changes from an earlier session are restored, so they load them. */
+  const [pendingReady, setPendingReady] = useState(false);
+  const [restoredCount, setRestoredCount] = useState(0);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    if (!token) return;
+    let cancelled = false;
+    void restorePending().then((count) => {
+      if (cancelled) return;
+      setRestoredCount(count);
+      setPendingReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+    // Capture phase on window runs before the site-wide search palette's Ctrl+K handler, so it wins here.
+    function onKeyDown(event: KeyboardEvent) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        event.stopPropagation();
+        setSearchOpen((open) => !open);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, [token]);
+
+  /** Opens a tab (and an entry in it) from search or the Dashboard. */
+  function openTarget(target: SearchTarget) {
+    if (!TABS.some((item) => item.key === target.tab)) return;
+    if (!confirmDiscardEdits()) return;
+    setSearchOpen(false);
+    setTab(target.tab as Tab);
+    setLinkedEditor(target.slug || target.id ? { tab: target.tab as Tab, slug: target.slug, id: target.id } : null);
+    setReloadKey((key) => key + 1);
+  }
+
+  const editId = (tabKey: Tab) => (linkedEditor?.tab === tabKey ? linkedEditor.id : undefined);
   const tabListRef = useRef<HTMLElement>(null);
   const selectedTabRef = useRef<HTMLButtonElement>(null);
 
@@ -287,7 +332,7 @@ export default function AdminEditor() {
     <AdminTokenProvider token={token}>
     <div>
       <div className="mb-3 flex min-w-0 items-center gap-3">
-        <nav ref={tabListRef} aria-label="Content editor sections" className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto rounded-lg border border-border bg-surface p-1">
+        <nav ref={tabListRef} aria-label="Content editor sections" className="thin-scrollbar flex min-w-0 flex-1 items-center gap-1 overflow-x-auto rounded-lg border border-border bg-surface p-1">
           {TABS.map((item) => {
             const Icon = ICONS[item.icon] ?? CircleHelp;
             const selected = tab === item.key;
@@ -300,14 +345,24 @@ export default function AdminEditor() {
                 aria-pressed={selected}
                 title={item.label}
                 onClick={() => selectTab(item.key)}
-                className={`flex shrink-0 items-center justify-center rounded-md p-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${selected ? "bg-accent/10 text-accent" : "text-muted hover:bg-background hover:text-foreground"}`}
+                className={`flex shrink-0 items-center justify-center gap-1.5 rounded-md p-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${selected ? "bg-accent/10 text-accent" : "text-muted hover:bg-background hover:text-foreground"}`}
               >
                 <Icon size={18} aria-hidden="true" />
+                {selected && <span className="whitespace-nowrap pr-1">{item.label}</span>}
               </button>
             );
           })}
         </nav>
         <div className="flex shrink-0 items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            aria-label="Search the CMS (Ctrl+K)"
+            title="Search the CMS (Ctrl+K)"
+            className="rounded-lg p-2 text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <Search size={18} aria-hidden="true" />
+          </button>
           <a
             href="/resume"
             target="_blank"
@@ -330,10 +385,17 @@ export default function AdminEditor() {
         </div>
       </div>
 
-      <AdminStatusBar token={token} onContentChanged={() => setReloadKey((key) => key + 1)} />
+      <AdminStatusBar token={token} restoredCount={restoredCount} onContentChanged={() => setReloadKey((key) => key + 1)} />
 
+      {searchOpen && (
+        <AdminSearch token={token} tabs={TABS} onClose={() => setSearchOpen(false)} onSelect={openTarget} />
+      )}
+
+      {!pendingReady ? (
+        <p role="status" className="text-muted text-sm">Loading…</p>
+      ) : (
       <div key={reloadKey}>
-      {tab === "dashboard" && <Dashboard token={token} onAuthError={handleAuthError} />}
+      {tab === "dashboard" && <Dashboard token={token} onAuthError={handleAuthError} onOpen={openTarget} />}
       {tab === "blog" && (
         <Editor
           key="blog"
@@ -359,6 +421,7 @@ export default function AdminEditor() {
           token={token}
           onAuthError={handleAuthError}
           initialNew={linkedEditor?.tab === "experience" && linkedEditor.create === true}
+          initialEditId={editId("experience")}
         />
       )}
       {tab === "services" && (
@@ -367,10 +430,11 @@ export default function AdminEditor() {
           token={token}
           onAuthError={handleAuthError}
           initialNew={linkedEditor?.tab === "services" && linkedEditor.create === true}
+          initialEditId={editId("services")}
         />
       )}
       {tab === "education" && (
-        <GenericArrayEditor config={educationConfig} token={token} onAuthError={handleAuthError} />
+        <GenericArrayEditor config={educationConfig} token={token} onAuthError={handleAuthError} initialEditId={editId("education")} />
       )}
       {tab === "certifications" && (
         <GenericArrayEditor
@@ -378,9 +442,10 @@ export default function AdminEditor() {
           token={token}
           onAuthError={handleAuthError}
           initialNew={linkedEditor?.tab === "certifications" && linkedEditor.create === true}
+          initialEditId={editId("certifications")}
         />
       )}
-      {tab === "testimonials" && <TestimonialsManager token={token} onAuthError={handleAuthError} />}
+      {tab === "testimonials" && <TestimonialsManager token={token} onAuthError={handleAuthError} initialEditId={editId("testimonials")} />}
       {tab === "projects" && (
         <Editor
           key="project"
@@ -401,7 +466,7 @@ export default function AdminEditor() {
           initialNew={linkedEditor?.tab === "clients" && linkedEditor.create === true}
         />
       )}
-      {tab === "menu" && <GenericArrayEditor config={menuConfig} token={token} onAuthError={handleAuthError} />}
+      {tab === "menu" && <GenericArrayEditor config={menuConfig} token={token} onAuthError={handleAuthError} initialEditId={editId("menu")} />}
       {tab === "admin-menu" && (
         <GenericArrayEditor config={adminMenuConfig} token={token} onAuthError={handleAuthError} />
       )}
@@ -414,15 +479,16 @@ export default function AdminEditor() {
       {tab === "search-log" && <SearchLogViewer token={token} onAuthError={handleAuthError} />}
       {tab === "tasks" && <TasksManager token={token} onAuthError={handleAuthError} />}
       {tab === "sections" && (
-        <GenericArrayEditor config={sectionsConfig} token={token} onAuthError={handleAuthError} />
+        <GenericArrayEditor config={sectionsConfig} token={token} onAuthError={handleAuthError} initialEditId={editId("sections")} />
       )}
       {tab === "skill-categories" && (
         <GenericArrayEditor config={skillCategoriesConfig} token={token} onAuthError={handleAuthError} />
       )}
-      {tab === "seo" && <GenericArrayEditor config={seoConfig} token={token} onAuthError={handleAuthError} />}
+      {tab === "seo" && <GenericArrayEditor config={seoConfig} token={token} onAuthError={handleAuthError} initialEditId={editId("seo")} />}
       {tab === "ui-strings" && <UiStringsEditor token={token} onAuthError={handleAuthError} />}
       {tab === "faq-script" && <FaqScriptEditor token={token} onAuthError={handleAuthError} />}
       </div>
+      )}
     </div>
     </AdminTokenProvider>
   );

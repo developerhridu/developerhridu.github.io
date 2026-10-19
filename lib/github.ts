@@ -217,7 +217,7 @@ export async function commitFiles(
   const pending = getPending();
   if (pending.files.length > 0) await assertStagedBasesUnchanged(token);
   const all = mergeChanges(pending.files.map(({ path, content }) => ({ path, content })), changes);
-  const sha = await writeCommit(all, combinedMessage([...pending.messages, message]), token);
+  const sha = await writeCommit(all, combinedMessage([...pending.saves.map((save) => save.message), message]), token);
   clearPending();
   return { staged: false, sha };
 }
@@ -229,11 +229,27 @@ export async function publishPending(token: string): Promise<string | null> {
   await assertStagedBasesUnchanged(token);
   const sha = await writeCommit(
     pending.files.map(({ path, content }) => ({ path, content })),
-    combinedMessage(pending.messages),
+    combinedMessage(pending.saves.map((save) => save.message)),
     token
   );
   clearPending();
   return sha;
+}
+
+/** The version of a file that's live on GitHub, ignoring pending changes. Null when it doesn't exist. */
+export async function fetchPublishedFile(path: string, token: string): Promise<GitHubFile | null> {
+  try {
+    const data = await githubRequest(`${path}?ref=${BRANCH}`, token);
+    return { content: decodeBase64Unicode(data.content), sha: data.sha };
+  } catch (err) {
+    if (err instanceof GitHubApiError && err.status === 404) return null;
+    throw err;
+  }
+}
+
+/** Decodes a staged file's base64 content as text. */
+export function decodeStagedText(base64: string): string {
+  return decodeBase64Unicode(base64);
 }
 
 /** Reverts the last CMS commit — only while it's still the newest commit on the branch. */

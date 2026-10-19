@@ -11,6 +11,8 @@ import ImageListInput, { SingleImageInput } from "@/components/admin/ImageListIn
 import { CheckboxField, EditorPanel, Field, FormActions, FormSection, fieldClass } from "@/components/admin/FormKit";
 import { confirmDiscardEdits, snapshot, useSaveShortcut, useUnsavedGuard } from "@/components/admin/useUnsavedGuard";
 import { collectErrors, emailError, errorSummary, focusFirstError, requiredError, urlError, type FieldErrors } from "@/components/admin/validation";
+import { clearDraft, DraftBanner, useDraftRecovery } from "@/components/admin/useDraftRecovery";
+import { bulkMessage, standardBulkActions } from "@/components/admin/bulkActions";
 
 interface Entry {
   id: string;
@@ -88,9 +90,12 @@ function validate(entry: Entry): FieldErrors {
 export default function TestimonialsManager({
   token,
   onAuthError,
+  initialEditId,
 }: {
   token: string;
   onAuthError: () => void;
+  /** Entry to open once the list loads (from search or the Dashboard). */
+  initialEditId?: string;
 }) {
   const crud = useContentCrud<Entry>({ path: PATH, arrayKey: ARRAY_KEY, label: "testimonials", token, onAuthError, normalizeLoaded });
   const { entries, saving, setSaving, setError, commit, reportError, clearMessages } = crud;
@@ -101,9 +106,19 @@ export default function TestimonialsManager({
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [verifyFiles, setVerifyFiles] = useState<File[]>([]);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [pendingEditId, setPendingEditId] = useState(initialEditId);
 
   const dirty = !!editing && (snapshot(editing) !== opened || !!avatarFile || verifyFiles.length > 0);
   useUnsavedGuard(dirty);
+  const draftKey = editing ? `${PATH}:${isNew ? "new" : editing.id}` : null;
+  const recovery = useDraftRecovery(draftKey, editing, dirty);
+
+  // Opened from search or the Dashboard: jump into that entry once the list has loaded.
+  if (pendingEditId && entries) {
+    setPendingEditId(undefined);
+    const target = entries.find((e) => e.id === pendingEditId);
+    if (target) open({ ...target, verifyImages: target.verifyImages ?? [] }, false);
+  }
 
   function open(entry: Entry, asNew: boolean) {
     setEditing(entry);
@@ -125,6 +140,7 @@ export default function TestimonialsManager({
 
   function cancelEdit() {
     if (!confirmDiscardEdits(dirty)) return;
+    if (dirty) clearDraft(draftKey);
     setEditing(null);
     setAvatarFile(null);
     setVerifyFiles([]);
@@ -192,10 +208,27 @@ export default function TestimonialsManager({
 
     const message = isNew ? `content: add ${editing.name}` : `content: update ${editing.name}`;
     if (await commit(changes, updated, message)) {
+      clearDraft(draftKey);
       setEditing(null);
       setAvatarFile(null);
       setVerifyFiles([]);
     }
+  }
+
+  async function bulkSetPublished(items: Entry[], published: boolean) {
+    const ids = new Set(items.map((e) => e.id));
+    const updated = (entries ?? []).map((e) => (ids.has(e.id) ? { ...e, published } : e));
+    await commit([], updated, bulkMessage(published ? "publish" : "unpublish", items.length, "testimonials"));
+  }
+
+  async function bulkDelete(items: Entry[]) {
+    const ids = new Set(items.map((e) => e.id));
+    const updated = (entries ?? []).filter((e) => !ids.has(e.id));
+    const stillReferenced = new Set(updated.flatMap(entryImages));
+    const changes: FileChange[] = [...new Set(items.flatMap(entryImages))]
+      .filter((p) => isManagedImage(p) && !stillReferenced.has(p))
+      .map((p) => ({ path: toRepoPath(p), content: null }));
+    await commit(changes, updated, bulkMessage("delete", items.length, "testimonials"));
   }
 
   useSaveShortcut(() => void handleSave(), !!editing && !saving);
@@ -217,6 +250,16 @@ export default function TestimonialsManager({
 
       {editing ? (
         <EditorPanel title={isNew ? "New testimonial" : `Edit: ${editing.name || "testimonial"}`} dirty={dirty} onClose={cancelEdit}>
+          {recovery.draft && (
+            <DraftBanner
+              at={recovery.draft.at}
+              onRestore={() => {
+                setEditing(recovery.draft!.value);
+                recovery.accepted();
+              }}
+              onDismiss={recovery.dismiss}
+            />
+          )}
           <FormSection title="Person">
             <Field label="Name" htmlFor="t-name" required error={fieldErrors.name}>
               <input id="t-name" value={editing.name} onChange={(e) => update({ name: e.target.value })} className={fieldClass(fieldErrors.name)} />
@@ -300,6 +343,7 @@ export default function TestimonialsManager({
             onSaveOrder={() => void crud.saveOrder()}
             onDiscardOrder={crud.discardOrder}
             titleHeading="Name"
+            bulkActions={standardBulkActions<Entry>({ noun: "testimonials", onSetPublished: bulkSetPublished, onDelete: bulkDelete })}
           />
         </>
       )}

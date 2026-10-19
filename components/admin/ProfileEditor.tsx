@@ -14,6 +14,7 @@ import { ErrorBanner, SuccessBanner } from "@/components/admin/CrudBanners";
 import { FormActions, fieldClass } from "@/components/admin/FormKit";
 import { SingleImageInput } from "@/components/admin/ImageListInput";
 import { snapshot, useSaveShortcut, useUnsavedGuard } from "@/components/admin/useUnsavedGuard";
+import { clearDraft, DraftBanner, useDraftRecovery } from "@/components/admin/useDraftRecovery";
 import { collectErrors, emailError, errorSummary, focusFirstError, requiredError, urlError, type FieldErrors } from "@/components/admin/validation";
 
 interface ProfileForm {
@@ -96,6 +97,7 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
 
   const dirty = !loading && (snapshot(form) !== loadedForm || !!avatarFile || !!resumeFile);
   useUnsavedGuard(dirty);
+  const recovery = useDraftRecovery(loading ? null : `${PATH}:profile`, form, dirty);
   useSaveShortcut(() => void handleSave(), !loading && !saving);
 
   useEffect(() => {
@@ -248,6 +250,7 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
       setAvatarFile(null);
       setResumeFile(null);
       setSuccessMsg(savedMessage());
+      clearDraft(`${PATH}:profile`);
 
       await load();
     } catch (err) {
@@ -263,6 +266,16 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
     <div className="space-y-4">
       <ErrorBanner message={error} onReload={() => void load()} />
       <SuccessBanner message={successMsg} />
+      {recovery.draft && (
+        <DraftBanner
+          at={recovery.draft.at}
+          onRestore={() => {
+            setForm(recovery.draft!.value);
+            recovery.accepted();
+          }}
+          onDismiss={recovery.dismiss}
+        />
+      )}
 
       <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
         <div className="grid sm:grid-cols-2 gap-4">
@@ -412,6 +425,7 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
             setAvatarFile(null);
             setResumeFile(null);
             setFieldErrors({});
+            clearDraft(`${PATH}:profile`);
             void load();
           }}
         />

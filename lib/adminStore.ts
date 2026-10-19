@@ -55,17 +55,29 @@ export interface StagedFile {
   stagedSha: string;
 }
 
-export interface PendingState {
-  files: StagedFile[];
-  /** One line per save, in order — becomes the publish commit message. */
-  messages: string[];
+export interface PendingSave {
+  /** Commit-style message, e.g. "content: update SQL (Advanced)". */
+  message: string;
+  /** Files this save touched — used to discard one group of changes. */
+  paths: string[];
 }
 
-const pendingStore = createStore<PendingState>({ files: [], messages: [] });
-let stagedCounter = 0;
+export interface PendingState {
+  files: StagedFile[];
+  /** One entry per save, in order — the messages become the publish commit message. */
+  saves: PendingSave[];
+}
+
+const EMPTY: PendingState = { files: [], saves: [] };
+const pendingStore = createStore<PendingState>(EMPTY);
 
 export const subscribePending = pendingStore.subscribe;
 export const getPending = pendingStore.get;
+
+function setPending(next: PendingState) {
+  pendingStore.set(next);
+  schedulePersist(next);
+}
 
 export function getStaged(path: string): StagedFile | undefined {
   return pendingStore.get().files.find((file) => file.path === path);
@@ -85,16 +97,103 @@ export function stageChanges(
       content: change.content,
       // Keep the sha from the first time this file was staged; later saves build on top of it.
       baseSha: previous ? previous.baseSha : guard?.path === change.path ? guard.expectedSha : null,
-      stagedSha: `staged-${++stagedCounter}`,
+      // Unique across sessions, since the queue survives reloads.
+      stagedSha: `staged-${crypto.randomUUID()}`,
     };
     if (index >= 0) files[index] = next;
     else files.push(next);
   }
-  pendingStore.set({ files, messages: [...pendingStore.get().messages, message] });
+  const save: PendingSave = { message, paths: changes.map((change) => change.path) };
+  setPending({ files, saves: [...pendingStore.get().saves, save] });
 }
 
 export function clearPending() {
-  pendingStore.set({ files: [], messages: [] });
+  setPending(EMPTY);
+}
+
+export interface PendingGroup {
+  /** The content file the saves were about (or the first file touched). */
+  path: string;
+  saves: PendingSave[];
+}
+
+function primaryPath(save: PendingSave): string {
+  return save.paths.find((path) => path.startsWith("content/")) ?? save.paths[0] ?? "";
+}
+
+/** Pending saves bucketed by the content file they changed, for per-group discard. */
+export function pendingGroups(state: PendingState = pendingStore.get()): PendingGroup[] {
+  const groups = new Map<string, PendingSave[]>();
+  for (const save of state.saves) {
+    const key = primaryPath(save);
+    groups.set(key, [...(groups.get(key) ?? []), save]);
+  }
+  return [...groups].map(([path, saves]) => ({ path, saves }));
+}
+
+/**
+ * Drops every save that touched `path` (later saves of a JSON file build on earlier ones,
+ * so they go together) and any staged file only those saves touched — e.g. their uploads.
+ */
+export function discardPendingGroup(path: string) {
+  const { files, saves } = pendingStore.get();
+  const kept = saves.filter((save) => !save.paths.includes(path));
+  const stillTouched = new Set(kept.flatMap((save) => save.paths));
+  setPending({ files: files.filter((file) => stillTouched.has(file.path)), saves: kept });
+}
+
+// ---------------------------------------------------------------------------
+// Persistence — the queue is saved to IndexedDB so a reload or crash doesn't lose it.
+// ---------------------------------------------------------------------------
+
+const DB_NAME = "admin-cms";
+const DB_STORE = "kv";
+const PENDING_KEY = "pending";
+
+function openDb(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onupgradeneeded = () => request.result.createObjectStore(DB_STORE);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function idb<T>(mode: IDBTransactionMode, run: (store: IDBObjectStore) => IDBRequest): Promise<T> {
+  const db = await openDb();
+  return new Promise<T>((resolve, reject) => {
+    const request = run(db.transaction(DB_STORE, mode).objectStore(DB_STORE));
+    request.onsuccess = () => resolve(request.result as T);
+    request.onerror = () => reject(request.error);
+  }).finally(() => db.close());
+}
+
+let persistTimer: ReturnType<typeof setTimeout> | undefined;
+
+function schedulePersist(state: PendingState) {
+  if (typeof indexedDB === "undefined") return;
+  clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => {
+    const write = state.files.length === 0
+      ? idb("readwrite", (store) => store.delete(PENDING_KEY))
+      : idb("readwrite", (store) => store.put(state, PENDING_KEY));
+    write.catch(() => {
+      // Storage blocked or full — the queue still works for this tab; the reload warning covers the rest.
+    });
+  }, 250);
+}
+
+/** Restores the queue saved by an earlier session. Resolves to the number of restored saves. */
+export async function restorePending(): Promise<number> {
+  if (typeof indexedDB === "undefined" || pendingStore.get().files.length > 0) return 0;
+  try {
+    const saved = await idb<PendingState | undefined>("readonly", (store) => store.get(PENDING_KEY));
+    if (!saved?.files?.length) return 0;
+    pendingStore.set({ files: saved.files, saves: saved.saves ?? [] });
+    return saved.saves?.length ?? saved.files.length;
+  } catch {
+    return 0;
+  }
 }
 
 /** Data URL for an image that's staged but not yet on the site, so admin previews can show it. */

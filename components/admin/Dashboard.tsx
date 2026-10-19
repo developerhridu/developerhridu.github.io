@@ -4,12 +4,16 @@ import { useEffect, useState } from "react";
 import { TrendingUp, MessageSquareText, Quote as QuoteIcon, RefreshCw } from "lucide-react";
 import { fetchContentFile, GitHubApiError } from "@/lib/github";
 import { WORKER_URL } from "@/lib/workerUrl";
+import ContentHealth from "@/components/admin/ContentHealth";
+import type { SearchTarget } from "@/components/admin/AdminSearch";
 
 const TESTIMONIALS_PATH = "content/testimonials.json";
 
 interface DashboardProps {
   token: string;
   onAuthError: () => void;
+  /** Opens an entry in its editor (used by Content health). */
+  onOpen?: (target: SearchTarget) => void;
 }
 
 interface LogEntry {
@@ -24,7 +28,7 @@ interface TopItem {
   count: number;
 }
 
-export default function Dashboard({ token, onAuthError }: DashboardProps) {
+export default function Dashboard({ token, onAuthError, onOpen }: DashboardProps) {
   const [totalViews, setTotalViews] = useState<number | null>(null);
   const [topItems, setTopItems] = useState<TopItem[]>([]);
   const [pendingTestimonials, setPendingTestimonials] = useState<number | null>(null);
@@ -119,6 +123,8 @@ export default function Dashboard({ token, onAuthError }: DashboardProps) {
           </p>
         </div>
       </div>
+
+      <ContentHealth token={token} onOpen={onOpen} />
 
       {topItems.length > 0 && (
         <div className="mb-8">

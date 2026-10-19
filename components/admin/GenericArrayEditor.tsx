@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   fetchContentFile,
   commitFiles,
@@ -18,6 +18,9 @@ import { CheckboxField, EditorPanel, Field, FormActions, FormSection, fieldClass
 import { confirmDiscardEdits, snapshot, useSaveShortcut, useUnsavedGuard } from "@/components/admin/useUnsavedGuard";
 import { collectErrors, errorSummary, focusFirstError, requiredError, urlError, type FieldErrors } from "@/components/admin/validation";
 import { renderPreview, type PreviewKind } from "@/components/admin/previews";
+import { clearDraft, DraftBanner, useDraftRecovery } from "@/components/admin/useDraftRecovery";
+import { bulkMessage, standardBulkActions } from "@/components/admin/bulkActions";
+import type { CounterRange } from "@/components/admin/FormKit";
 
 type FieldType =
   | "text"
@@ -51,6 +54,8 @@ interface FieldDef {
   width?: "half" | "full";
   /** Textarea height. Defaults to 3 rows (5 for `list`). */
   rows?: number;
+  /** Shows a live character count with the recommended range (SEO titles/descriptions). */
+  counter?: CounterRange;
 }
 
 /** Long-form and picker inputs need the full row; short scalars pair up two-across. */
@@ -227,9 +232,12 @@ interface GenericArrayEditorProps {
   token: string;
   onAuthError: () => void;
   initialNew?: boolean;
+  /** Entry to open as soon as the list loads (from search or the Dashboard). */
+  initialEditId?: string;
 }
 
-export default function GenericArrayEditor({ config, token, onAuthError, initialNew = false }: GenericArrayEditorProps) {
+export default function GenericArrayEditor({ config, token, onAuthError, initialNew = false, initialEditId }: GenericArrayEditorProps) {
+  const pendingEditId = useRef(initialEditId);
   const [entries, setEntries] = useState<RawEntry[] | null>(null);
   const [fileSha, setFileSha] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -255,6 +263,9 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
 
   useUnsavedGuard(dirty);
   useSaveShortcut(() => void handleSave(), editing && !saving);
+
+  const draftKey = editing ? `${config.path}:${editingId ?? "new"}` : null;
+  const recovery = useDraftRecovery(draftKey, form, dirty);
 
   const pendingFiles = useMemo(
     () => [...Object.values(imageFiles).filter((f): f is File => !!f), ...Object.values(imageListFiles).flat()],
@@ -286,6 +297,12 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
       setEntries(loaded);
       setLoadedOrderIds(loaded.map((e) => String(e.id)));
       setFileSha(sha);
+      // Opened from search or the Dashboard: jump straight into that entry.
+      if (pendingEditId.current) {
+        const index = loaded.findIndex((e) => String(e.id) === pendingEditId.current);
+        pendingEditId.current = undefined;
+        if (index >= 0) openForm(normalizeIn(loaded[index], config), false, String(loaded[index].id), index);
+      }
     } catch (err) {
       handleApiError(err);
     } finally {
@@ -331,6 +348,7 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
 
   function cancelEdit() {
     if (!confirmDiscardEdits(dirty)) return;
+    if (dirty) clearDraft(draftKey);
     setEditingIndex(null);
     setEditingId(null);
     setImageFiles({});
@@ -453,9 +471,26 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
     const message = isNew ? `content: add ${titleVal}` : `content: update ${titleVal}`;
     const ok = await commit(changes, updated, message);
     if (ok) {
+      clearDraft(draftKey);
       setImageFiles({});
       setImageListFiles({});
     }
+  }
+
+  async function bulkSetPublished(items: RawEntry[], published: boolean) {
+    const ids = new Set(items.map((e) => String(e.id)));
+    const updated = (entries ?? []).map((e) => (ids.has(String(e.id)) ? { ...e, published } : e));
+    await commit([], updated, bulkMessage(published ? "publish" : "unpublish", items.length, config.label.toLowerCase()));
+  }
+
+  async function bulkDelete(items: RawEntry[]) {
+    const ids = new Set(items.map((e) => String(e.id)));
+    const updated = (entries ?? []).filter((e) => !ids.has(String(e.id)));
+    const stillUsed = new Set(updated.flatMap((e) => managedImagePaths(e, config)));
+    const changes: FileChange[] = [...new Set(items.flatMap((e) => managedImagePaths(e, config)))]
+      .filter((p) => !stillUsed.has(p))
+      .map((p) => ({ path: toRepoPath(p), content: null }));
+    await commit(changes, updated, bulkMessage("delete", items.length, config.label.toLowerCase()));
   }
 
   async function handleDelete(entry: RawEntry) {
@@ -497,6 +532,16 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
           onClose={cancelEdit}
           preview={config.preview ? renderPreview(config.preview, previewEntry()) : undefined}
         >
+          {recovery.draft && (
+            <DraftBanner
+              at={recovery.draft.at}
+              onRestore={() => {
+                setForm(recovery.draft!.value);
+                recovery.accepted();
+              }}
+              onDismiss={recovery.dismiss}
+            />
+          )}
           {groupFields(config.fields).map((group, groupIndex) => (
             <FormSection key={group.section ?? `group-${groupIndex}`} title={group.section ?? undefined}>
               {group.fields.map((field) => {
@@ -526,6 +571,7 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
                     hint={field.hint}
                     required={required}
                     full={isFullWidth(field)}
+                    counter={field.counter ? { value, range: field.counter } : undefined}
                   >
                     {field.type === "textarea" || field.type === "list" ? (
                       <textarea
@@ -611,6 +657,11 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
           onSaveOrder={() => void handleSaveOrder()}
           onDiscardOrder={() => void load()}
           titleHeading={config.fields.find((f) => f.key === config.titleField)?.label ?? "Title"}
+          bulkActions={standardBulkActions<RawEntry>({
+            noun: config.label.toLowerCase(),
+            onSetPublished: hasPublishedField ? bulkSetPublished : undefined,
+            onDelete: bulkDelete,
+          })}
         />
       )}
     </div>

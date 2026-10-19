@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore, type ChangeEvent } from "react";
+import { useRef, useState, useSyncExternalStore, type ChangeEvent, type ClipboardEvent } from "react";
 import dynamic from "next/dynamic";
 import { Upload } from "lucide-react";
 import rehypeSanitize from "rehype-sanitize";
@@ -80,7 +80,25 @@ export default function ArticleMarkdownEditor({
     const picked = event.target.files?.[0];
     event.target.value = "";
     if (!picked) return;
+    await insertFile(picked);
+  }
 
+  /** Pasting a screenshot uploads it (optimized) and drops a Markdown image at the cursor. */
+  function handlePaste(event: ClipboardEvent<HTMLDivElement>) {
+    const item = [...event.clipboardData.items].find((entry) => entry.kind === "file" && entry.type.startsWith("image/"));
+    const file = item?.getAsFile();
+    if (!file) return;
+    event.preventDefault();
+    const textarea = editorRef.current?.querySelector("textarea");
+    selectionRef.current = textarea
+      ? { start: textarea.selectionStart, end: textarea.selectionEnd }
+      : { start: value.length, end: value.length };
+    // Clipboard images are all called "image.png"; the saved path gets a unique id either way.
+    const named = file.name && file.name !== "image.png" ? file : new File([file], "pasted-image.png", { type: file.type });
+    void insertFile(named);
+  }
+
+  async function insertFile(picked: File) {
     try {
       const file = await optimizeImage(picked);
       const path = onAddImage(file);
@@ -100,8 +118,9 @@ export default function ArticleMarkdownEditor({
   }
 
   return (
-    <div ref={editorRef} data-color-mode={theme} className="article-markdown-editor w-full min-w-0">
-      <div className="mb-2 flex justify-end">
+    <div ref={editorRef} data-color-mode={theme} onPaste={handlePaste} className="article-markdown-editor w-full min-w-0">
+      <div className="mb-2 flex items-center justify-end gap-3">
+        <span className="text-xs text-muted">Tip: paste a screenshot straight into the text.</span>
         <button type="button" onClick={chooseImage} className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-accent hover:bg-surface-hover">
           <Upload size={14} aria-hidden="true" /> Insert local image
         </button>

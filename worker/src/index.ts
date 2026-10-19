@@ -80,6 +80,69 @@ async function listLogEntries(env: Env, prefix: string): Promise<unknown[]> {
   return entries.filter(Boolean);
 }
 
+/** Hosts the link checker refuses, so it can't be used to probe private networks. */
+function isPrivateHost(hostname: string): boolean {
+  const host = hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  if (host === "localhost" || host.endsWith(".localhost") || host.endsWith(".local") || host.endsWith(".internal")) return true;
+  if (host === "::1" || host.startsWith("fc") || host.startsWith("fd") || host.startsWith("fe80")) return true;
+  const ipv4 = host.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
+  if (!ipv4) return false;
+  const [a, b] = [Number(ipv4[1]), Number(ipv4[2])];
+  return a === 0 || a === 10 || a === 127 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168);
+}
+
+interface LinkResult {
+  url: string;
+  status: number;
+  ok: boolean;
+  finalUrl?: string;
+  error?: string;
+}
+
+async function checkOneLink(url: string): Promise<LinkResult> {
+  const init = (method: string): RequestInit => ({
+    method,
+    redirect: "follow",
+    signal: AbortSignal.timeout(8000),
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; hridu-portfolio-link-check)" },
+  });
+  try {
+    let res = await fetch(url, init("HEAD"));
+    // Plenty of servers reject HEAD; ask again with GET before calling the link broken.
+    if (res.status === 405 || res.status === 403 || res.status === 501 || res.status === 400) {
+      res = await fetch(url, init("GET"));
+    }
+    return { url, status: res.status, ok: res.status < 400, finalUrl: res.url !== url ? res.url : undefined };
+  } catch (err) {
+    return { url, status: 0, ok: false, error: err instanceof Error ? err.message : "Request failed" };
+  }
+}
+
+/** POST /check-links {urls} — admin-only: reports the HTTP status of each external link. */
+async function handleCheckLinks(request: Request, env: Env): Promise<Response> {
+  const headers = { "Content-Type": "application/json", ...corsHeaders(request) };
+  if (!(await isAuthorizedAdmin(request, env))) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+  }
+  let urls: string[];
+  try {
+    const body = await request.json<{ urls?: unknown }>();
+    urls = Array.isArray(body.urls) ? body.urls.filter((u): u is string => typeof u === "string") : [];
+  } catch {
+    return new Response(JSON.stringify({ error: "Invalid request body" }), { status: 400, headers });
+  }
+  const valid = [...new Set(urls)].slice(0, 50).filter((raw) => {
+    try {
+      const parsed = new URL(raw);
+      return (parsed.protocol === "http:" || parsed.protocol === "https:") && !isPrivateHost(parsed.hostname);
+    } catch {
+      return false;
+    }
+  });
+  const results = await Promise.all(valid.map(checkOneLink));
+  return new Response(JSON.stringify({ results }), { headers });
+}
+
 async function handleLogs(request: Request, env: Env): Promise<Response> {
   if (!env.CHAT_LOG) {
     return new Response(JSON.stringify({ error: "Logging is not configured for this Worker" }), {
@@ -616,6 +679,10 @@ export default {
 
     if ((request.method === "GET" || request.method === "POST") && url.pathname === "/search-log") {
       return handleSearchLog(request, env);
+    }
+
+    if (request.method === "POST" && url.pathname === "/check-links") {
+      return handleCheckLinks(request, env);
     }
 
     if (request.method !== "POST") {

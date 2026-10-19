@@ -67,6 +67,32 @@ export function FormSection({ title, children, columns = 2 }: { title?: string; 
   );
 }
 
+export interface CounterRange {
+  /** Below this the text is "too short" (amber). */
+  min?: number;
+  /** Above this the text is "too long" (red). */
+  max: number;
+}
+
+/** "52 / 60" next to a label — green in range, amber when short, red when over. */
+export function CharCounter({ value, range }: { value: string; range: CounterRange }) {
+  const length = value.trim().length;
+  const tone =
+    length > range.max ? "text-red-400" : range.min !== undefined && length < range.min ? "text-yellow-500" : "text-green-500";
+  const advice =
+    length > range.max
+      ? `Over the recommended ${range.max} characters`
+      : range.min !== undefined && length < range.min
+        ? `Recommended ${range.min}–${range.max} characters`
+        : "Good length";
+  return (
+    <span className={`font-mono text-[11px] normal-case tracking-normal ${tone}`} title={advice} aria-label={`${length} characters. ${advice}.`}>
+      {length}
+      {range.min !== undefined ? ` / ${range.min}–${range.max}` : ` / ${range.max}`}
+    </span>
+  );
+}
+
 /** Label + control + hint/error. `full` spans both columns of a two-column section. */
 export function Field({
   label,
@@ -75,6 +101,7 @@ export function Field({
   hint,
   required = false,
   full = false,
+  counter,
   children,
 }: {
   label: string;
@@ -83,13 +110,18 @@ export function Field({
   hint?: ReactNode;
   required?: boolean;
   full?: boolean;
+  /** Character counter shown at the right of the label. */
+  counter?: { value: string; range: CounterRange };
   children: ReactNode;
 }) {
   return (
     <div className={full ? "sm:col-span-2" : ""} data-field-error={error ? "true" : undefined}>
-      <label htmlFor={htmlFor} className="block text-xs uppercase tracking-wide text-muted mb-1">
-        {label}
-        {required && <span className="ml-0.5 text-red-400" aria-hidden="true">*</span>}
+      <label htmlFor={htmlFor} className="mb-1 flex items-center justify-between gap-2 text-xs uppercase tracking-wide text-muted">
+        <span>
+          {label}
+          {required && <span className="ml-0.5 text-red-400" aria-hidden="true">*</span>}
+        </span>
+        {counter && <CharCounter value={counter.value} range={counter.range} />}
       </label>
       {children}
       {error ? (

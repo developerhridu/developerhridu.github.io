@@ -32,6 +32,14 @@ export interface EntryListProps<T> {
   onSaveOrder?: () => void;
   onDiscardOrder?: () => void;
   titleHeading?: string;
+  /** Actions for several ticked rows at once (publish, unpublish, delete…). */
+  bulkActions?: BulkAction<T>[];
+}
+
+export interface BulkAction<T> {
+  label: string;
+  tone?: "danger";
+  run: (items: T[]) => void | Promise<unknown>;
 }
 
 /** The list half of every admin editor, so they all search, sort and act the same way. */
@@ -57,10 +65,12 @@ export default function EntryList<T>({
   onSaveOrder,
   onDiscardOrder,
   titleHeading = "Title",
+  bulkActions,
 }: EntryListProps<T>) {
   const [query, setQuery] = useState("");
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [overIndex, setOverIndex] = useState<number | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const all = items ?? [];
   const needle = query.trim().toLowerCase();
@@ -75,6 +85,33 @@ export default function EntryList<T>({
       return haystack.includes(needle);
     });
   const canReorder = !!onMove && !needle;
+  const canSelect = !!bulkActions?.length;
+  // Ticked rows that still exist (entries can disappear after a delete or reload).
+  const selectedItems = all.filter((item) => selected.has(getKey(item)));
+  const visibleKeys = rows.map(({ item }) => getKey(item));
+  const allVisibleSelected = visibleKeys.length > 0 && visibleKeys.every((key) => selected.has(key));
+
+  function toggle(key: string) {
+    setSelected((previous) => {
+      const next = new Set(previous);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
+
+  function toggleAllVisible() {
+    setSelected((previous) => {
+      const next = new Set(previous);
+      visibleKeys.forEach((key) => (allVisibleSelected ? next.delete(key) : next.add(key)));
+      return next;
+    });
+  }
+
+  async function runBulk(action: BulkAction<T>) {
+    await action.run(selectedItems);
+    setSelected(new Set());
+  }
 
   function drop(target: number) {
     if (dragIndex !== null && onMove) onMove(dragIndex, target);
@@ -112,6 +149,30 @@ export default function EntryList<T>({
         )}
       </div>
 
+      {canSelect && selectedItems.length > 0 && (
+        <div role="toolbar" aria-label="Bulk actions" className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 text-sm">
+          <span className="font-medium text-foreground">{selectedItems.length} selected</span>
+          {bulkActions!.map((action) => (
+            <button
+              key={action.label}
+              type="button"
+              disabled={saving}
+              onClick={() => void runBulk(action)}
+              className={`rounded-lg border px-3 py-1 text-xs font-medium disabled:opacity-50 ${
+                action.tone === "danger"
+                  ? "border-red-500/40 text-red-400 hover:bg-red-500/10"
+                  : "border-border bg-surface text-foreground hover:border-accent/40"
+              }`}
+            >
+              {action.label}
+            </button>
+          ))}
+          <button type="button" onClick={() => setSelected(new Set())} className="ml-auto text-xs text-muted hover:text-foreground">
+            Clear selection
+          </button>
+        </div>
+      )}
+
       {loading && <p className="text-muted text-sm">Loading…</p>}
       {!loading && items && items.length === 0 && <p className="text-muted text-sm">No entries yet.</p>}
       {!loading && items && items.length > 0 && rows.length === 0 && (
@@ -123,6 +184,17 @@ export default function EntryList<T>({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-surface">
+                {canSelect && (
+                  <th className="w-10 pl-4">
+                    <input
+                      type="checkbox"
+                      checked={allVisibleSelected}
+                      onChange={toggleAllVisible}
+                      aria-label={allVisibleSelected ? "Unselect all shown entries" : "Select all shown entries"}
+                      className="h-4 w-4 accent-accent"
+                    />
+                  </th>
+                )}
                 {canReorder && <th className="w-8" aria-label="Drag to reorder" />}
                 <th className="text-left font-medium text-muted px-4 py-3">{titleHeading}</th>
                 <th className="text-right font-medium text-muted px-4 py-3">Actions</th>
@@ -156,8 +228,19 @@ export default function EntryList<T>({
                     }}
                     className={`border-b border-border last:border-b-0 transition-colors ${
                       dragIndex === index ? "opacity-40" : ""
-                    } ${overIndex === index && dragIndex !== index ? "bg-accent/10" : ""}`}
+                    } ${overIndex === index && dragIndex !== index ? "bg-accent/10" : ""} ${selected.has(getKey(item)) ? "bg-accent/5" : ""}`}
                   >
+                    {canSelect && (
+                      <td className="w-10 pl-4">
+                        <input
+                          type="checkbox"
+                          checked={selected.has(getKey(item))}
+                          onChange={() => toggle(getKey(item))}
+                          aria-label={`Select ${title}`}
+                          className="h-4 w-4 accent-accent"
+                        />
+                      </td>
+                    )}
                     {canReorder && (
                       <td className="pl-3 text-muted cursor-grab active:cursor-grabbing" title="Drag to reorder">
                         <GripVertical size={16} />

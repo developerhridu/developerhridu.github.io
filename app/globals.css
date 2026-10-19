@@ -71,6 +71,24 @@ html {
   background: var(--accent-hover);
 }
 
+/* Slim horizontal scrollbar for scrolling strips (admin nav). */
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--accent) 60%, transparent) transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar {
+  height: 2px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+}
+
 /* Selection color */
 ::selection {
   background: color-mix(in srgb, var(--accent) 30%, transparent);

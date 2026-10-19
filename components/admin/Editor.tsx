@@ -30,11 +30,14 @@ import EditorPreview from "@/components/admin/EditorPreview";
 import ArticleMarkdownEditor from "@/components/admin/ArticleMarkdownEditor";
 import EntryList from "@/components/admin/EntryList";
 import { ErrorBanner, SuccessBanner } from "@/components/admin/CrudBanners";
-import { FormActions, fieldClass } from "@/components/admin/FormKit";
+import { CharCounter, FormActions, fieldClass } from "@/components/admin/FormKit";
 import { MediaPickerButton, prepareImages, reusedNotice, useAdminToken } from "@/components/admin/MediaLibrary";
 import { confirmDiscardEdits, snapshot, useSaveShortcut, useUnsavedGuard } from "@/components/admin/useUnsavedGuard";
 import { collectErrors, errorSummary, focusFirstError, requiredError, slugError, urlError, type FieldErrors } from "@/components/admin/validation";
 import { stagedImageSrc } from "@/lib/adminStore";
+import { clearDraft, DraftBanner, useDraftRecovery } from "@/components/admin/useDraftRecovery";
+import { bulkMessage, standardBulkActions } from "@/components/admin/bulkActions";
+import LinkCheckPanel from "@/components/admin/LinkCheckPanel";
 import type { ContentSection, Project } from "@/types";
 import { parseLinkedInPostText, buildLinkedInEmbedBody } from "@/lib/linkedin";
 import { coverImages } from "@/lib/coverImages";
@@ -296,6 +299,8 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
   const dirty = !!editing && (snapshot({ editing, tagsText }) !== opened || pendingFiles);
   useUnsavedGuard(dirty);
   useSaveShortcut(() => void handleSave(), !!editing && !saving);
+  const draftKey = editing ? `${CONFIG[kind].path}:${isNew ? "new" : editing.id}` : null;
+  const recovery = useDraftRecovery(draftKey, { editing, tagsText }, dirty);
 
   function markOpened(entry: Entry, tags: string, startDirty = false) {
     setOpened(startDirty ? "" : snapshot({ editing: entry, tagsText: tags }));
@@ -424,6 +429,7 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
 
   function cancelEdit() {
     if (!confirmDiscardEdits(dirty)) return;
+    if (dirty) clearDraft(draftKey);
     clearInlineImages();
     setEditing(null);
     setCoverImageFiles([]);
@@ -800,6 +806,7 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
 
     const message = isNew ? `content: add ${editing.title}` : `content: update ${editing.title}`;
     if (await commit(changes, updated, message)) {
+      clearDraft(draftKey);
       clearInlineImages();
       setCoverImageFiles(savedCoverImages.map(() => null));
       setSectionImageFiles(sections.map((s) => (s.images ?? []).map(() => null)));
@@ -819,6 +826,24 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
       .map((p) => ({ path: toRepoPath(p), content: null }));
 
     await commit(changes, updated, `content: delete ${entry.title}`);
+  }
+
+  const bulkNoun = CONFIG[kind].label.toLowerCase();
+
+  async function bulkSetPublished(items: Entry[], published: boolean) {
+    const ids = new Set(items.map((e) => e.id));
+    const updated = (entries ?? []).map((e) => (ids.has(e.id) ? { ...e, published } : e));
+    await commit([], updated, bulkMessage(published ? "publish" : "unpublish", items.length, bulkNoun));
+  }
+
+  async function bulkDelete(items: Entry[]) {
+    const ids = new Set(items.map((e) => e.id));
+    const updated = (entries ?? []).filter((e) => !ids.has(e.id));
+    const stillReferenced = referencedImagePaths(updated);
+    const changes: FileChange[] = [...new Set(items.flatMap(entryImagePaths))]
+      .filter((p) => isManagedImage(p, kind) && !stillReferenced.has(p))
+      .map((p) => ({ path: toRepoPath(p), content: null }));
+    await commit(changes, updated, bulkMessage("delete", items.length, bulkNoun));
   }
 
   const orderDirty = !CONFIG[kind].dated && entries !== null &&
@@ -895,6 +920,19 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
               </button>
             </div>
           </div>
+          {recovery.draft && (
+            <div className="mb-4">
+              <DraftBanner
+                at={recovery.draft.at}
+                onRestore={() => {
+                  setEditing(recovery.draft!.value.editing);
+                  setTagsText(recovery.draft!.value.tagsText);
+                  recovery.accepted();
+                }}
+                onDismiss={recovery.dismiss}
+              />
+            </div>
+          )}
           {mode === "view" ? (
             <div className="border border-border rounded-xl overflow-hidden">
               <p className="border-b border-border px-6 py-3 text-sm text-muted">Preview of your current edits.</p>
@@ -1058,6 +1096,7 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
             saving={saving}
             onSaveOrder={() => { if (entries) void commit([], entries, `content: reorder ${CONFIG[kind].label}`); }}
             onDiscardOrder={() => void load()}
+            bulkActions={standardBulkActions<Entry>({ noun: bulkNoun, onSetPublished: bulkSetPublished, onDelete: bulkDelete })}
           />
         </>
       )}
@@ -1267,8 +1306,9 @@ function EntryForm({
       </div>
 
       <div data-field-error={fieldErrors.title ? "true" : undefined}>
-        <label htmlFor="entry-title" className="block text-xs uppercase tracking-wide text-muted mb-1">
-          Title <span className="text-red-400" aria-hidden="true">*</span>
+        <label htmlFor="entry-title" className="mb-1 flex items-center justify-between gap-2 text-xs uppercase tracking-wide text-muted">
+          <span>Title <span className="text-red-400" aria-hidden="true">*</span></span>
+          <CharCounter value={entry.title} range={{ min: 20, max: 70 }} />
         </label>
         <input
           id="entry-title"
@@ -1396,8 +1436,12 @@ function EntryForm({
       </div>
 
       <div>
-        <label className="block text-xs uppercase tracking-wide text-muted mb-1">Description</label>
+        <label htmlFor="entry-description" className="mb-1 flex items-center justify-between gap-2 text-xs uppercase tracking-wide text-muted">
+          <span>Description <span className="normal-case tracking-normal">(also the search-engine snippet)</span></span>
+          <CharCounter value={entry.description} range={{ min: 120, max: 160 }} />
+        </label>
         <textarea
+          id="entry-description"
           value={entry.description}
           onChange={(e) => setEntry({ ...entry, description: e.target.value })}
           rows={2}
@@ -1596,6 +1640,8 @@ function EntryForm({
 
       {kind === "project" && <ProjectLinkFields entry={entry} setEntry={setEntry} fieldErrors={fieldErrors} />}
       {kind === "client" && <ClientFields entry={entry} setEntry={setEntry} fieldErrors={fieldErrors} />}
+
+      <LinkCheckPanel entry={entry} />
 
       <FormActions saving={saving} dirty={dirty} onSave={onSave} onCancel={onCancel} />
     </div>
