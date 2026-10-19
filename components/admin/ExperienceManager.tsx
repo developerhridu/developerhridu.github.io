@@ -274,7 +274,8 @@ export default function ExperienceManager({
       const slug = slugify(editing.company);
       if (logoFile) {
         const ext = logoFile.name.split(".").pop()?.toLowerCase() || "png";
-        logo = `/images/${IMAGE_FOLDER}/${slug}.${ext}`;
+        // Logos live in the shared logos folder (never auto-deleted), not the experience folder.
+        logo = `/images/logos/${slug}.${ext}`;
         changes.push({ path: toRepoPath(logo), content: await fileToBase64(logoFile) });
       }
       for (const file of photoFiles) {

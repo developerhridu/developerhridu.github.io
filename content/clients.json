@@ -16,8 +16,8 @@
         "oracle-to-postgresql-migration-bangladesh"
       ],
       "proofOfWorkImages": [
-        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-0.png",
-        "/images/case-studies/oracle-to-postgresql-migration-bangladesh-section-6-1.png",
+        "/images/shared/oracle-to-postgresql-migration-bangladesh-section-6-0.png",
+        "/images/shared/oracle-to-postgresql-migration-bangladesh-section-6-1.png",
         "/images/shared/dataflow-database-migration-tool-photo-0.png",
         "/images/shared/dataflow-database-migration-tool-photo-1.png",
         "/images/shared/dataflow-database-migration-tool-photo-2.png"
@@ -35,7 +35,7 @@
       "tags": [],
       "body": "## Engagement\n\nThrough **TechnoNext Software Ltd.** (concern of US-Bangla Airlines) as **Software Engineer**, April 2024 – present.\n\n## What I Did\n\n- Designed and developed the end-to-end Fare Comparison platform as a scalable, responsive web application.\n- Integrated multiple GDS and NDC suppliers to aggregate competitor fares, flight schedules and seat availability, normalizing the data for comparison.\n- Engineered pricing-intelligence logic that turns market data into fare recommendations to optimize ticket pricing.\n\n## Proof of work documents",
       "sections": [],
-      "coverImages": ["/images/clients/us-bangla-airlines.jpg"],
+      "coverImages": ["/images/logos/us-bangla-airlines.jpg"],
       "projects": [
         "fare-comparison"
       ],
@@ -63,18 +63,18 @@
       "tags": [],
       "body": "## Engagement\n\nThrough **TechnoNext Software Ltd.** (concern of US-Bangla Airlines) as **Software Engineer**, April 2024 – present.\n\n## What I Did\n\n- Designed and developed the Engagement Automation feature in Foodi CRM to streamline customer and operations team communication.\n- Improved API response time with a read/write Redis caching strategy.\n\n## Proof of Work\n\nRepository access and commit history on foodi-crm, and the official transfer notice listing Foodi CRM as my project.",
       "sections": [],
-      "coverImages": ["/images/shared/foodi.jpg"],
+      "coverImages": ["/images/logos/foodi.jpg"],
       "projects": [
         "foodi-crm"
       ],
       "caseStudies": [],
       "proofOfWorkImages": [
-        "/images/projects/foodi-crm-photo-0.png",
-        "/images/projects/foodi-crm-photo-1.png",
-        "/images/projects/foodi-crm-photo-2.png",
-        "/images/projects/foodi-crm-photo-3.png",
-        "/images/projects/foodi-crm-photo-4.png",
-        "/images/projects/foodi-crm-photo-5.jpg"
+        "/images/shared/foodi-crm-photo-0.png",
+        "/images/shared/foodi-crm-photo-1.png",
+        "/images/shared/foodi-crm-photo-2.png",
+        "/images/shared/foodi-crm-photo-3.png",
+        "/images/shared/foodi-crm-photo-4.png",
+        "/images/shared/foodi-crm-photo-5.jpg"
       ],
       "updatedAt": "2026-10-11T09:02:05.324Z",
       "name": "Foodi"
@@ -121,7 +121,7 @@
         "/images/clients/scale-ai-photo-1.png"
       ],
       "updatedAt": "2026-10-11T09:02:05.325Z",
-      "coverImages": ["/images/clients/scale-ai.png"],
+      "coverImages": ["/images/logos/scale-ai.png"],
       "name": "Scale AI"
     },
     {
@@ -133,7 +133,7 @@
       "tags": [],
       "body": "## Engagement\n\nThrough **TechnoNext Software Ltd.** (concern of US-Bangla Airlines) as **Software Engineer**, April 2024 – present. FirstTrip runs on the shared multi-tenant OTA platform I work on; I am listed as a developer on the FirstTrip project.\n\n## What I Did\n\n- Built and maintained the shared multi-tenant OTA platform (B2B & B2C) this brand runs on — part of a 36+ service ecosystem serving 6 OTA clients.\n- Delivered 8 cloud-native supplier integrations (Sabre, Travelport, Travelport NDC, Air India, Flydubai, SQ NDC, TK NDC, IndiGo), increasing flight search feed by 27%.\n- Implemented Progressive Search, Search Ranking, Universal Split PNR, Refund Reissue and PNR Details.\n- Built the Booking Cancellation Service (ASP.NET Core + Hangfire) that cancels un-ticketed bookings before the last ticketing time.\n- Built an xUnit API integration test suite for 30+ supplier integrations, and integrated APM with Elasticsearch structured logging.\n\n## Impact\n\n- ADM penalties reduced by $4,500–$6,400 per month per OTA (~$23K–$27K saved across 6 clients).\n- Production failure rate cut by 30% after APM + structured logging.\n- Flight search feed up 27% from new supplier integrations.\n\n## Proof of Work\n\nFirstTrip project membership in the company PMS, plus screens of the shared platform and the Booking Cancellation Service.",
       "sections": [],
-      "coverImages": ["/images/shared/ota.png"],
+      "coverImages": ["/images/logos/firsttrip.png"],
       "projects": [
         "ota-platform",
         "airline-supplier-integration",
@@ -145,11 +145,11 @@
         "progressive-search-30-suppliers-ota"
       ],
       "proofOfWorkImages": [
-        "/images/projects/ota-platform-photo-0.png",
-        "/images/projects/ota-platform-photo-5.png",
-        "/images/projects/booking-manager-service-photo-0.png",
-        "/images/projects/booking-manager-service-photo-1.png",
-        "/images/projects/ota-platform-photo-6.png"
+        "/images/shared/ota-platform-photo-0.png",
+        "/images/shared/ota-platform-photo-5.png",
+        "/images/shared/booking-manager-service-photo-0.png",
+        "/images/shared/booking-manager-service-photo-1.png",
+        "/images/shared/ota-platform-photo-6.png"
       ],
       "updatedAt": "2026-10-11T09:02:05.324Z",
       "name": "FirstTrip"
@@ -175,10 +175,10 @@
         "progressive-search-30-suppliers-ota"
       ],
       "proofOfWorkImages": [
-        "/images/projects/ota-platform-photo-4.png",
-        "/images/projects/ota-platform-photo-5.png",
-        "/images/projects/booking-manager-service-photo-0.png",
-        "/images/projects/booking-manager-service-photo-1.png"
+        "/images/shared/ota-platform-photo-4.png",
+        "/images/shared/ota-platform-photo-5.png",
+        "/images/shared/booking-manager-service-photo-0.png",
+        "/images/shared/booking-manager-service-photo-1.png"
       ],
       "updatedAt": "2026-10-11T09:02:05.324Z",
       "name": "TripLover"
@@ -204,10 +204,10 @@
         "progressive-search-30-suppliers-ota"
       ],
       "proofOfWorkImages": [
-        "/images/projects/ota-platform-photo-2.png",
-        "/images/projects/ota-platform-photo-5.png",
-        "/images/projects/booking-manager-service-photo-0.png",
-        "/images/projects/booking-manager-service-photo-1.png"
+        "/images/shared/ota-platform-photo-2.png",
+        "/images/shared/ota-platform-photo-5.png",
+        "/images/shared/booking-manager-service-photo-0.png",
+        "/images/shared/booking-manager-service-photo-1.png"
       ],
       "updatedAt": "2026-10-11T09:02:05.324Z",
       "name": "TakeTrip"
@@ -233,10 +233,10 @@
         "progressive-search-30-suppliers-ota"
       ],
       "proofOfWorkImages": [
-        "/images/projects/ota-platform-photo-3.png",
-        "/images/projects/ota-platform-photo-5.png",
-        "/images/projects/booking-manager-service-photo-0.png",
-        "/images/projects/booking-manager-service-photo-1.png"
+        "/images/shared/ota-platform-photo-3.png",
+        "/images/shared/ota-platform-photo-5.png",
+        "/images/shared/booking-manager-service-photo-0.png",
+        "/images/shared/booking-manager-service-photo-1.png"
       ],
       "updatedAt": "2026-10-11T09:02:05.324Z",
       "name": "TravelChamp"
@@ -262,10 +262,10 @@
         "progressive-search-30-suppliers-ota"
       ],
       "proofOfWorkImages": [
-        "/images/projects/ota-platform-photo-1.png",
-        "/images/projects/ota-platform-photo-5.png",
-        "/images/projects/booking-manager-service-photo-0.png",
-        "/images/projects/booking-manager-service-photo-1.png"
+        "/images/shared/ota-platform-photo-1.png",
+        "/images/shared/ota-platform-photo-5.png",
+        "/images/shared/booking-manager-service-photo-0.png",
+        "/images/shared/booking-manager-service-photo-1.png"
       ],
       "updatedAt": "2026-10-11T09:02:05.324Z",
       "name": "TakeOff"
@@ -279,7 +279,7 @@
       "tags": [],
       "body": "## Engagement\n\n**Jr. Software Engineer (Part-Time)** at **E-Desh Limited**, remote, May 2022 – February 2023.\n\n## What I Did\n\n- Worked with a remote team to design and develop the company's courier platform website using React and ASP.NET Core.\n- Built the front end, built APIs, and optimized the existing codebase and database, improving performance and responsiveness.\n\n## Proof of Work\n\n[Walkthrough video](https://youtu.be/ouIKiEqVOYY).\n\n## Proof of work documents",
       "sections": [],
-      "coverImages": ["/images/shared/edesh.png"],
+      "coverImages": ["/images/logos/edesh.png"],
       "projects": [
         "e-desh-api"
       ],

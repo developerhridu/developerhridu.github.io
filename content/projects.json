@@ -29,20 +29,20 @@
       "updatedAt": "2026-10-11T04:12:21.541Z",
       "title": "Online Travel Agency (OTA) Platform",
       "coverImages": [
-        "/images/shared/ota.png",
+        "/images/logos/firsttrip.png",
         "/images/logos/triplover.jpeg",
         "/images/logos/taketrip.png",
         "/images/logos/travelchamp.png",
         "/images/logos/takeoff.png"
       ],
       "proofOfWorkImages": [
-        "/images/projects/ota-platform-photo-0.png",
-        "/images/projects/ota-platform-photo-1.png",
-        "/images/projects/ota-platform-photo-2.png",
-        "/images/projects/ota-platform-photo-3.png",
-        "/images/projects/ota-platform-photo-4.png",
-        "/images/projects/ota-platform-photo-5.png",
-        "/images/projects/ota-platform-photo-6.png"
+        "/images/shared/ota-platform-photo-0.png",
+        "/images/shared/ota-platform-photo-1.png",
+        "/images/shared/ota-platform-photo-2.png",
+        "/images/shared/ota-platform-photo-3.png",
+        "/images/shared/ota-platform-photo-4.png",
+        "/images/shared/ota-platform-photo-5.png",
+        "/images/shared/ota-platform-photo-6.png"
       ]
     },
     {
@@ -69,17 +69,17 @@
       "clients": [],
       "title": "Foodi CRM - Food Delivery System",
       "coverImages": [
-        "/images/shared/foodi.jpg",
-        "/images/projects/foodi-crm-cover-1c73aef8-ad16-4ad3-8d82-322df3897dd8.png",
-        "/images/projects/foodi-crm-cover-0618e574-373a-464b-902e-3488d49d8a5c.jpg"
+        "/images/logos/foodi.jpg",
+        "/images/projects/foodi-crm-cover-1.png",
+        "/images/projects/foodi-crm-cover-2.jpg"
       ],
       "proofOfWorkImages": [
-        "/images/projects/foodi-crm-photo-0.png",
-        "/images/projects/foodi-crm-photo-1.png",
-        "/images/projects/foodi-crm-photo-2.png",
-        "/images/projects/foodi-crm-photo-3.png",
-        "/images/projects/foodi-crm-photo-4.png",
-        "/images/projects/foodi-crm-photo-5.jpg"
+        "/images/shared/foodi-crm-photo-0.png",
+        "/images/shared/foodi-crm-photo-1.png",
+        "/images/shared/foodi-crm-photo-2.png",
+        "/images/shared/foodi-crm-photo-3.png",
+        "/images/shared/foodi-crm-photo-4.png",
+        "/images/shared/foodi-crm-photo-5.jpg"
       ]
     },
     {
@@ -108,8 +108,8 @@
       "clients": [],
       "title": "Bdjobs.com",
       "coverImages": [
-        "/images/projects/my-bdjobs-cover-5bea7d8f-d9e3-414d-bac3-a8e3f2aa2fda.png",
-        "/images/projects/my-bdjobs-cover-840de3cc-9e1b-4d08-92dd-a2f3d8fb6b9a.png"
+        "/images/projects/my-bdjobs-cover-1.png",
+        "/images/projects/my-bdjobs-cover-2.png"
       ],
       "proofOfWorkImages": [
         "/images/shared/bdjobs-photo-1.png",
@@ -173,8 +173,8 @@
       "clients": [],
       "title": "Recruiter.Bdjobs.com",
       "coverImages": [
-        "/images/projects/recruiter-bdjobs-cover-dd84666e-19e0-4ca0-a1c8-dc0258c7711d.png",
-        "/images/projects/recruiter-bdjobs-cover-cc8bf205-e045-400b-8969-f14c21c9c12c.png"
+        "/images/projects/recruiter-bdjobs-cover-1.png",
+        "/images/projects/recruiter-bdjobs-cover-2.png"
       ],
       "proofOfWorkImages": []
     },
@@ -203,7 +203,7 @@
       "updatedAt": "2026-10-11T04:02:16.188Z",
       "title": "Fare Comparison",
       "coverImages": [
-        "/images/projects/fare-comparison.png"
+        "/images/shared/fare-comparison.png"
       ],
       "proofOfWorkImages": [
         "/images/shared/fare-comparison-photo-0.png",
@@ -268,15 +268,15 @@
       "updatedAt": "2026-10-06T05:37:46.708Z",
       "title": "Booking Manager Service",
       "coverImages": [
-        "/images/projects/bcs.png"
+        "/images/shared/automated-booking-cancellation-service.png"
       ],
       "proofOfWorkImages": [
-        "/images/projects/booking-manager-service-photo-0.png",
-        "/images/projects/booking-manager-service-photo-1.png",
-        "/images/projects/booking-manager-service-photo-2.png",
-        "/images/projects/booking-manager-service-photo-3.png",
-        "/images/projects/booking-manager-service-photo-4.png",
-        "/images/projects/booking-manager-service-photo-5.png"
+        "/images/shared/booking-manager-service-photo-0.png",
+        "/images/shared/booking-manager-service-photo-1.png",
+        "/images/shared/booking-manager-service-photo-2.png",
+        "/images/shared/booking-manager-service-photo-3.png",
+        "/images/shared/booking-manager-service-photo-4.png",
+        "/images/shared/booking-manager-service-photo-5.png"
       ]
     },
     {
@@ -302,7 +302,7 @@
       "sections": [],
       "title": "DevNote Blog-site",
       "coverImages": [
-        "/images/projects/DevNote.png"
+        "/images/projects/devnote.png"
       ],
       "proofOfWorkImages": []
     },
@@ -348,8 +348,8 @@
       "clients": [],
       "title": "E-desh Limited E-Courier Management Project",
       "coverImages": [
-        "/images/projects/e-desh-api-cover-dfb8d70c-45d6-4afb-a82f-7195b25fd410.png",
-        "/images/shared/edesh.png"
+        "/images/projects/e-desh-api-cover.png",
+        "/images/logos/edesh.png"
       ],
       "proofOfWorkImages": [
         "/images/shared/edesh-photo-2.png",

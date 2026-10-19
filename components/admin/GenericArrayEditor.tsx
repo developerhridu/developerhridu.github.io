@@ -56,6 +56,11 @@ interface FieldDef {
   rows?: number;
   /** Shows a live character count with the recommended range (SEO titles/descriptions). */
   counter?: CounterRange;
+  /** Image fields: folder under /images that uploads go to, instead of the config's own `imageFolder`
+   *  (logos go to `logos`, which no editor auto-deletes from, so they can be shared safely). */
+  uploadFolder?: string;
+  /** Image fields: key of the field whose value names the uploaded file (default: the title field). */
+  nameFrom?: string;
 }
 
 /** Long-form and picker inputs need the full row; short scalars pair up two-across. */
@@ -427,9 +432,13 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
           const files = imageListFiles[field.key] ?? [];
           if (files.length === 0) continue;
           const uploaded: string[] = [];
+          const folder = field.uploadFolder ?? config.imageFolder;
+          const base = slugify(String(workingForm[field.nameFrom ?? config.titleField] ?? titleVal)) || slugify(titleVal);
           for (const file of files) {
             const ext = file.name.split(".").pop()?.toLowerCase() || "png";
-            const publicPath = `/images/${config.imageFolder}/${slugify(titleVal)}-${field.key}-${crypto.randomUUID()}.${ext}`;
+            const publicPath = field.uploadFolder
+              ? `/images/${folder}/${base}-${crypto.randomUUID().slice(0, 8)}.${ext}`
+              : `/images/${folder}/${base}-${field.key}-${crypto.randomUUID()}.${ext}`;
             changes.push({ path: toRepoPath(publicPath), content: await fileToBase64(file) });
             uploaded.push(publicPath);
           }
@@ -439,8 +448,10 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
           const file = imageFiles[field.key];
           if (!file) continue;
           const ext = file.name.split(".").pop()?.toLowerCase() || "png";
-          const publicPath = `/images/${config.imageFolder}/${slugify(titleVal)}${
-            imageFields.length > 1 ? `-${field.key}` : ""
+          const folder = field.uploadFolder ?? config.imageFolder;
+          const base = slugify(String(workingForm[field.nameFrom ?? config.titleField] ?? titleVal)) || slugify(titleVal);
+          const publicPath = `/images/${folder}/${base}${
+            imageFields.length > 1 && !field.uploadFolder ? `-${field.key}` : ""
           }.${ext}`;
           changes.push({ path: toRepoPath(publicPath), content: await fileToBase64(file) });
           workingForm[field.key] = publicPath;

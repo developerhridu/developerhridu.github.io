@@ -14,7 +14,7 @@ export const educationConfig: ArrayConfig = {
     { key: "period", label: "Period", type: "text", placeholder: "January 2017 - January 2023" },
     { key: "location", label: "Location", type: "text" },
     { key: "cgpa", label: "CGPA / Grade (optional)", type: "text" },
-    { key: "icon", label: "Icon / Logo", type: "image" },
+    { key: "icon", label: "Icon / Logo", type: "image", uploadFolder: "logos", nameFrom: "institution" },
     { key: "achievements", label: "Achievements (one per line, optional)", type: "list" },
   ],
 };
@@ -35,7 +35,7 @@ export const certificationsConfig: ArrayConfig = {
     { key: "verifyUrl", label: "Verification link", type: "url", placeholder: "https://…", section: "Details", width: "full", hint: "Clicking the card opens this link in a new tab." },
     { key: "published", label: "Published (visible on the site)", type: "boolean", defaultBoolean: true, section: "Details" },
     { key: "photos", label: "Certificate photos", type: "images", placeholder: "/images/certifications/example.png", section: "Certificate photos" },
-    { key: "icons", label: "Issuer logo(s)", type: "images", placeholder: "/images/logos/example.svg", section: "Issuer logo" },
+    { key: "icons", label: "Issuer logo(s)", type: "images", placeholder: "/images/logos/example.svg", section: "Issuer logo", uploadFolder: "logos", nameFrom: "issuer" },
   ],
   extraNormalizeIn: (raw) => ({
     icons: (raw.icon ? [raw.icon as string] : ((raw.icons as string[]) ?? [])).join("\n"),

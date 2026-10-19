@@ -40,6 +40,20 @@ lib/                  Content loaders (content.ts) and MDX parsing (mdx.ts)
 types/                Shared TypeScript interfaces
 ```
 
+## Image conventions
+
+Images live in `public/images/`, one folder level deep:
+
+| Folder | Holds |
+| --- | --- |
+| `logos/` | every organization logo (clients, employers, issuers, schools) |
+| `blog/`, `case-studies/`, `projects/`, `clients/`, `certifications/`, `testimonials/`, `profile/` | images used by that content type only |
+| `shared/` | other images used by two or more content types |
+
+Why it matters: the admin CMS deletes an entry's images when they sit in that entry type's own folder and nothing else of the *same type* uses them. An image shared across types must live in `shared/` (or `logos/`) so removing one entry can't break another's page.
+
+Names are lowercase kebab-case without spaces (`foodi-crm-cover-1.png`). Reference images by their `/images/...` path. `npm run build` also generates resized WebP copies in `public/_img/` (git-ignored) for responsive `srcset`s. Use the admin **Media** tab to browse folders, see where each image is used, and upload or delete.
+
 ## Getting started
 
 ```bash

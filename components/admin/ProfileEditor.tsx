@@ -197,10 +197,10 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
     try {
       if (avatarFile) {
         const ext = avatarFile.name.split(".").pop()?.toLowerCase() || "png";
-        const repoPath = `public/images/profile-avatar.${ext}`;
+        const repoPath = `public/images/profile/avatar.${ext}`;
         const base64 = await fileToBase64(avatarFile);
         changes.push({ path: repoPath, content: base64 });
-        avatar = `/images/profile-avatar.${ext}`;
+        avatar = `/images/profile/avatar.${ext}`;
       }
 
       if (resumeFile) {
@@ -211,7 +211,7 @@ export default function ProfileEditor({ token, onAuthError }: ProfileEditorProps
         resumeUrl = `/resume.${ext}`;
       }
 
-      if (avatarFile && oldAvatar && oldAvatar !== avatar && oldAvatar.startsWith("/images/profile-avatar.")) {
+      if (avatarFile && oldAvatar && oldAvatar !== avatar && oldAvatar.startsWith("/images/profile/")) {
         changes.push({ path: `public${oldAvatar}`, content: null });
       }
       if (resumeFile && oldResumeUrl && oldResumeUrl !== resumeUrl && oldResumeUrl.startsWith("/resume.")) {
