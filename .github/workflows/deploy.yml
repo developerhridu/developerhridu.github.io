@@ -47,7 +47,7 @@ jobs:
       # Restoring node_modules directly skips `npm ci` entirely when the lockfile is unchanged.
       - name: Cache node_modules
         id: node-modules
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: node_modules
           key: node-modules-${{ runner.os }}-node24-${{ hashFiles('package-lock.json') }}
@@ -63,7 +63,7 @@ jobs:
 
       # Resized WebP copies made by the prebuild step; it only redoes images whose content changed.
       - name: Cache responsive images
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: public/_img
           key: responsive-images-${{ hashFiles('public/images/**', 'scripts/generate-responsive-images.mjs', 'lib/imageWidths.mjs') }}
@@ -71,7 +71,7 @@ jobs:
             responsive-images-
 
       - name: Cache Next.js build
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .next/cache
           key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
