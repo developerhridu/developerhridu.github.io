@@ -26,16 +26,16 @@ export const certificationsConfig: ArrayConfig = {
   subtitleField: "issuer",
   imageFolder: "certifications",
   fields: [
-    { key: "name", label: "Name", type: "text" },
-    { key: "issuer", label: "Issuer", type: "text" },
-    { key: "date", label: "Date", type: "text", placeholder: "June 2024" },
-    { key: "verifyUrl", label: "Verify URL", type: "url" },
-    { key: "icons", label: "Icon(s) (comma separated paths)", type: "tags" },
-    { key: "photos", label: "Photos (one path per line, or upload)", type: "images" },
-    { key: "published", label: "Published (visible on the site)", type: "boolean", defaultBoolean: true },
+    { key: "name", label: "Certificate name", type: "text", placeholder: "Certified SQL (Advanced)", section: "Details", width: "full" },
+    { key: "issuer", label: "Issued by", type: "text", placeholder: "HackerRank", section: "Details" },
+    { key: "date", label: "Issue date", type: "text", placeholder: "June 2024", section: "Details" },
+    { key: "verifyUrl", label: "Verification link", type: "url", placeholder: "https://…", section: "Details", width: "full" },
+    { key: "published", label: "Published (visible on the site)", type: "boolean", defaultBoolean: true, section: "Details" },
+    { key: "photos", label: "Certificate photos", type: "images", placeholder: "/images/certifications/example.png", section: "Certificate photos" },
+    { key: "icons", label: "Issuer logo(s)", type: "images", placeholder: "/images/logos/example.svg", section: "Issuer logo" },
   ],
   extraNormalizeIn: (raw) => ({
-    icons: (raw.icon ? [raw.icon as string] : ((raw.icons as string[]) ?? [])).join(", "),
+    icons: (raw.icon ? [raw.icon as string] : ((raw.icons as string[]) ?? [])).join("\n"),
   }),
   extraTransformOut: (out) => {
     const iconsArr = (out.icons as string[]) ?? [];

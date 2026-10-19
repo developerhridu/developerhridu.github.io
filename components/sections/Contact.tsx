@@ -274,8 +274,9 @@ export default function Contact({ showHeading = true }: ContactProps) {
 
                   <Button
                     variant="primary"
+                    type="submit"
+                    disabled={formStatus === "loading"}
                     className="w-full justify-center"
-                    onClick={() => {}}
                   >
                     {formStatus === "loading" ? (
                       <span className="flex items-center gap-2">

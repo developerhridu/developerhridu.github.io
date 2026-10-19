@@ -48,6 +48,7 @@ function resolveHref(link: (typeof navLinks)[number]): string {
 // "education-certifications" section), so map those explicitly.
 const NAV_ID_TO_SECTION_ID: Record<string, string> = {
   "training-certifications": "education-certifications",
+  blogs: "blog",
 };
 
 const iconRegistry: Record<string, typeof House> = {
