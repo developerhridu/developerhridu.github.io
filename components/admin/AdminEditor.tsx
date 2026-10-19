@@ -85,20 +85,9 @@ type Tab =
   | "ui-strings"
   | "faq-script";
 
-const TABS: { key: Tab; label: string; icon: string; group: string }[] = adminMenuData.tabs
+const TABS: { key: Tab; label: string; icon: string }[] = adminMenuData.tabs
   .filter((t) => t.published !== false)
-  .map((t) => ({ key: t.id as Tab, label: t.label, icon: t.icon, group: (t as { group?: string }).group || "Other" }));
-
-const GROUP_ORDER = ["Overview", "Content", "Profile", "Site", "Logs"];
-
-/** Tabs bucketed by group, in a fixed group order (unknown groups go last, in first-seen order). */
-const TAB_GROUPS = [...new Set(TABS.map((t) => t.group))]
-  .sort((a, b) => {
-    const ia = GROUP_ORDER.indexOf(a);
-    const ib = GROUP_ORDER.indexOf(b);
-    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
-  })
-  .map((group) => ({ group, tabs: TABS.filter((t) => t.group === group) }));
+  .map((t) => ({ key: t.id as Tab, label: t.label, icon: t.icon }));
 
 const ICONS: Record<string, LucideIcon> = {
   award: Award,
@@ -294,44 +283,29 @@ export default function AdminEditor() {
     );
   }
 
-  const currentTab = TABS.find((item) => item.key === tab);
-
   return (
     <AdminTokenProvider token={token}>
     <div>
       <div className="mb-3 flex min-w-0 items-center gap-3">
-        <nav ref={tabListRef} aria-label="Content editor sections" className="flex min-w-0 flex-1 items-stretch gap-1 overflow-x-auto rounded-lg border border-border bg-surface p-1">
-          {TAB_GROUPS.map(({ group, tabs }, groupIndex) => (
-            <div
-              key={group}
-              role="group"
-              aria-label={group}
-              className={`flex shrink-0 items-center gap-0.5 ${groupIndex > 0 ? "ml-1 border-l border-border pl-2" : ""}`}
-            >
-              <span className="hidden pr-1 text-[10px] font-semibold uppercase tracking-wider text-muted/80 xl:inline">
-                {group}
-              </span>
-              {tabs.map((item) => {
-                const Icon = ICONS[item.icon] ?? CircleHelp;
-                const selected = tab === item.key;
-                return (
-                  <button
-                    key={item.key}
-                    ref={selected ? selectedTabRef : undefined}
-                    type="button"
-                    aria-label={item.label}
-                    aria-pressed={selected}
-                    title={`${group} · ${item.label}`}
-                    onClick={() => selectTab(item.key)}
-                    className={`flex shrink-0 items-center justify-center gap-1.5 rounded-md p-2 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${selected ? "bg-accent/10 text-accent" : "text-muted hover:bg-background hover:text-foreground"}`}
-                  >
-                    <Icon size={18} aria-hidden="true" />
-                    {selected && <span className="hidden pr-1 sm:inline">{item.label}</span>}
-                  </button>
-                );
-              })}
-            </div>
-          ))}
+        <nav ref={tabListRef} aria-label="Content editor sections" className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto rounded-lg border border-border bg-surface p-1">
+          {TABS.map((item) => {
+            const Icon = ICONS[item.icon] ?? CircleHelp;
+            const selected = tab === item.key;
+            return (
+              <button
+                key={item.key}
+                ref={selected ? selectedTabRef : undefined}
+                type="button"
+                aria-label={item.label}
+                aria-pressed={selected}
+                title={item.label}
+                onClick={() => selectTab(item.key)}
+                className={`flex shrink-0 items-center justify-center rounded-md p-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${selected ? "bg-accent/10 text-accent" : "text-muted hover:bg-background hover:text-foreground"}`}
+              >
+                <Icon size={18} aria-hidden="true" />
+              </button>
+            );
+          })}
         </nav>
         <div className="flex shrink-0 items-center gap-1">
           <a
@@ -355,13 +329,6 @@ export default function AdminEditor() {
           </button>
         </div>
       </div>
-
-      {currentTab && (
-        <h1 className="mb-3 text-lg font-semibold text-foreground">
-          <span className="text-muted font-normal">{currentTab.group} / </span>
-          {currentTab.label}
-        </h1>
-      )}
 
       <AdminStatusBar token={token} onContentChanged={() => setReloadKey((key) => key + 1)} />
 

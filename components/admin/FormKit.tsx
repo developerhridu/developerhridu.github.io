@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Copy, X } from "lucide-react";
+import { X } from "lucide-react";
 import { inputClass } from "@/components/admin/shared";
 
 /** Input class with a red border when the field has an error. */
@@ -133,13 +133,11 @@ export function FormActions({
   dirty = true,
   onSave,
   onCancel,
-  onDuplicate,
 }: {
   saving: boolean;
   dirty?: boolean;
   onSave: () => void;
   onCancel: () => void;
-  onDuplicate?: () => void;
 }) {
   return (
     <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center gap-3 rounded-b-xl border-t border-border bg-surface/95 px-6 py-4 backdrop-blur">
@@ -159,16 +157,6 @@ export function FormActions({
       >
         Cancel
       </button>
-      {onDuplicate && (
-        <button
-          type="button"
-          onClick={onDuplicate}
-          disabled={saving}
-          className="flex items-center gap-1.5 px-3 py-2.5 text-sm text-muted hover:text-foreground"
-        >
-          <Copy size={14} /> Duplicate
-        </button>
-      )}
       <span className="ml-auto hidden text-xs text-muted sm:inline">
         {dirty ? "Unsaved changes · " : ""}
         <kbd className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px]">Ctrl</kbd>

@@ -306,10 +306,9 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
     }
   }
 
-  /** `startDirty` marks prefilled forms (duplicates) as unsaved from the start. */
-  function openForm(next: FormState, asNew: boolean, id: string | null, index = -1, startDirty = false) {
+  function openForm(next: FormState, asNew: boolean, id: string | null, index = -1) {
     setForm(next);
-    setOpenedForm(startDirty ? "" : snapshot(next));
+    setOpenedForm(snapshot(next));
     setFieldErrors({});
     setImageFiles({});
     setImageListFiles({});
@@ -328,14 +327,6 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
   function startEdit(index: number) {
     if (!confirmDiscardEdits(dirty)) return;
     openForm(normalizeIn(entries![index], config), false, String(entries![index].id), index);
-  }
-
-  /** New entry pre-filled from an existing one (images are shared by path, not copied). */
-  function duplicate(source: FormState) {
-    if (!confirmDiscardEdits(dirty)) return;
-    const copy = { ...source, [config.titleField]: `${String(source[config.titleField] ?? "").trim()} (copy)` };
-    if (hasPublishedField) copy.published = false;
-    openForm(copy, true, null, -1, true);
   }
 
   function cancelEdit() {
@@ -590,7 +581,6 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
             dirty={dirty}
             onSave={() => void handleSave()}
             onCancel={cancelEdit}
-            onDuplicate={!isNew ? () => duplicate(form) : undefined}
           />
         </EditorPanel>
       ) : (
@@ -615,7 +605,6 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
           onMove={(from, to) => setEntries((previous) => (previous ? moveItem(previous, from, to) : previous))}
           onEdit={(entry) => startEdit(entries!.indexOf(entry))}
           onDelete={(entry) => void handleDelete(entry)}
-          onDuplicate={(entry) => duplicate(normalizeIn(entry, config))}
           onNew={startNew}
           orderDirty={orderDirty}
           saving={saving}

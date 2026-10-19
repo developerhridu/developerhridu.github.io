@@ -22,7 +22,6 @@ import {
   ArrowUp,
   ArrowDown,
   Linkedin,
-  Copy,
 } from "lucide-react";
 import { inputClass, slugify, fileToBase64, moveItem, savedMessage, confirmDeleteMessage } from "@/components/admin/shared";
 import ClientMultiSelect from "@/components/admin/ClientMultiSelect";
@@ -433,23 +432,6 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
     setFieldErrors({});
   }
 
-  /** Opens a new draft pre-filled from `entry` (images shared by path; never published). */
-  function duplicate(entry: Entry) {
-    if (!confirmDiscardEdits(dirty)) return;
-    clearInlineImages();
-    setMode("edit");
-    const slug = makeUniqueSlug(`${entry.slug}-copy`, (entries ?? []).map((e) => e.slug));
-    const copy: Entry = { ...entry, sections: entry.sections ?? [], id: "", slug, title: `${entry.title} (copy)`, published: false, featured: false };
-    setEditing(copy);
-    setTagsText(entry.tags.join(", "));
-    setIsNew(true);
-    setCoverImageFiles(copy.coverImages.map(() => null));
-    setSectionImageFiles(copy.sections.map((s) => (s.images ?? []).map(() => null)));
-    setPhotoFiles(copy.proofOfWorkImages.map(() => null));
-    markOpened(copy, entry.tags.join(", "), true);
-    setSuccessMsg(null);
-    setError(null);
-  }
 
   function cancelLinkedInImport() {
     setShowLinkedInImport(false);
@@ -888,16 +870,6 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
                   Open live page <ExternalLink size={14} />
                 </a>
               )}
-              {!isNew && (
-                <button
-                  type="button"
-                  onClick={() => duplicate(editing)}
-                  disabled={saving}
-                  className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground disabled:opacity-50"
-                >
-                  <Copy size={14} /> Duplicate
-                </button>
-              )}
               {dirty && (
                 <span className="rounded-full bg-yellow-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-yellow-500">
                   Unsaved
@@ -962,7 +934,6 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
               saving={saving}
               dirty={dirty}
               fieldErrors={fieldErrors}
-              onDuplicate={!isNew ? () => duplicate(editing) : undefined}
               coverImageFiles={coverImageFiles}
               onAddCoverFiles={(files) => void addCoverFiles(files)}
               onAddCoverPaths={addCoverPaths}
@@ -1068,7 +1039,6 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
             onMove={!CONFIG[kind].dated ? moveEntry : undefined}
             onEdit={(entry) => startEdit(entry)}
             onPreview={(entry) => startEdit(entry, "view")}
-            onDuplicate={duplicate}
             onDelete={(entry) => void handleDelete(entry)}
             onNew={startNew}
             newLabel={`New ${CONFIG[kind].singularLabel}`}
@@ -1217,7 +1187,6 @@ function EntryForm({
   saving,
   dirty,
   fieldErrors,
-  onDuplicate,
   coverImageFiles,
   onAddCoverFiles,
   onAddCoverPaths,
@@ -1256,7 +1225,6 @@ function EntryForm({
   saving: boolean;
   dirty: boolean;
   fieldErrors: FieldErrors;
-  onDuplicate?: () => void;
   coverImageFiles: (File | null)[];
   onAddCoverFiles: (files: File[]) => void;
   onAddCoverPaths: (paths: string[]) => void;
@@ -1629,7 +1597,7 @@ function EntryForm({
       {kind === "project" && <ProjectLinkFields entry={entry} setEntry={setEntry} fieldErrors={fieldErrors} />}
       {kind === "client" && <ClientFields entry={entry} setEntry={setEntry} fieldErrors={fieldErrors} />}
 
-      <FormActions saving={saving} dirty={dirty} onSave={onSave} onCancel={onCancel} onDuplicate={onDuplicate} />
+      <FormActions saving={saving} dirty={dirty} onSave={onSave} onCancel={onCancel} />
     </div>
   );
 }

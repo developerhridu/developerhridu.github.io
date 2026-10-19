@@ -105,9 +105,9 @@ export default function TestimonialsManager({
   const dirty = !!editing && (snapshot(editing) !== opened || !!avatarFile || verifyFiles.length > 0);
   useUnsavedGuard(dirty);
 
-  function open(entry: Entry, asNew: boolean, startDirty = false) {
+  function open(entry: Entry, asNew: boolean) {
     setEditing(entry);
-    setOpened(startDirty ? "" : snapshot(entry));
+    setOpened(snapshot(entry));
     setIsNew(asNew);
     setAvatarFile(null);
     setVerifyFiles([]);
@@ -121,10 +121,6 @@ export default function TestimonialsManager({
 
   function startEdit(entry: Entry) {
     if (confirmDiscardEdits(dirty)) open({ ...entry, verifyImages: entry.verifyImages ?? [] }, false);
-  }
-
-  function duplicate(entry: Entry) {
-    if (confirmDiscardEdits(dirty)) open({ ...entry, id: "", name: `${entry.name} (copy)`, published: false }, true, true);
   }
 
   function cancelEdit() {
@@ -276,7 +272,6 @@ export default function TestimonialsManager({
             dirty={dirty}
             onSave={() => void handleSave()}
             onCancel={cancelEdit}
-            onDuplicate={!isNew ? () => duplicate(editing) : undefined}
           />
         </EditorPanel>
       ) : (
@@ -299,7 +294,6 @@ export default function TestimonialsManager({
             onMove={crud.moveEntry}
             onEdit={startEdit}
             onDelete={(entry) => void handleDelete(entry)}
-            onDuplicate={duplicate}
             onNew={startNew}
             orderDirty={crud.orderDirty}
             saving={saving}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { ArrowDown, ArrowUp, Copy, ExternalLink, Eye, GripVertical, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ExternalLink, Eye, GripVertical, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import IconButton from "@/components/ui/IconButton";
 import { inputClass } from "@/components/admin/shared";
 import { ReorderControls } from "@/components/admin/ReorderControls";
@@ -23,7 +23,6 @@ export interface EntryListProps<T> {
   onMove?: (from: number, to: number) => void;
   onEdit: (item: T) => void;
   onDelete: (item: T) => void;
-  onDuplicate?: (item: T) => void;
   onPreview?: (item: T) => void;
   newLabel?: string;
   onNew: () => void;
@@ -49,7 +48,6 @@ export default function EntryList<T>({
   onMove,
   onEdit,
   onDelete,
-  onDuplicate,
   onPreview,
   newLabel = "New Entry",
   onNew,
@@ -219,11 +217,6 @@ export default function EntryList<T>({
                         {onPreview && (
                           <IconButton onClick={() => onPreview(item)} aria-label={`Preview ${title}`}>
                             <Eye size={16} />
-                          </IconButton>
-                        )}
-                        {onDuplicate && (
-                          <IconButton onClick={() => onDuplicate(item)} aria-label={`Duplicate ${title}`}>
-                            <Copy size={16} />
                           </IconButton>
                         )}
                         <IconButton onClick={() => onEdit(item)} aria-label={`Edit ${title}`}>

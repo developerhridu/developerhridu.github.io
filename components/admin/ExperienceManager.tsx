@@ -146,9 +146,9 @@ export default function ExperienceManager({
   const previewUrls = useMemo(() => new Map(previewFiles.map((file) => [file, URL.createObjectURL(file)])), [previewFiles]);
   useEffect(() => () => previewUrls.forEach((url) => URL.revokeObjectURL(url)), [previewUrls]);
 
-  function open(next: FormState, asNew: boolean, startDirty = false) {
+  function open(next: FormState, asNew: boolean) {
     setForm(next);
-    setOpened(startDirty ? "" : snapshot(next));
+    setOpened(snapshot(next));
     setIsNew(asNew);
     setLogoFile(null);
     setPhotoFiles([]);
@@ -164,11 +164,6 @@ export default function ExperienceManager({
   function startEdit(entry: Entry) {
     if (!confirmDiscardEdits(dirty)) return;
     open(toFormState(entry), false);
-  }
-
-  function duplicate(entry: Entry) {
-    if (!confirmDiscardEdits(dirty)) return;
-    open(toFormState({ ...entry, id: "", company: `${entry.company} (copy)`, published: false }), true, true);
   }
 
   function cancelEdit() {
@@ -455,7 +450,6 @@ export default function ExperienceManager({
             dirty={dirty}
             onSave={() => void handleSave()}
             onCancel={cancelEdit}
-            onDuplicate={!isNew ? () => duplicate(form.entry) : undefined}
           />
         </EditorPanel>
       ) : (
@@ -472,7 +466,6 @@ export default function ExperienceManager({
           onMove={crud.moveEntry}
           onEdit={startEdit}
           onDelete={(entry) => void handleDelete(entry)}
-          onDuplicate={duplicate}
           onNew={startNew}
           orderDirty={crud.orderDirty}
           saving={saving}
