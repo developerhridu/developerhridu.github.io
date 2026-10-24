@@ -28,66 +28,6 @@
       ]
     },
     {
-      "id": "certified-software-engineer",
-      "name": "Certified Software Engineer",
-      "issuer": "HackerRank",
-      "date": "January 2024",
-      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/bc1a30e19b7c",
-      "published": true,
-      "icon": "/images/logos/hackerrank.svg",
-      "photos": [
-        "/images/certifications/certified-software-engineer.png"
-      ]
-    },
-    {
-      "id": "certified-sql-advanced",
-      "published": true,
-      "name": "Certified SQL (Advanced)",
-      "issuer": "HackerRank",
-      "icon": "/images/logos/hackerrank.svg",
-      "date": "July 2026",
-      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/25415760cf15",
-      "photos": [
-        "/images/certifications/certified-sql-advanced.png"
-      ]
-    },
-    {
-      "id": "certified-c-developer",
-      "published": true,
-      "name": "Certified C# Developer",
-      "issuer": "HackerRank",
-      "icon": "/images/logos/hackerrank.svg",
-      "date": "February 2024",
-      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/e55bde03c575",
-      "photos": [
-        "/images/certifications/certified-c-developer.png"
-      ]
-    },
-    {
-      "id": "certified-javascript-developer",
-      "published": true,
-      "name": "Certified JavaScript Developer",
-      "issuer": "HackerRank",
-      "icon": "/images/logos/hackerrank.svg",
-      "date": "July 2026",
-      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/0a57fe9d6efc",
-      "photos": [
-        "/images/certifications/certified-javascript-developer.png"
-      ]
-    },
-    {
-      "id": "rest-api-intermediate",
-      "published": true,
-      "name": "Rest API (Intermediate)",
-      "issuer": "HackerRank",
-      "icon": "/images/logos/hackerrank.svg",
-      "date": "July 2026",
-      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/bae955cb87cd",
-      "photos": [
-        "/images/certifications/rest-api-intermediate.png"
-      ]
-    },
-    {
       "id": "react-basics",
       "name": "React Basics",
       "issuer": "Coursera (Meta)",
@@ -130,6 +70,66 @@
       "icons": [
         "/images/logos/coursera.svg",
         "/images/logos/coursera-meta-446e1865.png"
+      ]
+    },
+    {
+      "id": "certified-sql-advanced",
+      "published": true,
+      "name": "Certified SQL (Advanced)",
+      "issuer": "HackerRank",
+      "icon": "/images/logos/hackerrank.svg",
+      "date": "July 2026",
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/25415760cf15",
+      "photos": [
+        "/images/certifications/certified-sql-advanced.png"
+      ]
+    },
+    {
+      "id": "certified-software-engineer",
+      "name": "Certified Software Engineer",
+      "issuer": "HackerRank",
+      "date": "January 2024",
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/bc1a30e19b7c",
+      "published": true,
+      "icon": "/images/logos/hackerrank.svg",
+      "photos": [
+        "/images/certifications/certified-software-engineer.png"
+      ]
+    },
+    {
+      "id": "certified-c-developer",
+      "published": true,
+      "name": "Certified C# Developer",
+      "issuer": "HackerRank",
+      "icon": "/images/logos/hackerrank.svg",
+      "date": "February 2024",
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/e55bde03c575",
+      "photos": [
+        "/images/certifications/certified-c-developer.png"
+      ]
+    },
+    {
+      "id": "certified-javascript-developer",
+      "published": true,
+      "name": "Certified JavaScript Developer",
+      "issuer": "HackerRank",
+      "icon": "/images/logos/hackerrank.svg",
+      "date": "July 2026",
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/0a57fe9d6efc",
+      "photos": [
+        "/images/certifications/certified-javascript-developer.png"
+      ]
+    },
+    {
+      "id": "rest-api-intermediate",
+      "published": true,
+      "name": "Rest API (Intermediate)",
+      "issuer": "HackerRank",
+      "icon": "/images/logos/hackerrank.svg",
+      "date": "July 2026",
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/bae955cb87cd",
+      "photos": [
+        "/images/certifications/rest-api-intermediate.png"
       ]
     }
   ]
