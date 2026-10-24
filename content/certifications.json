@@ -73,18 +73,6 @@
       ]
     },
     {
-      "id": "certified-sql-advanced",
-      "published": true,
-      "name": "Certified SQL (Advanced)",
-      "issuer": "HackerRank",
-      "icon": "/images/logos/hackerrank.svg",
-      "date": "July 2026",
-      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/25415760cf15",
-      "photos": [
-        "/images/certifications/certified-sql-advanced.png"
-      ]
-    },
-    {
       "id": "certified-software-engineer",
       "name": "Certified Software Engineer",
       "issuer": "HackerRank",
@@ -106,6 +94,18 @@
       "verifyUrl": "https://www.hackerrank.com/certificates/iframe/e55bde03c575",
       "photos": [
         "/images/certifications/certified-c-developer.png"
+      ]
+    },
+    {
+      "id": "certified-sql-advanced",
+      "published": true,
+      "name": "Certified SQL (Advanced)",
+      "issuer": "HackerRank",
+      "icon": "/images/logos/hackerrank.svg",
+      "date": "July 2026",
+      "verifyUrl": "https://www.hackerrank.com/certificates/iframe/25415760cf15",
+      "photos": [
+        "/images/certifications/certified-sql-advanced.png"
       ]
     },
     {
