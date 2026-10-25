@@ -40,9 +40,9 @@ export default function Education({ showHeading = true, noSection = false }: Edu
             transition={{ duration: 0.5, delay: idx * 0.1 }}
           >
             <GlassCard className="h-full">
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-3 sm:gap-4">
                 {edu.icon ? (
-                  <div className="w-14 h-14 rounded-lg bg-white/90 flex items-center justify-center p-3 shrink-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-white/90 flex items-center justify-center p-2.5 sm:p-3 shrink-0">
                     <div className="relative w-full h-full">
                       <Image src={edu.icon} alt={edu.institution} fill sizes="32px" className="object-contain" />
                     </div>
@@ -52,15 +52,15 @@ export default function Education({ showHeading = true, noSection = false }: Edu
                     <GraduationCap className="w-8 h-8 text-accent" />
                   </div>
                 )}
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-foreground mb-1">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1 text-balance">
                     {edu.degree}
                   </h3>
-                  <p className="text-accent font-medium mb-3">
+                  <p className="text-sm sm:text-base text-accent font-medium mb-3">
                     {edu.institution}
                   </p>
 
-                  <div className="flex flex-wrap gap-4 text-sm text-muted mb-4">
+                  <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-muted mb-4">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
                       <span>{edu.period}</span>

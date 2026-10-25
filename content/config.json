@@ -10,5 +10,14 @@
     "category": "",
     "categoryId": ""
   },
-  "aiChatWorkerUrl": "https://hridu-portfolio-ai-chat.developerhridu.workers.dev/"
+  "aiChatWorkerUrl": "https://hridu-portfolio-ai-chat.developerhridu.workers.dev/",
+  "aiChatPrompt": {
+    "firstDelaySeconds": 3,
+    "repeatEverySeconds": 30,
+    "visibleForSeconds": 3
+  },
+  "clientSpin": {
+    "orbitLapSeconds": 40,
+    "bandLoopSeconds": 28
+  }
 }

@@ -9,6 +9,7 @@ import { getPublishedClients } from "@/lib/clients";
 import type { Client } from "@/types";
 import { primaryCoverImage } from "@/lib/coverImages";
 import ClientPreviewCard, { CLIENT_PREVIEW_WIDTH } from "@/components/ui/ClientPreviewCard";
+import { BAND_LOOP_SECONDS } from "@/lib/clientSpin";
 
 type ClientWithLogo = Client & { image: string };
 
@@ -19,8 +20,8 @@ const CLIENTS_WITH_LOGOS: ClientWithLogo[] = getPublishedClients()
 const CHIP_CLASS =
   "flex items-center justify-center w-36 h-24 shrink-0 rounded-xl bg-white/90 px-5 py-3 transition-transform hover:scale-105";
 
-/** Resting drift in px/sec — matches the old 28s CSS loop. */
-const REST_SPEED = 40;
+/** Drift until the track is measured; after that it is width / bandLoopSeconds. */
+const FALLBACK_REST_SPEED = 40;
 /** Pointer travel (px) after which a press counts as a spin, not a click. */
 const DRAG_THRESHOLD = 6;
 /** How quickly a flick slows back to the resting speed (per second). */
@@ -103,7 +104,9 @@ export default function ClientMarquee() {
 
   /** Pixels scrolled, wrapped to one track's width so the loop is seamless. */
   const offsetRef = useRef(0);
-  const speedRef = useRef(REST_SPEED);
+  const speedRef = useRef(FALLBACK_REST_SPEED);
+  /** Resting px/sec for the configured loop time, recomputed as the track is measured. */
+  const restSpeedRef = useRef(FALLBACK_REST_SPEED);
   const dragRef = useRef<DragState | null>(null);
   /** True right after a drag, so the click it ends with doesn't open a client. */
   const suppressClickRef = useRef(false);
@@ -126,19 +129,23 @@ export default function ClientMarquee() {
       const dt = Math.min((now - last) / 1000, 0.1);
       last = now;
 
+      const track = trackRef.current;
+      const half = track ? track.scrollWidth / 2 : 0;
+      // One loop of the track takes bandLoopSeconds, whatever the logo count.
+      if (half > 0) restSpeedRef.current = half / BAND_LOOP_SECONDS;
+      const restSpeed = restSpeedRef.current;
+
       if (!dragRef.current) {
         const paused = hoverRef.current || activeRef.current !== null;
-        const target = reduceMotion || paused ? 0 : REST_SPEED;
+        const target = reduceMotion || paused ? 0 : restSpeed;
         const speed = speedRef.current;
         // A flick coasts down gently; stopping and restarting eases quickly.
-        const rate = speed > REST_SPEED * 1.05 && !paused ? FLICK_DAMPING : EASE;
+        const rate = speed > restSpeed * 1.05 && !paused ? FLICK_DAMPING : EASE;
         speedRef.current = speed + (target - speed) * Math.min(1, dt * rate);
         offsetRef.current += speedRef.current * dt;
       }
 
-      const track = trackRef.current;
       if (track) {
-        const half = track.scrollWidth / 2;
         if (half > 0) offsetRef.current = ((offsetRef.current % half) + half) % half;
         track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
       }
@@ -216,7 +223,7 @@ export default function ClientMarquee() {
       }, 0);
       // A flick forward coasts; dragging backwards just resumes the normal drift.
       const flick = Math.min(Math.abs(drag.velocity), MAX_SPEED);
-      if (drag.velocity > 0 && flick > REST_SPEED) speedRef.current = flick;
+      if (drag.velocity > 0 && flick > restSpeedRef.current) speedRef.current = flick;
     }
   }
 

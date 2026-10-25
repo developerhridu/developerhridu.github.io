@@ -23,9 +23,43 @@ const AI_WORKER_URL = config.aiChatWorkerUrl;
 
 const INITIALS = profile.name.split(" ").map(n => n[0]).join("");
 
+/** Timings for the "Ask AI" teaser, in seconds, from content/config.json. */
+const PROMPT_DEFAULTS = { firstDelaySeconds: 3, repeatEverySeconds: 30, visibleForSeconds: 3 };
+const PROMPT_TIMING = { ...PROMPT_DEFAULTS, ...(config.aiChatPrompt ?? {}) };
+
+/** Seconds to milliseconds, guarding against a zero or negative value in the config. */
+function ms(seconds: number, fallback: number): number {
+  return Math.max(0.5, Number(seconds) > 0 ? Number(seconds) : fallback) * 1000;
+}
+
+const FIRST_DELAY_MS = ms(PROMPT_TIMING.firstDelaySeconds, PROMPT_DEFAULTS.firstDelaySeconds);
+const REPEAT_EVERY_MS = ms(PROMPT_TIMING.repeatEverySeconds, PROMPT_DEFAULTS.repeatEverySeconds);
+const VISIBLE_FOR_MS = ms(PROMPT_TIMING.visibleForSeconds, PROMPT_DEFAULTS.visibleForSeconds);
+
+/** Remembers a dismissal for this browser tab, so a reload doesn't bring the teaser back. */
+const DISMISSED_KEY = "ai_chat_prompt_dismissed";
+
+function wasDismissed(): boolean {
+  try {
+    return sessionStorage.getItem(DISMISSED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function rememberDismissed() {
+  try {
+    sessionStorage.setItem(DISMISSED_KEY, "1");
+  } catch {
+    // Storage blocked — the in-memory flag still stops it for this page view.
+  }
+}
+
 export default function AiChatWidget() {
   const [open, setOpen] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
+  /** Closed via the X — stays hidden for the rest of this tab's session. */
+  const [dismissed, setDismissed] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -38,17 +72,45 @@ export default function AiChatWidget() {
   }, [messages, loading, open]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowPrompt(true), 2000);
-    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sessionStorage is browser-only, so a previous dismissal can only be read after hydration.
+    if (wasDismissed()) setDismissed(true);
   }, []);
 
+  /**
+   * Shows the teaser for `visibleForSeconds`, hides it, waits `repeatEverySeconds` and
+   * repeats — until it is dismissed or the chat is opened.
+   */
+  useEffect(() => {
+    if (dismissed || open) return;
+
+    let timer: ReturnType<typeof setTimeout>;
+    const hide = () => {
+      setShowPrompt(false);
+      timer = setTimeout(show, REPEAT_EVERY_MS);
+    };
+    const show = () => {
+      setShowPrompt(true);
+      timer = setTimeout(hide, VISIBLE_FOR_MS);
+    };
+
+    timer = setTimeout(show, FIRST_DELAY_MS);
+    // Clearing on open/dismiss also resets the teaser, so reopening starts a fresh cycle.
+    return () => {
+      clearTimeout(timer);
+      setShowPrompt(false);
+    };
+  }, [dismissed, open]);
+
+  /** The X button: gone for the rest of this tab's session. */
   function dismissPrompt() {
     setShowPrompt(false);
+    setDismissed(true);
+    rememberDismissed();
   }
 
   function handleOpen() {
     setOpen(true);
-    dismissPrompt();
+    setShowPrompt(false);
     if (messages.length === 0) trackEvent("faq_bot_open", {});
   }
 
@@ -191,7 +253,7 @@ export default function AiChatWidget() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {showPrompt && !open && (
+        {showPrompt && !open && !dismissed && (
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}

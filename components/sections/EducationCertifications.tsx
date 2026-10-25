@@ -36,27 +36,34 @@ export default function EducationCertifications() {
           subtitle={sectionCopy.subtitle}
         />
 
-        {/* Tab Bar */}
-        <div className="flex justify-center mb-12">
-          <div className="inline-flex flex-wrap items-center gap-2 p-2 rounded-full border border-border bg-surface">
+        {/* Tab bar: an even two-column control on phones (the long label would otherwise wrap
+            the pill onto two ragged rows), and the centred lozenge from `sm` up. */}
+        <div className="flex justify-center mb-10 sm:mb-12">
+          <div
+            role="tablist"
+            aria-label={sectionCopy.title}
+            className="grid w-full max-w-md grid-cols-2 gap-1.5 rounded-2xl border border-border bg-surface p-1.5 sm:inline-flex sm:w-auto sm:max-w-none sm:items-center sm:gap-2 sm:rounded-full sm:p-2"
+          >
             {tabs.map((tab) => (
               <button
                 key={tab.id}
+                id={`edu-cert-tab-${tab.id}`}
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                aria-controls="edu-cert-panel"
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative px-6 py-3 rounded-full text-sm font-semibold transition-colors ${
-                  activeTab === tab.id
-                    ? "text-accent-foreground"
-                    : "text-muted hover:text-foreground"
+                className={`relative rounded-xl px-2 py-2.5 text-xs font-semibold transition-colors sm:rounded-full sm:px-6 sm:py-3 sm:text-sm ${
+                  activeTab === tab.id ? "text-accent-foreground" : "text-muted hover:text-foreground"
                 }`}
               >
                 {activeTab === tab.id && (
                   <motion.span
                     layoutId="education-cert-tab-pill"
-                    className="absolute inset-0 rounded-full bg-accent"
+                    className="absolute inset-0 rounded-xl bg-accent sm:rounded-full"
                     transition={{ type: "spring", duration: 0.5 }}
                   />
                 )}
-                <span className="relative flex items-center gap-3">
+                <span className="relative flex items-center justify-center gap-1.5 sm:gap-3">
                   {tab.label}
                   <span className={activeTab === tab.id ? "text-accent-foreground/70" : "text-muted"}>
                     {tab.number}
@@ -69,6 +76,9 @@ export default function EducationCertifications() {
 
         <motion.div
           key={activeTab}
+          id="edu-cert-panel"
+          role="tabpanel"
+          aria-labelledby={`edu-cert-tab-${activeTab}`}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}

@@ -10,13 +10,15 @@ import { getPublishedClients } from "@/lib/clients";
 import type { Client } from "@/types";
 import { primaryCoverImage } from "@/lib/coverImages";
 import ClientPreviewCard, { CLIENT_PREVIEW_WIDTH } from "@/components/ui/ClientPreviewCard";
+import { ORBIT_LAP_SECONDS } from "@/lib/clientSpin";
 
 const CLIENTS = getPublishedClients()
   .map((client) => ({ ...client, image: primaryCoverImage(client) }))
   .filter((client): client is Client & { image: string } => !!client.image);
 
-/** Seconds for one full lap at the resting speed (the ring turns counter-clockwise). */
-const LAP_SECONDS = 40;
+/** Seconds for one full lap at the resting speed (the ring turns counter-clockwise),
+ *  from `clientSpin.orbitLapSeconds` in content/config.json. */
+const LAP_SECONDS = ORBIT_LAP_SECONDS;
 /** Rendered tile size (px). The base tile size is viewport-based, between MIN_BASE_SIZE
  *  and CHIP_SIZE; each tile is then scaled by where it sits on the ellipse. */
 const CHIP_SIZE = 140;
