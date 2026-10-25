@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ChangeEvent, type ClipboardEvent, type MouseEvent } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ChangeEvent, type ClipboardEvent } from "react";
+import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import { ChevronLeft, ChevronRight, Upload, X } from "lucide-react";
 import rehypeSanitize from "rehype-sanitize";
@@ -88,27 +89,40 @@ export default function ArticleMarkdownEditor({
   }
 
   /**
-   * Opens a full view when a preview image is clicked. The preview is rendered by
-   * @uiw/react-md-editor, so the images are read from the DOM rather than from a
-   * components override — that way inline blob: URLs for not-yet-published uploads and
-   * plain HTML <img> tags both work, and sanitization is left untouched.
+   * Opens a full view when a preview image is clicked. The images are read from the
+   * rendered DOM rather than through a `previewOptions.components` override: that way
+   * inline blob: URLs for not-yet-published uploads and plain HTML <img> tags both work,
+   * and @uiw/react-md-editor's own sanitization and URL handling are left untouched.
+   *
+   * Listening on the document in the capture phase, instead of with React's onClick, is
+   * what makes it fire at all — the editor stops click events inside its preview, so a
+   * bubbling handler on the wrapper never sees them.
    */
-  function handlePreviewClick(event: MouseEvent<HTMLDivElement>) {
-    const target = event.target as HTMLElement;
-    if (target.tagName !== "IMG") return;
-    const preview = target.closest(".wmde-markdown");
-    if (!preview || target.closest("a")) return; // A linked image keeps its link.
+  useEffect(() => {
+    function onClickCapture(event: globalThis.MouseEvent) {
+      const target = event.target as HTMLElement | null;
+      if (!target || target.tagName !== "IMG") return;
+      // Only images in this editor's preview, not elsewhere on the admin page.
+      const preview = target.closest(".wmde-markdown");
+      if (!preview || !editorRef.current?.contains(preview)) return;
+      if (target.closest("a")) return; // A linked image keeps its link.
 
-    const all = [...preview.querySelectorAll("img")];
-    const images = all.map((image) => ({
-      // currentSrc resolves srcset and blob: URLs to what the browser actually loaded.
-      src: image.currentSrc || image.src,
-      alt: image.alt || "Preview image",
-    }));
-    const index = Math.max(0, all.indexOf(target as HTMLImageElement));
-    setZoomIndex(index);
-    setZoomImages(images);
-  }
+      event.preventDefault();
+      event.stopPropagation();
+
+      const all = [...preview.querySelectorAll("img")];
+      const images = all.map((image) => ({
+        // currentSrc resolves srcset and blob: URLs to what the browser actually loaded.
+        src: image.currentSrc || image.src,
+        alt: image.alt || "Preview image",
+      }));
+      setZoomIndex(Math.max(0, all.indexOf(target as HTMLImageElement)));
+      setZoomImages(images);
+    }
+
+    document.addEventListener("click", onClickCapture, true);
+    return () => document.removeEventListener("click", onClickCapture, true);
+  }, []);
 
   useEffect(() => {
     if (!zoomOpen) return;
@@ -188,7 +202,6 @@ export default function ArticleMarkdownEditor({
       ref={editorRef}
       data-color-mode={theme}
       onPaste={handlePaste}
-      onClick={handlePreviewClick}
       className="article-markdown-editor w-full min-w-0"
     >
       <div className="mb-2 flex items-center justify-end gap-3">
@@ -211,7 +224,9 @@ export default function ArticleMarkdownEditor({
         textareaProps={{ "aria-label": label, placeholder }}
       />
 
-      {zoomOpen && zoomed && (
+      {/* Portaled to the body: an ancestor with a transform or overflow would otherwise
+          clip or mis-position a `fixed` overlay rendered inside the editor. */}
+      {zoomOpen && zoomed && createPortal(
         <div
           role="dialog"
           aria-modal="true"
@@ -258,7 +273,8 @@ export default function ArticleMarkdownEditor({
             className="relative max-h-full max-w-full rounded-lg object-contain"
             onClick={(event) => event.stopPropagation()}
           />
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
