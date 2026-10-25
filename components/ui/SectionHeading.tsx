@@ -6,9 +6,14 @@ interface SectionHeadingProps {
   title: string;
   subtitle?: string;
   eyebrow?: string;
+  /**
+   * Heading level. Sections on a page default to "h2"; a listing page passes "h1" so the
+   * document has exactly one top-level heading. 11 of 13 routes used to start at h2.
+   */
+  as?: "h1" | "h2";
 }
 
-export default function SectionHeading({ title, subtitle, eyebrow }: SectionHeadingProps) {
+export default function SectionHeading({ title, subtitle, eyebrow, as: Heading = "h2" }: SectionHeadingProps) {
   return (
     <motion.div
       className="text-center mb-16"
@@ -22,9 +27,9 @@ export default function SectionHeading({ title, subtitle, eyebrow }: SectionHead
           — {eyebrow}
         </p>
       )}
-      <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+      <Heading className="text-4xl md:text-5xl font-bold text-foreground mb-4">
         {title}
-      </h2>
+      </Heading>
       {subtitle && (
         <p className="text-muted text-lg max-w-2xl mx-auto">
           {subtitle}

@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useModal } from "@/lib/useModal";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { X, Quote, Mail, Linkedin, BadgeCheck } from "lucide-react";
 import LightboxImage from "@/components/ui/LightboxImage";
 import type { Testimonial } from "@/types";
+
+const TITLE_ID = "testimonial-modal-title";
 
 interface TestimonialModalProps {
   testimonial: Testimonial | null;
@@ -13,21 +15,12 @@ interface TestimonialModalProps {
 }
 
 export default function TestimonialModal({ testimonial, onClose }: TestimonialModalProps) {
-  useEffect(() => {
-    if (!testimonial) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [testimonial, onClose]);
+  const panelRef = useModal<HTMLDivElement>({
+    open: !!testimonial,
+    onClose,
+    // A verification image opened from inside takes Escape first.
+    allowEscape: () => !document.querySelector("[data-image-lightbox]"),
+  });
 
   return (
     <AnimatePresence>
@@ -42,7 +35,12 @@ export default function TestimonialModal({ testimonial, onClose }: TestimonialMo
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
 
           <motion.div
-            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-surface shadow-2xl"
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={TITLE_ID}
+            tabIndex={-1}
+            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-surface shadow-2xl outline-none"
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -75,9 +73,9 @@ export default function TestimonialModal({ testimonial, onClose }: TestimonialMo
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-xl font-bold text-foreground truncate flex items-center gap-1.5">
+                  <h2 id={TITLE_ID} className="text-xl font-bold text-foreground truncate flex items-center gap-1.5">
                     <span className="truncate">{testimonial.name}</span>
-                    <BadgeCheck size={18} className="text-accent shrink-0" aria-label="Verified" />
+                    <BadgeCheck size={18} className="text-accent shrink-0" role="img" aria-label="Verified" />
                   </h2>
                   {(testimonial.role || testimonial.company) && (
                     <p className="text-muted text-sm truncate">

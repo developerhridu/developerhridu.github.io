@@ -8,13 +8,17 @@ import servicesData from "@/content/services.json";
 import { getSectionCopy } from "@/lib/sections";
 import { isPublished } from "@/lib/published";
 import type { Service } from "@/types";
+import type { ServiceIconKey } from "@/lib/iconKeys";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 interface ServicesProps {
   showHeading?: boolean;
   noSection?: boolean;
+  /** "h1" when this section is the whole page, so the page has one top-level heading. */
+  headingAs?: "h1" | "h2";
 }
 
-const iconRegistry: Record<string, typeof Server> = {
+const iconRegistry: Record<ServiceIconKey, typeof Server> = {
   server: Server,
   layers: Layers,
   plug: Plug,
@@ -24,7 +28,12 @@ const iconRegistry: Record<string, typeof Server> = {
   database: Database,
 };
 
-export default function Services({ showHeading = true, noSection = false }: ServicesProps) {
+/** Icon keys come from services.json at runtime, so the lookup takes a plain string. */
+function lookupServiceIcon(key: string | undefined) {
+  return key && key in iconRegistry ? iconRegistry[key as ServiceIconKey] : undefined;
+}
+
+export default function Services({ showHeading = true, noSection = false, headingAs = "h2" }: ServicesProps) {
   const services = ((servicesData.services || []) as Service[]).filter(isPublished);
   const sectionCopy = getSectionCopy("services");
 
@@ -34,6 +43,7 @@ export default function Services({ showHeading = true, noSection = false }: Serv
     <>
       {showHeading && (
         <SectionHeading
+          as={headingAs}
           eyebrow={sectionCopy.eyebrow}
           title={sectionCopy.title}
           subtitle={sectionCopy.subtitle}
@@ -42,7 +52,7 @@ export default function Services({ showHeading = true, noSection = false }: Serv
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {services.map((service, idx) => {
-          const Icon = (service.icon && iconRegistry[service.icon]) || Wrench;
+          const Icon = lookupServiceIcon(service.icon) ?? Wrench;
           return (
             <motion.div
               key={service.id}
@@ -79,7 +89,7 @@ export default function Services({ showHeading = true, noSection = false }: Serv
 
   return (
     <section id="services" className="py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">{content}</div>
+      <div className={PAGE_CONTAINER}>{content}</div>
     </section>
   );
 }

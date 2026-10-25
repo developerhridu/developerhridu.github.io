@@ -6,6 +6,7 @@ import { getFeaturedCaseStudies } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
 import uiStrings from "@/content/ui-strings.json";
 import { getSectionCopy } from "@/lib/sections";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 export default function CaseStudies() {
   const caseStudies = [...getFeaturedCaseStudies()]
@@ -17,7 +18,7 @@ export default function CaseStudies() {
 
   return (
     <section id="case-studies" className="py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className={PAGE_CONTAINER}>
         <SectionHeading
           eyebrow={sectionCopy.eyebrow}
           title={sectionCopy.title}

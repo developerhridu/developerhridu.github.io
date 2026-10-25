@@ -23,9 +23,13 @@ export function getSeo(id: string): Metadata {
   const ogDescription = route.ogDescription ?? route.description;
   const twitterTitle = route.twitterTitle ?? route.title;
   const twitterDescription = route.twitterDescription ?? route.description;
-  const image = route.image ?? profile.avatar;
   const imageAlt = route.imageAlt ?? profile.name;
+  // Without an explicit image, use this route's generated 1200x630 card rather than the
+  // 400x400 avatar, so a shared link previews as a full-width banner.
+  const generatedCard = `${SITE_URL}/og-image/page/${route.id}.png`;
+  const image = route.image ?? generatedCard;
   const imageUrl = image.startsWith("http") ? image : `${SITE_URL}${image}`;
+  const wideCard = !route.image;
 
   return {
     title: route.title,
@@ -38,10 +42,14 @@ export function getSeo(id: string): Metadata {
       description: ogDescription,
       type: (route.ogType as "website" | "profile") ?? "website",
       url: canonical,
-      images: [{ url: imageUrl, width: 400, height: 400, alt: imageAlt }],
+      images: [
+        wideCard
+          ? { url: imageUrl, width: 1200, height: 630, alt: imageAlt }
+          : { url: imageUrl, width: 400, height: 400, alt: imageAlt },
+      ],
     },
     twitter: {
-      card: "summary",
+      card: wideCard ? "summary_large_image" : "summary",
       title: twitterTitle,
       description: twitterDescription,
       images: [imageUrl],

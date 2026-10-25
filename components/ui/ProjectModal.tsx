@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useModal } from "@/lib/useModal";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, ArrowRight } from "lucide-react";
 import TitleImageGallery from "@/components/ui/TitleImageGallery";
@@ -29,28 +29,12 @@ interface ProjectModalProps {
 }
 
 export default function ProjectModal({ project, onClose }: ProjectModalProps) {
-  const panelRef = useRef<HTMLDivElement>(null);
-  const lastFocused = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (!project) return;
-
-    lastFocused.current = document.activeElement as HTMLElement | null;
-    panelRef.current?.focus();
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !document.querySelector("[data-image-lightbox]")) onClose();
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-      lastFocused.current?.focus();
-    };
-  }, [project, onClose]);
+  const panelRef = useModal<HTMLDivElement>({
+    open: !!project,
+    onClose,
+    // An image lightbox opened from inside the modal takes Escape first.
+    allowEscape: () => !document.querySelector("[data-image-lightbox]"),
+  });
 
   return (
     <AnimatePresence>

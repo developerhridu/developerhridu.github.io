@@ -1,12 +1,13 @@
 import ArticleDetail from "@/components/ui/ArticleDetail";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getBlogPosts, getBlogPost, getRelatedBlogPosts, getRelatedItems } from "@/lib/content";
+import { getBlogPosts, getBlogPost, getRelatedBlogPosts, getRelatedItems , getProfile } from "@/lib/content";
 import { toRelatedItem } from "@/lib/related";
 import { primaryCoverImage } from "@/lib/coverImages";
 import { ogImageUrl } from "@/lib/ogImageUrl";
+import config from "@/content/config.json";
 
-const BASE_URL = "https://developerhridu.github.io";
+const BASE_URL = config.siteUrl;
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -82,8 +83,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     datePublished: post.date,
     dateModified: post.updatedAt ?? post.date,
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
-    author: { "@type": "Person", name: "Mizanur Rahman", url: BASE_URL },
-    publisher: { "@type": "Person", name: "Mizanur Rahman", url: BASE_URL },
+    author: { "@type": "Person", name: getProfile().name, url: BASE_URL },
+    publisher: { "@type": "Person", name: getProfile().name, url: BASE_URL },
     keywords: post.tags.join(", "),
   };
 

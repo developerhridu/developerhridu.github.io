@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchContentFile, updateContentFile, GitHubApiError } from "@/lib/github";
 import { ErrorBanner, SuccessBanner } from "@/components/admin/CrudBanners";
 import { useLoadedFormGuard } from "@/components/admin/useUnsavedGuard";
@@ -26,6 +26,8 @@ export default function SkillsEditor({ token, onAuthError }: SkillsEditorProps) 
   const [form, setForm] = useState<Record<string, string>>({});
   const [fileSha, setFileSha] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  /** The file exactly as loaded, so categories this editor doesn't list survive a save. */
+  const loadedRef = useRef<Record<string, unknown>>({});
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -41,10 +43,14 @@ export default function SkillsEditor({ token, onAuthError }: SkillsEditorProps) 
     setError(null);
     try {
       const { content, sha } = await fetchContentFile(PATH, token);
-      const parsed = JSON.parse(content);
+      const parsed = JSON.parse(content) as Record<string, unknown>;
+      // Kept so a save patches the real file rather than rebuilding it from CATEGORIES,
+      // which dropped any category added through the skill-categories tab.
+      loadedRef.current = parsed;
       const next: Record<string, string> = {};
       for (const c of CATEGORIES) {
-        next[c.key] = Array.isArray(parsed[c.key]) ? parsed[c.key].join(", ") : "";
+        const value = parsed[c.key];
+        next[c.key] = Array.isArray(value) ? value.join(", ") : "";
       }
       setForm(next);
       setFileSha(sha);
@@ -73,7 +79,7 @@ export default function SkillsEditor({ token, onAuthError }: SkillsEditorProps) 
     setSaving(true);
     setError(null);
     try {
-      const payload: Record<string, string[]> = {};
+      const payload: Record<string, unknown> = { ...loadedRef.current };
       for (const c of CATEGORIES) {
         payload[c.key] = (form[c.key] ?? "")
           .split(",")

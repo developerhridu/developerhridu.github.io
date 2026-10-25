@@ -6,10 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint --max-warnings=0",
     "images": "node scripts/generate-responsive-images.mjs",
     "prebuild": "node scripts/generate-responsive-images.mjs",
-    "test": "node --no-warnings --import ./tests/register.mjs --test \"tests/**/*.test.mts\""
+    "test": "node --no-warnings --import ./tests/register.mjs --test \"tests/**/*.test.mts\"",
+    "typecheck": "tsc --noEmit",
+    "typecheck:worker": "tsc --noEmit -p worker/tsconfig.json",
+    "verify": "npm run typecheck && npm run typecheck:worker && npm run lint && npm test"
   },
   "dependencies": {
     "@uiw/react-md-editor": "^4.1.2",
@@ -36,5 +39,8 @@
     "simple-icons": "^16.30.0",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20.12"
   }
 }

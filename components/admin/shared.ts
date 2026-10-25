@@ -21,7 +21,9 @@ export function confirmDeleteMessage(label: string): string {
 }
 
 export const inputClass =
-  "w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors";
+  // text-base (16px) is deliberate: iOS Safari zooms the viewport whenever a focused field
+  // is smaller than that, which made every tap in the admin jump the layout.
+  "w-full px-4 py-3 text-base bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors";
 
 export function slugify(title: string): string {
   return title
@@ -68,12 +70,6 @@ export async function optimizeImage(file: File): Promise<File> {
   } catch {
     return file;
   }
-}
-
-/** Optimizes the first file of a file input's selection, or null when nothing was picked. */
-export async function optimizeFirst(files: FileList | null): Promise<File | null> {
-  const file = files?.[0];
-  return file ? optimizeImage(file) : null;
 }
 
 /** Git's blob sha (sha1 of "blob <size>\0" + bytes) — matches the shas GitHub reports for repo files. */

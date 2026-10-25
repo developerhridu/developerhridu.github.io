@@ -1,14 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ChangeEvent, type ClipboardEvent } from "react";
-import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
-import { ChevronLeft, ChevronRight, Upload, X } from "lucide-react";
+import { Upload } from "lucide-react";
 import rehypeSanitize from "rehype-sanitize";
 import { defaultUrlTransform } from "react-markdown";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import { optimizeImage } from "@/components/admin/shared";
+import ImageZoomOverlay, { type ZoomImage } from "@/components/ui/ImageZoomOverlay";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), {
   ssr: false,
@@ -43,12 +43,6 @@ function getServerIsDesktop() {
   return false;
 }
 
-/** One image in the live preview, collected from the rendered DOM when a zoom opens. */
-interface PreviewImage {
-  src: string;
-  alt: string;
-}
-
 export default function ArticleMarkdownEditor({
   value,
   onChange,
@@ -75,27 +69,18 @@ export default function ArticleMarkdownEditor({
   const selectionRef = useRef({ start: 0, end: 0 });
   const [imageError, setImageError] = useState<string | null>(null);
   /** Images in the preview at the moment of the click, and which one is shown. */
-  const [zoomImages, setZoomImages] = useState<PreviewImage[]>([]);
+  const [zoomImages, setZoomImages] = useState<ZoomImage[]>([]);
   const [zoomIndex, setZoomIndex] = useState(0);
   const zoomOpen = zoomImages.length > 0;
-  const zoomed = zoomImages[zoomIndex];
-
-  const moveZoom = useCallback((direction: -1 | 1) => {
-    setZoomIndex((index) => (index + direction + zoomImages.length) % zoomImages.length);
-  }, [zoomImages.length]);
 
   function closeZoom() {
     setZoomImages([]);
   }
 
   /**
-   * Opens a full view when a preview image is clicked. The click is bound on the image
-   * element itself — through react-markdown's `components` map, which @uiw passes
-   * through — rather than on a wrapper: the editor stops click events inside its preview
-   * pane, so a bubbling handler there never runs.
-   *
-   * The sibling images are then read from the rendered DOM, so that arrow navigation also
-   * covers plain HTML <img> tags, and blob: URLs for not-yet-published uploads work as-is.
+   * Collects the preview's images from the rendered DOM when one is clicked. Reading the
+   * DOM rather than the Markdown source means raw HTML <img> tags work too, and
+   * `currentSrc` resolves the blob: URLs of images that aren't published yet.
    */
   const openZoomFrom = useCallback((image: HTMLImageElement) => {
     const preview = image.closest(".wmde-markdown");
@@ -103,7 +88,6 @@ export default function ArticleMarkdownEditor({
     setZoomIndex(Math.max(0, all.indexOf(image)));
     setZoomImages(
       all.map((each) => ({
-        // currentSrc resolves srcset and blob: URLs to what the browser actually loaded.
         src: each.currentSrc || each.src,
         alt: each.alt || "Preview image",
       })),
@@ -112,9 +96,9 @@ export default function ArticleMarkdownEditor({
 
   /**
    * Second, independent path to the same zoom. A document listener in the capture phase
-   * runs before any handler in the editor can stop the event, which covers the case where
-   * the `components` override below never applies (raw HTML images, or a future version of
-   * the editor rendering its preview differently). It stops the event, so only one fires.
+   * runs before any handler in the editor can stop the event, covering the case where the
+   * `components` override below never applies (raw HTML images, or a future version of the
+   * editor rendering its preview differently). It stops the event, so only one fires.
    */
   useEffect(() => {
     function onClickCapture(event: globalThis.MouseEvent) {
@@ -132,30 +116,6 @@ export default function ArticleMarkdownEditor({
     document.addEventListener("click", onClickCapture, true);
     return () => document.removeEventListener("click", onClickCapture, true);
   }, [openZoomFrom]);
-
-  useEffect(() => {
-    if (!zoomOpen) return;
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") closeZoom();
-      if (zoomImages.length > 1 && event.key === "ArrowRight") {
-        event.preventDefault();
-        moveZoom(1);
-      }
-      if (zoomImages.length > 1 && event.key === "ArrowLeft") {
-        event.preventDefault();
-        moveZoom(-1);
-      }
-    }
-    document.addEventListener("keydown", onKeyDown);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [zoomOpen, zoomImages.length, moveZoom]);
 
   function chooseImage() {
     const textarea = editorRef.current?.querySelector("textarea");
@@ -250,55 +210,13 @@ export default function ArticleMarkdownEditor({
 
       {/* Portaled to the body: an ancestor with a transform or overflow would otherwise
           clip or mis-position a `fixed` overlay rendered inside the editor. */}
-      {zoomOpen && zoomed && createPortal(
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Full image: ${zoomed.alt}`}
-          className="fixed inset-0 z-[80] flex items-center justify-center p-4"
-          onClick={closeZoom}
-        >
-          <div className="absolute inset-0 bg-black/85 backdrop-blur-sm" />
-          <button
-            type="button"
-            onClick={closeZoom}
-            aria-label="Close full image"
-            className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-surface/80 text-foreground transition-colors hover:bg-surface"
-          >
-            <X size={20} />
-          </button>
-          {zoomImages.length > 1 && (
-            <>
-              <button
-                type="button"
-                onClick={(event) => { event.stopPropagation(); moveZoom(-1); }}
-                aria-label="Previous image"
-                className="absolute left-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-surface/80 text-foreground hover:bg-surface"
-              >
-                <ChevronLeft size={24} />
-              </button>
-              <button
-                type="button"
-                onClick={(event) => { event.stopPropagation(); moveZoom(1); }}
-                aria-label="Next image"
-                className="absolute right-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-surface/80 text-foreground hover:bg-surface"
-              >
-                <ChevronRight size={24} />
-              </button>
-              <span className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-surface/80 px-3 py-1 text-xs text-muted">
-                {zoomIndex + 1} / {zoomImages.length}
-              </span>
-            </>
-          )}
-          {/* eslint-disable-next-line @next/next/no-img-element -- the src comes from the rendered preview (often a blob: URL) and has no known size */}
-          <img
-            src={zoomed.src}
-            alt={zoomed.alt}
-            className="relative max-h-full max-w-full rounded-lg object-contain"
-            onClick={(event) => event.stopPropagation()}
-          />
-        </div>,
-        document.body,
+      {zoomOpen && (
+        <ImageZoomOverlay
+          images={zoomImages}
+          index={zoomIndex}
+          onIndexChange={setZoomIndex}
+          onClose={closeZoom}
+        />
       )}
     </div>
   );

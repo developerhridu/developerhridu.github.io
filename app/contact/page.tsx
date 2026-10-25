@@ -7,7 +7,7 @@ export const metadata: Metadata = getSeo("contact");
 export default function ContactPage() {
   return (
     <div className="pt-16 md:pt-0">
-      <Contact />
+      <Contact headingAs="h1" />
     </div>
   );
 }

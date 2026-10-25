@@ -1,4 +1,5 @@
 import type { ArrayConfig } from "@/components/admin/GenericArrayEditor";
+import { ADMIN_ICON_KEYS, NAV_ICON_KEYS, SERVICE_ICON_KEYS } from "@/lib/iconKeys";
 
 export const educationConfig: ArrayConfig = {
   path: "content/education.json",
@@ -58,8 +59,8 @@ export const menuConfig: ArrayConfig = {
   sitePath: (entry) => (typeof entry.href === "string" && entry.href.startsWith("/") ? entry.href : null),
   fields: [
     { key: "name", label: "Name", type: "text" },
-    { key: "href", label: "Link", type: "text", placeholder: "/about", hint: "A site path like /about, or a full URL for external links." },
-    { key: "icon", label: "Icon key", type: "text", placeholder: "home, user, folder-kanban…" },
+    { key: "href", label: "Link", type: "url", placeholder: "/about", unique: true, hint: "A site path like /about, or a full URL for external links." },
+    { key: "icon", label: "Icon key", type: "text", placeholder: NAV_ICON_KEYS.slice(0, 4).join(", "), iconKeys: NAV_ICON_KEYS, hint: `One of: ${NAV_ICON_KEYS.join(", ")}` },
     { key: "external", label: "External link", type: "boolean" },
     { key: "published", label: "Published (visible in menu & search)", type: "boolean", defaultBoolean: true },
   ],
@@ -79,7 +80,9 @@ export const servicesConfig: ArrayConfig = {
       key: "icon",
       label: "Icon key",
       type: "text",
-      placeholder: "server, layers, plug, gauge, shield-check, refresh-cw, database…",
+      placeholder: SERVICE_ICON_KEYS.slice(0, 4).join(", "),
+      iconKeys: SERVICE_ICON_KEYS,
+      hint: `One of: ${SERVICE_ICON_KEYS.join(", ")}`,
     },
     { key: "highlights", label: "Highlights (one per line, optional)", type: "list" },
     { key: "published", label: "Published (visible on the site)", type: "boolean", defaultBoolean: true },
@@ -94,7 +97,7 @@ export const adminMenuConfig: ArrayConfig = {
   subtitleField: "id",
   fields: [
     { key: "label", label: "Label", type: "text", required: true },
-    { key: "icon", label: "Icon key", type: "text", placeholder: "layout-dashboard, newspaper, folder-code, wrench…" },
+    { key: "icon", label: "Icon key", type: "text", placeholder: ADMIN_ICON_KEYS.slice(0, 4).join(", "), iconKeys: ADMIN_ICON_KEYS, hint: `One of: ${ADMIN_ICON_KEYS.join(", ")}` },
     { key: "published", label: "Published", type: "boolean", defaultBoolean: true },
   ],
 };
@@ -119,7 +122,7 @@ export const skillCategoriesConfig: ArrayConfig = {
   titleField: "label",
   subtitleField: "key",
   fields: [
-    { key: "key", label: "Tech-Stack Key (must match tech-stack.json)", type: "text", required: true },
+    { key: "key", label: "Tech-Stack Key (must match tech-stack.json)", type: "text", required: true, unique: true },
     { key: "label", label: "Display Label", type: "text" },
     { key: "color", label: "Tailwind Color Class", type: "text", placeholder: "bg-accent, bg-pink-500…" },
   ],
@@ -133,7 +136,7 @@ export const seoConfig: ArrayConfig = {
   subtitleField: "route",
   sitePath: (entry) => (typeof entry.route === "string" ? entry.route : null),
   fields: [
-    { key: "route", label: "Route", type: "text", placeholder: "/about", required: true },
+    { key: "route", label: "Route", type: "text", placeholder: "/about", required: true, unique: true },
     { key: "title", label: "Title", type: "text", counter: { min: 30, max: 60 } },
     { key: "description", label: "Description", type: "textarea", required: true, counter: { min: 120, max: 160 } },
     { key: "ogTitle", label: "OG Title (optional)", type: "text", counter: { max: 60 } },

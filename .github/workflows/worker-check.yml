@@ -1,0 +1,49 @@
+name: Check worker
+
+# The Worker is excluded from the Pages deploy (it isn't part of the static site) and is
+# released by hand with `cd worker && npm run deploy`. Without this workflow its ~900
+# lines reached production with no type checking at all.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "worker/**"
+      - ".github/workflows/worker-check.yml"
+  pull_request:
+    paths:
+      - "worker/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - name: Cache worker node_modules
+        id: worker-modules
+        uses: actions/cache@v6
+        with:
+          path: worker/node_modules
+          key: worker-modules-${{ runner.os }}-node24-${{ hashFiles('worker/package-lock.json') }}
+
+      - name: Install worker dependencies
+        if: steps.worker-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit --no-fund
+        working-directory: worker
+
+      - name: Type check
+        run: npx tsc --noEmit -p tsconfig.json
+        working-directory: worker

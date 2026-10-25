@@ -2,7 +2,7 @@ import ArticleDetail from "@/components/ui/ArticleDetail";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProjectLinks from "@/components/ui/ProjectLinks";
-import { getProjects, getProject, getRelatedItems } from "@/lib/content";
+import { getProjects, getProject, getRelatedItems , getProfile } from "@/lib/content";
 import config from "@/content/config.json";
 import { primaryCoverImage } from "@/lib/coverImages";
 import { ogImageUrl } from "@/lib/ogImageUrl";
@@ -74,7 +74,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     description: project.description,
     image: imageUrl,
     url,
-    creator: { "@type": "Person", name: "Mizanur Rahman", url: BASE_URL },
+    creator: { "@type": "Person", name: getProfile().name, url: BASE_URL },
     keywords: project.tags.join(", "),
     ...(project.client ? { about: project.client } : {}),
     ...(project.liveUrl ? { sameAs: project.liveUrl } : {}),

@@ -11,12 +11,15 @@ import experienceData from "@/content/experience.json";
 import uiStrings from "@/content/ui-strings.json";
 import { getSectionCopy } from "@/lib/sections";
 import { HIGHLIGHTS_PER_JOB } from "@/lib/display";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 interface ExperienceProps {
   showHeading?: boolean;
   /** /experience passes this: every highlight starts expanded (with a "Show less"
    *  toggle available), and the "View Full Experience" footer link is hidden. */
   showAll?: boolean;
+  /** "h1" when this section is the whole page, so the page has one top-level heading. */
+  headingAs?: "h1" | "h2";
 }
 
 const VISIBLE_HIGHLIGHTS = HIGHLIGHTS_PER_JOB;
@@ -61,15 +64,16 @@ function ProjectHighlights({ highlights, defaultExpanded }: { highlights: string
   );
 }
 
-export default function Experience({ showHeading = true, showAll = false }: ExperienceProps) {
+export default function Experience({ showHeading = true, showAll = false, headingAs = "h2" }: ExperienceProps) {
   const experiences = experienceData.experiences.filter((exp) => exp.published !== false);
   const sectionCopy = getSectionCopy("experience");
 
   return (
     <section id="experience" className="py-16 lg:py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className={PAGE_CONTAINER}>
         {showHeading && (
           <SectionHeading
+            as={headingAs}
             eyebrow={sectionCopy.eyebrow}
             title={sectionCopy.title}
             subtitle={sectionCopy.subtitle}

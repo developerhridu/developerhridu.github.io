@@ -30,6 +30,27 @@ export function slugError(value: unknown): string | null {
   return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(text) ? null : "Use lowercase letters, numbers and dashes only.";
 }
 
+/**
+ * Fails when another entry already uses this value. Without it a duplicate seo.json route
+ * or skill-categories key saved cleanly and broke the page that looked it up.
+ */
+export function uniqueError(value: unknown, taken: string[], label: string): string | null {
+  const text = String(value ?? "").trim().toLowerCase();
+  if (!text) return null;
+  return taken.some((other) => other.trim().toLowerCase() === text)
+    ? `Another entry already uses this ${label.toLowerCase()}.`
+    : null;
+}
+
+/** Fails on an icon key the site cannot render — it would silently show a placeholder. */
+export function iconKeyError(value: unknown, allowed: readonly string[]): string | null {
+  const text = String(value ?? "").trim();
+  if (!text) return null;
+  if (allowed.includes(text)) return null;
+  const suggestion = allowed.find((key) => key.startsWith(text.slice(0, 3)));
+  return `Unknown icon "${text}". ${suggestion ? `Did you mean "${suggestion}"? ` : ""}Pick one of: ${allowed.slice(0, 8).join(", ")}…`;
+}
+
 /** Builds an errors object from `[key, error | null]` pairs, dropping the passing ones. */
 export function collectErrors(checks: [string, string | null][]): FieldErrors {
   return Object.fromEntries(checks.filter((check): check is [string, string] => !!check[1]));

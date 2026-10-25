@@ -14,6 +14,7 @@ import skillCategoriesData from "@/content/skill-categories.json";
 import uiStrings from "@/content/ui-strings.json";
 import { getSectionCopy } from "@/lib/sections";
 import type { SkillsCategory } from "@/types";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 const sectionCopy = getSectionCopy("about");
 
@@ -30,6 +31,8 @@ interface AboutProps {
    *  below. /about keeps both (default true) — Tech Stack in the grid, Skill Proficiency
    *  full-width underneath. */
   showTechStack?: boolean;
+  /** "h1" when this section is the whole page, so the page has one top-level heading. */
+  headingAs?: "h1" | "h2";
 }
 
 /** A bio paragraph is either plain prose, or a lead-in line followed by "- " bullet
@@ -88,12 +91,13 @@ function ProficiencyBar({ skill }: { skill: { name: string; level: number } }) {
   );
 }
 
-export default function About({ showHeading = true, showTechStack = true }: AboutProps) {
+export default function About({ showHeading = true, showTechStack = true, headingAs = "h2" }: AboutProps) {
   return (
     <section id="about" className="py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className={PAGE_CONTAINER}>
         {showHeading && (
           <SectionHeading
+            as={headingAs}
             eyebrow={sectionCopy.eyebrow}
             title={sectionCopy.title}
             subtitle={sectionCopy.subtitle}

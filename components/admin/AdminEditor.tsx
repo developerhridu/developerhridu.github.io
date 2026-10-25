@@ -29,7 +29,6 @@ import {
   Quote,
   type LucideIcon,
 } from "lucide-react";
-import configData from "@/content/config.json";
 import adminMenuData from "@/content/admin-menu.json";
 import { inputClass, TOKEN_KEY, TOKEN_CHANGED_EVENT } from "@/components/admin/shared";
 import Editor from "@/components/admin/Editor";
@@ -50,6 +49,8 @@ import SearchLogViewer from "@/components/admin/SearchLogViewer";
 import Dashboard from "@/components/admin/Dashboard";
 import TasksManager from "@/components/admin/TasksManager";
 import MediaManager from "@/components/admin/MediaManager";
+import SiteConfigEditor from "@/components/admin/SiteConfigEditor";
+import type { AdminIconKey } from "@/lib/iconKeys";
 import {
   educationConfig,
   certificationsConfig,
@@ -62,7 +63,6 @@ import {
   seoConfig,
 } from "@/components/admin/arrayConfigs";
 
-const PASSWORD_KEY = "admin_password";
 
 type Tab =
   | "dashboard"
@@ -88,13 +88,14 @@ type Tab =
   | "skill-categories"
   | "seo"
   | "ui-strings"
-  | "faq-script";
+  | "faq-script"
+  | "site-config";
 
 const TABS: { key: Tab; label: string; icon: string }[] = adminMenuData.tabs
   .filter((t) => t.published !== false)
   .map((t) => ({ key: t.id as Tab, label: t.label, icon: t.icon }));
 
-const ICONS: Record<string, LucideIcon> = {
+const ICONS: Record<AdminIconKey, LucideIcon> = {
   award: Award,
   images: Images,
   "briefcase-business": BriefcaseBusiness,
@@ -120,11 +121,13 @@ const ICONS: Record<string, LucideIcon> = {
   quote: Quote,
 };
 
+/** Icon keys come from admin-menu.json at runtime, so the lookup takes a plain string. */
+function lookupAdminIcon(key: string | undefined) {
+  return key && key in ICONS ? ICONS[key as AdminIconKey] : undefined;
+}
+
 export default function AdminEditor() {
   const [credentialsLoaded, setCredentialsLoaded] = useState(false);
-  const [unlocked, setUnlocked] = useState(false);
-  const [passwordInput, setPasswordInput] = useState("");
-  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const [token, setToken] = useState<string | null>(null);
   const [tokenInput, setTokenInput] = useState("");
@@ -195,10 +198,6 @@ export default function AdminEditor() {
       }
     }
 
-    const savedPassword = localStorage.getItem(PASSWORD_KEY);
-    if (savedPassword) {
-      setUnlocked(true);
-    }
     const savedToken = localStorage.getItem(TOKEN_KEY);
     if (savedToken) setToken(savedToken);
     setCredentialsLoaded(true);
@@ -219,18 +218,6 @@ export default function AdminEditor() {
       tabList.scrollLeft += selectedBounds.right - listBounds.right;
     }
   }, [tab, token]);
-
-  function handlePasswordSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (passwordInput === configData.password) {
-      localStorage.setItem(PASSWORD_KEY, passwordInput);
-      setUnlocked(true);
-      setPasswordError(null);
-      setPasswordInput("");
-    } else {
-      setPasswordError("Incorrect password.");
-    }
-  }
 
   function handleTokenSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -259,47 +246,14 @@ export default function AdminEditor() {
 
   function handleLogout() {
     if (!confirmDiscardEdits()) return;
-    localStorage.removeItem(PASSWORD_KEY);
     localStorage.removeItem(TOKEN_KEY);
     window.dispatchEvent(new Event(TOKEN_CHANGED_EVENT));
-    setPasswordInput("");
     setTokenInput("");
     setToken(null);
-    setUnlocked(false);
   }
 
   if (!credentialsLoaded) {
     return <p role="status" className="text-muted text-sm">Loading content editor...</p>;
-  }
-
-  if (!unlocked) {
-    return (
-      <div className="max-w-md mx-auto">
-        {/* <h1 className="text-2xl font-bold text-foreground mb-2">Content Editor</h1> */}
-        <p className="text-muted text-sm mb-6">Enter the admin password to continue.</p>
-        {passwordError && (
-          <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-            {passwordError}
-          </div>
-        )}
-        <form onSubmit={handlePasswordSubmit} className="space-y-4">
-          <input
-            type="password"
-            value={passwordInput}
-            onChange={(e) => setPasswordInput(e.target.value)}
-            placeholder="Password"
-            className={inputClass}
-            autoFocus
-          />
-          <button
-            type="submit"
-            className="w-full px-4 py-3 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg font-medium transition-colors"
-          >
-            Continue
-          </button>
-        </form>
-      </div>
-    );
   }
 
   if (!token) {
@@ -338,7 +292,7 @@ export default function AdminEditor() {
       <div className="mb-3 flex min-w-0 items-center gap-3">
         <nav ref={tabListRef} aria-label="Content editor sections" className="thin-scrollbar flex min-w-0 flex-1 items-center gap-1 overflow-x-auto rounded-lg border border-border bg-surface p-1">
           {TABS.map((item) => {
-            const Icon = ICONS[item.icon] ?? CircleHelp;
+            const Icon = lookupAdminIcon(item.icon) ?? CircleHelp;
             const selected = tab === item.key;
             return (
               <button
@@ -492,6 +446,7 @@ export default function AdminEditor() {
       {tab === "seo" && <GenericArrayEditor config={seoConfig} token={token} onAuthError={handleAuthError} initialEditId={editId("seo")} />}
       {tab === "ui-strings" && <UiStringsEditor token={token} onAuthError={handleAuthError} />}
       {tab === "faq-script" && <FaqScriptEditor token={token} onAuthError={handleAuthError} />}
+      {tab === "site-config" && <SiteConfigEditor token={token} onAuthError={handleAuthError} />}
       </div>
       )}
     </div>

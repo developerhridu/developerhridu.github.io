@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useModal } from "@/lib/useModal";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import ContentImage from "@/components/ui/ContentImage";
@@ -30,6 +31,9 @@ export default function LightboxImage({
 }: LightboxImageProps) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(galleryIndex);
+  // Escape, the Tab trap, the scroll lock and focus restore all live in the hook now;
+  // this effect keeps only the arrow-key navigation that is specific to a gallery.
+  const overlayRef = useModal<HTMLDivElement>({ open, onClose: () => setOpen(false) });
   const images = galleryImages?.length ? galleryImages : src ? [src] : [];
   const activeSrc = images[activeIndex] ?? src;
   const activeAlt = galleryImages?.length ? `${alt.split(" — photo ")[0]} — photo ${activeIndex + 1}` : alt;
@@ -39,27 +43,20 @@ export default function LightboxImage({
   }, [images.length]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || images.length < 2) return;
 
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-      if (images.length > 1 && e.key === "ArrowRight") {
+      if (e.key === "ArrowRight") {
         e.preventDefault();
         moveImage(1);
       }
-      if (images.length > 1 && e.key === "ArrowLeft") {
+      if (e.key === "ArrowLeft") {
         e.preventDefault();
         moveImage(-1);
       }
     }
     document.addEventListener("keydown", onKeyDown);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
+    return () => document.removeEventListener("keydown", onKeyDown);
   }, [open, images.length, moveImage]);
 
   if (!src) {
@@ -102,8 +99,13 @@ export default function LightboxImage({
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={overlayRef}
             data-image-lightbox
-            className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Full image: ${activeAlt}`}
+            tabIndex={-1}
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4 outline-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

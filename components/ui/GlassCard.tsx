@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import { ReactNode, KeyboardEvent } from "react";
 
 interface GlassCardProps {
   children: ReactNode;
@@ -11,6 +11,8 @@ interface GlassCardProps {
   /** Set false when the caller already wraps the card in its own reveal animation —
    *  two nested whileInView tweens multiply their opacities and visibly jitter. */
   animate?: boolean;
+  /** Describes what activating the card does, for screen readers. Only used with onClick. */
+  ariaLabel?: string;
 }
 
 export default function GlassCard({
@@ -19,6 +21,7 @@ export default function GlassCard({
   hover = true,
   onClick,
   animate = true,
+  ariaLabel,
 }: GlassCardProps) {
   const classes = `
         card-corners bg-surface border border-border
@@ -27,9 +30,32 @@ export default function GlassCard({
         ${className}
       `;
 
+  /**
+   * A card with an onClick is a button, so it has to be reachable and operable by keyboard.
+   * Without this, the project and testimonial modals could only be opened with a mouse.
+   * Cards without an onClick stay plain containers — no role, no tab stop.
+   */
+  function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (!onClick || (event.key !== "Enter" && event.key !== " ")) return;
+    // Ignore keys meant for a link or button rendered inside the card.
+    if (event.target !== event.currentTarget) return;
+    event.preventDefault();
+    onClick();
+  }
+
+  const interactive = onClick
+    ? {
+        role: "button",
+        tabIndex: 0,
+        "aria-label": ariaLabel,
+        onClick,
+        onKeyDown,
+      }
+    : {};
+
   if (!animate) {
     return (
-      <div className={classes} onClick={onClick}>
+      <div className={classes} {...interactive}>
         {children}
       </div>
     );
@@ -42,7 +68,7 @@ export default function GlassCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      onClick={onClick}
+      {...interactive}
     >
       {children}
     </motion.div>

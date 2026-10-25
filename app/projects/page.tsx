@@ -7,7 +7,7 @@ export const metadata: Metadata = getSeo("projects");
 export default function ProjectsPage() {
   return (
     <div className="pt-16 md:pt-0">
-      <Projects showAll />
+      <Projects showAll headingAs="h1" />
     </div>
   );
 }

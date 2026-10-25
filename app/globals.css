@@ -194,9 +194,10 @@ body {
 }
 
 @media print {
-  /* Compact the whole document: Tailwind's rem-based type and spacing
-     scale down together, matching the density of the source resume. */
-  html {
+  /* Compact the document: Tailwind's rem-based type and spacing scale down together,
+     matching the density of the source resume. Scoped to pages that opt in with
+     .print-compact (the resume), so printing an article keeps normal type sizes. */
+  html:has(.print-compact) {
     font-size: 12.5px;
   }
 
@@ -226,6 +227,32 @@ body {
   .print-keep-with-next {
     break-after: avoid;
     page-break-after: avoid;
+  }
+
+  /* Article extras are interactive or network-backed and mean nothing on paper. */
+  .print-hide-furniture {
+    display: none !important;
+  }
+
+  /* Code in an article must wrap instead of being cut off at the page margin. */
+  .prose-content pre,
+  .prose-content code {
+    white-space: pre-wrap !important;
+    word-break: break-word;
+  }
+
+  .prose-content pre,
+  .prose-content table,
+  .prose-content figure,
+  .prose-content img {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Keep card and chip backgrounds instead of printing them as blank boxes. */
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 }
 

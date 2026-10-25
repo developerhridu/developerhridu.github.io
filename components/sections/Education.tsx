@@ -8,6 +8,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import educationData from "@/content/education.json";
 import { getSectionCopy } from "@/lib/sections";
 import type { Education as EducationType } from "@/types";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 interface EducationProps {
   showHeading?: boolean;
@@ -103,7 +104,7 @@ export default function Education({ showHeading = true, noSection = false }: Edu
 
   return (
     <section id="education" className="py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">{content}</div>
+      <div className={PAGE_CONTAINER}>{content}</div>
     </section>
   );
 }

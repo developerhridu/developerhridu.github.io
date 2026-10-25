@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Metadata } from "next";
 import { getPublishedCaseStudies } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
@@ -6,6 +7,7 @@ import ContentListing from "@/components/ui/ContentListing";
 import { getSeo } from "@/lib/seo";
 import { getSectionCopy } from "@/lib/sections";
 import uiStrings from "@/content/ui-strings.json";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 export const metadata: Metadata = getSeo("case-studies");
 
@@ -30,18 +32,22 @@ export default function CaseStudiesPage() {
   return (
     <div className="pt-16 md:pt-0">
       <section className="py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className={PAGE_CONTAINER}>
           <SectionHeading
+            as="h1"
             eyebrow={sectionCopy.eyebrow}
             title={sectionCopy.title}
             subtitle={sectionCopy.subtitle}
           />
 
-          <ContentListing
-            type="case-study"
-            items={items}
-            emptyMessage={uiStrings.caseStudiesEmptyMessage}
-          />
+          {/* ContentListing reads ?tag= with useSearchParams, which needs a boundary under static export. */}
+          <Suspense fallback={null}>
+            <ContentListing
+              type="case-study"
+              items={items}
+              emptyMessage={uiStrings.caseStudiesEmptyMessage}
+            />
+          </Suspense>
         </div>
       </section>
     </div>

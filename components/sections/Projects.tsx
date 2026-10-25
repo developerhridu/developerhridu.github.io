@@ -15,15 +15,18 @@ import { isPublished } from "@/lib/published";
 import { trackClick } from "@/lib/analytics";
 import { TAGS_PER_CARD } from "@/lib/display";
 import type { Project } from "@/types";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 type ProjectItem = Project;
 
 interface ProjectsProps {
   showHeading?: boolean;
   showAll?: boolean;
+  /** "h1" when this section is the whole page, so the page has one top-level heading. */
+  headingAs?: "h1" | "h2";
 }
 
-export default function Projects({ showHeading = true, showAll = false }: ProjectsProps) {
+export default function Projects({ showHeading = true, showAll = false, headingAs = "h2" }: ProjectsProps) {
   const projects = (projectsData.projects as Project[]).filter(isPublished);
   const featuredProjects = projects.filter((p) => p.featured);
   const otherProjects = projects.filter((p) => !p.featured);
@@ -41,9 +44,10 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
 
   return (
     <section id="projects" className="py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className={PAGE_CONTAINER}>
         {showHeading && (
           <SectionHeading
+            as={headingAs}
             eyebrow={sectionCopy.eyebrow}
             title={sectionCopy.title}
             subtitle={sectionCopy.subtitle}
@@ -61,7 +65,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
             >
-              <GlassCard className="h-full flex flex-col cursor-pointer group" onClick={() => openProject(project)}>
+              <GlassCard className="h-full flex flex-col cursor-pointer group" onClick={() => openProject(project)} ariaLabel={`Open details for ${project.title}`}>
                 {/* Project Image */}
                 <ThumbnailGallery
                   images={coverImages(project)}
@@ -172,7 +176,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
                 >
-                  <GlassCard className="h-full cursor-pointer group relative" onClick={() => openProject(project)}>
+                  <GlassCard className="h-full cursor-pointer group relative" onClick={() => openProject(project)} ariaLabel={`Open details for ${project.title}`}>
                     <div className="absolute top-4 right-4 flex items-center justify-center w-8 h-8 rounded-full bg-accent text-accent-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                       <ArrowUpRight size={16} />
                     </div>

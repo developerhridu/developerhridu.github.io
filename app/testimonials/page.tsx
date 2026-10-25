@@ -7,7 +7,7 @@ export const metadata: Metadata = getSeo("testimonials");
 export default function TestimonialsPage() {
   return (
     <div className="pt-16 md:pt-0">
-      <Testimonials />
+      <Testimonials headingAs="h1" />
     </div>
   );
 }

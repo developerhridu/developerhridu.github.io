@@ -27,6 +27,72 @@ function corsHeaders(request: Request): HeadersInit {
   };
 }
 
+/**
+ * Slugs become KV keys, so an unvalidated one lets anyone create unlimited keys by
+ * posting random values. Content slugs are lowercase kebab-case and short.
+ */
+const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]{0,80}$/;
+
+function isValidSlug(value: unknown): value is string {
+  return typeof value === "string" && SLUG_PATTERN.test(value);
+}
+
+/** Largest request body any endpoint here needs (testimonials carry a quote + links). */
+const MAX_BODY_BYTES = 16 * 1024;
+
+function tooLarge(request: Request): boolean {
+  const declared = Number(request.headers.get("Content-Length") ?? "0");
+  return Number.isFinite(declared) && declared > MAX_BODY_BYTES;
+}
+
+/**
+ * Fixed-window per-IP limiter backed by KV.
+ *
+ * KV is eventually consistent, so this is a cost ceiling rather than an exact quota —
+ * which is the point: without it, the AI route (one inference plus eight GitHub fetches
+ * per call) and the testimonial route (a commit to main, which triggers a Pages build)
+ * can both be driven in a loop by anyone. Open when no KV namespace is bound.
+ */
+async function rateLimited(
+  request: Request,
+  env: Env,
+  bucket: string,
+  limit: number,
+  windowSeconds: number
+): Promise<boolean> {
+  if (!env.VIEWS) return false;
+  const ip = request.headers.get("CF-Connecting-IP") ?? "unknown";
+  const window = Math.floor(Date.now() / 1000 / windowSeconds);
+  const key = `rl:${bucket}:${window}:${ip}`;
+  try {
+    const used = Number((await env.VIEWS.get(key)) ?? "0") || 0;
+    if (used >= limit) return true;
+    await env.VIEWS.put(key, String(used + 1), { expirationTtl: Math.max(60, windowSeconds * 2) });
+    return false;
+  } catch {
+    // A limiter failure must not take the endpoint down with it.
+    return false;
+  }
+}
+
+function tooManyRequests(request: Request, retryAfterSeconds: number): Response {
+  return new Response(JSON.stringify({ error: "Too many requests — please slow down." }), {
+    status: 429,
+    headers: {
+      "Content-Type": "application/json",
+      "Retry-After": String(retryAfterSeconds),
+      ...corsHeaders(request),
+    },
+  });
+}
+
+function payloadTooLarge(request: Request): Response {
+  return new Response(JSON.stringify({ error: "Request body too large" }), {
+    status: 413,
+    headers: { "Content-Type": "application/json", ...corsHeaders(request) },
+  });
+}
+
 async function logQa(env: Env, question: string, answer: string) {
   if (!env.CHAT_LOG) return;
   try {
@@ -253,9 +319,9 @@ async function handleViews(request: Request, env: Env): Promise<Response> {
     }
   }
 
-  if (!isViewType(type) || !slug) {
+  if (!isViewType(type) || !isValidSlug(slug)) {
     return new Response(
-      JSON.stringify({ error: "type must be 'blog' or 'case-study', and slug is required" }),
+      JSON.stringify({ error: "type must be 'blog' or 'case-study', and slug must be a valid content slug" }),
       { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders(request) } }
     );
   }
@@ -424,9 +490,9 @@ async function handleReactions(request: Request, env: Env): Promise<Response> {
     }
   }
 
-  if (!isViewType(type) || !slug) {
+  if (!isViewType(type) || !isValidSlug(slug)) {
     return new Response(
-      JSON.stringify({ error: "type must be 'blog' or 'case-study', and slug is required" }),
+      JSON.stringify({ error: "type must be 'blog' or 'case-study', and slug must be a valid content slug" }),
       { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders(request) } }
     );
   }
@@ -765,22 +831,40 @@ export default {
     }
 
     if (request.method === "POST" && url.pathname === "/clicks") {
+      if (tooLarge(request)) return payloadTooLarge(request);
+      if (await rateLimited(request, env, "clicks", 120, 60)) {
+        return tooManyRequests(request, 60);
+      }
       return handleClicks(request, env);
     }
 
     if ((request.method === "GET" || request.method === "POST") && url.pathname === "/views") {
+      if (request.method === "POST" && (await rateLimited(request, env, "views", 60, 60))) {
+        return tooManyRequests(request, 60);
+      }
       return handleViews(request, env);
     }
 
     if ((request.method === "GET" || request.method === "POST") && url.pathname === "/reactions") {
+      if (request.method === "POST" && (await rateLimited(request, env, "reactions", 30, 60))) {
+        return tooManyRequests(request, 60);
+      }
       return handleReactions(request, env);
     }
 
     if (request.method === "POST" && url.pathname === "/testimonials/submit") {
+      if (tooLarge(request)) return payloadTooLarge(request);
+      // Each accepted submission commits to main and triggers a Pages build.
+      if (await rateLimited(request, env, "testimonial", 3, 3600)) {
+        return tooManyRequests(request, 3600);
+      }
       return handleTestimonialSubmit(request, env);
     }
 
     if ((request.method === "GET" || request.method === "POST") && url.pathname === "/search-log") {
+      if (request.method === "POST" && (await rateLimited(request, env, "search-log", 60, 60))) {
+        return tooManyRequests(request, 60);
+      }
       return handleSearchLog(request, env);
     }
 
@@ -788,8 +872,22 @@ export default {
       return handleCheckLinks(request, env);
     }
 
+    // Everything past this point is the AI chat handler. "/" is kept because the deployed
+    // site posts to the Worker's root; "/chat" is the name to use from now on. Any other
+    // path used to land here too, which made every unmatched URL an inference call.
+    if (url.pathname !== "/" && url.pathname !== "/chat") {
+      return new Response("Not found", { status: 404, headers: corsHeaders(request) });
+    }
+
     if (request.method !== "POST") {
       return new Response("Method not allowed", { status: 405, headers: corsHeaders(request) });
+    }
+
+    if (tooLarge(request)) return payloadTooLarge(request);
+
+    // One inference plus eight GitHub fetches per call, so this is the costliest route.
+    if (await rateLimited(request, env, "chat", 12, 60)) {
+      return tooManyRequests(request, 60);
     }
 
     let question: string;

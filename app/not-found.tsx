@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import Button from "@/components/ui/Button";
+import SearchHint from "@/components/ui/SearchHint";
 import uiStrings from "@/content/ui-strings.json";
+
+export const metadata: Metadata = {
+  title: "Page not found",
+  description: uiStrings.notFound.body,
+  // Without this the 404 inherited the home page's metadata and invited indexing.
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
   return (
@@ -10,7 +19,12 @@ export default function NotFound() {
         <p className="text-muted mb-8 max-w-md mx-auto">
           {uiStrings.notFound.body}
         </p>
-        <Button href="/" variant="primary">{uiStrings.notFound.goHome}</Button>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Button href="/" variant="primary">{uiStrings.notFound.goHome}</Button>
+          <Button href="/blog" variant="secondary">Read the blog</Button>
+          <Button href="/projects" variant="secondary">See projects</Button>
+        </div>
+        <SearchHint />
       </div>
     </div>
   );

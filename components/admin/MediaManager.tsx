@@ -6,12 +6,11 @@ import { commitFiles, fetchContentFile, GitHubApiError, listRepoImages, type Fil
 import { getPending, stagedImageSrc, subscribePending, type PendingState } from "@/lib/adminStore";
 import { fileToBase64, inputClass, savedMessage, slugify } from "@/components/admin/shared";
 import { prepareImages, reusedNotice } from "@/components/admin/MediaLibrary";
-import { loadAdminContent, referencedImages } from "@/components/admin/adminContent";
+import { loadAdminContent, referencedImages, NON_LIST_CONTENT_FILES } from "@/components/admin/adminContent";
 import { ErrorBanner, SuccessBanner } from "@/components/admin/CrudBanners";
+import { useModal } from "@/lib/useModal";
 
 const EMPTY: PendingState = { files: [], saves: [] };
-/** Content files outside the editable lists that can still point at images. */
-const EXTRA_FILES = ["content/profile.json", "content/seo.json"];
 
 interface MediaItem {
   path: string;
@@ -57,6 +56,8 @@ export default function MediaManager({ token, onAuthError }: { token: string; on
   const [usage, setUsage] = useState<Map<string, string[]> | null>(null);
   /** Path of the image open in the full-size viewer. */
   const [viewing, setViewing] = useState<string | null>(null);
+  /** Narrows the grid to images no content references — the ones safe to clear out. */
+  const [unusedOnly, setUnusedOnly] = useState(false);
 
   /** Scans all content (pending edits included) once and indexes which entries use each image. */
   async function scanUsage(): Promise<Map<string, string[]>> {
@@ -64,7 +65,7 @@ export default function MediaManager({ token, onAuthError }: { token: string; on
     const add = (path: string, who: string) => map.set(path, [...(map.get(path) ?? []), who]);
     const { items: content } = await loadAdminContent(token);
     for (const item of content) for (const path of referencedImages(item.raw)) add(path, `${item.source.tabLabel}: ${item.label}`);
-    for (const file of EXTRA_FILES) {
+    for (const file of NON_LIST_CONTENT_FILES) {
       try {
         const { content: text } = await fetchContentFile(file, token);
         for (const path of referencedImages(JSON.parse(text))) add(path, file.replace("content/", ""));
@@ -130,8 +131,13 @@ export default function MediaManager({ token, onAuthError }: { token: string; on
   }, [items]);
 
   const visible = items.filter(
-    (item) => (folder === "all" || folderOf(item.path) === folder) && item.path.toLowerCase().includes(query.trim().toLowerCase())
+    (item) =>
+      (folder === "all" || folderOf(item.path) === folder) &&
+      item.path.toLowerCase().includes(query.trim().toLowerCase()) &&
+      // While the usage scan is still running, don't hide anything.
+      (!unusedOnly || !usage || (usage.get(item.path) ?? []).length === 0)
   );
+  const unusedCount = usage ? items.filter((item) => (usage.get(item.path) ?? []).length === 0).length : null;
   const uploadFolder = folder === "all" ? "" : folder;
 
   function createFolder() {
@@ -192,10 +198,17 @@ export default function MediaManager({ token, onAuthError }: { token: string; on
     setSuccess(null);
     try {
       const uses = await usagesOf(item.path);
-      const warning = uses.length
-        ? `\n\nStill used by:\n• ${uses.slice(0, 8).join("\n• ")}${uses.length > 8 ? `\n…and ${uses.length - 8} more` : ""}\n\nThose pages will show a broken image.`
-        : "";
-      if (!window.confirm(`Delete ${item.path}?${warning}`)) return;
+      if (uses.length) {
+        // Refuse rather than warn. Deleting a referenced image breaks those pages, and
+        // nothing here rewrites the references that point at it.
+        const list = uses.slice(0, 8).join("\n• ");
+        const more = uses.length > 8 ? `\n…and ${uses.length - 8} more` : "";
+        setError(
+          `${item.path} is still used by ${uses.length} ${uses.length === 1 ? "entry" : "entries"}, so it wasn't deleted:\n• ${list}${more}\n\nRemove the image from those entries first.`
+        );
+        return;
+      }
+      if (!window.confirm(`Delete ${item.path}? It isn't used by any content.`)) return;
       await commitFiles([{ path: `public${item.path}`, content: null }], `content: delete image ${item.path.split("/").pop()}`, token);
       setSuccess(`Deleted ${item.path}. ${savedMessage()}`);
     } catch (err) {
@@ -241,11 +254,22 @@ export default function MediaManager({ token, onAuthError }: { token: string; on
         </button>
       </div>
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-[1fr_auto_auto]">
+      <div className="mb-4 grid gap-3 sm:grid-cols-[1fr_auto_auto_auto]">
         <div className="relative">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
           <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search file names…" className={`${inputClass} py-2 pl-8 text-sm`} />
         </div>
+        <button
+          type="button"
+          onClick={() => setUnusedOnly((on) => !on)}
+          aria-pressed={unusedOnly}
+          title="Images no content file references"
+          className={`flex items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border px-3 py-2 text-sm transition-colors ${
+            unusedOnly ? "border-accent bg-accent/10 text-accent" : "border-border text-muted hover:text-foreground"
+          }`}
+        >
+          Unused only{unusedCount === null ? "" : ` (${unusedCount})`}
+        </button>
         <div className="flex gap-2">
           <input
             value={newFolder}
@@ -347,20 +371,28 @@ function ImageViewer({
 }) {
   const index = items.findIndex((item) => item.path === path);
   const item = items[index];
+  const overlayRef = useModal<HTMLDivElement>({ open: true, onClose });
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-      else if (event.key === "ArrowRight" && index < items.length - 1) onChange(items[index + 1].path);
+      if (event.key === "ArrowRight" && index < items.length - 1) onChange(items[index + 1].path);
       else if (event.key === "ArrowLeft" && index > 0) onChange(items[index - 1].path);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [index, items, onChange, onClose]);
+  }, [index, items, onChange]);
 
   if (!item) return null;
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-black/85 p-4" onClick={onClose} role="dialog" aria-modal="true" aria-label={`Preview of ${item.path}`}>
+    <div
+      ref={overlayRef}
+      tabIndex={-1}
+      className="fixed inset-0 z-[100] flex flex-col bg-black/85 p-4 outline-none"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Preview of ${item.path}`}
+    >
       <div className="mb-3 flex items-start justify-between gap-4 text-white" onClick={(e) => e.stopPropagation()}>
         <div className="min-w-0 text-sm">
           <p className="break-all font-medium">{item.path}</p>

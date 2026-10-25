@@ -62,7 +62,7 @@ export default function ContentHealth({ token, onOpen }: { token: string; onOpen
       {error && <p className="text-sm text-red-400">{error}</p>}
       {!issues && !error && (
         <p className="flex items-center gap-2 text-sm text-muted">
-          <Loader2 size={14} className="animate-spin" /> Checking every entryâ€¦
+          <Loader2 size={14} className="animate-spin" /> Checking every entry…
         </p>
       )}
       {issues && groups.length === 0 && (
@@ -74,7 +74,7 @@ export default function ContentHealth({ token, onOpen }: { token: string; onOpen
         <>
           <p className={`mb-3 flex items-center gap-2 text-sm ${problems ? "text-yellow-500" : "text-muted"}`}>
             {problems ? <CircleAlert size={16} /> : <CheckCircle2 size={16} className="text-green-500" />}
-            {problems ? `${problems} thing${problems === 1 ? "" : "s"} to fix` : "No problems â€” just notes"}
+            {problems ? `${problems} thing${problems === 1 ? "" : "s"} to fix` : "No problems — just notes"}
           </p>
           <div className="divide-y divide-border rounded-lg border border-border">
             {groups.map(({ group, items }) => (
@@ -102,7 +102,7 @@ export default function ContentHealth({ token, onOpen }: { token: string; onOpen
                             <Icon size={14} className={`mt-0.5 shrink-0 ${tone}`} />
                             <span className="min-w-0">
                               <span className="font-medium text-foreground">{issue.item.label}</span>
-                              <span className="text-muted"> Â· {issue.item.source.tabLabel}</span>
+                              <span className="text-muted"> · {issue.item.source.tabLabel}</span>
                               <span className="block text-xs text-muted">{issue.message}</span>
                             </span>
                           </button>

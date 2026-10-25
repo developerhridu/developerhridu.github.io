@@ -33,6 +33,8 @@ import { trackEvent } from "@/lib/analytics";
 import { resolveCvHref } from "@/lib/cv";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import SearchPalette from "@/components/ui/SearchPalette";
+import { SEARCH_OPEN_EVENT } from "@/lib/searchEvent";
+import type { NavIconKey } from "@/lib/iconKeys";
 import { TOKEN_KEY, TOKEN_CHANGED_EVENT } from "@/components/admin/shared";
 
 const navLinks = menu.navLinks.filter(
@@ -51,7 +53,7 @@ const NAV_ID_TO_SECTION_ID: Record<string, string> = {
   blogs: "blog",
 };
 
-const iconRegistry: Record<string, typeof House> = {
+const iconRegistry: Record<NavIconKey, typeof House> = {
   house: House,
   "user-round": UserRound,
   "folder-code": FolderCode,
@@ -68,9 +70,21 @@ const iconRegistry: Record<string, typeof House> = {
   "building-2": Building2,
 };
 
+/** Icon keys come from menu.json at runtime, so the lookup takes a plain string. */
+function lookupNavIcon(key: string | undefined) {
+  return key && key in iconRegistry ? iconRegistry[key as NavIconKey] : undefined;
+}
+
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+
+  // Lets other pages (the 404, for one) open search without reaching into the Navbar.
+  useEffect(() => {
+    const open = () => setSearchOpen(true);
+    window.addEventListener(SEARCH_OPEN_EVENT, open);
+    return () => window.removeEventListener(SEARCH_OPEN_EVENT, open);
+  }, []);
   const [hasValidToken, setHasValidToken] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
   const pathname = usePathname();
@@ -177,7 +191,7 @@ export default function Navbar() {
         <div className="mb-8">{Logo}</div>
         <div className="flex flex-col items-center gap-1">
           {visibleNavLinks.map((link) => {
-            const Icon = iconRegistry[link.icon] ?? FileText;
+            const Icon = lookupNavIcon(link.icon) ?? FileText;
             return link.external ? (
               <a
                 key={link.name}
@@ -317,7 +331,7 @@ export default function Navbar() {
               animate={{ opacity: 1, y: 0 }}
             >
               {visibleNavLinks.map((link) => {
-                const Icon = iconRegistry[link.icon] ?? FileText;
+                const Icon = lookupNavIcon(link.icon) ?? FileText;
                 const rowClass = "flex items-center gap-3 py-2.5 transition-colors";
                 return link.external ? (
                   <a

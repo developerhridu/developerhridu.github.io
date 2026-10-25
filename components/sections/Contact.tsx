@@ -12,6 +12,7 @@ import config from "@/content/config.json";
 import uiStrings from "@/content/ui-strings.json";
 import { getSectionCopy } from "@/lib/sections";
 import { trackEvent } from "@/lib/analytics";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 const t = uiStrings.contact;
 
@@ -39,9 +40,11 @@ function rememberSent() {
 
 interface ContactProps {
   showHeading?: boolean;
+  /** "h1" when this section is the whole page, so the page has one top-level heading. */
+  headingAs?: "h1" | "h2";
 }
 
-export default function Contact({ showHeading = true }: ContactProps) {
+export default function Contact({ showHeading = true, headingAs = "h2" }: ContactProps) {
   const sectionCopy = getSectionCopy("contact");
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error" | "cooldown">("idle");
   const [formData, setFormData] = useState({
@@ -117,9 +120,10 @@ export default function Contact({ showHeading = true }: ContactProps) {
 
   return (
     <section id="contact" className="py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className={PAGE_CONTAINER}>
         {showHeading && (
           <SectionHeading
+            as={headingAs}
             eyebrow={sectionCopy.eyebrow}
             title={sectionCopy.title}
             subtitle={sectionCopy.subtitle}

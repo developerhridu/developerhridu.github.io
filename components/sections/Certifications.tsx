@@ -7,13 +7,16 @@ import certificationsData from "@/content/certifications.json";
 import { getSectionCopy } from "@/lib/sections";
 import { isPublished } from "@/lib/published";
 import type { Certification } from "@/types";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 interface CertificationsProps {
   showHeading?: boolean;
   noSection?: boolean;
+  /** "h1" when this section is the whole page, so the page has one top-level heading. */
+  headingAs?: "h1" | "h2";
 }
 
-export default function Certifications({ showHeading = true, noSection = false }: CertificationsProps) {
+export default function Certifications({ showHeading = true, noSection = false, headingAs = "h2" }: CertificationsProps) {
   const certifications = ((certificationsData.certifications || []) as Certification[]).filter(isPublished);
   const sectionCopy = getSectionCopy("certifications");
 
@@ -23,6 +26,7 @@ export default function Certifications({ showHeading = true, noSection = false }
     <>
       {showHeading && (
         <SectionHeading
+            as={headingAs}
           eyebrow={sectionCopy.eyebrow}
           title={sectionCopy.title}
           subtitle={sectionCopy.subtitle}
@@ -49,7 +53,7 @@ export default function Certifications({ showHeading = true, noSection = false }
 
   return (
     <section id="certifications" className="py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">{content}</div>
+      <div className={PAGE_CONTAINER}>{content}</div>
     </section>
   );
 }

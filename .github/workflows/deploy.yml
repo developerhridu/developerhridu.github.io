@@ -9,6 +9,9 @@ on:
       - "**.md"
       - ".claude/**"
       - ".vscode/**"
+      # The Worker isn't part of the static site and is deployed separately with
+      # `cd worker && npm run deploy`, so a Worker-only change needs no Pages build.
+      # Its type check runs in the worker-check workflow instead.
       - "worker/**"
   workflow_dispatch:
 
@@ -56,8 +59,19 @@ jobs:
         if: steps.node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit --no-fund
 
+      # Everything below gates the deploy: a failure stops the run before the artifact
+      # is uploaded, so a broken build can never reach the live site.
+
+      # Type errors in app code. next build catches most of these, but this fails in
+      # seconds instead of after a full build.
+      - name: Type check
+        run: npm run typecheck
+
+      # Lint was configured but never ran in CI.
+      - name: Lint
+        run: npm run lint
+
       # CMS save/publish/undo logic, review diff, link checks, content-health rules.
-      # A failure stops the deploy, so a broken admin never goes live.
       - name: Test
         run: npm test
 

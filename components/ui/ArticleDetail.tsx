@@ -17,33 +17,40 @@ import RelatedGrid from "@/components/ui/RelatedGrid";
 import type { RelatedItem } from "@/lib/related";
 import Comments from "@/components/ui/Comments";
 import EditArticleButton from "@/components/ui/EditArticleButton";
+import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 const ARTICLE_TYPES = {
   blog: {
+    sectionName: "Blog",
     path: "/blog",
     backLabel: "Back to Blog",
     footerLabel: "Back to all posts",
     draftMessage: "This post is a draft — it isn't listed on the blog, sitemap, or RSS feed. Only people with this link can see it.",
   },
   "case-study": {
+    sectionName: "Case Studies",
     path: "/case-studies",
     backLabel: "Back to Case Studies",
     footerLabel: "Back to all case studies",
     draftMessage: "This case study is a draft — it isn't listed on the case studies page, sitemap, or RSS feed. Only people with this link can see it.",
   },
   project: {
+    sectionName: "Projects",
     path: "/projects",
     backLabel: "Back to Projects",
     footerLabel: "Back to all projects",
     draftMessage: "This project is a draft — it isn't listed on the projects page or sitemap. Only people with this link can see it.",
   },
   client: {
+    sectionName: "Clients",
     path: "/clients",
     backLabel: "Back to Clients",
     footerLabel: "Back to all clients",
     draftMessage: "This client is a draft — it isn't linked from the site or listed in the sitemap. Only people with this link can see it.",
   },
   employer: {
+    sectionName: "Employers",
     path: "/employers",
     backLabel: "Back to Employers",
     footerLabel: "Back to all employers",
@@ -115,12 +122,25 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
 
   return (
     <div className={preview ? "" : "pt-16 md:pt-0"}>
+      {!preview && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(
+              breadcrumbJsonLd([
+                { name: labels.sectionName, path: labels.path },
+                { name: entry.title, path: `${labels.path}/${entry.slug}` },
+              ]),
+            ),
+          }}
+        />
+      )}
       {!preview && jsonLd && <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />}
       <article className={preview ? "py-8" : "py-20"}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className={PAGE_CONTAINER}>
           {!preview && <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <Link
               href={labels.path}
@@ -204,7 +224,7 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
               {!preview && engagementType && <ViewCounter type={engagementType} slug={entry.slug} />}
             </div>
 
-            {!preview && url && <div className="mt-4">
+            {!preview && url && <div className="print-hide-furniture mt-4">
               <ShareButtons url={url} title={entry.title} />
             </div>}
           </header>
@@ -270,9 +290,12 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
           )}
 
           {children}
-          {!preview && engagementType && <ReactionButton type={engagementType} slug={entry.slug} />}
-          {related && <RelatedGrid items={related} />}
-          {!preview && engagementType && <Comments />}
+          {/* Reactions, related cards and comments are interactive; they print as noise. */}
+          <div className="print-hide-furniture">
+            {!preview && engagementType && <ReactionButton type={engagementType} slug={entry.slug} />}
+            {related && <RelatedGrid items={related} />}
+            {!preview && engagementType && <Comments />}
+          </div>
 
           {!preview && <div className="mt-12 pt-8 border-t border-border">
             <Link

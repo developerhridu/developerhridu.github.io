@@ -143,6 +143,12 @@
       "label": "FAQ Script",
       "icon": "circle-help",
       "published": true
+    },
+    {
+      "id": "site-config",
+      "label": "Site Config",
+      "icon": "wrench",
+      "published": true
     }
   ]
 }

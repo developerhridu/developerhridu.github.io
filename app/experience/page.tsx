@@ -7,7 +7,7 @@ export const metadata: Metadata = getSeo("experience");
 export default function ExperiencePage() {
   return (
     <div className="pt-16 md:pt-0">
-      <Experience showAll />
+      <Experience showAll headingAs="h1" />
     </div>
   );
 }

@@ -119,6 +119,12 @@
       "twitterTitle": "Resume | Mizanur Rahman",
       "twitterDescription": "Live, always up-to-date resume for Mizanur Rahman, Full-Stack Software Engineer.",
       "ogType": "profile"
+    },
+    {
+      "id": "privacy",
+      "route": "/privacy",
+      "title": "Privacy | Mizanur Rahman — Full-Stack Software Engineer",
+      "description": "What this site measures, which third-party services see it, and how to opt out."
     }
   ]
 }

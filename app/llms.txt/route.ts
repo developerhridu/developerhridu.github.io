@@ -1,9 +1,10 @@
 import profile from "@/content/profile.json";
 import { searchIndex, type SearchItem } from "@/lib/searchIndex";
+import config from "@/content/config.json";
 
 export const dynamic = "force-static";
 
-const BASE_URL = "https://developerhridu.github.io";
+const BASE_URL = config.siteUrl;
 
 function section(title: string, items: SearchItem[]): string {
   if (items.length === 0) return "";

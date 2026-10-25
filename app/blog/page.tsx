@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Metadata } from "next";
 import { getPublishedBlogPosts } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
@@ -6,6 +7,7 @@ import ContentListing from "@/components/ui/ContentListing";
 import { getSeo } from "@/lib/seo";
 import { getSectionCopy } from "@/lib/sections";
 import uiStrings from "@/content/ui-strings.json";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 export const metadata: Metadata = getSeo("blog");
 
@@ -29,14 +31,18 @@ export default function BlogPage() {
   return (
     <div className="pt-16 md:pt-0">
       <section className="py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className={PAGE_CONTAINER}>
           <SectionHeading
+            as="h1"
             eyebrow={sectionCopy.eyebrow}
             title={sectionCopy.title}
             subtitle={sectionCopy.subtitle}
           />
 
-          <ContentListing type="blog" items={items} emptyMessage={uiStrings.blogEmptyMessage} />
+          {/* ContentListing reads ?tag= with useSearchParams, which needs a boundary under static export. */}
+          <Suspense fallback={null}>
+            <ContentListing type="blog" items={items} emptyMessage={uiStrings.blogEmptyMessage} />
+          </Suspense>
         </div>
       </section>
     </div>

@@ -1009,7 +1009,7 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
       ) : (
         <>
           {showLinkedInImport && (
-            <div className="mb-4 bg-surface border border-border rounded-xl p-6 space-y-4">
+            <div className="mb-4 bg-surface border border-border rounded-xl p-4 sm:p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-foreground">Import from LinkedIn</h2>
                 <button
@@ -1294,7 +1294,7 @@ function EntryForm({
 }) {
   const token = useAdminToken();
   return (
-    <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
+    <div className="bg-surface border border-border rounded-xl p-4 sm:p-6 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-foreground">
           {entry.id ? "Edit entry" : "New entry"}

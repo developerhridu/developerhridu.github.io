@@ -37,7 +37,7 @@ export default function ResumePage() {
   const summary = profile.bio.split("\n\n")[0];
 
   return (
-    <div className="pt-16 md:pt-0 print:pt-0">
+    <div className="print-compact pt-16 md:pt-0 print:pt-0">
       <section className="py-12 print:py-0">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 print:px-0 print:max-w-none">
           <div className="flex justify-end mb-6 print:hidden">

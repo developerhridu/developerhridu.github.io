@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, X, Send, Sparkles } from "lucide-react";
-import { askFaqBot, STARTER_QUESTIONS } from "@/lib/faqBot";
+import { STARTER_QUESTIONS } from "@/lib/starterQuestions";
 import { askAi, type AiChatHistoryMessage } from "@/lib/aiChat";
 import { trackEvent } from "@/lib/analytics";
 import { ASK_AI_EVENT } from "@/lib/askAiEvent";
@@ -72,7 +72,7 @@ export default function AiChatWidget() {
   }, [messages, loading, open]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- sessionStorage is browser-only, so a previous dismissal can only be read after hydration.
+    // sessionStorage is browser-only, so a previous dismissal can only be read after hydration.
     if (wasDismissed()) setDismissed(true);
   }, []);
 
@@ -114,7 +114,8 @@ export default function AiChatWidget() {
     if (messages.length === 0) trackEvent("faq_bot_open", {});
   }
 
-  async function ask(question: string) {
+  // Wrapped so the ASK_AI listener below isn't torn down and re-added on every render.
+  const ask = useCallback(async (question: string) => {
     const trimmed = question.trim();
     if (!trimmed || loading) return;
     const history: AiChatHistoryMessage[] = messages.map((m) => ({
@@ -135,9 +136,12 @@ export default function AiChatWidget() {
       }
     }
 
+    // Loaded on demand: this fallback pulls in fuse.js and a corpus built from every
+    // content file, and most visitors never reach it.
+    const { askFaqBot } = await import("@/lib/faqBot");
     const { text } = askFaqBot(trimmed);
     setMessages((prev) => [...prev, { role: "bot", text }]);
-  }
+  }, [loading, messages]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

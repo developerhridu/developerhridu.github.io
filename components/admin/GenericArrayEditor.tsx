@@ -16,7 +16,7 @@ import EntryList from "@/components/admin/EntryList";
 import { ErrorBanner, SuccessBanner } from "@/components/admin/CrudBanners";
 import { CheckboxField, EditorPanel, Field, FormActions, FormSection, fieldClass } from "@/components/admin/FormKit";
 import { confirmDiscardEdits, snapshot, useSaveShortcut, useUnsavedGuard } from "@/components/admin/useUnsavedGuard";
-import { collectErrors, errorSummary, focusFirstError, requiredError, urlError, type FieldErrors } from "@/components/admin/validation";
+import { collectErrors, errorSummary, focusFirstError, iconKeyError, requiredError, uniqueError, urlError, type FieldErrors } from "@/components/admin/validation";
 import { renderPreview, type PreviewKind } from "@/components/admin/previews";
 import { clearDraft, DraftBanner, useDraftRecovery } from "@/components/admin/useDraftRecovery";
 import { bulkMessage, standardBulkActions } from "@/components/admin/bulkActions";
@@ -45,6 +45,10 @@ interface FieldDef {
   hint?: string;
   /** Must be filled in before saving (the title field always is). */
   required?: boolean;
+  /** No two entries in this list may share this value (a route, a lookup key, a slug). */
+  unique?: boolean;
+  /** Valid icon keys; an unknown one renders a placeholder on the site, so it is rejected. */
+  iconKeys?: readonly string[];
   defaultBoolean?: boolean;
   min?: number;
   max?: number;
@@ -214,12 +218,21 @@ function toRepoPath(publicPath: string): string {
   return `public${publicPath}`;
 }
 
-function validate(form: FormState, config: ArrayConfig): FieldErrors {
+/**
+ * @param others Every other entry in the list, for the uniqueness checks — the entry
+ *               being edited is excluded so saving it unchanged doesn't fail.
+ */
+function validate(form: FormState, config: ArrayConfig, others: RawEntry[] = []): FieldErrors {
   return collectErrors(
     config.fields.flatMap((f): [string, string | null][] => {
       const value = form[f.key];
       const checks: [string, string | null][] = [];
       if (f.required || f.key === config.titleField) checks.push([f.key, requiredError(value, f.label)]);
+      if (f.unique) {
+        const taken = others.map((entry) => String(entry[f.key] ?? "")).filter(Boolean);
+        checks.push([f.key, uniqueError(value, taken, f.label)]);
+      }
+      if (f.iconKeys) checks.push([f.key, iconKeyError(value, f.iconKeys)]);
       if (f.type === "url") checks.push([f.key, urlError(value)]);
       if (f.type === "image") checks.push([f.key, urlError(value)]);
       if (f.type === "number" && String(value ?? "").trim()) {
@@ -406,7 +419,8 @@ export default function GenericArrayEditor({ config, token, onAuthError, initial
 
   async function handleSave() {
     if (editingIndex === null || saving) return;
-    const errors = validate(form, config);
+    const others = (entries ?? []).filter((entry) => String(entry.id) !== editingId);
+    const errors = validate(form, config, others);
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       setError(errorSummary(errors));

@@ -5,6 +5,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import { getPublishedEmployers } from "@/lib/employers";
 import { getSeo } from "@/lib/seo";
 import { getSectionCopy } from "@/lib/sections";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 export const metadata: Metadata = getSeo("employers");
 
@@ -15,8 +16,8 @@ export default function EmployersPage() {
   return (
     <div className="pt-16 md:pt-0">
       <section id="employers" className="py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <SectionHeading eyebrow={sectionCopy.eyebrow} title={sectionCopy.title} subtitle={sectionCopy.subtitle} />
+        <div className={PAGE_CONTAINER}>
+          <SectionHeading as="h1" eyebrow={sectionCopy.eyebrow} title={sectionCopy.title} subtitle={sectionCopy.subtitle} />
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
             {employers.map((employer) => (

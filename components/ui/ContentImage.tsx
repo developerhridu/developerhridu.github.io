@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { responsiveSrcSet } from "@/lib/imageLoader";
@@ -34,20 +34,18 @@ export default function ContentImage({
   natural = false,
 }: ContentImageProps) {
   const [broken, setBroken] = useState(false);
-  const imgRef = useRef<HTMLImageElement>(null);
   const failed = !src || broken;
 
-  useEffect(() => {
-    // On static export, the browser can fetch (and fail) the image before
-    // hydration attaches onError, silently missing the event. Catch that by
-    // checking the element's actual load state once mounted. Only applies to
-    // the plain <img> (natural) path — next/image's onError doesn't have this gap.
-    if (!natural) return;
-    const el = imgRef.current;
-    if (el && el.complete && el.naturalWidth === 0) {
-      setBroken(true);
-    }
-  }, [src, natural]);
+  /**
+   * On a static export the browser can fetch (and fail) the image before hydration
+   * attaches onError, so that event is missed. This ref callback runs when the element is
+   * attached and checks its real load state instead. Doing it here rather than in an
+   * effect avoids a second render pass for every image on the page. Only the plain <img>
+   * (natural) path needs it; next/image's onError has no such gap.
+   */
+  const checkAlreadyFailed = (element: HTMLImageElement | null) => {
+    if (element?.complete && element.naturalWidth === 0) setBroken(true);
+  };
 
   if (failed && initials === undefined) return null;
 
@@ -62,8 +60,11 @@ export default function ContentImage({
       {failed ? (
         <span className={`${initialsClassName} font-bold text-foreground/20`}>{initials}</span>
       ) : natural ? (
+        /* A "natural" image has no known dimensions, which next/image's fill mode requires;
+           the srcSet below does the optimising instead. */
+        // eslint-disable-next-line @next/next/no-img-element
         <img
-          ref={imgRef}
+          ref={checkAlreadyFailed}
           src={src}
           srcSet={responsiveSrcSet(src)}
           sizes="(max-width: 768px) 100vw, 1100px"

@@ -29,6 +29,24 @@ export const CONTENT_SOURCES: Source[] = [
   { tab: "menu", tabLabel: "Menu", path: "content/menu.json", arrayKey: "navLinks", titleField: "name", subtitleField: "href", openBy: "id" },
   { tab: "seo", tabLabel: "SEO / Metadata", path: "content/seo.json", arrayKey: "routes", titleField: "title", subtitleField: "route", openBy: "id" },
   { tab: "sections", tabLabel: "Section Copy", path: "content/sections.json", arrayKey: "sections", titleField: "title", subtitleField: "id", openBy: "id" },
+  { tab: "employers", tabLabel: "Employers", path: "content/experience.json", arrayKey: "experiences", titleField: "company", subtitleField: "role", openBy: "id" },
+  { tab: "skill-categories", tabLabel: "Skill Categories", path: "content/skill-categories.json", arrayKey: "categories", titleField: "label", subtitleField: "key", openBy: "id" },
+  { tab: "proficiency", tabLabel: "Proficiency", path: "content/proficiency.json", arrayKey: "proficiency", titleField: "name", subtitleField: "level", openBy: "id" },
+  { tab: "tasks", tabLabel: "Tasks", path: "content/tasks.json", arrayKey: "tasks", titleField: "text", openBy: "id" },
+];
+
+/**
+ * Content files that are not entry lists but can still reference an image. Anything that
+ * scans for image usage has to include these, or an image used only by, say, profile.json
+ * looks unused and is offered up for deletion.
+ */
+export const NON_LIST_CONTENT_FILES = [
+  "content/profile.json",
+  "content/config.json",
+  "content/ui-strings.json",
+  "content/faq-script.json",
+  "content/tech-stack.json",
+  "content/admin-menu.json",
 ];
 
 export interface AdminItem {

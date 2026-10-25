@@ -12,6 +12,7 @@ import { getClients } from "@/lib/clients";
 import { trackEvent } from "@/lib/analytics";
 import uiStrings from "@/content/ui-strings.json";
 import { getSectionCopy } from "@/lib/sections";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 const inputClass =
   "w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder-muted focus:outline-none focus:border-accent transition-colors";
@@ -98,7 +99,7 @@ export default function TestimonialSubmit() {
 
   return (
     <section className="py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className={PAGE_CONTAINER}>
         <SectionHeading
           eyebrow={sectionCopy.eyebrow}
           title={sectionCopy.title}

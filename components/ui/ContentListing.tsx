@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TrendingUp } from "lucide-react";
 import ContentCard, { type ContentCardItem } from "@/components/ui/ContentCard";
 import { WORKER_URL } from "@/lib/workerUrl";
@@ -16,11 +17,31 @@ interface ContentListingProps {
 }
 
 export default function ContentListing({ type, items, emptyMessage }: ContentListingProps) {
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [popular, setPopular] = useState<{ slug: string; count: number }[]>([]);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const viewPath = type === "blog" ? "/blog" : "/case-studies";
   const tags = useMemo(() => Array.from(new Set(items.flatMap((i) => i.tags))).sort(), [items]);
+
+  /**
+   * The selected tag lives in the URL (?tag=…) rather than in component state, so a
+   * filtered view can be linked, shared and reached with the back button. Unknown values
+   * fall back to showing everything.
+   */
+  const tagParam = searchParams.get("tag");
+  const selectedTag = tagParam && tags.includes(tagParam) ? tagParam : null;
+
+  function selectTag(tag: string | null) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (tag) params.set("tag", tag);
+    else params.delete("tag");
+    const query = params.toString();
+    // scroll: false keeps the page where it is; this only swaps the filter.
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }
+
   const filtered = selectedTag ? items.filter((i) => i.tags.includes(selectedTag)) : items;
 
   useEffect(() => {
@@ -60,9 +81,10 @@ export default function ContentListing({ type, items, emptyMessage }: ContentLis
       )}
 
       {tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div className="flex flex-wrap items-center gap-2 mb-8" role="group" aria-label="Filter by tag">
           <button
-            onClick={() => setSelectedTag(null)}
+            onClick={() => selectTag(null)}
+            aria-pressed={selectedTag === null}
             className={`px-3 py-1.5 rounded-full text-xs font-mono uppercase tracking-wide border transition-colors ${
               selectedTag === null
                 ? "bg-accent text-accent-foreground border-accent"
@@ -74,7 +96,8 @@ export default function ContentListing({ type, items, emptyMessage }: ContentLis
           {tags.map((tag) => (
             <button
               key={tag}
-              onClick={() => setSelectedTag(tag)}
+              onClick={() => selectTag(tag)}
+              aria-pressed={selectedTag === tag}
               className={`px-3 py-1.5 rounded-full text-xs font-mono uppercase tracking-wide border transition-colors ${
                 selectedTag === tag
                   ? "bg-accent text-accent-foreground border-accent"
@@ -85,6 +108,13 @@ export default function ContentListing({ type, items, emptyMessage }: ContentLis
             </button>
           ))}
         </div>
+      )}
+
+      {selectedTag && (
+        <p role="status" className="-mt-4 mb-8 text-sm text-muted">
+          {filtered.length} {filtered.length === 1 ? "entry" : "entries"} tagged{" "}
+          <span className="text-foreground">{selectedTag}</span>
+        </p>
       )}
 
       {filtered.length === 0 ? (

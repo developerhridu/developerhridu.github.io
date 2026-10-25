@@ -7,6 +7,7 @@ import Education from "@/components/sections/Education";
 import Certifications from "@/components/sections/Certifications";
 import uiStrings from "@/content/ui-strings.json";
 import { getSectionCopy } from "@/lib/sections";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 type Tab = "education" | "certifications";
 
@@ -29,7 +30,7 @@ export default function EducationCertifications() {
 
   return (
     <section id="education-certifications" className="py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className={PAGE_CONTAINER}>
         <SectionHeading
           eyebrow={sectionCopy.eyebrow}
           title={sectionCopy.title}

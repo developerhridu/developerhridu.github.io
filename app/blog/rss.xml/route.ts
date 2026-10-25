@@ -1,8 +1,9 @@
 import { getPublishedBlogPosts } from "@/lib/content";
+import config from "@/content/config.json";
 
 export const dynamic = "force-static";
 
-const BASE_URL = "https://developerhridu.github.io";
+const BASE_URL = config.siteUrl;
 
 function escapeXml(value: string): string {
   return value

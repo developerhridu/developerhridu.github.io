@@ -209,3 +209,94 @@ test("findIssues flags drafts, missing description/cover, broken images and SEO 
     `SEO text:${"t".repeat(75)}`,
   ]);
 });
+
+// --- Phase 3: uniqueness, icon keys, new health rules -------------------------
+
+test("uniqueError rejects a value another entry already uses, case-insensitively", () => {
+  assert.equal(validation.uniqueError("/about", ["/contact", "/blog"], "Route"), null);
+  assert.equal(validation.uniqueError("", ["/about"], "Route"), null, "empty is left to requiredError");
+  assert.match(validation.uniqueError("/about", ["/About"], "Route") ?? "", /already uses this route/);
+  assert.match(validation.uniqueError(" backend ", ["backend"], "Key") ?? "", /already uses this key/);
+});
+
+test("iconKeyError accepts known keys and suggests a near match", () => {
+  const keys = ["house", "user-round", "wrench"] as const;
+  assert.equal(validation.iconKeyError("house", keys), null);
+  assert.equal(validation.iconKeyError("", keys), null, "empty means no icon, which is allowed");
+  const error = validation.iconKeyError("hou", keys) ?? "";
+  assert.match(error, /Unknown icon "hou"/);
+  assert.match(error, /Did you mean "house"/);
+});
+
+test("every icon key list matches what the registries can render", async () => {
+  const { NAV_ICON_KEYS, SERVICE_ICON_KEYS, ADMIN_ICON_KEYS } = await import("@/lib/iconKeys");
+  for (const [name, keys] of [
+    ["nav", NAV_ICON_KEYS],
+    ["service", SERVICE_ICON_KEYS],
+    ["admin", ADMIN_ICON_KEYS],
+  ] as const) {
+    assert.ok(keys.length > 0, `${name} icon keys should not be empty`);
+    assert.equal(new Set(keys).size, keys.length, `${name} icon keys should be unique`);
+    for (const key of keys) assert.match(key, /^[a-z0-9]+(?:-[a-z0-9]+)*$/, `${name} key "${key}" should be kebab-case`);
+  }
+});
+
+test("icon keys used by content are all renderable", () => {
+  const navIcons = JSON.parse(readFileSync(path.join(root, "content/menu.json"), "utf8")).navLinks;
+  const adminIcons = JSON.parse(readFileSync(path.join(root, "content/admin-menu.json"), "utf8")).tabs;
+  const services = JSON.parse(readFileSync(path.join(root, "content/services.json"), "utf8")).services;
+  // Catches a typo in a committed icon key, which otherwise shows a placeholder icon.
+  return import("@/lib/iconKeys").then(({ NAV_ICON_KEYS, SERVICE_ICON_KEYS, ADMIN_ICON_KEYS }) => {
+    for (const link of navIcons) {
+      if (link.icon) assert.ok((NAV_ICON_KEYS as readonly string[]).includes(link.icon), `menu.json icon "${link.icon}"`);
+    }
+    for (const tab of adminIcons) {
+      if (tab.icon) assert.ok((ADMIN_ICON_KEYS as readonly string[]).includes(tab.icon), `admin-menu.json icon "${tab.icon}"`);
+    }
+    for (const service of services) {
+      if (service.icon) assert.ok((SERVICE_ICON_KEYS as readonly string[]).includes(service.icon), `services.json icon "${service.icon}"`);
+    }
+  });
+});
+
+test("findIssues flags markdown images with no alt text and duplicate slugs", () => {
+  const source = (tab: string) => CONTENT_SOURCES.find((s) => s.tab === tab)!;
+  const item = (tab: string, raw: Record<string, unknown>): AdminItem => ({
+    source: source(tab),
+    label: String(raw.title),
+    sublabel: "",
+    published: true,
+    open: { tab },
+    raw,
+  });
+  const issues = findIssues(
+    [
+      item("blog", {
+        title: "No alt",
+        slug: "dup",
+        description: "d".repeat(130),
+        coverImages: ["/images/blog/ok.png"],
+        body: "![](/images/blog/ok.png) and ![fine](/images/blog/ok.png)",
+      }),
+      item("blog", { title: "Same slug", slug: "DUP", description: "d".repeat(130), coverImages: ["/images/blog/ok.png"] }),
+    ],
+    new Set(["/images/blog/ok.png"])
+  );
+  const groups = issues.map((issue) => `${issue.group}:${issue.item.label}`).sort();
+  assert.deepEqual(groups, ["Accessibility:No alt", "Duplicate slugs:No alt", "Duplicate slugs:Same slug"]);
+  assert.match(issues.find((issue) => issue.group === "Accessibility")!.message, /no alt text: ok\.png/);
+});
+
+test("every admin content source points at a real file with its declared array key", () => {
+  for (const source of CONTENT_SOURCES) {
+    const parsed = JSON.parse(readFileSync(path.join(root, source.path), "utf8"));
+    assert.ok(Array.isArray(parsed[source.arrayKey]), `${source.path} should hold an array at "${source.arrayKey}"`);
+  }
+});
+
+test("non-list content files all exist, so image usage counting can't miss one", async () => {
+  const { NON_LIST_CONTENT_FILES } = await import("@/components/admin/adminContent");
+  for (const file of NON_LIST_CONTENT_FILES) {
+    assert.doesNotThrow(() => readFileSync(path.join(root, file), "utf8"), `${file} should exist`);
+  }
+});

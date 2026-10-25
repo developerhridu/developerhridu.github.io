@@ -94,42 +94,6 @@ async function getFileSha(path: string, token: string): Promise<string | null> {
   }
 }
 
-/** Creates or overwrites a binary file (e.g. an image) at `path`. `base64Content` must
- *  already be base64-encoded (no data: URL prefix). */
-export async function uploadBinaryFile(
-  path: string,
-  base64Content: string,
-  message: string,
-  token: string
-): Promise<void> {
-  const existingSha = await getFileSha(path, token);
-  await githubRequest(path, token, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      message,
-      content: base64Content,
-      ...(existingSha ? { sha: existingSha } : {}),
-      branch: BRANCH,
-    }),
-  });
-}
-
-/** Deletes a file at `path` if it exists. No-op (does not throw) if it's already gone. */
-export async function deleteBinaryFile(path: string, message: string, token: string): Promise<void> {
-  const sha = await getFileSha(path, token);
-  if (!sha) return;
-  await githubRequest(path, token, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      message,
-      sha,
-      branch: BRANCH,
-    }),
-  });
-}
-
 async function githubGitRequest(path: string, token: string, init?: RequestInit) {
   const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/git/${path}`, {
     ...init,

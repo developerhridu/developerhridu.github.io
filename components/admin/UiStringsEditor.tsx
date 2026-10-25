@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchContentFile, updateContentFile, GitHubApiError } from "@/lib/github";
 import { ErrorBanner, SuccessBanner } from "@/components/admin/CrudBanners";
 import { useLoadedFormGuard } from "@/components/admin/useUnsavedGuard";
@@ -187,6 +187,8 @@ export default function UiStringsEditor({ token, onAuthError }: UiStringsEditorP
   const [form, setForm] = useState<Record<string, string>>({});
   const [fileSha, setFileSha] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  /** The file exactly as loaded, so unknown keys survive a save. */
+  const loadedRef = useRef<Record<string, unknown>>({});
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -203,6 +205,9 @@ export default function UiStringsEditor({ token, onAuthError }: UiStringsEditorP
     try {
       const { content, sha } = await fetchContentFile(PATH, token);
       const parsed = JSON.parse(content) as Record<string, unknown>;
+      // Kept so a save patches the real file instead of rebuilding it from FIELDS, which
+      // silently deleted every string this editor doesn't know about.
+      loadedRef.current = parsed;
       const next: Record<string, string> = {};
       for (const f of FIELDS) {
         const source = f.section ? (parsed[f.section] as Record<string, unknown> | undefined) : parsed;
@@ -236,12 +241,14 @@ export default function UiStringsEditor({ token, onAuthError }: UiStringsEditorP
     setSaving(true);
     setError(null);
     try {
-      const payload: Record<string, Record<string, string> | string> = {};
+      // Start from the loaded file and overwrite only the edited fields.
+      const payload: Record<string, unknown> = { ...loadedRef.current };
       for (const f of FIELDS) {
         const value = form[fieldPath(f)] ?? "";
         if (f.section) {
-          const bucket = (payload[f.section] as Record<string, string> | undefined) ?? {};
-          bucket[f.key] = value;
+          const existing = payload[f.section];
+          const bucket = { ...(typeof existing === "object" && existing !== null ? existing : {}) };
+          (bucket as Record<string, unknown>)[f.key] = value;
           payload[f.section] = bucket;
         } else {
           payload[f.key] = value;

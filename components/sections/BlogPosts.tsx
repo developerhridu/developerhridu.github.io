@@ -6,6 +6,7 @@ import { getFeaturedBlogPosts } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
 import { getSectionCopy } from "@/lib/sections";
 import uiStrings from "@/content/ui-strings.json";
+import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 export default function BlogPosts() {
   const posts = [...getFeaturedBlogPosts()]
@@ -17,7 +18,7 @@ export default function BlogPosts() {
 
   return (
     <section id="blog" className="py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className={PAGE_CONTAINER}>
         <SectionHeading
           eyebrow={sectionCopy.eyebrow}
           title={sectionCopy.title}

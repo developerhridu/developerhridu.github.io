@@ -197,7 +197,7 @@ export default function EntryList<T>({
                 )}
                 {canReorder && <th className="w-8" aria-label="Drag to reorder" />}
                 <th className="text-left font-medium text-muted px-4 py-3">{titleHeading}</th>
-                <th className="text-right font-medium text-muted px-4 py-3">Actions</th>
+                <th className="sticky right-0 z-10 bg-surface text-right font-medium text-muted px-4 py-3">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -273,8 +273,8 @@ export default function EntryList<T>({
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-1">
+                    <td className="sticky right-0 z-10 bg-background px-2 py-3 sm:px-4">
+                      <div className="flex items-center justify-end gap-0.5 sm:gap-1">
                         {canReorder && (
                           <>
                             <IconButton onClick={() => onMove?.(index, index - 1)} disabled={saving || index === 0} aria-label={`Move ${title} up`}>

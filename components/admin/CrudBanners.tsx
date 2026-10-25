@@ -6,7 +6,9 @@ import { CONFLICT_MESSAGE } from "@/lib/github";
 
 export function ErrorBanner({ message, onReload }: { message: string | null; onReload?: () => void }) {
   if (!message) return null;
-  const conflict = message === CONFLICT_MESSAGE;
+  // Callers pass the error's message text, so this compares against the same constant the
+  // commit layer throws — isConflictError() is for the Error object itself.
+  const conflict = message.startsWith(CONFLICT_MESSAGE);
   return (
     <div role="alert" className="mb-4 flex flex-wrap items-center justify-between gap-3 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
       <span className="min-w-0 flex-1">

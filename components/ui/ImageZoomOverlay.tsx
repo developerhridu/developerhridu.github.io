@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
+import { useModal } from "@/lib/useModal";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
@@ -23,6 +24,7 @@ interface ImageZoomOverlayProps {
  */
 export default function ImageZoomOverlay({ images, index, onIndexChange, onClose }: ImageZoomOverlayProps) {
   const active = images[index];
+  const overlayRef = useModal<HTMLDivElement>({ open: true, onClose });
 
   const move = useCallback(
     (direction: -1 | 1) => {
@@ -31,36 +33,36 @@ export default function ImageZoomOverlay({ images, index, onIndexChange, onClose
     [index, images.length, onIndexChange],
   );
 
+  // Escape, the Tab trap, the scroll lock and focus restore come from useModal; only the
+  // gallery's arrow keys are specific to this overlay.
   useEffect(() => {
+    if (images.length < 2) return;
+
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-      if (images.length > 1 && event.key === "ArrowRight") {
+      if (event.key === "ArrowRight") {
         event.preventDefault();
         move(1);
       }
-      if (images.length > 1 && event.key === "ArrowLeft") {
+      if (event.key === "ArrowLeft") {
         event.preventDefault();
         move(-1);
       }
     }
     document.addEventListener("keydown", onKeyDown);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [images.length, move, onClose]);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [images.length, move]);
 
   if (!active) return null;
 
   return createPortal(
     <div
+      ref={overlayRef}
+      data-image-lightbox
       role="dialog"
       aria-modal="true"
       aria-label={`Full image: ${active.alt}`}
-      className="fixed inset-0 z-[80] flex items-center justify-center p-4"
+      tabIndex={-1}
+      className="fixed inset-0 z-[80] flex items-center justify-center p-4 outline-none"
       onClick={onClose}
     >
       <div className="absolute inset-0 bg-black/85 backdrop-blur-sm" />

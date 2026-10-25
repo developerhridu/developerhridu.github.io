@@ -2,10 +2,11 @@ import { MetadataRoute } from "next";
 import { getPublishedBlogPosts, getPublishedCaseStudies, getPublishedProjects } from "@/lib/content";
 import { getPublishedClients } from "@/lib/clients";
 import { getPublishedEmployers } from "@/lib/employers";
+import config from "@/content/config.json";
 
 export const dynamic = "force-static";
 
-const BASE_URL = "https://developerhridu.github.io";
+const BASE_URL = config.siteUrl;
 
 type Entry = MetadataRoute.Sitemap[number];
 
@@ -44,6 +45,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page("/about", 0.8, "monthly"),
     page("/projects", 0.9, "monthly", newest(projects.map((p) => p.at))),
     ...projects.map((p) => page(`/projects/${p.slug}`, 0.6, "monthly", p.at)),
+    page("/services", 0.8, "monthly"),
     page("/experience", 0.8, "monthly"),
     page("/certifications", 0.7, "monthly"),
     page("/resume", 0.7, "monthly"),
@@ -57,5 +59,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...employers.map((e) => page(`/employers/${e.slug}`, 0.5, "monthly")),
     page("/testimonials", 0.5, "monthly"),
     page("/contact", 0.5, "yearly"),
+    page("/privacy", 0.2, "yearly"),
   ];
 }

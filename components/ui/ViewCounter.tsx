@@ -1,9 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { Eye } from "lucide-react";
 import { WORKER_URL } from "@/lib/workerUrl";
-import { TOKEN_KEY } from "@/components/admin/shared";
+import { TOKEN_KEY, TOKEN_CHANGED_EVENT } from "@/components/admin/shared";
+
+/**
+ * Whether an admin token is present, read as external state rather than copied into
+ * component state inside an effect (which triggers a second render pass before paint).
+ */
+function subscribeToToken(onChange: () => void) {
+  window.addEventListener(TOKEN_CHANGED_EVENT, onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    window.removeEventListener(TOKEN_CHANGED_EVENT, onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
+
+function hasToken(): boolean {
+  try {
+    return !!localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return false;
+  }
+}
+
+/** The server has no localStorage, so the count is hidden until hydration says otherwise. */
+function hasTokenOnServer(): boolean {
+  return false;
+}
 
 interface ViewCounterProps {
   type: "blog" | "case-study";
@@ -12,11 +38,7 @@ interface ViewCounterProps {
 
 export default function ViewCounter({ type, slug }: ViewCounterProps) {
   const [count, setCount] = useState<number | null>(null);
-  const [isOwner, setIsOwner] = useState(false);
-
-  useEffect(() => {
-    setIsOwner(!!localStorage.getItem(TOKEN_KEY));
-  }, []);
+  const isOwner = useSyncExternalStore(subscribeToToken, hasToken, hasTokenOnServer);
 
   useEffect(() => {
     // Tracking runs for every visitor regardless of who's viewing — only the
