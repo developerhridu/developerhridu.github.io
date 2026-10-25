@@ -1,8 +1,8 @@
 import type { Components } from "react-markdown";
 import LinkedInEmbed from "@/components/ui/LinkedInEmbed";
 import ArticleCodeBlock from "@/components/ui/ArticleCodeBlock";
+import MarkdownImage from "@/components/ui/MarkdownImage";
 import { extractLinkedInActivityId } from "@/lib/linkedin";
-import { responsiveSrcSet } from "@/lib/imageLoader";
 
 interface CodeElementProps {
   className?: string;
@@ -50,10 +50,8 @@ export const markdownComponents: Components = {
     );
   },
   img({ src, alt, title }) {
+    // Clicking a body image opens it full size, like the covers and galleries around it.
     const url = typeof src === "string" ? src : undefined;
-    return (
-      // eslint-disable-next-line @next/next/no-img-element -- markdown images have no known size; a lazy <img> with srcset fits best
-      <img src={url} srcSet={responsiveSrcSet(url)} sizes="(max-width: 768px) 100vw, 900px" alt={alt ?? ""} title={title} loading="lazy" decoding="async" />
-    );
+    return <MarkdownImage src={url} alt={alt ?? ""} title={title} />;
   },
 };

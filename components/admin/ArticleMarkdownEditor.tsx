@@ -89,40 +89,49 @@ export default function ArticleMarkdownEditor({
   }
 
   /**
-   * Opens a full view when a preview image is clicked. The images are read from the
-   * rendered DOM rather than through a `previewOptions.components` override: that way
-   * inline blob: URLs for not-yet-published uploads and plain HTML <img> tags both work,
-   * and @uiw/react-md-editor's own sanitization and URL handling are left untouched.
+   * Opens a full view when a preview image is clicked. The click is bound on the image
+   * element itself — through react-markdown's `components` map, which @uiw passes
+   * through — rather than on a wrapper: the editor stops click events inside its preview
+   * pane, so a bubbling handler there never runs.
    *
-   * Listening on the document in the capture phase, instead of with React's onClick, is
-   * what makes it fire at all — the editor stops click events inside its preview, so a
-   * bubbling handler on the wrapper never sees them.
+   * The sibling images are then read from the rendered DOM, so that arrow navigation also
+   * covers plain HTML <img> tags, and blob: URLs for not-yet-published uploads work as-is.
+   */
+  const openZoomFrom = useCallback((image: HTMLImageElement) => {
+    const preview = image.closest(".wmde-markdown");
+    const all = preview ? [...preview.querySelectorAll("img")] : [image];
+    setZoomIndex(Math.max(0, all.indexOf(image)));
+    setZoomImages(
+      all.map((each) => ({
+        // currentSrc resolves srcset and blob: URLs to what the browser actually loaded.
+        src: each.currentSrc || each.src,
+        alt: each.alt || "Preview image",
+      })),
+    );
+  }, []);
+
+  /**
+   * Second, independent path to the same zoom. A document listener in the capture phase
+   * runs before any handler in the editor can stop the event, which covers the case where
+   * the `components` override below never applies (raw HTML images, or a future version of
+   * the editor rendering its preview differently). It stops the event, so only one fires.
    */
   useEffect(() => {
     function onClickCapture(event: globalThis.MouseEvent) {
       const target = event.target as HTMLElement | null;
-      if (!target || target.tagName !== "IMG") return;
-      // Only images in this editor's preview, not elsewhere on the admin page.
+      if (!target || target.tagName !== "IMG" || target.closest("a")) return;
       const preview = target.closest(".wmde-markdown");
+      // Only this editor's preview, not other images on the admin page.
       if (!preview || !editorRef.current?.contains(preview)) return;
-      if (target.closest("a")) return; // A linked image keeps its link.
 
       event.preventDefault();
       event.stopPropagation();
-
-      const all = [...preview.querySelectorAll("img")];
-      const images = all.map((image) => ({
-        // currentSrc resolves srcset and blob: URLs to what the browser actually loaded.
-        src: image.currentSrc || image.src,
-        alt: image.alt || "Preview image",
-      }));
-      setZoomIndex(Math.max(0, all.indexOf(target as HTMLImageElement)));
-      setZoomImages(images);
+      openZoomFrom(target as HTMLImageElement);
     }
 
     document.addEventListener("click", onClickCapture, true);
     return () => document.removeEventListener("click", onClickCapture, true);
-  }, []);
+  }, [openZoomFrom]);
 
   useEffect(() => {
     if (!zoomOpen) return;
@@ -220,6 +229,21 @@ export default function ArticleMarkdownEditor({
         previewOptions={{
           rehypePlugins: [rehypeSanitize],
           urlTransform: (url) => inlineImageUrls[url] ?? defaultUrlTransform(url),
+          components: {
+            img: (props) => (
+              // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text -- this replaces Markdown's own <img>; alt comes from the Markdown
+              <img
+                {...props}
+                onClick={(event) => {
+                  // A linked image keeps its link rather than zooming.
+                  if (event.currentTarget.closest("a")) return;
+                  event.preventDefault();
+                  event.stopPropagation();
+                  openZoomFrom(event.currentTarget);
+                }}
+              />
+            ),
+          },
         }}
         textareaProps={{ "aria-label": label, placeholder }}
       />
