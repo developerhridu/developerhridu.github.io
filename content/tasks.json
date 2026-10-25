@@ -1,3 +1,9 @@
 {
-  "tasks": []
+  "tasks": [
+    {
+      "id": "markdown-editor-image-should-be-view-as-full-image-like-others",
+      "text": "Markdown Editor Image should be view as full image like others",
+      "done": false
+    }
+  ]
 }
