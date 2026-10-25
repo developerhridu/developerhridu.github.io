@@ -5,6 +5,7 @@ import TrackedLink from "@/components/ui/TrackedLink";
 import { coverImages } from "@/lib/coverImages";
 import type { ClickArea } from "@/lib/analytics";
 import uiStrings from "@/content/ui-strings.json";
+import { TAGS_PER_CARD } from "@/lib/display";
 
 export interface ContentCardItem {
   slug: string;
@@ -45,7 +46,7 @@ export default function ContentCard({ item, viewPath, showReadMore = false, area
 
         <div className="flex-1">
           <div className="flex flex-wrap gap-2 mb-3">
-            {item.tags.slice(0, 3).map((tag) => (
+            {item.tags.slice(0, TAGS_PER_CARD).map((tag) => (
               <span
                 key={tag}
                 className="font-mono px-2 py-0.5 bg-accent/10 text-accent border border-accent/20 rounded text-xs uppercase tracking-wide"

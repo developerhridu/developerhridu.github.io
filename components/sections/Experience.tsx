@@ -10,6 +10,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import experienceData from "@/content/experience.json";
 import uiStrings from "@/content/ui-strings.json";
 import { getSectionCopy } from "@/lib/sections";
+import { HIGHLIGHTS_PER_JOB } from "@/lib/display";
 
 interface ExperienceProps {
   showHeading?: boolean;
@@ -18,7 +19,7 @@ interface ExperienceProps {
   showAll?: boolean;
 }
 
-const VISIBLE_HIGHLIGHTS = 1;
+const VISIBLE_HIGHLIGHTS = HIGHLIGHTS_PER_JOB;
 
 function ProjectHighlights({ highlights, defaultExpanded }: { highlights: string[]; defaultExpanded: boolean }) {
   const [expanded, setExpanded] = useState(defaultExpanded);

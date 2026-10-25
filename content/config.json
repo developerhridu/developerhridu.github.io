@@ -16,6 +16,11 @@
     "repeatEverySeconds": 30,
     "visibleForSeconds": 3
   },
+  "display": {
+    "highlightsPerJob": 1,
+    "tagsPerCard": 3,
+    "searchResults": 8
+  },
   "clientSpin": {
     "orbitLapSeconds": 40,
     "bandLoopSeconds": 28

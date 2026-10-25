@@ -13,6 +13,7 @@ import uiStrings from "@/content/ui-strings.json";
 import { getSectionCopy } from "@/lib/sections";
 import { isPublished } from "@/lib/published";
 import { trackClick } from "@/lib/analytics";
+import { TAGS_PER_CARD } from "@/lib/display";
 import type { Project } from "@/types";
 
 type ProjectItem = Project;
@@ -188,7 +189,7 @@ export default function Projects({ showHeading = true, showAll = false }: Projec
                       {project.description}
                     </p>
                     <div className="flex flex-wrap gap-1 mb-3">
-                      {project.tags.slice(0, 3).map((tag) => (
+                      {project.tags.slice(0, TAGS_PER_CARD).map((tag) => (
                         <span
                           key={tag}
                           className="font-mono px-2 py-0.5 bg-surface border border-border text-muted rounded text-xs uppercase tracking-wide"

@@ -9,6 +9,7 @@ import { searchIndex, type SearchItem } from "@/lib/searchIndex";
 import { dispatchAskAi } from "@/lib/askAiEvent";
 import { WORKER_URL } from "@/lib/workerUrl";
 import uiStrings from "@/content/ui-strings.json";
+import { SEARCH_RESULTS } from "@/lib/display";
 
 const t = uiStrings.searchPalette;
 
@@ -42,8 +43,8 @@ export default function SearchPalette({ open, onOpenChange }: SearchPaletteProps
   }
 
   const results: SearchItem[] = useMemo(() => {
-    if (!query.trim()) return searchIndex.slice(0, 8);
-    return fuse.search(query).slice(0, 8).map((r) => r.item);
+    if (!query.trim()) return searchIndex.slice(0, SEARCH_RESULTS);
+    return fuse.search(query).slice(0, SEARCH_RESULTS).map((r) => r.item);
   }, [query]);
 
   // Debounced, best-effort logging of what visitors search for (and whether it

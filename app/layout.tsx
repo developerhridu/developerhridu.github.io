@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import BackToTop from "@/components/ui/BackToTop";
 import AiChatWidget from "@/components/ui/AiChatWidget";
 import EditPageButton from "@/components/ui/EditPageButton";
+import ExtensionHydrationFilter from "@/components/dev/ExtensionHydrationFilter";
 import config from "@/content/config.json";
 import { getProfile } from "@/lib/content";
 import { getSeo } from "@/lib/seo";
@@ -96,6 +97,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
+        {process.env.NODE_ENV !== "production" && <ExtensionHydrationFilter />}
         <a href="#main-content" className="skip-to-content">
           Skip to content
         </a>

@@ -4,6 +4,7 @@ import GlassCard from "@/components/ui/GlassCard";
 import ThumbnailGallery from "@/components/ui/ThumbnailGallery";
 import { coverImages } from "@/lib/coverImages";
 import type { RelatedItem } from "@/lib/related";
+import { TAGS_PER_CARD } from "@/lib/display";
 
 const KINDS = {
   project: { label: "Project", basePath: "/projects", Icon: FolderKanban },
@@ -53,7 +54,7 @@ export default function RelatedGrid({ items }: { items: RelatedItem[] }) {
                   {item.description && <p className="text-muted text-sm mb-4 line-clamp-2">{item.description}</p>}
                   {item.tags && item.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {item.tags.slice(0, 3).map((tag) => (
+                      {item.tags.slice(0, TAGS_PER_CARD).map((tag) => (
                         <span
                           key={tag}
                           className="font-mono px-2 py-0.5 bg-accent/10 text-accent border border-accent/20 rounded text-xs uppercase tracking-wide"
