@@ -52,6 +52,29 @@ html {
   scroll-behavior: smooth;
 }
 
+/* No sideways scrolling on any screen. `clip` rather than `hidden` because `hidden`
+   makes the root a scroll container, which breaks `position: sticky` descendants.
+   Decorative overflow (hero orbit, marquee) is clipped; real wide content such as
+   tables and code blocks scrolls inside its own box instead. */
+html {
+  overflow-x: clip;
+}
+
+body {
+  overflow-x: clip;
+  /* A long URL or unbroken token must wrap rather than widen the page. */
+  overflow-wrap: break-word;
+}
+
+/* Article bodies carry pasted links and long identifiers. */
+.prose-content {
+  overflow-wrap: break-word;
+}
+
+.prose-content a {
+  word-break: break-word;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -103,25 +126,10 @@ html {
   mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 40%, transparent 90%);
 }
 
-/* Infinite horizontal scroll for the client-logo marquee in the hero */
-@keyframes marquee-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
+/* The client band's drift is driven by requestAnimationFrame in ClientMarquee.tsx so it can
+   also be dragged and flicked, so there is no CSS animation for it here. */
 
-.animate-marquee {
-  animation: marquee-scroll 28s linear infinite;
-}
-
-.animate-marquee:hover {
-  animation-play-state: paused;
-}
-
-/* Fades the marquee's edges so logos scroll in/out smoothly */
+/* Fades the client band's edges so logos scroll in/out smoothly */
 .marquee-fade {
   -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
   mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);

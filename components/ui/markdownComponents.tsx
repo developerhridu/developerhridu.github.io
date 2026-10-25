@@ -40,6 +40,15 @@ export const markdownComponents: Components = {
 
     return <ArticleCodeBlock code={code} language={language} />;
   },
+  table({ children }) {
+    // Wide tables scroll inside their own box instead of widening the whole page on mobile.
+    // The wrapper only scrolls; the table keeps its prose styling as a descendant.
+    return (
+      <div className="my-6 max-w-full overflow-x-auto">
+        <table>{children}</table>
+      </div>
+    );
+  },
   img({ src, alt, title }) {
     const url = typeof src === "string" ? src : undefined;
     return (

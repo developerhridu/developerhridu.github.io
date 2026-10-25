@@ -265,7 +265,8 @@ export default function Navbar() {
         <div className="px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
             {Logo}
-            <div className="flex items-center gap-3">
+            {/* Tight gaps and an icon-only Hire Me keep this row inside a 320px screen. */}
+            <div className="flex items-center gap-1.5 sm:gap-3">
               <button
                 onClick={() => setSearchOpen(true)}
                 aria-label={uiStrings.navbar.searchAriaLabel}
@@ -290,14 +291,15 @@ export default function Navbar() {
                 href={profile.social.upwork}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={uiStrings.navbar.hireMeLabel}
                 onClick={() => trackEvent("hire_me_click", { location: "navbar_mobile" })}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-accent-foreground text-sm transition-colors"
+                className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-accent-foreground text-sm transition-colors max-[380px]:w-9 max-[380px]:h-9 max-[380px]:px-0 max-[380px]:py-0"
               >
-                <Handshake size={16} />
-                {uiStrings.navbar.hireMeLabel}
+                <Handshake size={16} className="shrink-0" />
+                <span className="max-[380px]:hidden">{uiStrings.navbar.hireMeLabel}</span>
               </a>
               <button
-                className="text-foreground"
+                className="flex items-center justify-center w-9 h-9 rounded-lg text-foreground hover:bg-surface-hover transition-colors"
                 aria-label={isMobileMenuOpen ? uiStrings.navbar.closeMenuAriaLabel : uiStrings.navbar.openMenuAriaLabel}
                 aria-expanded={isMobileMenuOpen}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -309,40 +311,44 @@ export default function Navbar() {
 
           {isMobileMenuOpen && (
             <motion.div
-              className="py-4 border-t border-border"
+              // Capped height so a long menu stays reachable on short screens and in landscape.
+              className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain py-2 border-t border-border"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              {visibleNavLinks.map((link) =>
-                link.external ? (
+              {visibleNavLinks.map((link) => {
+                const Icon = iconRegistry[link.icon] ?? FileText;
+                const rowClass = "flex items-center gap-3 py-2.5 transition-colors";
+                return link.external ? (
                   <a
                     key={link.name}
                     href={resolveHref(link)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block py-2 text-muted hover:text-foreground transition-colors"
+                    className={`${rowClass} text-muted hover:text-foreground`}
                     onClick={() => {
                       if (link.name === "CV") trackEvent("resume_view", { location: "navbar_mobile" });
                       setIsMobileMenuOpen(false);
                     }}
                   >
+                    <Icon size={18} className="shrink-0" aria-hidden="true" />
                     {link.name}
                   </a>
                 ) : (
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`block py-2 transition-colors ${
-                      isLinkActive(link)
-                        ? "text-accent"
-                        : "text-muted hover:text-foreground"
+                    aria-current={isLinkActive(link) ? "page" : undefined}
+                    className={`${rowClass} ${
+                      isLinkActive(link) ? "text-accent" : "text-muted hover:text-foreground"
                     }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
+                    <Icon size={18} className="shrink-0" aria-hidden="true" />
                     {link.name}
                   </Link>
-                )
-              )}
+                );
+              })}
             </motion.div>
           )}
         </div>

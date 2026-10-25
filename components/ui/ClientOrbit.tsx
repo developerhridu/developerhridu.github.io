@@ -3,13 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
 import type { MouseEvent, PointerEvent, RefObject } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getPublishedClients } from "@/lib/clients";
 import type { Client } from "@/types";
 import { primaryCoverImage } from "@/lib/coverImages";
+import ClientPreviewCard, { CLIENT_PREVIEW_WIDTH } from "@/components/ui/ClientPreviewCard";
 
 const CLIENTS = getPublishedClients()
   .map((client) => ({ ...client, image: primaryCoverImage(client) }))
@@ -52,7 +52,7 @@ const REST_SPEED = 1 / LAP_SECONDS;
 
 /** Hover preview card: width (px), gap from its tile (px), and how long it lingers after
  *  the pointer leaves (ms) so you can move from the tile onto the card. */
-const PREVIEW_WIDTH = 240;
+const PREVIEW_WIDTH = CLIENT_PREVIEW_WIDTH;
 /** Hovered tile grows by this factor. */
 const HOVER_LIFT = 1.12;
 const PREVIEW_GAP = 14;
@@ -483,23 +483,7 @@ function ClientPreview({
         exit={{ opacity: 0, scale: 0.94 }}
         transition={{ duration: 0.16 }}
       >
-        <Link
-          href={`/clients/${client.slug}`}
-          className="group block rounded-2xl border border-border bg-surface/95 backdrop-blur-md p-3 shadow-xl"
-        >
-          <div className="relative h-24 w-full rounded-lg bg-white/90 mb-3">
-            <Image src={client.image} alt="" fill sizes={`${PREVIEW_WIDTH}px`} className="object-contain p-4" />
-          </div>
-          <p className="text-base font-semibold text-foreground text-center group-hover:text-accent transition-colors">
-            {client.name}
-          </p>
-          {client.description && (
-            <p className="mt-1 text-xs text-muted text-center line-clamp-2">{client.description}</p>
-          )}
-          <p className="mt-2 flex items-center justify-center gap-1 text-xs text-accent">
-            View client <ArrowRight size={12} aria-hidden="true" />
-          </p>
-        </Link>
+        <ClientPreviewCard client={client} />
       </motion.div>
     </div>
   );
