@@ -903,8 +903,9 @@ export default function Editor({ kind, token, onAuthError, initialSlug, initialN
                 <button
                   type="button"
                   onClick={() => void handleSave()}
-                  disabled={saving}
-                  className="px-4 py-2 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  disabled={saving || !dirty}
+                  title={!saving && !dirty ? "No changes to save" : undefined}
+                  className="px-4 py-2 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {saving ? "Saving…" : "Save"}
                 </button>

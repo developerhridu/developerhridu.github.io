@@ -244,8 +244,9 @@ export default function SiteConfigEditor({ token, onAuthError }: { token: string
 
       <button
         onClick={() => void handleSave()}
-        disabled={saving}
-        className="rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent-hover disabled:opacity-50"
+        disabled={saving || !dirty}
+        title={!saving && !dirty ? "No changes to save" : undefined}
+        className="rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
       >
         {saving ? "Saving…" : dirty ? "Save changes" : "Save"}
       </button>

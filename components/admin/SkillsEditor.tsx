@@ -121,8 +121,9 @@ export default function SkillsEditor({ token, onAuthError }: SkillsEditorProps) 
         <div className="pt-2">
           <button
             onClick={() => void handleSave()}
-            disabled={saving}
-            className="px-4 py-2.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+            disabled={saving || !dirty}
+            title={!saving && !dirty ? "No changes to save" : undefined}
+            className="px-4 py-2.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             {saving ? "Saving…" : dirty ? "Save changes" : "Save"}
           </button>

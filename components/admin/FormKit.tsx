@@ -159,7 +159,13 @@ export function CheckboxField({
   );
 }
 
-/** Sticky Save / Cancel bar shared by every entry form. */
+/**
+ * Sticky Save / Cancel bar shared by every entry form.
+ *
+ * Save is disabled until something actually changes: an enabled Save on an untouched form
+ * invites a pointless commit, and with the publish queue that means a staged change (and
+ * eventually a deploy) that contains nothing.
+ */
 export function FormActions({
   saving,
   dirty = true,
@@ -176,8 +182,9 @@ export function FormActions({
       <button
         type="button"
         onClick={onSave}
-        disabled={saving}
-        className="px-4 py-2.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+        disabled={saving || !dirty}
+        title={!saving && !dirty ? "No changes to save" : undefined}
+        className="px-4 py-2.5 bg-accent hover:bg-accent-hover text-accent-foreground rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
       >
         {saving ? "Saving…" : "Save"}
       </button>
