@@ -378,6 +378,16 @@ body {
   color: #aeb0b3;
 }
 
+/* Images in the admin Markdown editor's live preview open a full view on click, so show
+   the zoom cursor. A linked image keeps its link, and its pointer, instead. */
+.article-markdown-editor .wmde-markdown img {
+  cursor: zoom-in;
+}
+
+.article-markdown-editor .wmde-markdown a img {
+  cursor: pointer;
+}
+
 /* Honour the OS "reduce motion" setting for every CSS animation and
    transition on the site, including the client marquee and smooth scroll. */
 @media (prefers-reduced-motion: reduce) {
