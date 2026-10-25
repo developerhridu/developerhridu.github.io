@@ -1,14 +1,3 @@
 {
-  "tasks": [
-    {
-      "id": "adding-heatmaps-clarity-clarity-sign-up-free-at-clarity-microsoft-com-add-a-project-for-developerhridu-github-io-copy-the-project-id-into-clarityprojectid-in-content-config-json-click-counts-redeploy-the-worker-which-still-needs-the-cloudflare-account-that-owns-the-developerhridu-subdomain-the-account-i-logged-into-mizanurrahmanhridu-gmail-com-isn-t-it",
-      "text": "Adding Heatmaps (Clarity): Clarity: sign up free at clarity.microsoft.com, add a project for developerhridu.github.io, copy the project ID into clarityProjectId in content/config.json. Click counts: redeploy the worker, which still needs the Cloudflare account that owns the developerhridu subdomain — the account I logged into (mizanurrahmanhridu@gmail.com) isn't it.",
-      "done": false
-    },
-    {
-      "id": "mobile-site-responsiveness-fix-mobile-menu-icon-add",
-      "text": "Mobile site Responsiveness fix + Mobile menu Icon add",
-      "done": false
-    }
-  ]
+  "tasks": []
 }
