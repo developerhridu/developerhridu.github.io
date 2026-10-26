@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { Metadata } from "next";
 import { getPublishedBlogPosts } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
@@ -38,11 +37,7 @@ export default function BlogPage() {
             title={sectionCopy.title}
             subtitle={sectionCopy.subtitle}
           />
-
-          {/* ContentListing reads ?tag= with useSearchParams, which needs a boundary under static export. */}
-          <Suspense fallback={null}>
-            <ContentListing type="blog" items={items} emptyMessage={uiStrings.blogEmptyMessage} />
-          </Suspense>
+          <ContentListing type="blog" items={items} emptyMessage={uiStrings.blogEmptyMessage} />
         </div>
       </section>
     </div>

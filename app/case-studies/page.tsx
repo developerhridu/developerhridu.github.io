@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { Metadata } from "next";
 import { getPublishedCaseStudies } from "@/lib/content";
 import { estimateReadingTime } from "@/lib/readingTime";
@@ -39,15 +38,11 @@ export default function CaseStudiesPage() {
             title={sectionCopy.title}
             subtitle={sectionCopy.subtitle}
           />
-
-          {/* ContentListing reads ?tag= with useSearchParams, which needs a boundary under static export. */}
-          <Suspense fallback={null}>
-            <ContentListing
+          <ContentListing
               type="case-study"
               items={items}
               emptyMessage={uiStrings.caseStudiesEmptyMessage}
             />
-          </Suspense>
         </div>
       </section>
     </div>

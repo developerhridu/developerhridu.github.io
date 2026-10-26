@@ -1,14 +1,49 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TrendingUp } from "lucide-react";
 import ContentCard, { type ContentCardItem } from "@/components/ui/ContentCard";
 import { WORKER_URL } from "@/lib/workerUrl";
 import uiStrings from "@/content/ui-strings.json";
 
 export type ContentListingItem = ContentCardItem;
+
+/**
+ * The selected tag lives in the URL, read as external state rather than through
+ * useSearchParams().
+ *
+ * useSearchParams() opts a component out of prerendering: under `output: export` its
+ * Suspense boundary renders the fallback at build time, which left /blog and
+ * /case-studies with no article links in the static HTML at all — invisible to any crawler
+ * that doesn't run JavaScript, and blank until hydration. Reading location directly keeps
+ * the whole grid server-rendered, and useSyncExternalStore is the right primitive for it:
+ * the URL is external state that changes outside React.
+ */
+const TAG_CHANGED_EVENT = "portfolio:tag-filter";
+
+function subscribeToTag(onChange: () => void) {
+  window.addEventListener(TAG_CHANGED_EVENT, onChange);
+  // Also covers the back/forward buttons.
+  window.addEventListener("popstate", onChange);
+  return () => {
+    window.removeEventListener(TAG_CHANGED_EVENT, onChange);
+    window.removeEventListener("popstate", onChange);
+  };
+}
+
+function readTag(): string {
+  try {
+    return new URLSearchParams(window.location.search).get("tag") ?? "";
+  } catch {
+    return "";
+  }
+}
+
+/** No URL on the server, so the prerendered page shows everything — which is what a crawler should see. */
+function readTagOnServer(): string {
+  return "";
+}
 
 interface ContentListingProps {
   type: "blog" | "case-study";
@@ -18,28 +53,26 @@ interface ContentListingProps {
 
 export default function ContentListing({ type, items, emptyMessage }: ContentListingProps) {
   const [popular, setPopular] = useState<{ slug: string; count: number }[]>([]);
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const urlTag = useSyncExternalStore(subscribeToTag, readTag, readTagOnServer);
 
   const viewPath = type === "blog" ? "/blog" : "/case-studies";
   const tags = useMemo(() => Array.from(new Set(items.flatMap((i) => i.tags))).sort(), [items]);
 
-  /**
-   * The selected tag lives in the URL (?tag=…) rather than in component state, so a
-   * filtered view can be linked, shared and reached with the back button. Unknown values
-   * fall back to showing everything.
-   */
-  const tagParam = searchParams.get("tag");
-  const selectedTag = tagParam && tags.includes(tagParam) ? tagParam : null;
+  // An unknown tag in a shared link falls back to showing everything.
+  const selectedTag = urlTag && tags.includes(urlTag) ? urlTag : null;
 
   function selectTag(tag: string | null) {
-    const params = new URLSearchParams(searchParams.toString());
-    if (tag) params.set("tag", tag);
-    else params.delete("tag");
-    const query = params.toString();
-    // scroll: false keeps the page where it is; this only swaps the filter.
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    try {
+      const url = new URL(window.location.href);
+      if (tag) url.searchParams.set("tag", tag);
+      else url.searchParams.delete("tag");
+      // replaceState, not router.replace: the filter is a view of this page, not a new
+      // one, and this avoids re-running the route.
+      window.history.replaceState(null, "", url);
+      window.dispatchEvent(new Event(TAG_CHANGED_EVENT));
+    } catch {
+      // A failed URL update must not stop the filter working.
+    }
   }
 
   const filtered = selectedTag ? items.filter((i) => i.tags.includes(selectedTag)) : items;
