@@ -50,7 +50,10 @@ export default function ViewCounter({ type, slug }: ViewCounterProps) {
 
     async function run() {
       try {
-        const res = alreadyViewed
+        // Only count a view from the deployed site: running `next dev` points at the
+        // production Worker, so local browsing used to inflate the real counts.
+        const countThisView = !alreadyViewed && process.env.NODE_ENV === "production";
+        const res = !countThisView
           ? await fetch(`${WORKER_URL}/views?${query}`)
           : await fetch(`${WORKER_URL}/views`, {
               method: "POST",
@@ -60,7 +63,9 @@ export default function ViewCounter({ type, slug }: ViewCounterProps) {
         if (!res.ok) return;
         const data = (await res.json()) as { count?: number };
         if (typeof data.count === "number") setCount(data.count);
-        if (!alreadyViewed) localStorage.setItem(storageKey, "1");
+        // Mark as counted only if it really was, so a dev visit doesn't suppress the
+        // first real count from this browser later.
+        if (countThisView) localStorage.setItem(storageKey, "1");
       } catch {
         // Fail silently — a view counter should never break the page.
       }

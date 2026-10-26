@@ -8,7 +8,7 @@ import ClientOrbit from "@/components/ui/ClientOrbit";
 import profile from "@/content/profile.json";
 import uiStrings from "@/content/ui-strings.json";
 import { getPublishedClients } from "@/lib/clients";
-import { trackEvent } from "@/lib/analytics";
+import { trackConversion } from "@/lib/analytics";
 
 const publishedClientCount = getPublishedClients().length;
 
@@ -72,7 +72,7 @@ export default function Hero() {
                 target="_blank"
                 rel="noopener noreferrer"
                 variant="secondary"
-                onClick={() => trackEvent("booking_click", { location: "hero" })}
+                onClick={() => trackConversion("booking", "booking_click", "hero")}
               >
                 <CalendarDays size={18} />
                 {uiStrings.hero.ctaBookCall}

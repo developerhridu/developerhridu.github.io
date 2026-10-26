@@ -5,7 +5,7 @@ import { CalendarDays, Code2, Github, Handshake, Linkedin, Mail } from "lucide-r
 import profile from "@/content/profile.json";
 import menu from "@/content/menu.json";
 import uiStrings from "@/content/ui-strings.json";
-import { trackEvent } from "@/lib/analytics";
+import { trackClick, trackConversion } from "@/lib/analytics";
 import { resolveCvHref } from "@/lib/cv";
 import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
@@ -43,7 +43,7 @@ export default function Footer() {
                 href={resolveCvHref(link)}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => link.name === "CV" && trackEvent("resume_view", { location: "footer" })}
+                onClick={() => link.name === "CV" && trackConversion("resume", "resume_view", "footer")}
                 className={linkClass}
               >
                 {link.name}
@@ -66,6 +66,7 @@ export default function Footer() {
               key={label}
               href={href}
               {...(href.startsWith("mailto:") ? {} : { target: "_blank", rel: "noopener noreferrer" })}
+              onClick={() => trackClick("social", label.toLowerCase())}
               aria-label={label === "Email" ? `Email ${profile.name}` : `${profile.name} on ${label}`}
               title={label}
               // 40px target: these used to be bare 20px glyphs, awkward to hit on a phone.
@@ -80,7 +81,7 @@ export default function Footer() {
               href={profile.bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => trackEvent("booking_click", { location: "footer" })}
+              onClick={() => trackConversion("booking", "booking_click", "footer")}
               className="ml-2 inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-sm text-muted transition-colors hover:border-accent/40 hover:text-foreground"
             >
               <CalendarDays size={16} aria-hidden="true" />
@@ -92,7 +93,7 @@ export default function Footer() {
             href={profile.social.upwork}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => trackEvent("hire_me_click", { location: "footer" })}
+            onClick={() => trackConversion("hire-me", "hire_me_click", "footer")}
             className="ml-2 inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent-hover"
           >
             <Handshake size={16} aria-hidden="true" />

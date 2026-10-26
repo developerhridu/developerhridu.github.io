@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TrendingUp, MessageSquareText, MousePointerClick, Quote as QuoteIcon, RefreshCw, ExternalLink, SearchX } from "lucide-react";
+import { TrendingUp, MessageSquareText, MousePointerClick, Quote as QuoteIcon, RefreshCw, ExternalLink, SearchX, BookOpenCheck, Route, Radar } from "lucide-react";
 import { fetchContentFile, GitHubApiError } from "@/lib/github";
 import { WORKER_URL } from "@/lib/workerUrl";
 import ContentHealth from "@/components/admin/ContentHealth";
@@ -39,11 +39,69 @@ interface ClickItem {
   count: number;
 }
 
+interface LeadEntry {
+  kind: "contact" | "testimonial";
+  journey: string[];
+  referrer: string;
+  campaign: string;
+  visit: number;
+  minutes: number;
+  timestamp: string;
+}
+
 interface SearchEntry {
   query: string;
   resultCount: number;
   timestamp: string;
 }
+
+interface Signal {
+  name: string;
+  label: string;
+  count: number;
+}
+
+/** Signals of one name, biggest first. */
+function ofName(signals: Signal[], name: string): Signal[] {
+  return signals.filter((signal) => signal.name === name).sort((a, b) => b.count - a.count);
+}
+
+/**
+ * Read-through per article: of the readers who got a quarter of the way in, how many
+ * reached the end. A low rate is the clearest sign a piece loses people early — a plain
+ * view count cannot distinguish that from a thorough read.
+ */
+function readThrough(signals: Signal[]) {
+  const finished = new Map(ofName(signals, "scroll-100").map((signal) => [signal.label, signal.count]));
+  return ofName(signals, "scroll-25")
+    .map((signal) => {
+      const finish = finished.get(signal.label) ?? 0;
+      return {
+        label: signal.label,
+        start: signal.count,
+        finish,
+        rate: signal.count > 0 ? Math.round((finish / signal.count) * 100) : 0,
+      };
+    })
+    .sort((a, b) => b.start - a.start);
+}
+
+/** "12 started, 5 left without sending (42% abandoned)", or null when nobody has started. */
+function formFunnel(signals: Signal[]): string | null {
+  const total = (name: string) => ofName(signals, name).reduce((sum, signal) => sum + signal.count, 0);
+  const starts = total("form-start");
+  if (starts === 0) return null;
+  const abandons = total("form-abandon");
+  const share = Math.round((abandons / starts) * 100);
+  return `${starts} started, ${abandons} left without sending (${share}% abandoned)`;
+}
+
+const SIGNAL_PANELS = [
+  { name: "referrer", title: "Where visitors come from" },
+  { name: "campaign", title: "Tagged links (utm_source)" },
+  { name: "section-view", title: "Home sections reached" },
+  { name: "visit", title: "Visit number" },
+];
 
 export default function Dashboard({ token, onAuthError, onOpen }: DashboardProps) {
   const [totalViews, setTotalViews] = useState<number | null>(null);
@@ -56,6 +114,10 @@ export default function Dashboard({ token, onAuthError, onOpen }: DashboardProps
   const [questionCount, setQuestionCount] = useState<number | null>(null);
   /** Searches that returned nothing — the clearest signal of missing content. */
   const [emptySearches, setEmptySearches] = useState<{ query: string; times: number; last: string }[]>([]);
+  /** Raw signal counters: scroll depth, section views, referrers, form starts. */
+  const [signals, setSignals] = useState<{ name: string; label: string; count: number }[]>([]);
+  /** One record per enquiry: what they read before getting in touch. */
+  const [leads, setLeads] = useState<LeadEntry[]>([]);
   const [loading, setLoading] = useState(false);
   /** "blog:my-slug" → entry title, so Most Read shows names rather than raw slugs. */
   const [titles, setTitles] = useState<Map<string, string>>(new Map());
@@ -67,7 +129,16 @@ export default function Dashboard({ token, onAuthError, onOpen }: DashboardProps
 
   async function loadAll() {
     setLoading(true);
-    await Promise.all([loadViews(), loadTestimonials(), loadChatLogs(), loadClicks(), loadSearches(), loadTitles()]);
+    await Promise.all([
+      loadViews(),
+      loadTestimonials(),
+      loadChatLogs(),
+      loadClicks(),
+      loadSearches(),
+      loadTitles(),
+      loadSignals(),
+      loadLeads(),
+    ]);
     setLoading(false);
   }
 
@@ -81,6 +152,32 @@ export default function Dashboard({ token, onAuthError, onOpen }: DashboardProps
       setTotalViews(data.total ?? 0);
     } catch {
       // Views are a nice-to-have on the dashboard — don't block the rest.
+    }
+  }
+
+  async function loadSignals() {
+    if (!WORKER_URL) return;
+    try {
+      const res = await fetch(`${WORKER_URL}/signals/top?limit=100`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      const data = (await res.json()) as { items?: { name: string; label: string; count: number }[] };
+      setSignals(data.items ?? []);
+    } catch {
+      // Behaviour signals are extra context — never block the rest of the dashboard.
+    }
+  }
+
+  async function loadLeads() {
+    if (!WORKER_URL) return;
+    try {
+      const res = await fetch(`${WORKER_URL}/leads`, { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) return;
+      const data = (await res.json()) as { entries?: LeadEntry[] };
+      setLeads(data.entries ?? []);
+    } catch {
+      // Same: optional context.
     }
   }
 
@@ -266,6 +363,90 @@ export default function Dashboard({ token, onAuthError, onOpen }: DashboardProps
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {leads.length > 0 && (
+        <div className="mb-8">
+          <p className="mb-1 flex items-center gap-2 text-sm font-semibold text-foreground">
+            <Route size={15} className="text-accent" /> What they read before getting in touch
+          </p>
+          <p className="mb-3 text-xs text-muted">
+            The path through the site for each enquiry — the one thing a counter can&apos;t tell you.
+          </p>
+          <div className="divide-y divide-border rounded-lg border border-border">
+            {leads.slice(0, 8).map((lead) => (
+              <div key={lead.timestamp} className="px-4 py-3 text-sm">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+                  <span className="rounded bg-surface-hover px-1.5 py-0.5 font-medium text-foreground">{lead.kind}</span>
+                  <span>{new Date(lead.timestamp).toLocaleString()}</span>
+                  <span>via {lead.campaign || lead.referrer}</span>
+                  <span>visit #{lead.visit}</span>
+                  {lead.minutes > 0 && <span>{lead.minutes} min on site</span>}
+                </div>
+                <p className="mt-1.5 break-words font-mono text-xs text-foreground">
+                  {lead.journey.length > 0 ? lead.journey.join("  →  ") : "(no pages recorded)"}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {readThrough(signals).length > 0 && (
+        <div className="mb-8">
+          <p className="mb-1 flex items-center gap-2 text-sm font-semibold text-foreground">
+            <BookOpenCheck size={15} className="text-accent" /> Read-through
+          </p>
+          <p className="mb-3 text-xs text-muted">
+            Of the readers who got a quarter of the way in, how many reached the end.
+          </p>
+          <div className="divide-y divide-border rounded-lg border border-border">
+            {readThrough(signals)
+              .slice(0, 8)
+              .map((row) => (
+                <div key={row.label} className="flex items-center justify-between gap-4 px-4 py-3 text-sm">
+                  <span className="min-w-0 truncate text-foreground">{row.label}</span>
+                  <span className="shrink-0 text-muted">
+                    {row.rate}% finished{" "}
+                    <span className="text-xs">
+                      ({row.finish}/{row.start})
+                    </span>
+                  </span>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {signals.length > 0 && (
+        <div className="mb-8 grid gap-4 md:grid-cols-2">
+          {SIGNAL_PANELS.map((panel) => {
+            const rows = ofName(signals, panel.name);
+            if (rows.length === 0) return null;
+            return (
+              <div key={panel.name}>
+                <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <Radar size={14} className="text-accent" /> {panel.title}
+                </p>
+                <div className="divide-y divide-border rounded-lg border border-border">
+                  {rows.slice(0, 6).map((row) => (
+                    <div key={row.label} className="flex items-center justify-between px-4 py-2.5 text-sm">
+                      <span className="min-w-0 truncate text-foreground">{row.label}</span>
+                      <span className="ml-4 shrink-0 text-muted">{row.count.toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {formFunnel(signals) && (
+        <div className="mb-8 rounded-lg border border-border px-4 py-3 text-sm">
+          <span className="font-semibold text-foreground">Contact form:</span>{" "}
+          <span className="text-muted">{formFunnel(signals)}</span>
         </div>
       )}
 

@@ -27,7 +27,8 @@ export default function ReactionButton({ type, slug }: ReactionButtonProps) {
   }, [type, slug, storageKey]);
 
   async function toggle() {
-    if (!WORKER_URL || loading) return;
+    // Local dev points at the production Worker; don't let it move the real totals.
+    if (!WORKER_URL || loading || process.env.NODE_ENV !== "production") return;
     setLoading(true);
     const nextReacted = !reacted;
     try {

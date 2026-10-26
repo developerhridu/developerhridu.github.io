@@ -9,6 +9,7 @@ import EducationCertifications from "@/components/sections/EducationCertificatio
 import Testimonials from "@/components/sections/Testimonials";
 import Contact from "@/components/sections/Contact";
 import menu from "@/content/menu.json";
+import SectionViews from "@/components/analytics/SectionViews";
 
 function isPublished(id: string): boolean {
   return menu.navLinks.find((link) => link.id === id)?.published !== false;
@@ -17,6 +18,8 @@ function isPublished(id: string): boolean {
 export default function Home() {
   return (
     <>
+      {/* Reports which sections are actually reached, to sanity-check their order. */}
+      <SectionViews />
       <Hero />
       {isPublished("about") && <About showTechStack={false} />}
       {isPublished("services") && <Services />}

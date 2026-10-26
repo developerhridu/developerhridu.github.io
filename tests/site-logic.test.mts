@@ -182,3 +182,66 @@ test("getPublishedTestimonials drops unpublished entries, which carry unreviewed
     assert.ok(!published.some((shown) => shown.id === entry.id), `"${entry.name}" should not be published`);
   }
 });
+
+// --- visitor session: the logic behind the behaviour signals ---------------------------
+
+test("visitBucket groups visit numbers instead of keeping an exact count", async () => {
+  const { visitBucket } = await import("@/lib/visitorSession");
+  assert.equal(visitBucket(0), "1", "a missing count is treated as a first visit");
+  assert.equal(visitBucket(1), "1");
+  assert.equal(visitBucket(2), "2");
+  assert.equal(visitBucket(3), "3-5");
+  assert.equal(visitBucket(5), "3-5");
+  assert.equal(visitBucket(6), "6+");
+  assert.equal(visitBucket(500), "6+");
+});
+
+test("visitorSession helpers survive storage being unavailable", async () => {
+  // No window/sessionStorage under the test runner, which is the same situation as a
+  // private window with site data blocked: every helper must no-op, never throw.
+  const session = await import("@/lib/visitorSession");
+  assert.doesNotThrow(() => session.recordPageView("/blog"));
+  assert.doesNotThrow(() => session.oncePerSession("anything"));
+  assert.doesNotThrow(() => session.withinSignalBudget());
+});
+
+/** Names from a `export type X = | "a" | "b";` union, including the last one. */
+function unionMembers(source: string, declaration: string): string[] {
+  const from = source.indexOf(declaration);
+  assert.ok(from >= 0, `declaration not found: ${declaration}`);
+  const block = source.slice(from, source.indexOf(";", from));
+  return [...block.matchAll(/"([a-z0-9-]+)"/g)].map((match) => match[1]);
+}
+
+/** Names from a `const X = [ "a", "b" ] as const;` array. */
+function arrayMembers(source: string, declaration: string): string[] {
+  const from = source.indexOf(declaration);
+  assert.ok(from >= 0, `declaration not found: ${declaration}`);
+  const block = source.slice(from, source.indexOf("] as const", from));
+  return [...block.matchAll(/"([a-z0-9-]+)"/g)].map((match) => match[1]);
+}
+
+test("every signal the client can send is one the Worker accepts", () => {
+  // The two lists are in different projects and cannot import each other, so this is the
+  // only thing stopping a client signal from being silently rejected with a 400.
+  const clientSignals = unionMembers(
+    readFileSync(path.join(root, "lib/analytics.ts"), "utf8"),
+    "export type SignalName ="
+  );
+  const workerSignals = arrayMembers(readFileSync(path.join(root, "worker/src/index.ts"), "utf8"), "const SIGNAL_NAMES");
+
+  assert.equal(clientSignals.length, 11, "expected the full client signal union");
+  assert.ok(workerSignals.includes("visit"), "the last union member must be extracted too");
+  for (const name of clientSignals) {
+    assert.ok(workerSignals.includes(name), `client sends "${name}" but the Worker rejects it`);
+  }
+});
+
+test("every click area the client sends is one the Worker accepts", () => {
+  const clientAreas = unionMembers(readFileSync(path.join(root, "lib/analytics.ts"), "utf8"), "export type ClickArea =");
+  const workerAreas = arrayMembers(readFileSync(path.join(root, "worker/src/index.ts"), "utf8"), "const CLICK_AREAS");
+  assert.equal(clientAreas.length, 12, "expected the full client click-area union");
+  for (const area of clientAreas) {
+    assert.ok(workerAreas.includes(area), `client sends click area "${area}" but the Worker rejects it`);
+  }
+});

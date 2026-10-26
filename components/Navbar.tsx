@@ -29,7 +29,7 @@ import Image from "next/image";
 import menu from "@/content/menu.json";
 import profile from "@/content/profile.json";
 import uiStrings from "@/content/ui-strings.json";
-import { trackEvent } from "@/lib/analytics";
+import { trackConversion } from "@/lib/analytics";
 import { resolveCvHref } from "@/lib/cv";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import SearchPalette from "@/components/ui/SearchPalette";
@@ -199,7 +199,7 @@ export default function Navbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={link.name}
-                onClick={() => link.name === "CV" && trackEvent("resume_view", { location: "navbar_desktop" })}
+                onClick={() => link.name === "CV" && trackConversion("resume", "resume_view", "navbar_desktop")}
                 className="group relative flex items-center justify-center w-11 h-11 rounded-lg text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
               >
                 <Icon size={20} />
@@ -242,7 +242,7 @@ export default function Navbar() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={uiStrings.navbar.hireMeLabel}
-          onClick={() => trackEvent("hire_me_click", { location: "navbar_desktop" })}
+          onClick={() => trackConversion("hire-me", "hire_me_click", "navbar_desktop")}
           className="group relative flex items-center justify-center w-11 h-11 rounded-lg bg-accent hover:bg-accent-hover text-accent-foreground transition-colors"
         >
           <Handshake size={20} />
@@ -257,7 +257,7 @@ export default function Navbar() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={uiStrings.navbar.bookCallLabel}
-            onClick={() => trackEvent("booking_click", { location: "navbar_desktop" })}
+            onClick={() => trackConversion("booking", "booking_click", "navbar_desktop")}
             className="group relative flex items-center justify-center w-11 h-11 mt-2 rounded-lg bg-surface border border-border text-muted hover:text-foreground hover:border-accent/40 transition-colors"
           >
             <CalendarDays size={20} />
@@ -295,7 +295,7 @@ export default function Navbar() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={uiStrings.navbar.bookCallLabel}
-                  onClick={() => trackEvent("booking_click", { location: "navbar_mobile" })}
+                  onClick={() => trackConversion("booking", "booking_click", "navbar_mobile")}
                   className="flex items-center justify-center w-9 h-9 rounded-lg bg-surface border border-border text-muted hover:text-foreground hover:border-accent/40 transition-colors"
                 >
                   <CalendarDays size={18} />
@@ -306,7 +306,7 @@ export default function Navbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={uiStrings.navbar.hireMeLabel}
-                onClick={() => trackEvent("hire_me_click", { location: "navbar_mobile" })}
+                onClick={() => trackConversion("hire-me", "hire_me_click", "navbar_mobile")}
                 className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent hover:bg-accent-hover text-accent-foreground text-sm transition-colors max-[380px]:w-9 max-[380px]:h-9 max-[380px]:px-0 max-[380px]:py-0"
               >
                 <Handshake size={16} className="shrink-0" />
@@ -341,7 +341,7 @@ export default function Navbar() {
                     rel="noopener noreferrer"
                     className={`${rowClass} text-muted hover:text-foreground`}
                     onClick={() => {
-                      if (link.name === "CV") trackEvent("resume_view", { location: "navbar_mobile" });
+                      if (link.name === "CV") trackConversion("resume", "resume_view", "navbar_mobile");
                       setIsMobileMenuOpen(false);
                     }}
                   >

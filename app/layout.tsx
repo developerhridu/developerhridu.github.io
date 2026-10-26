@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import BackToTop from "@/components/ui/BackToTop";
 import AiChatWidget from "@/components/ui/AiChatWidget";
 import EditPageButton from "@/components/ui/EditPageButton";
+import BehaviorTracking from "@/components/analytics/BehaviorTracking";
 import ExtensionHydrationFilter from "@/components/dev/ExtensionHydrationFilter";
 import config from "@/content/config.json";
 import { getProfile } from "@/lib/content";
@@ -113,6 +114,8 @@ export default function RootLayout({
         <AiChatWidget />
         {process.env.NODE_ENV === "production" && (
           <>
+            {/* Acquisition, journey, return visits and contact-detail copies. */}
+            <BehaviorTracking />
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
               strategy="afterInteractive"

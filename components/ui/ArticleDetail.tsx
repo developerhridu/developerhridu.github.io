@@ -17,6 +17,7 @@ import RelatedGrid from "@/components/ui/RelatedGrid";
 import type { RelatedItem } from "@/lib/related";
 import Comments from "@/components/ui/Comments";
 import EditArticleButton from "@/components/ui/EditArticleButton";
+import ReadDepth from "@/components/analytics/ReadDepth";
 import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
@@ -135,6 +136,8 @@ export default function ArticleDetail({ kind, entry, url, jsonLd, related, previ
           }}
         />
       )}
+      {/* How far readers actually get. Skipped in the admin preview, which is you. */}
+      {!preview && <ReadDepth slug={`${kind}/${entry.slug}`} />}
       {!preview && jsonLd && <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

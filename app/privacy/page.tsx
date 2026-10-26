@@ -45,6 +45,13 @@ export default function PrivacyPage() {
               browser&apos;s own storage. They never leave your device and are not readable by
               anyone else.
             </p>
+            <p>
+              The same storage also holds the list of pages you have opened during this
+              visit, the site that linked you here, and how many times you have visited
+              before. The page list stays on your device and is only ever sent if you
+              choose to submit the contact form or a testimonial — so that I can see what
+              someone had read before getting in touch. Closing the tab discards it.
+            </p>
           </Section>
 
           {(analyticsEnabled || clarityEnabled) && (
@@ -76,6 +83,16 @@ export default function PrivacyPage() {
                 A small Cloudflare Worker keeps per-page view counts, reaction totals and
                 counts of which areas get clicked. These are aggregate numbers, not tied to
                 you.
+              </p>
+              <p>
+                It also counts, in the same aggregate way: how far down an article readers
+                scroll (a quarter, half, three quarters, all of it), which sections of the
+                home page come into view, which site referred you, whether a shared link was
+                tagged with a campaign name, whether someone copied my email or phone
+                number, whether the contact form was started but not sent, and whether a
+                visit is a first or a repeat one. Each of these is a number against a label
+                like a page name — none of them records who you are, and none of them
+                records anything you typed.
               </p>
               <p>
                 Search terms typed into the site search, and questions asked of the AI

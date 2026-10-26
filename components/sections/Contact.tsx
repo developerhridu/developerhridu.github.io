@@ -11,7 +11,8 @@ import profile from "@/content/profile.json";
 import config from "@/content/config.json";
 import uiStrings from "@/content/ui-strings.json";
 import { getSectionCopy } from "@/lib/sections";
-import { trackEvent } from "@/lib/analytics";
+import { trackEvent, trackLead, trackSignal, trackConversion } from "@/lib/analytics";
+import { getVisitorSession, oncePerSession, withinSignalBudget } from "@/lib/visitorSession";
 import { PAGE_CONTAINER } from "@/components/ui/PageContainer";
 
 const t = uiStrings.contact;
@@ -55,9 +56,31 @@ export default function Contact({ showHeading = true, headingAs = "h2" }: Contac
   /** Hidden honeypot — people never see it, form-filling bots usually do. */
   const [botcheck, setBotcheck] = useState("");
   const shownAt = useRef(0);
+  /** Set once the visitor types into the form; drives the abandonment signal below. */
+  const started = useRef(false);
+  const submitted = useRef(false);
 
   useEffect(() => {
     shownAt.current = Date.now();
+  }, []);
+
+  /**
+   * Someone who fills part of the form and leaves is a lost enquiry, and nothing else on
+   * the site would ever notice. Reported on the way out, when it is known for certain
+   * that no submit followed.
+   */
+  useEffect(() => {
+    function report() {
+      if (!started.current || submitted.current) return;
+      started.current = false;
+      if (oncePerSession("form-abandon") && withinSignalBudget()) trackSignal("form-abandon", "contact");
+    }
+    window.addEventListener("pagehide", report);
+    return () => {
+      window.removeEventListener("pagehide", report);
+      // Also covers navigating away inside the app, where pagehide never fires.
+      report();
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -98,9 +121,20 @@ export default function Contact({ showHeading = true, headingAs = "h2" }: Contac
 
       if (result.success) {
         rememberSent();
+        submitted.current = true;
         setFormStatus("success");
         setFormData({ name: "", email: "", message: "" });
         trackEvent("contact_form_submit", { status: "success" });
+        // The one moment worth keeping the whole path for: what did they read first?
+        const session = getVisitorSession();
+        trackLead({
+          kind: "contact",
+          journey: session.journey,
+          referrer: session.referrer,
+          campaign: session.campaign,
+          visit: session.visit,
+          minutes: session.minutes,
+        });
       } else {
         setFormStatus("error");
         trackEvent("contact_form_submit", { status: "error" });
@@ -112,6 +146,10 @@ export default function Contact({ showHeading = true, headingAs = "h2" }: Contac
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (!started.current) {
+      started.current = true;
+      if (oncePerSession("form-start") && withinSignalBudget()) trackSignal("form-start", "contact");
+    }
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -181,7 +219,7 @@ export default function Contact({ showHeading = true, headingAs = "h2" }: Contac
                     target="_blank"
                     rel="noopener noreferrer"
                     variant="primary"
-                    onClick={() => trackEvent("booking_click", { location: "contact" })}
+                    onClick={() => trackConversion("booking", "booking_click", "contact")}
                   >
                     <CalendarDays size={18} />
                     {t.bookCallLabel}

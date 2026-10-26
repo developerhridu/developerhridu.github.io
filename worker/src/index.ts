@@ -397,6 +397,155 @@ async function handleClicks(request: Request, env: Env): Promise<Response> {
 }
 
 /** Ranked click counts for the admin dashboard's "Most clicked" panel. */
+/**
+ * Behaviour signals, counted the same way clicks are.
+ *
+ * Separate from /clicks because these are not clicks: they answer "did anyone read this",
+ * "where did they come from", "did they start the contact form and give up". The name is
+ * allowlisted and the label is cleaned and truncated, so a visitor cannot invent keys.
+ */
+const SIGNAL_NAMES = [
+  // "did they read it": 25/50/75/100 reached, labelled with the article slug.
+  "scroll-25",
+  "scroll-50",
+  "scroll-75",
+  "scroll-100",
+  // Home page sections that actually came into view, labelled with the section id.
+  "section-view",
+  // Acquisition, labelled with the referrer host or the utm_source.
+  "referrer",
+  "campaign",
+  // Intent that produces no click.
+  "copy-contact",
+  // Contact form started but never submitted.
+  "form-abandon",
+  "form-start",
+  // Visit number bucket for this browser: 1, 2, 3-5, 6+.
+  "visit",
+] as const;
+
+function isSignalName(value: unknown): value is (typeof SIGNAL_NAMES)[number] {
+  return typeof value === "string" && (SIGNAL_NAMES as readonly string[]).includes(value);
+}
+
+async function handleSignals(request: Request, env: Env): Promise<Response> {
+  const headers = { "Content-Type": "application/json", ...corsHeaders(request) };
+  if (!env.VIEWS) {
+    return new Response(JSON.stringify({ error: "Signal counting is not configured for this Worker" }), { status: 501, headers });
+  }
+
+  let name: unknown;
+  let label = "";
+  try {
+    const body = await request.json<{ name?: unknown; label?: unknown }>();
+    name = body.name;
+    label = cleanLabel(body.label);
+  } catch {
+    // Malformed body falls through to the validation error below.
+  }
+
+  if (!isSignalName(name) || !label) {
+    return new Response(JSON.stringify({ error: "name must be a known signal, and label is required" }), { status: 400, headers });
+  }
+
+  const key = `signal:${name}:${label}`;
+  const count = (Number((await env.VIEWS.get(key)) ?? "0") || 0) + 1;
+  await env.VIEWS.put(key, String(count));
+
+  return new Response(JSON.stringify({ ok: true }), { headers });
+}
+
+/** Admin-only: signal totals for the dashboard. Unlike /clicks/top this is not public. */
+async function handleSignalsTop(request: Request, env: Env): Promise<Response> {
+  const headers = { "Content-Type": "application/json", ...corsHeaders(request) };
+  if (!env.VIEWS) {
+    return new Response(JSON.stringify({ error: "Signal counting is not configured for this Worker" }), { status: 501, headers });
+  }
+  if (!(await isAuthorizedAdmin(request, env))) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+  }
+
+  const url = new URL(request.url);
+  const nameParam = url.searchParams.get("name");
+  const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 20, 1), 100);
+  const prefix = isSignalName(nameParam) ? `signal:${nameParam}:` : "signal:";
+
+  const list = await env.VIEWS.list({ prefix });
+  const items = await Promise.all(
+    list.keys.map(async (k) => {
+      const value = await env.VIEWS!.get(k.name);
+      const [, signal, ...labelParts] = k.name.split(":");
+      return { name: signal, label: labelParts.join(":"), count: Number(value) || 0 };
+    })
+  );
+
+  return new Response(
+    JSON.stringify({
+      items: [...items].sort((a, b) => b.count - a.count).slice(0, limit),
+      total: items.reduce((sum, i) => sum + i.count, 0),
+    }),
+    { headers }
+  );
+}
+
+/**
+ * One record per enquiry: the pages the visitor read before contacting, where they came
+ * from and how many times they had visited. This is the question a portfolio owner
+ * actually has — "what did they look at before they got in touch?" — and no counter can
+ * answer it, because it is a sequence.
+ *
+ * Written only when someone submits the contact form or a testimonial, so the volume is
+ * tiny. Kept 90 days like the other logs, and admin-only to read.
+ */
+async function handleLeads(request: Request, env: Env): Promise<Response> {
+  const headers = { "Content-Type": "application/json", ...corsHeaders(request) };
+  if (!env.CHAT_LOG) {
+    return new Response(JSON.stringify({ error: "Lead logging is not configured for this Worker" }), { status: 501, headers });
+  }
+
+  if (request.method === "GET") {
+    if (!(await isAuthorizedAdmin(request, env))) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+    }
+    return new Response(JSON.stringify({ entries: await listLogEntries(env, "lead:") }), { headers });
+  }
+
+  try {
+    const body = await request.json<{
+      kind?: unknown;
+      journey?: unknown;
+      referrer?: unknown;
+      campaign?: unknown;
+      visit?: unknown;
+      minutes?: unknown;
+    }>();
+    const kind = body.kind === "testimonial" ? "testimonial" : "contact";
+    // Paths only — never query strings, which could carry anything.
+    const journey = Array.isArray(body.journey)
+      ? body.journey
+          .filter((entry): entry is string => typeof entry === "string")
+          .map((entry) => entry.split("?")[0].slice(0, 120))
+          .slice(-12)
+      : [];
+    const entry = {
+      kind,
+      journey,
+      referrer: cleanLabel(body.referrer) || "direct",
+      campaign: cleanLabel(body.campaign),
+      visit: Math.min(Math.max(Number(body.visit) || 1, 1), 999),
+      minutes: Math.min(Math.max(Number(body.minutes) || 0, 0), 600),
+      timestamp: new Date().toISOString(),
+    };
+    await env.CHAT_LOG.put(`lead:${Date.now()}:${crypto.randomUUID()}`, JSON.stringify(entry), {
+      expirationTtl: 60 * 60 * 24 * 90,
+    });
+  } catch {
+    // Best-effort: never let analytics break a contact submission.
+  }
+
+  return new Response(JSON.stringify({ ok: true }), { headers });
+}
+
 async function handleClicksTop(request: Request, env: Env): Promise<Response> {
   const headers = { "Content-Type": "application/json", ...corsHeaders(request) };
   if (!env.VIEWS) {
@@ -828,6 +977,28 @@ export default {
 
     if (request.method === "GET" && url.pathname === "/clicks/top") {
       return handleClicksTop(request, env);
+    }
+
+    if (request.method === "GET" && url.pathname === "/signals/top") {
+      return handleSignalsTop(request, env);
+    }
+
+    if (request.method === "POST" && url.pathname === "/signals") {
+      if (tooLarge(request)) return payloadTooLarge(request);
+      // Scroll and section events are far more frequent than clicks, so this ceiling is
+      // what keeps one tab from filling KV.
+      if (await rateLimited(request, env, "signals", 200, 60)) {
+        return tooManyRequests(request, 60);
+      }
+      return handleSignals(request, env);
+    }
+
+    if ((request.method === "GET" || request.method === "POST") && url.pathname === "/leads") {
+      if (tooLarge(request)) return payloadTooLarge(request);
+      if (request.method === "POST" && (await rateLimited(request, env, "leads", 5, 3600))) {
+        return tooManyRequests(request, 3600);
+      }
+      return handleLeads(request, env);
     }
 
     if (request.method === "POST" && url.pathname === "/clicks") {

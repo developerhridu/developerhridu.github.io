@@ -8,6 +8,8 @@ import GlassCard from "@/components/ui/GlassCard";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Button from "@/components/ui/Button";
 import { WORKER_URL } from "@/lib/workerUrl";
+import { trackLead } from "@/lib/analytics";
+import { getVisitorSession } from "@/lib/visitorSession";
 import { getClients } from "@/lib/clients";
 import { trackEvent } from "@/lib/analytics";
 import uiStrings from "@/content/ui-strings.json";
@@ -84,6 +86,16 @@ export default function TestimonialSubmit() {
 
       setStatus("success");
       trackEvent("testimonial_submit", { status: "success" });
+      // Same path context as a contact enquiry: what did they read before vouching for you?
+      const session = getVisitorSession();
+      trackLead({
+        kind: "testimonial",
+        journey: session.journey,
+        referrer: session.referrer,
+        campaign: session.campaign,
+        visit: session.visit,
+        minutes: session.minutes,
+      });
       setFormData({ name: "", role: "", company: "", email: "", linkedinUrl: "", quote: "", honeypot: "" });
     } catch {
       setStatus("error");
