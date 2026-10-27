@@ -1,3 +1,9 @@
 {
-  "tasks": []
+  "tasks": [
+    {
+      "id": "add-cdn",
+      "text": "Add CDN",
+      "done": false
+    }
+  ]
 }
