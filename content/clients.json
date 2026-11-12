@@ -4,7 +4,7 @@
       "id": "banglalink-digital",
       "slug": "banglalink-digital",
       "url": "https://www.banglalink.net/",
-      "published": true,
+      "published": false,
       "description": "Oracle-to-PostgreSQL migration for Banglalink Digital: ~1 TB of data, 550+ tables and 1,700+ database objects.",
       "tags": [],
       "body": "## What I Did\n\n- Migrated ~1 TB of production data, 550+ tables, 1,700+ stored procedures/database objects and 23 application projects from Oracle to PostgreSQL.\n- Redesigned cross-database integration and built an executable validation loop to verify the migration.\n- Built O2P, a data-migration tool for moving large, changing production datasets reliably.\n\n## Proof of Work\n\nMigration plan repository and tooling.",
@@ -15,7 +15,7 @@
       "caseStudies": [
         "oracle-to-postgresql-migration-bangladesh"
       ],
-      "updatedAt": "2026-10-11T09:02:05.323Z",
+      "updatedAt": "2026-11-12T06:14:30.036Z",
       "coverImages": [
         "/images/logos/banglalink-digital.jpeg"
       ],
@@ -26,6 +26,8 @@
         "/images/shared/dataflow-database-migration-tool-photo-1.png",
         "/images/shared/dataflow-database-migration-tool-photo-2.png"
       ],
+      "blogs": [],
+      "clients": [],
       "name": "Banglalink Digital"
     },
     {
@@ -334,6 +336,8 @@
         "editable-website-without-a-backend"
       ],
       "updatedAt": "2026-10-29T13:38:27.015Z",
+      "blogs": [],
+      "clients": [],
       "coverImages": [
         "/images/profile/dp.png"
       ],
@@ -342,8 +346,6 @@
         "/images/shared/dataflow-database-migration-tool-photo-1.png",
         "/images/shared/dataflow-database-migration-tool-photo-2.png"
       ],
-      "blogs": [],
-      "clients": [],
       "name": "Personal Project"
     }
   ]
